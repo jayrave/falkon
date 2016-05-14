@@ -1,0 +1,48 @@
+buildscript {
+
+    def baseVersions = [
+            kotlin  :   '1.0.2'
+    ]
+
+    def pluginsVersions = [
+            kotlin  :   baseVersions.kotlin
+    ]
+
+    ext.javaVersions = [
+            source  :   JavaVersion.VERSION_1_6,
+            target  :   JavaVersion.VERSION_1_6
+    ]
+
+    ext.artifactsInfo = [
+            group       :   'com.jayrave.falkon',
+            version     :   '0.1'
+    ]
+
+    ext.librariesVersions = [
+            assertJ         :   '1.7.1',
+            jUnit           :   '4.12',
+            kotlinStdlib    :   baseVersions.kotlin
+    ]
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${pluginsVersions.kotlin}"
+    }
+}
+
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+
+ext.libraries = [
+        assertJ         :   "org.assertj:assertj-core:${librariesVersions.assertJ}",
+        jUnit           :   "junit:junit:${librariesVersions.jUnit}",
+        kotlinStdlib    :   "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}"
+]
