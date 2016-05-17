@@ -1,4 +1,4 @@
-package com.jayrave.falkon
+package com.jayrave.falkon.engine
 
 interface TypeHandler<T> {
     fun get(source: Source, columnIndex: Int): T

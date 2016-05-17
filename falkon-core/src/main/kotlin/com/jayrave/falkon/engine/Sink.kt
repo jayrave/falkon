@@ -1,4 +1,4 @@
-package com.jayrave.falkon
+package com.jayrave.falkon.engine
 
 interface Sink {
     fun put(columnName: String, value: Byte)
