@@ -1,11 +1,12 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.lib.ValueHoldingDataConsumer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class NullHandlingNullableDataConsumerTest {
 
-    private val consumer = NullHandlingDataConsumerForTest()
+    private val consumer = ValueHoldingDataConsumer()
 
     @Test
     fun testPutWithNullByte() {
@@ -128,36 +129,10 @@ class NullHandlingNullableDataConsumerTest {
     }
 
     private fun assertInteractionsForPuttingNullValue() {
-        assertThat(consumer.numberOfTimesConsumedValueSet).isEqualTo(1)
-        assertThat(consumer.consumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isNull()
     }
 
     private fun assertInteractionsForPuttingNonNullValue(type: Class<*>) {
-        assertThat(consumer.numberOfTimesConsumedValueSet).isEqualTo(1)
-        assertThat(consumer.consumedValue).isExactlyInstanceOf(type)
-    }
-
-
-
-    private class NullHandlingDataConsumerForTest : NullHandlingDataConsumer() {
-
-        var numberOfTimesConsumedValueSet: Int = 0
-        var consumedValue: Any? = null
-            private set(value) {
-                numberOfTimesConsumedValueSet++
-                field = value
-            }
-
-        override fun put(byte: Byte) { consumedValue = byte }
-        override fun put(char: Char) { consumedValue = char }
-        override fun put(short: Short) { consumedValue = short }
-        override fun put(int: Int) { consumedValue = int }
-        override fun put(long: Long) { consumedValue = long }
-        override fun put(float: Float) { consumedValue = float }
-        override fun put(double: Double) { consumedValue = double }
-        override fun put(boolean: Boolean) { consumedValue = boolean }
-        override fun putNonNullString(string: String) { consumedValue = string }
-        override fun putNonNullBlob(blob: ByteArray) { consumedValue = blob }
-        override fun putNull() { consumedValue = null }
+        assertThat(consumer.mostRecentConsumedValue).isExactlyInstanceOf(type)
     }
 }
