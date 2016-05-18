@@ -5,7 +5,7 @@ import org.junit.Test
 
 class NullHandlingNullableDataConsumerTest {
 
-    private val consumer = NullHandlingNullableDataConsumerForTest()
+    private val consumer = NullHandlingDataConsumerForTest()
 
     @Test
     fun testPutWithNullByte() {
@@ -139,7 +139,7 @@ class NullHandlingNullableDataConsumerTest {
 
 
 
-    private class NullHandlingNullableDataConsumerForTest : NullHandlingNullableDataConsumer() {
+    private class NullHandlingDataConsumerForTest : NullHandlingDataConsumer() {
 
         var numberOfTimesConsumedValueSet: Int = 0
         var consumedValue: Any? = null

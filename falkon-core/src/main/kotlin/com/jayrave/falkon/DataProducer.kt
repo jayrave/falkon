@@ -1,6 +1,6 @@
 package com.jayrave.falkon
 
-interface NullableDataProducer {
+interface DataProducer {
     fun getByte(): Byte?
     fun getChar(): Char?
     fun getShort(): Short?

@@ -1,6 +1,6 @@
 package com.jayrave.falkon
 
-interface NullableDataConsumer {
+interface DataConsumer {
     fun put(byte: Byte?)
     fun put(char: Char?)
     fun put(short: Short?)

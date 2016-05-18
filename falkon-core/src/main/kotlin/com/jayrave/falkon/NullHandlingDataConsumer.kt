@@ -1,10 +1,10 @@
 package com.jayrave.falkon
 
 /**
- * A [NullableDataConsumer] that redirects `put` calls to `putNull` if the passed in value is `null`.
+ * A [DataConsumer] that redirects `put` calls to `putNull` if the passed in value is `null`.
  * Otherwise, the call is just forwarded to the method that handles the corresponding non-null type
  */
-abstract class NullHandlingNullableDataConsumer : NullableDataConsumer {
+abstract class NullHandlingDataConsumer : DataConsumer {
 
     override final fun put(byte: Byte?) {
         when(byte) {
