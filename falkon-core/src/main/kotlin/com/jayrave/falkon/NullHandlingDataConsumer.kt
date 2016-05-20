@@ -7,49 +7,49 @@ package com.jayrave.falkon
 abstract class NullHandlingDataConsumer : DataConsumer {
 
     override final fun put(short: Short?) {
-        when(short) {
+        when (short) {
             null -> putNull()
             else -> put(short)
         }
     }
 
     override final fun put(int: Int?) {
-        when(int) {
+        when (int) {
             null -> putNull()
             else -> put(int)
         }
     }
 
     override final fun put(long: Long?) {
-        when(long) {
+        when (long) {
             null -> putNull()
             else -> put(long)
         }
     }
 
     override final fun put(float: Float?) {
-        when(float) {
+        when (float) {
             null -> putNull()
             else -> put(float)
         }
     }
 
     override final fun put(double: Double?) {
-        when(double) {
+        when (double) {
             null -> putNull()
             else -> put(double)
         }
     }
 
     override final fun put(string: String?) {
-        when(string) {
+        when (string) {
             null -> putNull()
             else -> putNonNullString(string)
         }
     }
 
     override final fun put(blob: ByteArray?) {
-        when(blob) {
+        when (blob) {
             null -> putNull()
             else -> putNonNullBlob(blob)
         }
