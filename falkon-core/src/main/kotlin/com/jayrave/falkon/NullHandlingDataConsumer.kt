@@ -6,20 +6,6 @@ package com.jayrave.falkon
  */
 abstract class NullHandlingDataConsumer : DataConsumer {
 
-    override final fun put(byte: Byte?) {
-        when(byte) {
-            null -> putNull()
-            else -> put(byte)
-        }
-    }
-
-    override final fun put(char: Char?) {
-        when(char) {
-            null -> putNull()
-            else -> put(char)
-        }
-    }
-
     override final fun put(short: Short?) {
         when(short) {
             null -> putNull()
@@ -55,13 +41,6 @@ abstract class NullHandlingDataConsumer : DataConsumer {
         }
     }
 
-    override final fun put(boolean: Boolean?) {
-        when(boolean) {
-            null -> putNull()
-            else -> put(boolean)
-        }
-    }
-
     override final fun put(string: String?) {
         when(string) {
             null -> putNull()
@@ -77,14 +56,11 @@ abstract class NullHandlingDataConsumer : DataConsumer {
     }
 
 
-    abstract fun put(byte: Byte)
-    abstract fun put(char: Char)
     abstract fun put(short: Short)
     abstract fun put(int: Int)
     abstract fun put(long: Long)
     abstract fun put(float: Float)
     abstract fun put(double: Double)
-    abstract fun put(boolean: Boolean)
     abstract fun putNonNullString(string: String)
     abstract fun putNonNullBlob(blob: ByteArray)
 }

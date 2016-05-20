@@ -1,16 +1,6 @@
 package com.jayrave.falkon
 
-class NullableByteConverter : Converter<Byte?> {
-    override fun from(dataProducer: DataProducer): Byte? = dataProducer.getByte()
-    override fun to(value: Byte?, dataConsumer: DataConsumer) = dataConsumer.put(value)
-}
-
-
-class NullableCharConverter : Converter<Char?> {
-    override fun from(dataProducer: DataProducer): Char? = dataProducer.getChar()
-    override fun to(value: Char?, dataConsumer: DataConsumer) = dataConsumer.put(value)
-}
-
+import com.jayrave.falkon.exceptions.ConversionException
 
 class NullableShortConverter : Converter<Short?> {
     override fun from(dataProducer: DataProducer): Short? = dataProducer.getShort()
@@ -42,12 +32,6 @@ class NullableDoubleConverter : Converter<Double?> {
 }
 
 
-class NullableBooleanConverter : Converter<Boolean?> {
-    override fun from(dataProducer: DataProducer): Boolean? = dataProducer.getBoolean()
-    override fun to(value: Boolean?, dataConsumer: DataConsumer) = dataConsumer.put(value)
-}
-
-
 class NullableStringConverter : Converter<String?> {
     override fun from(dataProducer: DataProducer): String? = dataProducer.getString()
     override fun to(value: String?, dataConsumer: DataConsumer) = dataConsumer.put(value)
@@ -57,6 +41,87 @@ class NullableStringConverter : Converter<String?> {
 class NullableBlobConverter : Converter<ByteArray?> {
     override fun from(dataProducer: DataProducer): ByteArray? = dataProducer.getBlob()
     override fun to(value: ByteArray?, dataConsumer: DataConsumer) = dataConsumer.put(value)
+}
+
+
+/**
+ * [Byte] is stored as [Short]. When getting data back from the database, an exception is thrown if the
+ * retrieved short is outside of byte's limits
+ */
+class NullableByteConverter : Converter<Byte?> {
+
+    override fun from(dataProducer: DataProducer): Byte? {
+        val short = dataProducer.getShort()
+        return when (short) {
+            null -> null
+            else -> when (short >= Byte.MIN_VALUE && short <= Byte.MAX_VALUE) {
+                true -> short.toByte()
+                else -> throw ConversionException(
+                        "Stored value must be in [${Byte.MIN_VALUE}, ${Byte.MAX_VALUE}], but is $short"
+                )
+            }
+        }
+    }
+
+    override fun to(value: Byte?, dataConsumer: DataConsumer) = dataConsumer.put(value?.toShort())
+}
+
+
+/**
+ * [Char] is stored as [String]. When getting data back from the database, an exception is thrown if the
+ * retrieved string is empty or has more than one character
+ */
+class NullableCharConverter : Converter<Char?> {
+
+    override fun from(dataProducer: DataProducer): Char? {
+        val string = dataProducer.getString()
+        return when (string) {
+            null -> null
+            else -> when (string.length == 1) {
+                true -> string.single()
+                false -> throw ConversionException("Stored value must be a single char text, but is $string")
+            }
+        }
+    }
+
+    override fun to(value: Char?, dataConsumer: DataConsumer) = dataConsumer.put(value?.toString())
+}
+
+
+/**
+ * [Boolean] is either 0 or 1
+ */
+class NullableBooleanConverter : Converter<Boolean?> {
+    override fun from(dataProducer: DataProducer): Boolean? {
+        val short = dataProducer.getShort()
+        return when (short) {
+            null -> null
+            else -> when (short) {
+                TRUE_VALUE -> true
+                FALSE_VALUE -> false
+                else -> throw ConversionException(
+                        "Stored value must be either $TRUE_VALUE or $FALSE_VALUE, but is $short"
+                )
+            }
+        }
+    }
+
+    override fun to(value: Boolean?, dataConsumer: DataConsumer) {
+        val short: Short? = when (value) {
+            null -> null
+            else -> when (value) {
+                true -> TRUE_VALUE
+                false -> FALSE_VALUE
+            }
+        }
+
+        dataConsumer.put(short)
+    }
+
+    companion object {
+        private const val TRUE_VALUE: Short = 1
+        private const val FALSE_VALUE: Short = 0
+    }
 }
 
 

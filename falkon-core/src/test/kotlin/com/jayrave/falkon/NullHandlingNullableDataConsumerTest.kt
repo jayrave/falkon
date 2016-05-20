@@ -9,30 +9,6 @@ class NullHandlingNullableDataConsumerTest {
     private val consumer = ValueHoldingDataConsumer()
 
     @Test
-    fun testPutWithNullByte() {
-        consumer.put(null as Byte?)
-        assertInteractionsForPuttingNullValue()
-    }
-
-    @Test
-    fun testPutWithNonNullByte() {
-        consumer.put(1.toByte())
-        assertInteractionsForPuttingNonNullValue(Byte::class.javaObjectType)
-    }
-
-    @Test
-    fun testPutWithNullChar() {
-        consumer.put(null as Char?)
-        assertInteractionsForPuttingNullValue()
-    }
-
-    @Test
-    fun testPutWithNonNullChar() {
-        consumer.put(1.toChar())
-        assertInteractionsForPuttingNonNullValue(Char::class.javaObjectType)
-    }
-
-    @Test
     fun testPutWithNullShort() {
         consumer.put(null as Short?)
         assertInteractionsForPuttingNullValue()
@@ -90,18 +66,6 @@ class NullHandlingNullableDataConsumerTest {
     fun testPutWithNonNullDouble() {
         consumer.put(1.toDouble())
         assertInteractionsForPuttingNonNullValue(Double::class.javaObjectType)
-    }
-
-    @Test
-    fun testPutWithNullBoolean() {
-        consumer.put(null as Boolean?)
-        assertInteractionsForPuttingNullValue()
-    }
-
-    @Test
-    fun testPutWithNonNullBoolean() {
-        consumer.put(true)
-        assertInteractionsForPuttingNonNullValue(Boolean::class.javaObjectType)
     }
 
     @Test
