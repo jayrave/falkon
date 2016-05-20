@@ -1,17 +1,31 @@
 package com.jayrave.falkon.engine
 
+/**
+ * All implementations must be able to handle the following data types natively in addition to `null`
+ *
+ *      - [Short]
+ *      - [Int]
+ *      - [Long]
+ *      - [Float]
+ *      - [Double]
+ *      - [String]
+ *      - [ByteArray]
+ *
+ *      Only the above types are demanded from [Source] and sent to [Sink]. All the raw queries & statements
+ * sent to the engine for processing will only contain objects of the above mentioned types.
+ *
+ * **Type Handling: ** implementations could choose to handle objects in one of the following two ways
+ *
+ *      - Don't mangle any objects sent to the engine
+ *      - If engine is mangling objects, it should be sophisticated enough to pick out those that are included
+ *      in raw DML statements and mangle them also
+ */
 interface Engine<S : Sink> {
 
     /**
      * The [Factory] that creates the [Sink]s for this engine
      */
     val sinkFactory: Factory<S>
-
-    /**
-     * [TypesHandler] that informs how different types are handled by this engine
-     */
-    val typesHandler: TypesHandler
-
 
     /**
      * [tableName] the table to delete from
