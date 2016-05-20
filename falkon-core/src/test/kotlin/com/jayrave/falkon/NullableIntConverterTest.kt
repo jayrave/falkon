@@ -1,7 +1,6 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.lib.StaticDataProducer
-import com.jayrave.falkon.lib.ValueHoldingDataConsumer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

@@ -1,6 +1,4 @@
-package com.jayrave.falkon.lib
-
-import com.jayrave.falkon.NullHandlingDataConsumer
+package com.jayrave.falkon
 
 /**
  * A consumer that stores the most recent value it is asked to consume in [mostRecentConsumedValue]
