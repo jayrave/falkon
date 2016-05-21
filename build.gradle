@@ -21,7 +21,8 @@ buildscript {
     ext.librariesVersions = [
             assertJ         :   '1.7.1',
             jUnit           :   '4.12',
-            kotlinStdlib    :   baseVersions.kotlin
+            kotlinStdlib    :   baseVersions.kotlin,
+            kotlinReflect   :   baseVersions.kotlin
     ]
 
     repositories {
@@ -44,5 +45,6 @@ allprojects {
 ext.libraries = [
         assertJ         :   "org.assertj:assertj-core:${librariesVersions.assertJ}",
         jUnit           :   "junit:junit:${librariesVersions.jUnit}",
-        kotlinStdlib    :   "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}"
+        kotlinStdlib    :   "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
+        kotlinReflect   :   "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}"
 ]
