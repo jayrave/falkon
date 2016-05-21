@@ -13,33 +13,25 @@ interface Column<T : Any, C> {
     val name: String
 
     /**
-     * True if this column is primary key or part of a composite primary key
-     */
-    val id: Boolean
-
-    /**
-     * A converter between the SQL type and `C`
-     */
-    val converter: Converter<C>
-
-    /**
-     * To get a non-null object for null in SQL land
-     */
-    val nullFromSqlSubstitute: NullSubstitute<C>
-
-    /**
-     * To write a non-null SQL value for null in kotlin land
-     */
-    val nullToSqlSubstitute: NullSubstitute<C>?
-
-    /**
      * A function to extract the property from the containing object
      */
     val propertyExtractor: (T) -> C
 
+    /**
+     * From property to the form it would get stored in the database
+     *
+     * [property] the property to compute the storage form for
+     *
+     * @return - how the passed in [property] gets stored as
+     */
+    fun computeStorageFormOf(property: C): Any?
 
     /**
-     * @return - how the passed in [value] gets stored as
+     * From the form the data was stored in the database to property
+     *
+     * [dataProducer] the producer which supplies the stored data
+     *
+     * @return - the property corresponding to the passed in stored form
      */
-    fun computeStorageFormOf(value: C): Any?
+    fun computePropertyFrom(dataProducer: DataProducer): C
 }
