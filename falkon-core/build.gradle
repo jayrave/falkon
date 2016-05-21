@@ -10,6 +10,8 @@ dependencies {
     compile libraries.kotlinStdlib
     compile libraries.kotlinReflect
 
-    testCompile libraries.jUnit
     testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.mockito
+    testCompile libraries.mockitoKotlin
 }

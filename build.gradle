@@ -21,8 +21,10 @@ buildscript {
     ext.librariesVersions = [
             assertJ         :   '1.7.1',
             jUnit           :   '4.12',
+            kotlinReflect   :   baseVersions.kotlin,
             kotlinStdlib    :   baseVersions.kotlin,
-            kotlinReflect   :   baseVersions.kotlin
+            mockito         :   '2.0.53-beta',
+            mockitoKotlin   :   '0.4.1'
     ]
 
     repositories {
@@ -37,7 +39,7 @@ buildscript {
 
 allprojects {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 }
 
@@ -45,6 +47,8 @@ allprojects {
 ext.libraries = [
         assertJ         :   "org.assertj:assertj-core:${librariesVersions.assertJ}",
         jUnit           :   "junit:junit:${librariesVersions.jUnit}",
+        kotlinReflect   :   "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
         kotlinStdlib    :   "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
-        kotlinReflect   :   "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}"
+        mockito         :   "org.mockito:mockito-core:${librariesVersions.mockito}",
+        mockitoKotlin   :   "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}"
 ]
