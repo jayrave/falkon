@@ -23,7 +23,7 @@ abstract class BaseTable<T : Any, ID : Any, E : Engine<S>, S : Sink>(
             converter: Converter<C> = converter(property),
             nullFromSqlSubstitute: NullSubstitute<C> = nullFromSqlSubstitute(property),
             nullToSqlSubstitute: NullSubstitute<C> = nullToSqlSubstitute(property),
-            propertyExtractor: (T) -> C = { property.get(it) }): Column<T, C> {
+            propertyExtractor: PropertyExtractor<T, C> = SimplePropertyExtractor(property)): Column<T, C> {
 
         val column = ColumnImpl(name, propertyExtractor, converter, nullFromSqlSubstitute, nullToSqlSubstitute)
         _allColumns.add(column)
@@ -38,6 +38,14 @@ abstract class BaseTable<T : Any, ID : Any, E : Engine<S>, S : Sink>(
 
     private fun <R> converter(property: KProperty1<T, R>): Converter<R> {
         return configuration.getConverter(property.returnType)
+    }
+
+
+
+    private class SimplePropertyExtractor<T : Any, C>(private val property: KProperty1<T, C>) :
+            PropertyExtractor<T, C> {
+
+        override fun extract(t: T) = property.get(t)
     }
 
 

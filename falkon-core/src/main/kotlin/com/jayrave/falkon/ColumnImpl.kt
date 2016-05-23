@@ -6,9 +6,9 @@ package com.jayrave.falkon
  * [nullToSqlSubstitute] To write a non-null SQL value for null in kotlin land
  */
 internal class ColumnImpl<T : Any, C>(
-        override val name: String, override val propertyExtractor: (T) -> C, private val converter: Converter<C>,
-        private val nullFromSqlSubstitute: NullSubstitute<C>, private val nullToSqlSubstitute: NullSubstitute<C>) :
-        Column<T, C> {
+        override val name: String, override val propertyExtractor: PropertyExtractor<T, C>,
+        private val converter: Converter<C>, private val nullFromSqlSubstitute: NullSubstitute<C>,
+        private val nullToSqlSubstitute: NullSubstitute<C>) : Column<T, C> {
 
     override fun computeStorageFormOf(property: C): Any? {
         // Perform null substitution if required

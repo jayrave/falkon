@@ -64,9 +64,9 @@ class BaseTableTest {
 
         // Default property extract is a simple property getter
         val model = ModelForTest(int = 5, nullableInt = null, nullableString = "hurray")
-        assertThat(testTable.col1.propertyExtractor.invoke(model)).isEqualTo(model.int)
-        assertThat(testTable.col2.propertyExtractor.invoke(model)).isEqualTo(model.nullableInt)
-        assertThat(testTable.col3.propertyExtractor.invoke(model)).isEqualTo(model.nullableString)
+        assertThat(testTable.col1.propertyExtractor.extract(model)).isEqualTo(model.int)
+        assertThat(testTable.col2.propertyExtractor.extract(model)).isEqualTo(model.nullableInt)
+        assertThat(testTable.col3.propertyExtractor.extract(model)).isEqualTo(model.nullableString)
     }
 
 

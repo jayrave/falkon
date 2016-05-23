@@ -1,6 +1,7 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.lib.StaticDataProducer
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.*
@@ -82,21 +83,18 @@ class ColumnImplTest {
 
     companion object {
 
-        private fun <C> buildColumnImplForTest(
-                converter: Converter<C>, nullFromSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute(),
-                nullToSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute()): Column<Any, C> {
-
-            return ColumnImpl(
-                    "test", { throw RuntimeException() }, converter,
-                    nullFromSqlSubstitute, nullToSqlSubstitute
-            )
-        }
-
         private fun nonNullUuidConverter() = NullableToNonNullConverter(nullableUuidConverter())
         private fun nullableUuidConverter() = NullableUuidConverter()
         private fun <C> buildNullSubstitute(value: C) = object : NullSubstitute<C> { override fun value() = value }
         private fun <C> throwingNullSubstitute() = object : NullSubstitute<C> {
             override fun value() = throw RuntimeException()
+        }
+
+        private fun <C> buildColumnImplForTest(
+                converter: Converter<C>, nullFromSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute(),
+                nullToSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute()): Column<Any, C> {
+
+            return ColumnImpl("test", mock(), converter, nullFromSqlSubstitute, nullToSqlSubstitute)
         }
 
 

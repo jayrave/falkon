@@ -13,9 +13,9 @@ interface Column<T : Any, C> {
     val name: String
 
     /**
-     * A function to extract the property from the containing object
+     * To extract the property from the containing object
      */
-    val propertyExtractor: (T) -> C
+    val propertyExtractor: PropertyExtractor<T, C>
 
     /**
      * From property to the form it would get stored in the database
