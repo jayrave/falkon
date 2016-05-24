@@ -5,68 +5,67 @@ import com.jayrave.falkon.engine.Sink
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.reflect.KType
 
-// TODO - how to test converter, nullFromSqlSubstitute & nullToSqlSubstitute ?
+// TODO - how to test converter, nullFromSqlSubstitute, nullToSqlSubstitute, #addColumn & other stuff in BaseTable ?
 class BaseTableTest {
 
     @Test
     fun testAllColumnsWithZeroColumns() {
-        val testTable = object : BaseTableForTest() {}
-        assertThat(testTable.allColumns).isEmpty()
+        val tableForTest = object : TableForTest() {}
+        assertThat(tableForTest.allColumns).isEmpty()
     }
 
 
     @Test
     fun testAllColumnsWithOneColumn() {
-        val testTable = object : BaseTableForTest() {
-            val col = col(ModelForTest::int)
-        }
+        val tableForTest1 = object : TableForTest() { val col = col(ModelForTest::int) }
+        val tableForTest2 = object : TableForTest() { val col = col(ModelForTest::nullableInt) }
 
-        assertThat(testTable.allColumns).containsOnly(testTable.col)
+        assertThat(tableForTest1.allColumns).containsOnly(tableForTest1.col)
+        assertThat(tableForTest2.allColumns).containsOnly(tableForTest2.col)
     }
 
 
     @Test
     fun testAllColumnsWithMultipleColumns() {
-        val testTable = object : BaseTableForTest() {
+        val tableForTest = object : TableForTest() {
             val col1 = col(ModelForTest::int)
             val col2 = col(ModelForTest::blob)
             val col3 = col(ModelForTest::nullableString)
         }
 
-        assertThat(testTable.allColumns).containsOnly(testTable.col1, testTable.col2, testTable.col3)
+        assertThat(tableForTest.allColumns).containsOnly(tableForTest.col1, tableForTest.col2, tableForTest.col3)
     }
 
 
     @Test
     fun testDefaultNameFormatting() {
-        val testTable = object : BaseTableForTest() {
+        val tableForTest = object : TableForTest() {
             val col1 = col(ModelForTest::blob)
             val col2 = col(ModelForTest::nullableString)
             val col3 = col(ModelForTest::thisIsACrazyNameForAColumn)
         }
 
         // The table configuration we are passing in uses CamelCaseToSnakeCaseFormatter
-        assertThat(testTable.col1.name).isEqualTo("blob")
-        assertThat(testTable.col2.name).isEqualTo("nullable_string")
-        assertThat(testTable.col3.name).isEqualTo("this_is_a_crazy_name_for_a_column")
+        assertThat(tableForTest.col1.name).isEqualTo("blob")
+        assertThat(tableForTest.col2.name).isEqualTo("nullable_string")
+        assertThat(tableForTest.col3.name).isEqualTo("this_is_a_crazy_name_for_a_column")
     }
 
 
     @Test
     fun testDefaultPropertyExtractor() {
-        val testTable = object : BaseTableForTest() {
+        val tableForTest = object : TableForTest() {
             val col1 = col(ModelForTest::int)
             val col2 = col(ModelForTest::nullableInt)
             val col3 = col(ModelForTest::nullableString)
         }
 
-        // Default property extract is a simple property getter
+        // By default com.jayrave.falkon.SimplePropertyExtractor is used
         val model = ModelForTest(int = 5, nullableInt = null, nullableString = "hurray")
-        assertThat(testTable.col1.propertyExtractor.extract(model)).isEqualTo(model.int)
-        assertThat(testTable.col2.propertyExtractor.extract(model)).isEqualTo(model.nullableInt)
-        assertThat(testTable.col3.propertyExtractor.extract(model)).isEqualTo(model.nullableString)
+        assertThat(tableForTest.col1.propertyExtractor.extract(model)).isEqualTo(model.int)
+        assertThat(tableForTest.col2.propertyExtractor.extract(model)).isEqualTo(model.nullableInt)
+        assertThat(tableForTest.col3.propertyExtractor.extract(model)).isEqualTo(model.nullableString)
     }
 
 
@@ -87,12 +86,13 @@ class BaseTableTest {
             override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
             TableConfiguration<Engine<Sink>, Sink> {
 
-        override fun <R> getConverter(type: KType) = mock<Converter<R>>()
+        override fun <R> getConverterForNullableType(clazz: Class<R>) = mock<Converter<R>>()
+        override fun <R : Any> getConverterForNonNullType(clazz: Class<R>) = mock<Converter<R>>()
     }
 
 
 
-    private abstract class BaseTableForTest(
+    private abstract class TableForTest(
             configuration: TableConfiguration<Engine<Sink>, Sink> = TableConfigurationForTest()) :
             BaseTable<ModelForTest, Int, Engine<Sink>, Sink>("test", configuration) {
 

@@ -3,6 +3,7 @@ package com.jayrave.falkon
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
 /**
@@ -12,40 +13,49 @@ abstract class BaseTable<T : Any, ID : Any, E : Engine<S>, S : Sink>(
         override val name: String, override val configuration: TableConfiguration<E, S>) :
         Table<T, ID, E, S> {
 
-    private final val _allColumns: MutableSet<Column<T, *>> = HashSet()
-    override final val allColumns: Set<Column<T, *>>
-        get() = _allColumns
+    override final val allColumns: Set<Column<T, *>> = HashSet()
 
 
-    fun <C> col(
+    inline fun <reified C> col(
             property: KProperty1<T, C>,
-            name: String = name(property),
-            converter: Converter<C> = converter(property),
-            nullFromSqlSubstitute: NullSubstitute<C> = nullFromSqlSubstitute(property),
-            nullToSqlSubstitute: NullSubstitute<C> = nullToSqlSubstitute(property),
-            propertyExtractor: PropertyExtractor<T, C> = SimplePropertyExtractor(property)): Column<T, C> {
+            name: String = computeFormattedNameOf(property),
+            converter: Converter<C> = configuration.getConverterForNullableType(getJavaClassFor(C::class)),
+            nullFromSqlSubstitute: NullSubstitute<C> = buildNullFromSqlSubstitute(true),
+            nullToSqlSubstitute: NullSubstitute<C> = buildNullToSqlSubstitute(true),
+            propertyExtractor: PropertyExtractor<T, C> = buildPropertyExtractorFrom(property)): Column<T, C> {
+
+        return addColumn(name, converter, nullFromSqlSubstitute, nullToSqlSubstitute, propertyExtractor)
+    }
+
+
+    inline fun <reified C : Any> col(
+            property: KProperty1<T, C>,
+            name: String = computeFormattedNameOf(property),
+            converter: Converter<C> = configuration.getConverterForNonNullType(getJavaClassFor(C::class)),
+            nullFromSqlSubstitute: NullSubstitute<C> = buildNullFromSqlSubstitute(false),
+            propertyExtractor: PropertyExtractor<T, C> = buildPropertyExtractorFrom(property)): Column<T, C> {
+
+        return addColumn(name, converter, nullFromSqlSubstitute, buildNullToSqlSubstitute(false), propertyExtractor)
+    }
+
+
+    fun <C> addColumn(
+            name: String, converter: Converter<C>, nullFromSqlSubstitute: NullSubstitute<C>,
+            nullToSqlSubstitute: NullSubstitute<C>, propertyExtractor: PropertyExtractor<T, C>): Column<T, C> {
 
         val column = ColumnImpl(name, propertyExtractor, converter, nullFromSqlSubstitute, nullToSqlSubstitute)
-        _allColumns.add(column)
+        (allColumns as MutableSet).add(column)
         return column
     }
 
 
-    private fun <R> name(property: KProperty1<T, R>): String {
+    fun <C> computeFormattedNameOf(property: KProperty1<T, C>): String {
         return configuration.nameFormatter.format(property.name)
     }
 
 
-    private fun <R> converter(property: KProperty1<T, R>): Converter<R> {
-        return configuration.getConverter(property.returnType)
-    }
-
-
-
-    private class SimplePropertyExtractor<T : Any, C>(private val property: KProperty1<T, C>) :
-            PropertyExtractor<T, C> {
-
-        override fun extract(t: T) = property.get(t)
+    fun <C> buildPropertyExtractorFrom(property: KProperty1<T, C>): PropertyExtractor<T, C> {
+        return SimplePropertyExtractor(property)
     }
 
 
@@ -58,8 +68,8 @@ abstract class BaseTable<T : Any, ID : Any, E : Engine<S>, S : Sink>(
 
         val throwingNullFromSqlSubstitute = object : NullSubstitute<Any> {
             override fun value() = throw NullPointerException(
-                    "SQL value for a non-null type property is null!!. Solution: make db column non-null or " +
-                            "provide a valid ${NullSubstitute::class}"
+                    "Trying to assign return null for a non-null type property!!. " +
+                            "Solution: make db column non-null or provide a valid ${NullSubstitute::class}"
             )
         }
 
@@ -68,21 +78,31 @@ abstract class BaseTable<T : Any, ID : Any, E : Engine<S>, S : Sink>(
         }
 
 
-        private fun <T, C> nullFromSqlSubstitute(property: KProperty1<T, C>): NullSubstitute<C> {
+        fun <C> buildNullFromSqlSubstitute(isNullableProperty: Boolean): NullSubstitute<C> {
             @Suppress("UNCHECKED_CAST")
-            return when (property.returnType.isMarkedNullable) {
+            return when (isNullableProperty) {
                 true -> nullReturningNullSubstitute
                 false -> throwingNullFromSqlSubstitute
             } as NullSubstitute<C>
         }
 
 
-        private fun <T, C> nullToSqlSubstitute(property: KProperty1<T, C>): NullSubstitute<C> {
+        fun <C> buildNullToSqlSubstitute(isNullableProperty: Boolean): NullSubstitute<C> {
             @Suppress("UNCHECKED_CAST")
-            return when (property.returnType.isMarkedNullable) {
+            return when (isNullableProperty) {
                 true -> nullReturningNullSubstitute
                 false -> throwingNullToSqlSubstitute
             } as NullSubstitute<C>
+        }
+
+
+        /**
+         * This is used as a work around to get Class<> from a generic type that is upper bounded by Any?
+         * **CAUTION: Don't use this unless you perfectly know what this method does & what it is used for**
+         */
+        fun <C> getJavaClassFor(clazz: KClass<*>): Class<C> {
+            @Suppress("CAST_NEVER_SUCCEEDS")
+            return clazz.java as Class<C>
         }
     }
 }
