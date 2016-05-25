@@ -7,7 +7,10 @@ import com.jayrave.falkon.Column
  */
 interface WhereBuilder<T : Any, ID : Any> :
         PredicateAdder<T, ID>,
-        CompoundConnectorAdder<T, ID>
+        CompoundConnectorAdder<T, ID> {
+
+    fun build(): Where
+}
 
 
 /**
