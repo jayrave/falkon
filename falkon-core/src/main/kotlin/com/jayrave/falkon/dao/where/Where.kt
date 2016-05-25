@@ -6,7 +6,7 @@ package com.jayrave.falkon.dao.where
  *
  * [arguments] contains arguments for which `?` placeholder was used
  */
-interface Where {
-    val clause: String
-    val arguments: Iterable<Any?>
-}
+internal data class Where(
+        val clause: String,
+        val arguments: Iterable<Any?>
+)
