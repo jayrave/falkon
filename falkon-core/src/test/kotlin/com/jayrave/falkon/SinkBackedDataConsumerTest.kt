@@ -1,5 +1,6 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.DataConsumptionException
 import com.jayrave.falkon.lib.MapBackedSink
 import org.assertj.core.api.Assertions.assertThat
@@ -204,11 +205,11 @@ class SinkBackedDataConsumerTest {
         consumer.putNull()
     }
 
-    private fun buildConsumer(): SinkBackedDataConsumer {
+    private fun buildConsumer(): SinkBackedDataConsumer<Sink> {
         return SinkBackedDataConsumer(mapBackedSink)
     }
 
-    private fun buildConsumerAndSetColumnName(): SinkBackedDataConsumer {
+    private fun buildConsumerAndSetColumnName(): SinkBackedDataConsumer<Sink> {
         val consumer = buildConsumer()
         consumer.setColumnName(DEFAULT_COLUMN_NAME)
         return consumer

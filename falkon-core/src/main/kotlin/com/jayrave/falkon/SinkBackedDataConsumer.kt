@@ -7,7 +7,7 @@ import com.jayrave.falkon.exceptions.DataConsumptionException
  * A [DataConsumer] that forwards all the calls to a [Sink]. Failing to call [setColumnName] before every
  * #put*() call will result in [DataConsumptionException]
  */
-class SinkBackedDataConsumer(private val sink: Sink) : NullHandlingDataConsumer() {
+class SinkBackedDataConsumer<S : Sink>(val sink: S) : NullHandlingDataConsumer() {
 
     private var columnName: String? = null
 
