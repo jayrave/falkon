@@ -1,7 +1,7 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.engine.Sink
-import com.jayrave.falkon.exceptions.DataConsumptionException
+import com.jayrave.falkon.exceptions.DataConsumerException
 import com.jayrave.falkon.lib.MapBackedSink
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -25,12 +25,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
     
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutShortWithoutColumnNameThrows() {
         buildConsumer().put(5.toShort())
     }
     
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutShortResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(5.toShort()) }
@@ -50,12 +50,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutIntWithoutColumnNameThrows() {
         buildConsumer().put(5.toInt())
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutIntResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(5.toInt()) }
@@ -75,12 +75,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutLongWithoutColumnNameThrows() {
         buildConsumer().put(5.toLong())
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutLongResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(5.toLong()) }
@@ -100,12 +100,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutFloatWithoutColumnNameThrows() {
         buildConsumer().put(5.toFloat())
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutFloatResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(5.toFloat()) }
@@ -125,12 +125,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutDoubleWithoutColumnNameThrows() {
         buildConsumer().put(5.toDouble())
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutDoubleResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(5.toDouble()) }
@@ -150,12 +150,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutStringWithoutColumnNameThrows() {
         buildConsumer().put(5.toString())
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutStringResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(5.toString()) }
@@ -175,12 +175,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutBlobWithoutColumnNameThrows() {
         buildConsumer().put(byteArrayOf(5))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutBlobResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.put(byteArrayOf(5)) }
@@ -193,12 +193,12 @@ class SinkBackedDataConsumerTest {
         assertThat(mapBackedSink.sunkValues()).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutNullWithoutColumnNameThrows() {
         buildConsumer().putNull()
     }
 
-    @Test(expected = DataConsumptionException::class)
+    @Test(expected = DataConsumerException::class)
     fun testPutNullResetsColumnName() {
         val consumer = buildConsumerAndSetColumnName()
         failIfThrows { consumer.putNull() }

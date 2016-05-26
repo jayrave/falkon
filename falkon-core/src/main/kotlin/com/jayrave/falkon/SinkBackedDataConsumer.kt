@@ -1,11 +1,11 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.engine.Sink
-import com.jayrave.falkon.exceptions.DataConsumptionException
+import com.jayrave.falkon.exceptions.DataConsumerException
 
 /**
  * A [DataConsumer] that forwards all the calls to a [Sink]. Failing to call [setColumnName] before every
- * #put*() call will result in [DataConsumptionException]
+ * #put*() call will result in [DataConsumerException]
  */
 class SinkBackedDataConsumer<S : Sink>(val sink: S) : NullHandlingDataConsumer() {
 
@@ -49,7 +49,7 @@ class SinkBackedDataConsumer<S : Sink>(val sink: S) : NullHandlingDataConsumer()
 
     private fun getAndNullifyColumnName(): String {
         val result = when (columnName) {
-            null -> throw DataConsumptionException("Calling #put without setting a column name")
+            null -> throw DataConsumerException("Calling #put without setting a column name")
             else -> columnName!!
         }
 
