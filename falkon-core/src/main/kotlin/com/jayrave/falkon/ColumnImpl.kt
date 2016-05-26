@@ -11,15 +11,19 @@ internal class ColumnImpl<T : Any, C>(
         private val nullToSqlSubstitute: NullSubstitute<C>) : Column<T, C> {
 
     override fun computeStorageFormOf(property: C): Any? {
+        val valueHoldingDataConsumer = threadLocalValueHoldingDataConsumer.get()
+        putStorageFormIn(property, valueHoldingDataConsumer)
+        return valueHoldingDataConsumer.mostRecentConsumedValue
+    }
+
+    override fun putStorageFormIn(property: C, dataConsumer: DataConsumer) {
         // Perform null substitution if required
         val nullSubstitutedValue = when (property) {
             null -> nullToSqlSubstitute.value()
             else -> property
         }
 
-        val valueHoldingDataConsumer = threadLocalValueHoldingDataConsumer.get()
-        converter.to(nullSubstitutedValue, valueHoldingDataConsumer)
-        return valueHoldingDataConsumer.mostRecentConsumedValue
+        converter.to(nullSubstitutedValue, dataConsumer)
     }
 
     override fun computePropertyFrom(dataProducer: DataProducer): C {

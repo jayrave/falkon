@@ -23,6 +23,24 @@ class ColumnImplTest {
     }
 
     @Test
+    fun testPutStorageFormInForNonNullType() {
+        val column: Column<Any, UUID> = buildColumnImplForTest(nonNullUuidConverter())
+        val inputId = UUID.randomUUID()
+        val dataConsumer = ValueHoldingDataConsumer()
+        column.putStorageFormIn(inputId, dataConsumer)
+        assertThat(dataConsumer.mostRecentConsumedValue).isEqualTo(inputId.toString())
+    }
+
+    @Test
+    fun testPutStorageFormInForNullableType() {
+        val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
+        val inputId = UUID.randomUUID()
+        val dataConsumer = ValueHoldingDataConsumer()
+        column.putStorageFormIn(inputId, dataConsumer)
+        assertThat(dataConsumer.mostRecentConsumedValue).isEqualTo(inputId.toString())
+    }
+
+    @Test
     fun testComputePropertyFromForNonNullType() {
         val column: Column<Any, UUID> = buildColumnImplForTest(nonNullUuidConverter())
         val inputString = UUID.randomUUID().toString()
