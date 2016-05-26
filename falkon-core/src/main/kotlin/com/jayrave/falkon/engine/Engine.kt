@@ -43,7 +43,7 @@ interface Engine<S : Sink> {
      *
      * @return the number of rows affected
      */
-    fun update(tableName: String, sink: S, whereClause: String, whereArgs: Array<Any?>): Int
+    fun update(tableName: String, sink: S, whereClause: String?, whereArgs: Iterable<Any?>?): Int
 
     /**
      * [tableName] the table to delete from
@@ -52,7 +52,7 @@ interface Engine<S : Sink> {
      *
      * @return the number of rows affected
      */
-    fun delete(tableName: String, whereClause: String, whereArgs: Array<Any?>): Int
+    fun delete(tableName: String, whereClause: String?, whereArgs: Iterable<Any?>?): Int
 
     /**
      * [tableName] the table to delete from
@@ -69,6 +69,6 @@ interface Engine<S : Sink> {
      */
     fun query(
             tableName: String, distinct: Boolean?, columns: Array<String>?, whereClause: String?,
-            whereArgs: Array<Any?>, groupBy: String?, having: String?, orderBy: String?, limit: String?
+            whereArgs: Iterable<Any?>?, groupBy: String?, having: String?, orderBy: String?, limit: String?
     ): Source
 }
