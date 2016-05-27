@@ -10,7 +10,7 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 
-class UpdateBuilderImpl<T : Any, E : Engine<S>, S : Sink>(override val table: Table<T, *, E, S>) :
+internal class UpdateBuilderImpl<T : Any, E : Engine<S>, S : Sink>(override val table: Table<T, *, E, S>) :
         UpdateBuilder<T, E, S> {
 
     private val dataConsumer = SinkBackedDataConsumer(table.configuration.engine.sinkFactory.create())

@@ -8,7 +8,7 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.Source
 import java.util.*
 
-class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) : QueryBuilder<T> {
+internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) : QueryBuilder<T> {
 
     private var distinct: Boolean = false
     private var selectedColumns: Iterable<Column<T, *>>? = null

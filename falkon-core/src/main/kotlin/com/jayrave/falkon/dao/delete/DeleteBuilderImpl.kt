@@ -6,7 +6,7 @@ import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 
-class DeleteBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) : DeleteBuilder<T> {
+internal class DeleteBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) : DeleteBuilder<T> {
 
     private var whereBuilder: WhereBuilderImpl<T, AdderOrEnder<T>>? = null
 
