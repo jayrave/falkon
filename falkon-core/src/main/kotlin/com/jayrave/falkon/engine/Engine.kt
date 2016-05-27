@@ -60,15 +60,16 @@ interface Engine<S : Sink> {
      * [columns] A list of which columns to return. Passing null will return all columns
      * [whereClause] the optional WHERE clause to apply when updating. Passing null will update all rows
      * [whereArgs] You may include ?s in the where clause, which will be replaced by the values from whereArgs
-     * [groupBy] Formatted as SQL GROUP BY clause (excluding `GROUP BY` itself). Passing null will skip grouping
+     * [groupBy] A list of columns to SQL GROUP BY clause. Passing null will skip grouping
      * [having] Formatted as SQL HAVING clause (excluding `HAVING` itself). Passing null will skip grouping
-     * [orderBy] Formatted as SQL ORDER BY clause (excluding `ORDER BY` itself). Passing null will skip ordering
+     * [orderBy] A list of columns & flags to SQL ORDER BY clause. Passing null will skip ordering. True flag => asc
      * [limit] Limits the number of rows returned by the query, formatted as LIMIT clause. Passing null denotes no limit
      *
      * @return the source that contains the rows matching the query
      */
     fun query(
-            tableName: String, distinct: Boolean?, columns: Array<String>?, whereClause: String?,
-            whereArgs: Iterable<Any?>?, groupBy: String?, having: String?, orderBy: String?, limit: String?
+            tableName: String, distinct: Boolean, columns: Iterable<String>?, whereClause: String?,
+            whereArgs: Iterable<Any?>?, groupBy: Iterable<String>?, having: String?,
+            orderBy: Iterable<Pair<String, Boolean>>?, limit: Long?, offset: Long?
     ): Source
 }
