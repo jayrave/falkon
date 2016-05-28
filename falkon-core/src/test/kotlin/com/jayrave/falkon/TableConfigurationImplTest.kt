@@ -4,7 +4,7 @@ import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.MissingConverterException
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.*
 

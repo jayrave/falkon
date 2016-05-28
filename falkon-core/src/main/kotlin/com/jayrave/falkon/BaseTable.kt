@@ -1,6 +1,6 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Sink
 import java.util.*
 import kotlin.reflect.KClass
@@ -9,9 +9,9 @@ import kotlin.reflect.KProperty1
 /**
  * An abstract extension of [Table] that could be sub-classed for easy & pain-free implementation of [Table]
  */
-abstract class BaseTable<T : Any, ID : Any, E : Engine<S>, S : Sink>(
-        override val name: String, override val configuration: TableConfiguration<E, S>) :
-        Table<T, ID, E, S> {
+abstract class BaseTable<T : Any, ID : Any, D : Dao<T, ID, S>, S : Sink>(
+        override val name: String, override val configuration: TableConfiguration<S>) :
+        Table<T, ID, D, S> {
 
     override final val allColumns: Set<Column<T, *>> = HashSet()
 

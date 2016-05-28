@@ -7,11 +7,9 @@ import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
-import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 
-internal class UpdateBuilderImpl<T : Any, E : Engine<S>, S : Sink>(override val table: Table<T, *, E, S>) :
-        UpdateBuilder<T, E, S> {
+internal class UpdateBuilderImpl<T : Any, S : Sink>(override val table: Table<T, *, *, S>) : UpdateBuilder<T, S> {
 
     private val dataConsumer = SinkBackedDataConsumer(table.configuration.engine.sinkFactory.create())
     private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null

@@ -1,12 +1,13 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Sink
 
-interface Table<T : Any, ID : Any, E : Engine<S>, S : Sink> {
+interface Table<T : Any, ID : Any, D : Dao<T, ID, S>, S : Sink> {
 
     val name: String
-    val configuration: TableConfiguration<E, S>
+    val configuration: TableConfiguration<S>
+    val dao: D
     val allColumns: Set<Column<T, *>>
     val idColumn: Column<T, ID>
 

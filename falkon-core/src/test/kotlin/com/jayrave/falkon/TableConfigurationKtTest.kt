@@ -3,7 +3,7 @@ package com.jayrave.falkon
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class TableConfigurationKtTest {

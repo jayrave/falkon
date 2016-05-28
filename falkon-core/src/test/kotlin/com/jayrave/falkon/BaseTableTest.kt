@@ -1,5 +1,6 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 import com.nhaarman.mockito_kotlin.mock
@@ -84,7 +85,7 @@ class BaseTableTest {
     private class TableConfigurationForTest(
             override val engine: Engine<Sink> = mock(),
             override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
-            TableConfiguration<Engine<Sink>, Sink> {
+            TableConfiguration<Sink> {
 
         override fun <R> getConverterForNullableType(clazz: Class<R>) = mock<Converter<R>>()
         override fun <R : Any> getConverterForNonNullType(clazz: Class<R>) = mock<Converter<R>>()
@@ -93,9 +94,10 @@ class BaseTableTest {
 
 
     private abstract class TableForTest(
-            configuration: TableConfiguration<Engine<Sink>, Sink> = TableConfigurationForTest()) :
-            BaseTable<ModelForTest, Int, Engine<Sink>, Sink>("test", configuration) {
+            configuration: TableConfiguration<Sink> = TableConfigurationForTest()) :
+            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int, Sink>, Sink>("test", configuration) {
 
+        override val dao: Dao<ModelForTest, Int, Sink> = mock()
         override val idColumn: Column<ModelForTest, Int> = mock()
         override fun create(value: Value<ModelForTest>): ModelForTest {
             throw UnsupportedOperationException()

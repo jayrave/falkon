@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.*
+import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Factory
 import com.jayrave.falkon.engine.Sink
@@ -87,9 +88,10 @@ class InsertBuilderImplTest {
 
 
     private class TableForTest(
-            configuration: TableConfiguration<Engine<Sink>, Sink> = defaultConfiguration()) :
-            BaseTable<ModelForTest, Int, Engine<Sink>, Sink>("test", configuration) {
+            configuration: TableConfiguration<Sink> = defaultConfiguration()) :
+            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int, Sink>, Sink>("test", configuration) {
 
+        override val dao: Dao<ModelForTest, Int, Sink> = mock()
         override val idColumn: Column<ModelForTest, Int> = mock()
         override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
 
@@ -97,7 +99,7 @@ class InsertBuilderImplTest {
         val string = col(ModelForTest::string)
 
         companion object {
-            private fun defaultConfiguration(): TableConfiguration<Engine<Sink>, Sink> {
+            private fun defaultConfiguration(): TableConfiguration<Sink> {
                 val engineMock: Engine<Sink> = mock()
                 whenever(engineMock.sinkFactory).thenReturn(object : Factory<Sink> {
                     override fun create() = MapBackedSink()

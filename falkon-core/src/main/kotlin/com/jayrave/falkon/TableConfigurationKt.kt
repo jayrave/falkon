@@ -1,6 +1,5 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 
 
@@ -31,7 +30,7 @@ import com.jayrave.falkon.engine.Sink
  *
  * CAUTION: Previously registers converters will be overwritten
  */
-fun <E : Engine<S>, S : Sink> TableConfigurationImpl<E, S>.registerDefaultConverters() {
+fun <S : Sink> TableConfigurationImpl<S>.registerDefaultConverters() {
     val nullableByteConverter = NullableByteConverter()
     val nullableCharConverter = NullableCharConverter()
     val nullableShortConverter = NullableShortConverter()

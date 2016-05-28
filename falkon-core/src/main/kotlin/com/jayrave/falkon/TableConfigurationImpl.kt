@@ -5,9 +5,9 @@ import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.MissingConverterException
 import java.util.concurrent.ConcurrentHashMap
 
-class TableConfigurationImpl<E : Engine<S>, S : Sink>(
-        override val engine: E, override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
-        TableConfiguration<E, S> {
+class TableConfigurationImpl<S : Sink>(
+        override val engine: Engine<S>, override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
+        TableConfiguration<S> {
 
     private val convertersForNonNullTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
     private val convertersForNullableTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()

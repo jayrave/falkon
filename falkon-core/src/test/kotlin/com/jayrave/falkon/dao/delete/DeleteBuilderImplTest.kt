@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.delete
 
 import com.jayrave.falkon.*
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Sink
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
@@ -66,9 +66,10 @@ class DeleteBuilderImplTest {
 
 
     private class TableForTest(
-            configuration: TableConfiguration<Engine<Sink>, Sink> = defaultConfiguration()) :
-            BaseTable<ModelForTest, Int, Engine<Sink>, Sink>("test", configuration) {
+            configuration: TableConfiguration<Sink> = defaultConfiguration()) :
+            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int, Sink>, Sink>("test", configuration) {
 
+        override val dao: Dao<ModelForTest, Int, Sink> = mock()
         override val idColumn: Column<ModelForTest, Int> = mock()
         override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
 
@@ -76,8 +77,8 @@ class DeleteBuilderImplTest {
         val string = col(ModelForTest::string)
 
         companion object {
-            private fun defaultConfiguration(): TableConfiguration<Engine<Sink>, Sink> {
-                val configuration = TableConfigurationImpl<Engine<Sink>, Sink>(mock())
+            private fun defaultConfiguration(): TableConfiguration<Sink> {
+                val configuration = TableConfigurationImpl<Sink>(mock())
                 configuration.registerDefaultConverters()
                 return configuration
             }

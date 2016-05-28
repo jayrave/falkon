@@ -3,11 +3,9 @@ package com.jayrave.falkon.dao.insert
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.SinkBackedDataConsumer
 import com.jayrave.falkon.Table
-import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 
-internal class InsertBuilderImpl<T : Any, E : Engine<S>, S : Sink>(override val table: Table<T, *, E, S>) :
-        InsertBuilder<T, E, S> {
+internal class InsertBuilderImpl<T : Any, S : Sink>(override val table: Table<T, *, *, S>) : InsertBuilder<T, S> {
 
     private val dataConsumer = SinkBackedDataConsumer(table.configuration.engine.sinkFactory.create())
 

@@ -2,12 +2,11 @@ package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.Table
-import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Sink
 
-interface InsertBuilder<T : Any, E: Engine<S>, S : Sink> {
+interface InsertBuilder<T : Any, S : Sink> {
 
-    val table: Table<T, *, E, S>
+    val table: Table<T, *, *, S>
 
     /**
      * Calling this method again for a column that has already been set should overwrite the existing value
