@@ -28,6 +28,12 @@ interface Engine<S : Sink> {
     val sinkFactory: Factory<S>
 
     /**
+     * All changes and queries appear to be Atomic, Consistent, Isolated, and Durable (ACID) when executed
+     * inside a transaction
+     */
+    fun <R> executeInTransaction(operation: () -> R): R
+
+    /**
      * [tableName] the table to delete from
      * [sink] the sink that contains the initial values for the columns
      *
