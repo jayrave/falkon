@@ -1,3 +1,4 @@
 rootProject.name = 'falkon'
 
 include 'falkon-core'
+include 'falkon-dao'

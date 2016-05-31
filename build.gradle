@@ -1,30 +1,30 @@
 buildscript {
 
     def baseVersions = [
-            kotlin  :   '1.0.2'
+            kotlin: '1.0.2'
     ]
 
     def pluginsVersions = [
-            kotlin  :   baseVersions.kotlin
+            kotlin: baseVersions.kotlin
     ]
 
     ext.javaVersions = [
-            source  :   JavaVersion.VERSION_1_6,
-            target  :   JavaVersion.VERSION_1_6
+            source: JavaVersion.VERSION_1_6,
+            target: JavaVersion.VERSION_1_6
     ]
 
     ext.artifactsInfo = [
-            group       :   'com.jayrave.falkon',
-            version     :   '0.1'
+            group  : 'com.jayrave.falkon',
+            version: '0.1'
     ]
 
     ext.librariesVersions = [
-            assertJ         :   '1.7.1',
-            jUnit           :   '4.12',
-            kotlinReflect   :   baseVersions.kotlin,
-            kotlinStdlib    :   baseVersions.kotlin,
-            mockito         :   '2.0.53-beta',
-            mockitoKotlin   :   '0.4.1'
+            assertJ      : '1.7.1',
+            jUnit        : '4.12',
+            kotlinReflect: baseVersions.kotlin,
+            kotlinStdlib : baseVersions.kotlin,
+            mockito      : '2.0.53-beta',
+            mockitoKotlin: '0.4.1'
     ]
 
     repositories {
@@ -44,11 +44,17 @@ allprojects {
 }
 
 
+ext.falkonModules = [
+        core: project(':falkon-core'),
+        dao : project(':falkon-dao')
+]
+
+
 ext.libraries = [
-        assertJ         :   "org.assertj:assertj-core:${librariesVersions.assertJ}",
-        jUnit           :   "junit:junit:${librariesVersions.jUnit}",
-        kotlinReflect   :   "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
-        kotlinStdlib    :   "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
-        mockito         :   "org.mockito:mockito-core:${librariesVersions.mockito}",
-        mockitoKotlin   :   "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}"
+        assertJ      : "org.assertj:assertj-core:${librariesVersions.assertJ}",
+        jUnit        : "junit:junit:${librariesVersions.jUnit}",
+        kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
+        kotlinStdlib : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
+        mockito      : "org.mockito:mockito-core:${librariesVersions.mockito}",
+        mockitoKotlin: "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}"
 ]

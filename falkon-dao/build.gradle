@@ -1,0 +1,17 @@
+apply plugin: 'kotlin'
+
+group = artifactsInfo.group
+version = artifactsInfo.version
+
+sourceCompatibility = javaVersions.source
+targetCompatibility = javaVersions.target
+
+dependencies {
+    compile falkonModules.core
+    compile libraries.kotlinStdlib
+
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.mockito
+    testCompile libraries.mockitoKotlin
+}
