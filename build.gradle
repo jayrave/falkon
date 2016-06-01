@@ -34,7 +34,8 @@ buildscript {
             kotlinReflect: baseVersions.kotlin,
             kotlinStdlib : baseVersions.kotlin,
             mockito      : '2.0.53-beta',
-            mockitoKotlin: '0.4.1'
+            mockitoKotlin: '0.4.1',
+            robolectric  : '3.0'
     ]
 
     repositories {
@@ -67,5 +68,6 @@ ext.libraries = [
         kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
         kotlinStdlib : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
         mockito      : "org.mockito:mockito-core:${librariesVersions.mockito}",
-        mockitoKotlin: "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}"
+        mockitoKotlin: "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
+        robolectric  : "org.robolectric:robolectric:${librariesVersions.robolectric}"
 ]

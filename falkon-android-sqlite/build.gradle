@@ -30,4 +30,5 @@ dependencies {
     testCompile libraries.jUnit
     testCompile libraries.mockito
     testCompile libraries.mockitoKotlin
+    testCompile libraries.robolectric
 }
