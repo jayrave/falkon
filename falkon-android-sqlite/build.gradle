@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion androidConstants.compileSdk
+    buildToolsVersion androidConstants.buildToolsVersion
+    resourcePrefix 'jras_' // jras is an acronym => jay rave android sqlite
+
+    defaultConfig {
+        minSdkVersion androidConstants.minSdk
+        targetSdkVersion androidConstants.targetSdk
+    }
+
+    compileOptions {
+        sourceCompatibility javaVersions.source
+        targetCompatibility javaVersions.target
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+}
+
+dependencies {
+    compile falkonModules.core
+    compile libraries.kotlinStdlib
+
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.mockito
+    testCompile libraries.mockitoKotlin
+}

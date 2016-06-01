@@ -1,4 +1,5 @@
 rootProject.name = 'falkon'
 
+include 'falkon-android-sqlite'
 include 'falkon-core'
 include 'falkon-dao'

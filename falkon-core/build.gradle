@@ -1,7 +1,7 @@
 apply plugin: 'kotlin'
 
 group = artifactsInfo.group
-version = artifactsInfo.version
+version = artifactsInfo.versionString
 
 sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
