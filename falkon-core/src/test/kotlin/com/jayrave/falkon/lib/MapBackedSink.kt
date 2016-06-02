@@ -7,6 +7,9 @@ internal class MapBackedSink : Sink {
 
     private val map = HashMap<String, Any?>()
 
+    override val size: Int
+        get() = map.size
+
     override fun put(columnName: String, value: Short) {
         map[columnName] = value
     }

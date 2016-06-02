@@ -8,6 +8,13 @@ class ContentValuesBackedSinkTest : RobolectricTestBaseClass() {
     private val sink = ContentValuesBackedSink()
 
     @Test
+    fun testSize() {
+        assertThat(sink.size).isEqualTo(0)
+        sink.put("test", 5)
+        assertThat(sink.size).isEqualTo(1)
+    }
+
+    @Test
     fun testPutShort() {
         val columnName = "test"
         val value = 5.toShort()
