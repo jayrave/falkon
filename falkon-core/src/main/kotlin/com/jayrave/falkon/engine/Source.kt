@@ -8,15 +8,10 @@ package com.jayrave.falkon.engine
 interface Source {
 
     /**
-     * @return the number of rows in the source's row set
-     */
-    val rowCount: Int
-
-    /**
      * Returns the current position the source is at in the row set. The value is zero-based.
      * When the row set is first returned the source will be at position -1, which is before
      * the first row. After the last row is returned another call to next() will leave the
-     * cursor past the last entry, at a position of [rowCount]
+     * cursor past the last entry
      *
      * @return source's current position i.e., the row it is pointing to
      */

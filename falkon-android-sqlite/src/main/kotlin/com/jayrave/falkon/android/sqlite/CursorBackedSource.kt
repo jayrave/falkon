@@ -5,9 +5,6 @@ import com.jayrave.falkon.engine.Source
 
 class CursorBackedSource(private val cursor: Cursor) : Source {
 
-    override val rowCount: Int
-        get() = cursor.count
-
     override val position: Int
         get() = cursor.position
 

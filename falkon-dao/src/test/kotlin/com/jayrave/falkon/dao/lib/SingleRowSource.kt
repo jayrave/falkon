@@ -9,7 +9,6 @@ import java.util.*
 class SingleRowSource(map: Map<String, Any?>) : Source {
 
     override val position: Int = 0
-    override val rowCount: Int = 1
     private val values: List<Any?>
     private val columnNameToIndexMap: Map<String, Int>
     init  {

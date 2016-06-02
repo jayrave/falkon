@@ -13,13 +13,6 @@ class CursorBackedSourceTest {
     private val source = CursorBackedSource(cursorMock)
 
     @Test
-    fun testGetRowCount() {
-        source.rowCount
-        verify(cursorMock).count
-        verifyNoMoreInteractions(cursorMock)
-    }
-
-    @Test
     fun testGetPosition() {
         source.position
         verify(cursorMock).position
