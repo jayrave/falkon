@@ -4,8 +4,8 @@ import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.DataConsumerException
 
 /**
- * A [DataConsumer] that forwards all the calls to a [Sink]. Failing to call [setColumnName] before every
- * #put*() call will result in [DataConsumerException]
+ * A [DataConsumer] that forwards all the calls to a [Sink]. Failing to call [setColumnName]
+ * before every #put*() call will result in [DataConsumerException]
  */
 class SinkBackedDataConsumer<S : Sink>(val sink: S) : NullHandlingDataConsumer() {
 
