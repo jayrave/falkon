@@ -30,6 +30,7 @@ buildscript {
 
     ext.librariesVersions = [
             assertJ      : '1.7.1',
+            h2           : '1.4.192',
             jUnit        : '4.12',
             kotlinReflect: baseVersions.kotlin,
             kotlinStdlib : baseVersions.kotlin,
@@ -64,6 +65,7 @@ ext.falkonModules = [
 
 ext.libraries = [
         assertJ      : "org.assertj:assertj-core:${librariesVersions.assertJ}",
+        h2           : "com.h2database:h2:${librariesVersions.h2}",
         jUnit        : "junit:junit:${librariesVersions.jUnit}",
         kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
         kotlinStdlib : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
