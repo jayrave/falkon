@@ -3,8 +3,13 @@ package com.jayrave.falkon.dao.lib
 import com.jayrave.falkon.engine.Source
 import java.util.*
 
-class MapBackedSource(map: Map<String, Any?>) : Source {
+/**
+ * A [Source] that can hold only one row at a time and always points at the row
+ */
+class SingleRowSource(map: Map<String, Any?>) : Source {
 
+    override val position: Int = 0
+    override val rowCount: Int = 1
     private val values: List<Any?>
     private val columnNameToIndexMap: Map<String, Int>
     init  {
@@ -15,6 +20,36 @@ class MapBackedSource(map: Map<String, Any?>) : Source {
             columnNameToIndexMap[entry.key] = index
             values.add(index, entry.value)
         }
+    }
+
+    override fun move(offset: Int): Boolean {
+        return when (position) {
+            0 -> true
+            else -> false
+        }
+    }
+
+    override fun moveToPosition(position: Int): Boolean {
+        return when (position) {
+            0 -> true
+            else -> false
+        }
+    }
+
+    override fun moveToFirst(): Boolean {
+        return true
+    }
+
+    override fun moveToLast(): Boolean {
+        return true
+    }
+
+    override fun moveToNext(): Boolean {
+        return false
+    }
+
+    override fun moveToPrevious(): Boolean {
+        return false
     }
 
     override fun getColumnIndex(columnName: String): Int {

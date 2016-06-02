@@ -1,9 +1,8 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.dao.lib.MapBackedSource
-import org.assertj.core.api.Assertions.*
+import com.jayrave.falkon.dao.lib.SingleRowSource
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
 
 class SourceBackedDataProducerTest {
 
@@ -63,16 +62,7 @@ class SourceBackedDataProducerTest {
 
 
     private fun buildProducerAndSetColumnIndex(inputValue: Any?): SourceBackedDataProducer {
-        // Add a few dummy columns to make sure that everything works even when
-        // there are multiple columns
-
-        val map: Map<String, Any?> = mapOf(
-                DEFAULT_COLUMN_NAME to inputValue,
-                UUID.randomUUID().toString() to UUID.randomUUID(),
-                UUID.randomUUID().toString() to UUID.randomUUID()
-        )
-
-        val source = MapBackedSource(map)
+        val source = SingleRowSource(mapOf(DEFAULT_COLUMN_NAME to inputValue))
         val producer = SourceBackedDataProducer(source)
         producer.setColumnIndex(source.getColumnIndex(DEFAULT_COLUMN_NAME))
         return producer
