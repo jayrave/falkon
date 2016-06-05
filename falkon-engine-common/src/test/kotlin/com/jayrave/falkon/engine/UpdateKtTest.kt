@@ -54,7 +54,7 @@ class UpdateKtTest {
 
     companion object {
 
-        private val regex = Regex("(\\S+) = \\?,?\\s?")
+        private val columnValueSetterRegex = Regex("(\\S+) = \\?,?\\s?")
 
 
         private fun buildColumnNameToValuesMap(): Map<String, Any?> {
@@ -67,17 +67,17 @@ class UpdateKtTest {
                 columnNamesToValuesMap: Map<String, Any?>, whereClause: String?,
                 whereArgs: Iterable<Any?>?) {
 
-            var mutableSql = cs.sql
+            var partialSql = cs.sql
             val mutableBoundArgs = LinkedList(cs.boundArgs)
             val mutableColumnNamesToValuesMap = HashMap(columnNamesToValuesMap)
 
             // Check statement start & setup for asserting columns
-            mutableSql = mutableSql.removePrefixOrThrow("UPDATE $tableName SET ")
-            assertThat(mutableSql.indexOf('?')).isGreaterThan(0) // At least one column must be set
+            partialSql = partialSql.removePrefixOrThrow("UPDATE $tableName SET ")
+            assertThat(partialSql.indexOf('?')).isGreaterThan(0) // At least one column must be set
 
             // Assert columns
             for (loopIndex in 0..columnNamesToValuesMap.size - 1) {
-                val matchResult = regex.find(mutableSql)
+                val matchResult = columnValueSetterRegex.find(partialSql)
 
                 // There should be a match & should start at index 0
                 assertThat(matchResult).isNotNull()
@@ -92,16 +92,16 @@ class UpdateKtTest {
                 )
 
                 // Setup for asserting next column
-                mutableSql = mutableSql.removePrefixOrThrow(matchResult.groups[0]!!.value)
+                partialSql = partialSql.removePrefixOrThrow(matchResult.groups[0]!!.value)
             }
 
             // Assert where clause & args
-            mutableSql = assertAndRemoveWhereRelatedInfo(
-                    whereClause, whereArgs, mutableSql, mutableBoundArgs
+            partialSql = assertAndRemoveWhereRelatedInfo(
+                    whereClause, whereArgs, partialSql, mutableBoundArgs
             )
 
             // Final assertions
-            assertThat(mutableSql).isEmpty()
+            assertThat(partialSql).isEmpty()
             assertThat(mutableBoundArgs).isEmpty()
         }
     }
