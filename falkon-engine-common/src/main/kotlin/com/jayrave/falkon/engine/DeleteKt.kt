@@ -3,7 +3,7 @@ package com.jayrave.falkon.engine
 /**
  * @return a compiled statement for the passed in parameters
  */
-inline fun <CS : Any> delete(
+inline fun <CS : Any> compileDeleteStatement(
         tableName: String, whereClause: String?,
         whereArgs: Iterable<Any?>?, statementCompiler: (String) -> CS,
         argsBinder: (compiledStatement: CS, index: Int, arg: Any?) -> Any?): CS {

@@ -9,8 +9,8 @@ class UpdateKtTest {
     private val tableName = "test"
 
     @Test
-    fun testUpdateReturnsNullForEmptyMap() {
-        val compiledStatement = update(
+    fun testCompileUpdateStatementReturnsNullForEmptyMap() {
+        val compiledStatement = compileUpdateStatement(
                 "test", emptyMap(), null, null, statementCompiler, argsBinder
         )
 
@@ -19,11 +19,11 @@ class UpdateKtTest {
 
 
     @Test
-    fun testUpdateWithoutWhere() {
+    fun testCompileUpdateStatementWithoutWhere() {
         val columnNameToValuesMap = buildColumnNameToValuesMap()
         val whereClause = null
         val whereArgs = null
-        val compiledStatement = update(
+        val compiledStatement = compileUpdateStatement(
                 tableName, columnNameToValuesMap, whereClause, whereArgs,
                 statementCompiler, argsBinder
         )
@@ -36,11 +36,11 @@ class UpdateKtTest {
 
 
     @Test
-    fun testUpdateWithWhere() {
+    fun testCompileUpdateStatementWithWhere() {
         val columnNameToValuesMap = buildColumnNameToValuesMap()
         val whereClause = "anything = ? AND nothing = ?"
         val whereArgs = listOf("test", 7)
-        val compiledStatement = update(
+        val compiledStatement = compileUpdateStatement(
                 tableName, columnNameToValuesMap, whereClause, whereArgs,
                 statementCompiler, argsBinder
         )

@@ -9,10 +9,10 @@ class DeleteKtTest {
     private val tableName = "test"
 
     @Test
-    fun testDeleteWithoutWhere() {
+    fun testCompileDeleteStatementWithoutWhere() {
         val whereClause = null
         val whereArgs = null
-        val compiledStatement = delete(
+        val compiledStatement = compileDeleteStatement(
                 tableName, whereClause, whereArgs,
                 statementCompiler, argsBinder
         )
@@ -22,10 +22,10 @@ class DeleteKtTest {
 
 
     @Test
-    fun testUpdateWithWhere() {
+    fun testCompileDeleteStatementWithWhere() {
         val whereClause = "anything = ? AND nothing = ?"
         val whereArgs = listOf("test", 7)
-        val compiledStatement = delete(
+        val compiledStatement = compileDeleteStatement(
                 tableName, whereClause, whereArgs,
                 statementCompiler, argsBinder
         )
