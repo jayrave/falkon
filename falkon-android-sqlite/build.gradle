@@ -24,6 +24,8 @@ android {
 
 dependencies {
     compile falkonModules.core
+    compile falkonModules.engineCommon
+
     compile libraries.kotlinStdlib
 
     testCompile libraries.assertJ
