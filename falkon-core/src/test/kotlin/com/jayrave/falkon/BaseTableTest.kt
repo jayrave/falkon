@@ -2,7 +2,6 @@ package com.jayrave.falkon
 
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.Sink
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -35,7 +34,9 @@ class BaseTableTest {
             val col3 = col(ModelForTest::nullableString)
         }
 
-        assertThat(tableForTest.allColumns).containsOnly(tableForTest.col1, tableForTest.col2, tableForTest.col3)
+        assertThat(tableForTest.allColumns).containsOnly(
+                tableForTest.col1, tableForTest.col2, tableForTest.col3
+        )
     }
 
 
@@ -66,7 +67,9 @@ class BaseTableTest {
         val model = ModelForTest(int = 5, nullableInt = null, nullableString = "hurray")
         assertThat(tableForTest.col1.propertyExtractor.extract(model)).isEqualTo(model.int)
         assertThat(tableForTest.col2.propertyExtractor.extract(model)).isEqualTo(model.nullableInt)
-        assertThat(tableForTest.col3.propertyExtractor.extract(model)).isEqualTo(model.nullableString)
+        assertThat(tableForTest.col3.propertyExtractor.extract(model)).isEqualTo(
+                model.nullableString
+        )
     }
 
 
@@ -83,9 +86,9 @@ class BaseTableTest {
 
 
     private class TableConfigurationForTest(
-            override val engine: Engine<Sink> = mock(),
+            override val engine: Engine = mock(),
             override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
-            TableConfiguration<Sink> {
+            TableConfiguration {
 
         override fun <R> getConverterForNullableType(clazz: Class<R>) = mock<Converter<R>>()
         override fun <R : Any> getConverterForNonNullType(clazz: Class<R>) = mock<Converter<R>>()
@@ -94,10 +97,10 @@ class BaseTableTest {
 
 
     private abstract class TableForTest(
-            configuration: TableConfiguration<Sink> = TableConfigurationForTest()) :
-            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int, Sink>, Sink>("test", configuration) {
+            configuration: TableConfiguration = TableConfigurationForTest()) :
+            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int>>("test", configuration) {
 
-        override val dao: Dao<ModelForTest, Int, Sink> = mock()
+        override val dao: Dao<ModelForTest, Int> = mock()
         override val idColumn: Column<ModelForTest, Int> = mock()
         override fun create(value: Value<ModelForTest>): ModelForTest {
             throw UnsupportedOperationException()

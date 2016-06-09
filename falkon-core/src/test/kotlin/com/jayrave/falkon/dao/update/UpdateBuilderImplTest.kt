@@ -1,131 +1,202 @@
 package com.jayrave.falkon.dao.update
 
-import com.jayrave.falkon.*
-import com.jayrave.falkon.dao.Dao
-import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.Factory
-import com.jayrave.falkon.engine.Sink
-import com.jayrave.falkon.lib.MapBackedSink
+import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
+import com.jayrave.falkon.dao.testLib.OneShotCompiledUpdateForTest
+import com.jayrave.falkon.dao.testLib.TableForTest
+import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.testLib.iterableContainsInAnyOrder
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
 
 class UpdateBuilderImplTest {
 
-    private val table = TableForTest()
-    private val engine = table.configuration.engine
-    private val builder = UpdateBuilderImpl(table)
-
     @Test
     fun testUpdateWithoutWhere() {
-        val inputValue = 5
-        val expectedSunkValues = HashMap<String, Any?>()
-        expectedSunkValues[table.int.name] = table.int.computeStorageFormOf(inputValue)
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engineSpy = bundle.engineSpy
 
-        builder.set(table.int, inputValue).update()
-        verifyCallToUpdate(expectedSunkValues, null, null)
+        val builder = UpdateBuilderImpl(table)
+        builder.set(table.int, 5).update()
+
+        // Verify interactions with engine
+        verify(engineSpy).compileUpdate(
+                eq(table.name), iterableContainsInAnyOrder(table.int.name), isNull()
+        )
+        verifyNoMoreInteractions(engineSpy)
+
+        // Verify interactions with compiled statement
+        assertThat(engineSpy.compiledUpdates).hasSize(1)
+        val statement: OneShotCompiledUpdateForTest = engineSpy.compiledUpdates.first()
+        assertThat(statement.boundArgs).hasSize(1)
+        assertThat(statement.intBoundAt(1)).isEqualTo(5)
+        assertThat(statement.isExecuted).isTrue()
+        assertThat(statement.isClosed).isTrue()
     }
 
 
     @Test
     fun testUpdateWithWhere() {
-        val inputValue = 5
-        val expectedSunkValues = HashMap<String, Any?>()
-        expectedSunkValues[table.int.name] = table.int.computeStorageFormOf(inputValue)
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engineSpy = bundle.engineSpy
 
-        builder.set(table.int, inputValue).where().eq(table.string, "test").update()
-        verifyCallToUpdate(expectedSunkValues, "string = ?", listOf("test"))
+        val builder = UpdateBuilderImpl(table)
+        builder.set(table.int, 5).where().eq(table.string, "test").update()
+
+        // Verify interactions with engine
+        verify(engineSpy).compileUpdate(
+                eq(table.name), iterableContainsInAnyOrder(table.int.name),
+                eq("string = ?")
+        )
+        verifyNoMoreInteractions(engineSpy)
+
+        // Verify interactions with compiled statement
+        assertThat(engineSpy.compiledUpdates).hasSize(1)
+        val statement: OneShotCompiledUpdateForTest = engineSpy.compiledUpdates.first()
+        assertThat(statement.boundArgs).hasSize(2)
+        assertThat(statement.intBoundAt(1)).isEqualTo(5)
+        assertThat(statement.stringBoundAt(2)).isEqualTo("test")
+        assertThat(statement.isExecuted).isTrue()
+        assertThat(statement.isClosed).isTrue()
     }
 
 
     @Test
     fun testCanUpdateMultipleColumns() {
-        val inputInt = 5
-        val inputString = "test"
-        val expectedSunkValues = HashMap<String, Any?>()
-        expectedSunkValues[table.int.name] = table.int.computeStorageFormOf(inputInt)
-        expectedSunkValues[table.string.name] = table.string.computeStorageFormOf(inputString)
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engineSpy = bundle.engineSpy
 
-        builder.set(table.int, inputInt).set(table.string, inputString).update()
-        verifyCallToUpdate(expectedSunkValues, null, null)
+        val builder = UpdateBuilderImpl(table)
+        builder.set(table.int, 5).set(table.string, "test").update()
+
+        // Verify interactions with engine
+        verify(engineSpy).compileUpdate(
+                eq(table.name), iterableContainsInAnyOrder(table.int.name, table.string.name),
+                isNull()
+        )
+        verifyNoMoreInteractions(engineSpy)
+
+        // Verify interactions with compiled statement
+        assertThat(engineSpy.compiledUpdates).hasSize(1)
+        val statement: OneShotCompiledUpdateForTest = engineSpy.compiledUpdates.first()
+        assertThat(statement.boundArgs).hasSize(2)
+        assertThat(statement.intBoundAt(1)).isEqualTo(5)
+        assertThat(statement.stringBoundAt(2)).isEqualTo("test")
+        assertThat(statement.isExecuted).isTrue()
+        assertThat(statement.isClosed).isTrue()
     }
 
 
     @Test
     fun testSetOverwritesExistingValueForTheSameColumn() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engineSpy = bundle.engineSpy
+
         val initialValue = 5
         val overwritingValue = initialValue + 1
-        val expectedSunkValues = HashMap<String, Any?>()
-        expectedSunkValues[table.int.name] = table.int.computeStorageFormOf(overwritingValue)
-
+        val builder = UpdateBuilderImpl(table)
         builder.set(table.int, initialValue).set(table.int, overwritingValue).update()
-        verifyCallToUpdate(expectedSunkValues, null, null)
+
+        // Verify interactions with engine
+        verify(engineSpy).compileUpdate(
+                eq(table.name), iterableContainsInAnyOrder(table.int.name), isNull()
+        )
+        verifyNoMoreInteractions(engineSpy)
+
+        // Verify interactions with compiled statement
+        assertThat(engineSpy.compiledUpdates).hasSize(1)
+        val statement: OneShotCompiledUpdateForTest = engineSpy.compiledUpdates.first()
+        assertThat(statement.boundArgs).hasSize(1)
+        assertThat(statement.intBoundAt(1)).isEqualTo(overwritingValue)
+        assertThat(statement.isExecuted).isTrue()
+        assertThat(statement.isClosed).isTrue()
     }
 
 
     @Test
     fun testDefiningSetAndWhereClausesDoesNotFireAnUpdateCall() {
-        builder.set(table.int, 5).where().eq(table.string, "test")
-        verify(engine, never()).update(any(), any(), any(), anyCollection())
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engineSpy = bundle.engineSpy
+
+        val builder = UpdateBuilderImpl(table)
+        builder.set(table.int, 5)
+        verifyZeroInteractions(engineSpy)
     }
 
 
     @Test
     fun testUpdateReportsCorrectRowCount() {
-        val numberOfRowsAffected = 183
-        whenever(engine.update(any(), any(), any(), anyCollection())).thenReturn(numberOfRowsAffected)
-        assertThat(builder.set(table.int, 5).where().eq(table.string, "test").update()).isEqualTo(numberOfRowsAffected)
-    }
-
-
-    private fun verifyCallToUpdate(
-            expectedSunkValues: Map<String, Any?>, expectedWhereClause: String?,
-            expectedWhereArgs: Iterable<Any?>?) {
-
-        // TableConfigurationForTest uses an mock engine that returns a factory that generates MapBackedSink.
-        // Capture and compare it against the passed in expectedSunkValues
-        val sinkCaptor = argumentCaptor<Sink>()
-        verify(engine).update(
-                eq(table.name), capture(sinkCaptor),
-                if (expectedWhereClause != null) eq(expectedWhereClause) else isNull<String>(),
-                if (expectedWhereArgs != null) eq(expectedWhereArgs) else isNull<Iterable<*>>()
+        val numberOfRowsAffected = 8745
+        val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                updateProvider = { OneShotCompiledUpdateForTest(numberOfRowsAffected) }
         )
 
-        val actualSunkValues = (sinkCaptor.value as MapBackedSink).sunkValues()
-        assertThat(actualSunkValues).isEqualTo(expectedSunkValues)
+        val bundle = Bundle.default(engine)
+        val table = bundle.table
+        val builder = UpdateBuilderImpl(table)
+        assertThat(builder.set(table.int, 5).update()).isEqualTo(numberOfRowsAffected)
+    }
+
+
+    @Test
+    fun testAllTypesAreBoundCorrectly() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engineSpy = bundle.engineSpy
+
+        val builder = UpdateBuilderImpl(table)
+        builder
+                .set(table.short, 5.toShort())
+                .set(table.int, 6)
+                .set(table.long, 7L)
+                .set(table.float, 8F)
+                .set(table.double, 9.toDouble())
+                .set(table.string, "test")
+                .set(table.blob, byteArrayOf(10))
+                .set(table.nullable, null)
+                .update()
+
+        // Verify interactions with engine
+        verify(engineSpy).compileUpdate(
+                eq(table.name),
+                iterableContainsInAnyOrder(
+                        table.short.name, table.int.name, table.long.name, table.float.name,
+                        table.double.name, table.string.name, table.blob.name, table.nullable.name
+                ), isNull()
+        )
+        verifyNoMoreInteractions(engineSpy)
+
+        // Verify interactions with compiled statement
+        assertThat(engineSpy.compiledUpdates).hasSize(1)
+        val statement: OneShotCompiledUpdateForTest = engineSpy.compiledUpdates.first()
+        assertThat(statement.boundArgs).hasSize(8)
+        assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
+        assertThat(statement.intBoundAt(2)).isEqualTo(6)
+        assertThat(statement.longBoundAt(3)).isEqualTo(7L)
+        assertThat(statement.floatBoundAt(4)).isEqualTo(8F)
+        assertThat(statement.doubleBoundAt(5)).isEqualTo(9.toDouble())
+        assertThat(statement.stringBoundAt(6)).isEqualTo("test")
+        assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
+        assertThat(statement.isNullBoundAt(8)).isTrue()
+        assertThat(statement.isExecuted).isTrue()
+        assertThat(statement.isClosed).isTrue()
     }
 
 
 
-    private class ModelForTest(
-            val int: Int = 0,
-            val string: String = "test"
-    )
-
-
-
-    private class TableForTest(
-            configuration: TableConfiguration<Sink> = defaultConfiguration()) :
-            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int, Sink>, Sink>("test", configuration) {
-
-        override val dao: Dao<ModelForTest, Int, Sink> = mock()
-        override val idColumn: Column<ModelForTest, Int> = mock()
-        override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
-
-        val int = col(ModelForTest::int)
-        val string = col(ModelForTest::string)
-
+    private class Bundle(val table: TableForTest, val engineSpy: EngineForTestingBuilders) {
         companion object {
-            private fun defaultConfiguration(): TableConfiguration<Sink> {
-                val engineMock: Engine<Sink> = mock()
-                whenever(engineMock.sinkFactory).thenReturn(object : Factory<Sink> {
-                    override fun create() = MapBackedSink()
-                })
+            fun default(engine: EngineForTestingBuilders =
+            EngineForTestingBuilders.createWithOneShotStatements()): Bundle {
 
-                val configuration = TableConfigurationImpl(engineMock)
-                configuration.registerDefaultConverters()
-                return configuration
+                val engineSpy = spy(engine)
+                val table = TableForTest(defaultTableConfiguration(engineSpy))
+                return Bundle(table, engineSpy)
             }
         }
     }

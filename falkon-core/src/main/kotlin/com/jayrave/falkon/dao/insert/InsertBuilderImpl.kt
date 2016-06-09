@@ -1,13 +1,15 @@
 package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.Column
-import com.jayrave.falkon.SinkBackedDataConsumer
 import com.jayrave.falkon.Table
-import com.jayrave.falkon.engine.Sink
+import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
+import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
+import com.jayrave.falkon.engine.bindAll
+import com.jayrave.falkon.engine.executeAndClose
 
-internal class InsertBuilderImpl<T : Any, S : Sink>(override val table: Table<T, *, *, S>) : InsertBuilder<T, S> {
+internal class InsertBuilderImpl<T : Any>(override val table: Table<T, *, *>) : InsertBuilder<T> {
 
-    private val dataConsumer = SinkBackedDataConsumer(table.configuration.engine.sinkFactory.create())
+    private val dataConsumer = LinkedHashMapBackedDataConsumer()
 
     override fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T> {
         return AdderOrEnderImpl().set(column, value)
@@ -22,8 +24,12 @@ internal class InsertBuilderImpl<T : Any, S : Sink>(override val table: Table<T,
             return this
         }
 
-        override fun insert(): Long {
-            return table.configuration.engine.insert(table.name, dataConsumer.sink)
+        override fun insert(): Boolean {
+            val map = dataConsumer.map
+            return table.configuration.engine
+                    .compileInsert(table.name, LinkedHashMapBackedIterable.forKeys(map))
+                    .bindAll(LinkedHashMapBackedIterable.forValues(map))
+                    .executeAndClose() == 1
         }
     }
 }

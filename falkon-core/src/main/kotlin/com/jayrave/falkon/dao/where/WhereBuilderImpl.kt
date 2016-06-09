@@ -8,10 +8,11 @@ import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
 import java.util.*
 
 /**
- * [Z] instantiated by the passed in creator function must call through (for [AdderOrEnder] methods) to the
- * instance of [WhereBuilderImpl] provided while invoking the creator
+ * [Z] instantiated by the passed in creator function must call through (for [AdderOrEnder]
+ * methods) to the instance of [WhereBuilderImpl] provided while invoking the creator
  */
-internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(adderOrEnderCreator: (WhereBuilderImpl<T, Z>) -> Z) :
+internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
+        adderOrEnderCreator: (WhereBuilderImpl<T, Z>) -> Z) :
         WhereBuilder<T, Z>,
         AdderOrEnder<T, Z>,
         AfterSimpleConnectorAdder<T, Z> {
@@ -114,13 +115,22 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(adderOrEnderCre
         val sections: MutableList<WhereSection<T>> = LinkedList()
 
         override fun <C> eq(column: Column<T, C>, value: C) = handleEq(sections, column, value)
-        override fun <C> notEq(column: Column<T, C>, value: C) = handleNotEq(sections, column, value)
+        override fun <C> notEq(column: Column<T, C>, value: C) = handleNotEq(
+                sections, column, value
+        )
+
         override fun <C> gt(column: Column<T, C>, value: C) = handleGt(sections, column, value)
         override fun <C> ge(column: Column<T, C>, value: C) = handleGe(sections, column, value)
         override fun <C> lt(column: Column<T, C>, value: C) = handleLt(sections, column, value)
         override fun <C> le(column: Column<T, C>, value: C) = handleLe(sections, column, value)
-        override fun <C> between(column: Column<T, C>, low: C, high: C) = handleBetween(sections, column, low, high)
-        override fun <C> like(column: Column<T, C>, pattern: String) = handleLike(sections, column, pattern)
+        override fun <C> between(column: Column<T, C>, low: C, high: C) = handleBetween(
+                sections, column, low, high
+        )
+
+        override fun <C> like(column: Column<T, C>, pattern: String) = handleLike(
+                sections, column, pattern
+        )
+
         override fun <C> isNull(column: Column<T, C>) = handleIsNull(sections, column)
         override fun <C> isNotNull(column: Column<T, C>) = handleIsNotNull(sections, column)
         override fun and(predicate: InnerAdder<T>.() -> Any?) = handleAnd(sections, predicate)
@@ -131,77 +141,107 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(adderOrEnderCre
 
     companion object {
 
-        private fun <T: Any, C> handleEq(sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+        private fun <T: Any, C> handleEq(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+
             sections.add(OneArgPredicate(OneArgPredicate.Type.EQ, column, value))
         }
 
 
-        private fun <T: Any, C> handleNotEq(sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+        private fun <T: Any, C> handleNotEq(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+
             sections.add(OneArgPredicate(OneArgPredicate.Type.NOT_EQ, column, value))
         }
 
 
-        private fun <T: Any, C> handleGt(sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+        private fun <T: Any, C> handleGt(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+
             sections.add(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, column, value))
         }
 
 
-        private fun <T: Any, C> handleGe(sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+        private fun <T: Any, C> handleGe(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+
             sections.add(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, column, value))
         }
 
 
-        private fun <T: Any, C> handleLt(sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+        private fun <T: Any, C> handleLt(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+
             sections.add(OneArgPredicate(OneArgPredicate.Type.LESS_THAN, column, value))
         }
 
 
-        private fun <T: Any, C> handleLe(sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+        private fun <T: Any, C> handleLe(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>, value: C) {
+
             sections.add(OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, column, value))
         }
 
 
         private fun <T: Any, C> handleBetween(
                 sections: MutableList<WhereSection<T>>, column: Column<T, C>, low: C, high: C) {
+
             sections.add(BetweenPredicate(column, low, high))
         }
 
 
         private fun <T: Any, C> handleLike(
                 sections: MutableList<WhereSection<T>>, column: Column<T, C>, pattern: String) {
+
             sections.add(LikePredicate(column, pattern))
         }
 
 
-        private fun <T: Any, C> handleIsNull(sections: MutableList<WhereSection<T>>, column: Column<T, C>) {
+        private fun <T: Any, C> handleIsNull(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>) {
+
             sections.add(NoArgPredicate(NoArgPredicate.Type.IS_NULL, column))
         }
 
 
-        private fun <T: Any, C> handleIsNotNull(sections: MutableList<WhereSection<T>>, column: Column<T, C>) {
+        private fun <T: Any, C> handleIsNotNull(
+                sections: MutableList<WhereSection<T>>, column: Column<T, C>) {
+
             sections.add(NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, column))
         }
 
 
-        private fun <T: Any> handleAnd(sections: MutableList<WhereSection<T>>, predicate: InnerAdder<T>.() -> Any?) {
+        private fun <T: Any> handleAnd(
+                sections: MutableList<WhereSection<T>>, predicate: InnerAdder<T>.() -> Any?) {
+
             val innerAdder = InnerAdderImpl<T>()
             innerAdder.predicate()
             val addedSections = innerAdder.sections
-            throwIfSectionsIfEmpty(addedSections, "At least 1 predicate should be added inside and{}")
+            throwIfSectionsIfEmpty(
+                    addedSections, "At least 1 predicate should be added inside and{}"
+            )
+
             sections.add(CompoundConnector(CompoundConnector.Type.AND, addedSections))
         }
 
 
-        private fun <T: Any> handleOr(sections: MutableList<WhereSection<T>>, predicate: InnerAdder<T>.() -> Any?) {
+        private fun <T: Any> handleOr(
+                sections: MutableList<WhereSection<T>>, predicate: InnerAdder<T>.() -> Any?) {
+
             val innerAdder = InnerAdderImpl<T>()
             innerAdder.predicate()
             val addedSections = innerAdder.sections
-            throwIfSectionsIfEmpty(addedSections, "At least 1 predicate should be added inside or{}")
+            throwIfSectionsIfEmpty(
+                    addedSections, "At least 1 predicate should be added inside or{}"
+            )
+
             sections.add(CompoundConnector(CompoundConnector.Type.OR, addedSections))
         }
 
 
-        private fun <T: Any> throwIfSectionsIfEmpty(sections: List<WhereSection<T>>, error: String) {
+        private fun <T: Any> throwIfSectionsIfEmpty(
+                sections: List<WhereSection<T>>, error: String) {
+
             if (sections.isEmpty()) {
                 throw SQLSyntaxErrorException(error)
             }

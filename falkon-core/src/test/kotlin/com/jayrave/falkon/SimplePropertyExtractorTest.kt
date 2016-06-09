@@ -16,8 +16,13 @@ class SimplePropertyExtractorTest {
 
         assertThat(nonNullIntExtractor.extract(modelForTest)).isSameAs(modelForTest.nonNullInt)
         assertThat(nullableIntExtractor.extract(modelForTest)).isSameAs(modelForTest.nullableInt)
-        assertThat(nonNullStringExtractor.extract(modelForTest)).isSameAs(modelForTest.nonNullString)
-        assertThat(nullableStringExtractor.extract(modelForTest)).isSameAs(modelForTest.nullableString)
+        assertThat(nonNullStringExtractor.extract(modelForTest)).isSameAs(
+                modelForTest.nonNullString
+        )
+
+        assertThat(nullableStringExtractor.extract(modelForTest)).isSameAs(
+                modelForTest.nullableString
+        )
     }
 
 

@@ -30,7 +30,7 @@ interface Source {
      * currently on the second entry in the result set and move(-5) is called,
      * the position will be pinned at -1, and false will be returned
      *
-     * @param offset the offset to be applied from the current position
+     * [offset] the offset to be applied from the current position
      * @return whether the requested move fully succeeded
      */
     fun move(offset: Int): Boolean
@@ -41,7 +41,7 @@ interface Source {
      * This method will return true if the request destination was reachable,
      * otherwise, it returns false
      *
-     * @param position the zero-based position to move to
+     * [position] the zero-based position to move to
      * @return whether the requested move fully succeeded
      */
     fun moveToPosition(position: Int): Boolean

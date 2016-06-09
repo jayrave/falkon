@@ -3,17 +3,6 @@ package com.jayrave.falkon.engine
 import java.util.*
 
 /**
- * @see compileInsertStatement
- */
-inline fun <CS : Any> compileInsertStatement(
-        tableName: String, sink: MapBackedSink, statementCompiler: (String) -> CS,
-        argsBinder: (compiledStatement: CS, index: Int, arg: Any?) -> Any?): CS? {
-
-    return compileInsertStatement(tableName, sink.map, statementCompiler, argsBinder)
-}
-
-
-/**
  * @return a compiled statement for the passed in parameters if it has the potential
  * to directly insert some rows; else null
  */

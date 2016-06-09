@@ -20,7 +20,7 @@ interface Column<T : Any, C> {
     /**
      * From property to the form it would get stored in the database
      *
-     * @param property the property to compute the storage form for
+     * [property] the property to compute the storage form for
      * @return - how the passed in [property] gets stored as
      */
     fun computeStorageFormOf(property: C): Any?
@@ -28,7 +28,7 @@ interface Column<T : Any, C> {
     /**
      * Storage form of [property] is computed and is sent to [DataConsumer]
      *
-     * @param property the property to convert and store
+     * [property] the property to convert and store
      * @param dataConsumer consumer that consumes the storage form
      */
     fun putStorageFormIn(property: C, dataConsumer: DataConsumer)
@@ -36,7 +36,7 @@ interface Column<T : Any, C> {
     /**
      * From the form the data was stored in the database to property
      *
-     * @param dataProducer the producer which supplies the stored data
+     * [dataProducer] the producer which supplies the stored data
      * @return - the property corresponding to the passed in stored form
      */
     fun computePropertyFrom(dataProducer: DataProducer): C

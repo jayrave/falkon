@@ -9,14 +9,10 @@ import com.jayrave.falkon.dao.query.QueryBuilder
 import com.jayrave.falkon.dao.query.QueryBuilderImpl
 import com.jayrave.falkon.dao.update.UpdateBuilder
 import com.jayrave.falkon.dao.update.UpdateBuilderImpl
-import com.jayrave.falkon.engine.Sink
 
-open class DaoImpl<T : Any, ID : Any, S : Sink>(
-        override val table: Table<T, ID, *, S>) :
-        Dao<T, ID, S> {
-
-    override final fun insertBuilder(): InsertBuilder<T, S> = InsertBuilderImpl(table)
-    override final fun updateBuilder(): UpdateBuilder<T, S> = UpdateBuilderImpl(table)
+open class DaoImpl<T : Any, ID : Any>(override val table: Table<T, ID, *>) : Dao<T, ID> {
+    override final fun insertBuilder(): InsertBuilder<T> = InsertBuilderImpl(table)
+    override final fun updateBuilder(): UpdateBuilder<T> = UpdateBuilderImpl(table)
     override final fun deleteBuilder(): DeleteBuilder<T>  = DeleteBuilderImpl(table)
     override final fun queryBuilder(): QueryBuilder<T> = QueryBuilderImpl(table)
 }

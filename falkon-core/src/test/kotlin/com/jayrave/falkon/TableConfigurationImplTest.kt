@@ -1,7 +1,6 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.MissingConverterException
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -10,7 +9,7 @@ import java.util.*
 
 class TableConfigurationImplTest {
 
-    val configuration = TableConfigurationImpl(mock<Engine<Sink>>(), mock())
+    val configuration = TableConfigurationImpl(mock<Engine>(), mock())
 
     @Test(expected = MissingConverterException::class)
     fun testGetConverterForNullableTypeThrowsForUnregisteredType() {

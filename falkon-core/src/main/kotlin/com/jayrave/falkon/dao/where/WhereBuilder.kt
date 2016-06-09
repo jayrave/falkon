@@ -47,8 +47,8 @@ interface CompoundConnectorAdder<T : Any, Z : AdderOrEnder<T, Z>> {
 
 
 /**
- * Just a semantic extension of [SimpleConnectorAdder] that doesn't add any other method. This most
- * probably will be extended where [WhereBuilder] needs to be extended
+ * Just a semantic extension of [SimpleConnectorAdder] that doesn't add any other method.
+ * This most probably will be extended where [WhereBuilder] needs to be extended
  */
 interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> : SimpleConnectorAdder<T, Z>
 
@@ -63,8 +63,8 @@ interface AfterSimpleConnectorAdder<T : Any, Z : AdderOrEnder<T, Z>> :
 
 
 /**
- * The interface that will be exposed inside function objects passed to methods in [CompoundConnectorAdder]
- * to add more predicates to the WHERE clause
+ * The interface that will be exposed inside function objects passed to methods in
+ * [CompoundConnectorAdder] to add more predicates to the WHERE clause
  */
 interface InnerAdder<T : Any> {
     fun <C> eq(column: Column<T, C>, value: C)

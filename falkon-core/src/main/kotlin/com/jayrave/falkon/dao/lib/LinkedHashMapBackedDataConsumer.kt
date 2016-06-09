@@ -1,46 +1,50 @@
-package com.jayrave.falkon
+package com.jayrave.falkon.dao.lib
 
-import com.jayrave.falkon.engine.Sink
+import com.jayrave.falkon.NullHandlingDataConsumer
 import com.jayrave.falkon.exceptions.DataConsumerException
+import java.util.*
 
 /**
- * A [DataConsumer] that forwards all the calls to a [Sink]. Failing to call [setColumnName]
- * before every #put*() call will result in [DataConsumerException]
+ * A [DataConsumer] that stores the data in a backing [LinkedHashMap].
+ * Failing to call [setColumnName] before every #put*() call will result 
+ * in [DataConsumerException]
  */
-class SinkBackedDataConsumer<S : Sink>(val sink: S) : NullHandlingDataConsumer() {
+class LinkedHashMapBackedDataConsumer : NullHandlingDataConsumer() {
+    
+    val map = LinkedHashMap<String, Any?>()
 
     private var columnName: String? = null
 
     override fun put(short: Short) {
-        sink.put(getAndNullifyColumnName(), short)
+        map.put(getAndNullifyColumnName(), short)
     }
 
     override fun put(int: Int) {
-        sink.put(getAndNullifyColumnName(), int)
+        map.put(getAndNullifyColumnName(), int)
     }
 
     override fun put(long: Long) {
-        sink.put(getAndNullifyColumnName(), long)
+        map.put(getAndNullifyColumnName(), long)
     }
 
     override fun put(float: Float) {
-        sink.put(getAndNullifyColumnName(), float)
+        map.put(getAndNullifyColumnName(), float)
     }
 
     override fun put(double: Double) {
-        sink.put(getAndNullifyColumnName(), double)
+        map.put(getAndNullifyColumnName(), double)
     }
 
     override fun putNonNullString(string: String) {
-        sink.put(getAndNullifyColumnName(), string)
+        map.put(getAndNullifyColumnName(), string)
     }
 
     override fun putNonNullBlob(blob: ByteArray) {
-        sink.put(getAndNullifyColumnName(), blob)
+        map.put(getAndNullifyColumnName(), blob)
     }
 
     override fun putNull() {
-        sink.putNull(getAndNullifyColumnName())
+        map.put(getAndNullifyColumnName(), null)
     }
 
     fun setColumnName(columnName: String) {

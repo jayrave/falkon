@@ -34,6 +34,8 @@ class CamelCaseToSnakeCaseFormatterTest {
 
     @Test
     fun testWithMixedDigitsAndTest() {
-        assertThat(formatter.format("test123Test4Test56Test789")).isEqualTo("test_123_test_4_test_56_test_789")
+        assertThat(formatter.format("test123Test4Test56Test789")).isEqualTo(
+                "test_123_test_4_test_56_test_789"
+        )
     }
 }

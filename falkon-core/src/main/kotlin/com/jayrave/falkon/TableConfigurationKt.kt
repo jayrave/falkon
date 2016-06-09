@@ -1,7 +1,5 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.engine.Sink
-
 
 /**
  * Registers converters for the following types
@@ -30,7 +28,7 @@ import com.jayrave.falkon.engine.Sink
  *
  * CAUTION: Previously registers converters will be overwritten
  */
-fun <S : Sink> TableConfigurationImpl<S>.registerDefaultConverters() {
+fun TableConfigurationImpl.registerDefaultConverters() {
     val nullableByteConverter = NullableByteConverter()
     val nullableCharConverter = NullableCharConverter()
     val nullableShortConverter = NullableShortConverter()
@@ -59,7 +57,8 @@ fun <S : Sink> TableConfigurationImpl<S>.registerDefaultConverters() {
     registerForNonNullType(Double::class.javaPrimitiveType!!, nonNullDoubleConverter)
     registerForNonNullType(Boolean::class.javaPrimitiveType!!, nonNullBooleanConverter)
 
-    // Register for non nullable non-primitives => Byte, Char, Short, Int, Long, Float, Double & Boolean
+    // Register for non nullable non-primitives => Byte, Char, Short, Int, Long,
+    // Float, Double & Boolean
     registerForNonNullType(Byte::class.javaObjectType, nonNullByteConverter)
     registerForNonNullType(Char::class.javaObjectType, nonNullCharConverter)
     registerForNonNullType(Short::class.javaObjectType, nonNullShortConverter)
@@ -69,7 +68,8 @@ fun <S : Sink> TableConfigurationImpl<S>.registerDefaultConverters() {
     registerForNonNullType(Double::class.javaObjectType, nonNullDoubleConverter)
     registerForNonNullType(Boolean::class.javaObjectType, nonNullBooleanConverter)
 
-    // Register for nullable non-primitives => Byte?, Char?, Short?, Int?, Long?, Float?, Double? & Boolean?
+    // Register for nullable non-primitives => Byte?, Char?, Short?, Int?, Long?,
+    // Float?, Double? & Boolean?
     registerForNullableType(Byte::class.javaObjectType, nullableByteConverter, false)
     registerForNullableType(Char::class.javaObjectType, nullableCharConverter, false)
     registerForNullableType(Short::class.javaObjectType, nullableShortConverter, false)
@@ -79,7 +79,8 @@ fun <S : Sink> TableConfigurationImpl<S>.registerDefaultConverters() {
     registerForNullableType(Double::class.javaObjectType, nullableDoubleConverter, false)
     registerForNullableType(Boolean::class.javaObjectType, nullableBooleanConverter, false)
 
-    // Register for nullable & non nullable non-primitives => String, String?, ByteArray, ByteArray?
+    // Register for nullable & non nullable non-primitives => String, String?,
+    // ByteArray, ByteArray?
     registerForNullableType(String::class.javaObjectType, NullableStringConverter(), true)
     registerForNullableType(ByteArray::class.javaObjectType, NullableBlobConverter(), true)
 }

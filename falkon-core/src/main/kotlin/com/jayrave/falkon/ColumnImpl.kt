@@ -35,10 +35,11 @@ internal class ColumnImpl<T : Any, C>(
 
 
     companion object {
-        private val threadLocalValueHoldingDataConsumer = object : ThreadLocal<ValueHoldingDataConsumer>() {
-            override fun initialValue(): ValueHoldingDataConsumer? {
-                return ValueHoldingDataConsumer()
-            }
-        }
+        private val threadLocalValueHoldingDataConsumer =
+                object : ThreadLocal<ValueHoldingDataConsumer>() {
+                    override fun initialValue(): ValueHoldingDataConsumer? {
+                        return ValueHoldingDataConsumer()
+                    }
+                }
     }
 }

@@ -7,11 +7,11 @@ import com.jayrave.falkon.engine.Source
 
 interface QueryBuilder<T : Any> : AdderOrEnder<T, QueryBuilder<T>> {
 
-    val table: Table<T, *, *, *>
+    val table: Table<T, *, *>
 
     /**
-     * Use to build the WHERE clause of SELECT SQL statement. Each call would erase the previously configured
-     * WHERE clause and start creating a new one
+     * Use to build the WHERE clause of SELECT SQL statement. Each call would erase the
+     * previously configured WHERE clause and start creating a new one
      */
     fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>>
 }
@@ -31,15 +31,16 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun select(column: Column<T, *>, vararg others: Column<T, *>): Z
 
     /**
-     * Adds the given columns to GROUP BY clause. Columns which are already in the GROUP BY clause are skipped.
-     * Columns are added to the GROUP BY clause in a "first come, first serve" order
+     * Adds the given columns to GROUP BY clause. Columns which are already in the GROUP BY clause
+     * are skipped. Columns are added to the GROUP BY clause in a "first come, first serve" order
      */
     fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): Z
 
     /**
-     * Adds ORDER BY clause for the passed in column. If called for a column that has already been included
-     * in the ORDER BY clause, this is a no-op. Multiple columns can be added by calling this multiple times
-     * with different [Column]s. Columns are added to the ORDER BY clause in a "first come, first serve" order
+     * Adds ORDER BY clause for the passed in column. If called for a column that has already been
+     * included in the ORDER BY clause, this is a no-op. Multiple columns can be added by calling
+     * this multiple times with different [Column]s. Columns are added to the ORDER BY clause in
+     * a "first come, first serve" order
      */
     fun orderBy(column: Column<T, *>, ascending: Boolean): Z
 

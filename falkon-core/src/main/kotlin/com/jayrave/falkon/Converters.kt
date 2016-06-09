@@ -45,8 +45,8 @@ class NullableBlobConverter : Converter<ByteArray?> {
 
 
 /**
- * [Byte] is stored as [Short]. When getting data back from the database, an exception is thrown if the
- * retrieved short is outside of byte's limits
+ * [Byte] is stored as [Short]. When getting data back from the database, an exception is
+ * thrown if the retrieved short is outside of byte's limits
  */
 class NullableByteConverter : Converter<Byte?> {
 
@@ -57,7 +57,8 @@ class NullableByteConverter : Converter<Byte?> {
             else -> when (short >= Byte.MIN_VALUE && short <= Byte.MAX_VALUE) {
                 true -> short.toByte()
                 else -> throw ConversionException(
-                        "Stored value must be in [${Byte.MIN_VALUE}, ${Byte.MAX_VALUE}], but is $short"
+                        "Stored value must be in [${Byte.MIN_VALUE}, " +
+                                "${Byte.MAX_VALUE}], but is $short"
                 )
             }
         }
@@ -68,8 +69,8 @@ class NullableByteConverter : Converter<Byte?> {
 
 
 /**
- * [Char] is stored as [String]. When getting data back from the database, an exception is thrown if the
- * retrieved string is empty or has more than one character
+ * [Char] is stored as [String]. When getting data back from the database, an exception is
+ * thrown if the retrieved string is empty or has more than one character
  */
 class NullableCharConverter : Converter<Char?> {
 
@@ -79,7 +80,9 @@ class NullableCharConverter : Converter<Char?> {
             null -> null
             else -> when (string.length == 1) {
                 true -> string.single()
-                false -> throw ConversionException("Stored value must be a single char text, but is $string")
+                false -> throw ConversionException(
+                        "Stored value must be a single char text, but is $string"
+                )
             }
         }
     }
@@ -126,10 +129,10 @@ class NullableBooleanConverter : Converter<Boolean?> {
 
 
 /**
- * Use this to wrap converters that work with nullable types to work as converters that work with non-null types.
- * It is assumed that if the [DataProducer] produces a non-null value, the passed in delegate also produces a
- * non-null value. If it is not the case, this converter will thrown an exception when trying to extract values
- * from a [DataProducer]
+ * Use this to wrap converters that work with nullable types to work as converters that work
+ * with non-null types. It is assumed that if the [DataProducer] produces a non-null value,
+ * the passed in delegate also produces a non-null value. If it is not the case, this converter
+ * will thrown an exception when trying to extract values from a [DataProducer]
  */
 class NullableToNonNullConverter<T>(private val delegate: Converter<T?>) : Converter<T> {
     override fun from(dataProducer: DataProducer): T  = delegate.from(dataProducer)!!

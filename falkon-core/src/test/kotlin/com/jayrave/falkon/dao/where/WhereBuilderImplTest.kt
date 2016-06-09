@@ -2,7 +2,6 @@ package com.jayrave.falkon.dao.where
 
 import com.jayrave.falkon.*
 import com.jayrave.falkon.dao.Dao
-import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -165,7 +164,10 @@ class WhereBuilderImplTest {
                 .eq(table.string, "test 1").or()
                 .eq(table.nullableInt, 6).build()
 
-        val expectedWhere = Where("int = ? AND string = ? OR nullable_int = ?", listOf(5, "test 1", 6))
+        val expectedWhere = Where(
+                "int = ? AND string = ? OR nullable_int = ?", listOf(5, "test 1", 6)
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -177,7 +179,10 @@ class WhereBuilderImplTest {
                 .notEq(table.string, "test 1").or()
                 .notEq(table.nullableInt, 6).build()
 
-        val expectedWhere = Where("int != ? AND string != ? OR nullable_int != ?", listOf(5, "test 1", 6))
+        val expectedWhere = Where(
+                "int != ? AND string != ? OR nullable_int != ?", listOf(5, "test 1", 6)
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -189,7 +194,10 @@ class WhereBuilderImplTest {
                 .gt(table.string, "test 1").or()
                 .gt(table.nullableInt, 6).build()
 
-        val expectedWhere = Where("int > ? AND string > ? OR nullable_int > ?", listOf(5, "test 1", 6))
+        val expectedWhere = Where(
+                "int > ? AND string > ? OR nullable_int > ?", listOf(5, "test 1", 6)
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -201,7 +209,10 @@ class WhereBuilderImplTest {
                 .ge(table.string, "test 1").or()
                 .ge(table.nullableInt, 6).build()
 
-        val expectedWhere = Where("int >= ? AND string >= ? OR nullable_int >= ?", listOf(5, "test 1", 6))
+        val expectedWhere = Where(
+                "int >= ? AND string >= ? OR nullable_int >= ?", listOf(5, "test 1", 6)
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -213,7 +224,10 @@ class WhereBuilderImplTest {
                 .lt(table.string, "test 1").or()
                 .lt(table.nullableInt, 6).build()
 
-        val expectedWhere = Where("int < ? AND string < ? OR nullable_int < ?", listOf(5, "test 1", 6))
+        val expectedWhere = Where(
+                "int < ? AND string < ? OR nullable_int < ?", listOf(5, "test 1", 6)
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -225,7 +239,10 @@ class WhereBuilderImplTest {
                 .le(table.string, "test 1").or()
                 .le(table.nullableInt, 6).build()
 
-        val expectedWhere = Where("int <= ? AND string <= ? OR nullable_int <= ?", listOf(5, "test 1", 6))
+        val expectedWhere = Where(
+                "int <= ? AND string <= ? OR nullable_int <= ?", listOf(5, "test 1", 6)
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -253,7 +270,10 @@ class WhereBuilderImplTest {
                 .like(table.string, "test 1").or()
                 .like(table.nullableInt, "6").build()
 
-        val expectedWhere = Where("int LIKE ? AND string LIKE ? OR nullable_int LIKE ?", listOf("5", "test 1", "6"))
+        val expectedWhere = Where(
+                "int LIKE ? AND string LIKE ? OR nullable_int LIKE ?", listOf("5", "test 1", "6")
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -265,7 +285,10 @@ class WhereBuilderImplTest {
                 .isNull(table.string).or()
                 .isNull(table.nullableInt).build()
 
-        val expectedWhere = Where("int IS NULL AND string IS NULL OR nullable_int IS NULL", emptyList())
+        val expectedWhere = Where(
+                "int IS NULL AND string IS NULL OR nullable_int IS NULL", emptyList()
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -277,7 +300,10 @@ class WhereBuilderImplTest {
                 .isNotNull(table.string).or()
                 .isNotNull(table.nullableInt).build()
 
-        val expectedWhere = Where("int IS NOT NULL AND string IS NOT NULL OR nullable_int IS NOT NULL", emptyList())
+        val expectedWhere = Where(
+                "int IS NOT NULL AND string IS NOT NULL OR nullable_int IS NOT NULL", emptyList()
+        )
+
         assertThat(actualWhere).isEqualTo(expectedWhere)
     }
 
@@ -302,7 +328,8 @@ class WhereBuilderImplTest {
 
         val expectedWhere = Where(
                 "int = ? OR nullable_string != ? AND string > ? OR nullable_int <= ? AND " +
-                        "(int BETWEEN ? AND ? OR string >= ?) OR (nullable_string >= ? AND string LIKE ?) AND " +
+                        "(int BETWEEN ? AND ? OR string >= ?) OR " +
+                        "(nullable_string >= ? AND string LIKE ?) AND " +
                         "nullable_int IS NULL OR int IS NOT NULL",
 
                 listOf(5, "test 1", "test 2", 7, 8, 9, "test 3", "test 4", "test 5")
@@ -323,10 +350,10 @@ class WhereBuilderImplTest {
 
 
     private class TableForTest(
-            configuration: TableConfiguration<Sink> = defaultConfiguration()) :
-            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int, Sink>, Sink>("test", configuration) {
+            configuration: TableConfiguration = defaultConfiguration()) :
+            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int>>("test", configuration) {
 
-        override val dao: Dao<ModelForTest, Int, Sink> = mock()
+        override val dao: Dao<ModelForTest, Int> = mock()
         override val idColumn: Column<ModelForTest, Int> = mock()
         override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
 
@@ -336,8 +363,8 @@ class WhereBuilderImplTest {
         val nullableString = col(ModelForTest::nullableString)
 
         companion object {
-            private fun defaultConfiguration(): TableConfiguration<Sink> {
-                val configuration = TableConfigurationImpl<Sink>(mock())
+            private fun defaultConfiguration(): TableConfiguration {
+                val configuration = TableConfigurationImpl(mock())
                 configuration.registerDefaultConverters()
                 return configuration
             }
@@ -346,7 +373,8 @@ class WhereBuilderImplTest {
 
 
 
-    private class AdderOrEnderForTest(val delegate: WhereBuilderImpl<ModelForTest, AdderOrEnderForTest>) :
+    private class AdderOrEnderForTest(
+            val delegate: WhereBuilderImpl<ModelForTest, AdderOrEnderForTest>) :
             AdderOrEnder<ModelForTest, AdderOrEnderForTest> {
 
         fun build() = delegate.build()

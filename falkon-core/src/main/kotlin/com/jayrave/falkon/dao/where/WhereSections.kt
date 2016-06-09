@@ -6,7 +6,9 @@ internal sealed class WhereSection<T : Any> {
 
     internal sealed class Predicate<T : Any> : WhereSection<T>() {
 
-        internal class NoArgPredicate<T : Any, C>(val type: Type, val column: Column<T, C>) : Predicate<T>() {
+        internal class NoArgPredicate<T : Any, C>(val type: Type, val column: Column<T, C>) :
+                Predicate<T>() {
+
             internal enum class Type {
                 IS_NULL,
                 IS_NOT_NULL
@@ -14,7 +16,8 @@ internal sealed class WhereSection<T : Any> {
         }
 
 
-        internal class OneArgPredicate<T : Any, C>(val type: Type, val column: Column<T, C>, val value: C) :
+        internal class OneArgPredicate<T : Any, C>(
+                val type: Type, val column: Column<T, C>, val value: C) :
                 Predicate<T>() {
 
             internal enum class Type {
@@ -28,8 +31,14 @@ internal sealed class WhereSection<T : Any> {
         }
 
 
-        internal class BetweenPredicate<T : Any, C>(val column: Column<T, C>, val low: C, val high: C) : Predicate<T>()
-        internal class LikePredicate<T : Any, C>(val column: Column<T, C>, val pattern: String) : Predicate<T>()
+        internal class BetweenPredicate<T : Any, C>(
+                val column: Column<T, C>, val low: C, val high: C
+        ) : Predicate<T>()
+
+
+        internal class LikePredicate<T : Any, C>(
+                val column: Column<T, C>, val pattern: String
+        ) : Predicate<T>()
     }
 
 
@@ -44,7 +53,8 @@ internal sealed class WhereSection<T : Any> {
         }
 
 
-        internal class CompoundConnector<T : Any>(val type: Type, val sections: List<WhereSection<T>>) :
+        internal class CompoundConnector<T : Any>(
+                val type: Type, val sections: List<WhereSection<T>>) :
                 Connector<T>() {
 
             internal enum class Type {

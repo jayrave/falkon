@@ -1,7 +1,8 @@
 package com.jayrave.falkon.exceptions
 
 /**
- * Thrown whenever a converter is demanded from [TableConfiguration] for a type that hasn't been registered
+ * Thrown whenever a converter is demanded from [TableConfiguration] for a type that
+ * hasn't been registered
  */
 class MissingConverterException : RuntimeException {
 

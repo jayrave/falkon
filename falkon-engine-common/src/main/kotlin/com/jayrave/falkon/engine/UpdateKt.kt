@@ -3,18 +3,6 @@ package com.jayrave.falkon.engine
 import java.util.*
 
 /**
- * @see compileUpdateStatement
- */
-inline fun <CS : Any> compileUpdateStatement(
-        tableName: String, sink: MapBackedSink, whereClause: String?,
-        whereArgs: Iterable<Any?>?, statementCompiler: (String) -> CS,
-        argsBinder: (compiledStatement: CS, index: Int, arg: Any?) -> Any?): CS? {
-
-    return compileUpdateStatement(tableName, sink.map, whereClause, whereArgs, statementCompiler, argsBinder)
-}
-
-
-/**
  * @return a compiled statement for the passed in parameters if it has the potential
  * to directly update some rows; else null
  */

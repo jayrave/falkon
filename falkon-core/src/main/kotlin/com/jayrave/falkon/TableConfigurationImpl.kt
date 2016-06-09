@@ -1,13 +1,13 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.Sink
 import com.jayrave.falkon.exceptions.MissingConverterException
 import java.util.concurrent.ConcurrentHashMap
 
-class TableConfigurationImpl<S : Sink>(
-        override val engine: Engine<S>, override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
-        TableConfiguration<S> {
+class TableConfigurationImpl(
+        override val engine: Engine,
+        override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
+        TableConfiguration {
 
     private val convertersForNonNullTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
     private val convertersForNullableTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
@@ -23,14 +23,18 @@ class TableConfigurationImpl<S : Sink>(
 
 
     /**
-     * Registers a [Converter] for the nullable form of [R] which can ge retrieved from [getConverterForNullableType]
+     * Registers a [Converter] for the nullable form of [R] which can ge retrieved from
+     * [getConverterForNullableType]
+     *
      * CAUTION: Overwrites converters that were previously registered for the same form of [R]
      *
-     * @param wrapForNonNullTypeIfRequired - If `true` & if the non-null form of [R] doesn't have any registered
-     *                                       converter, the passed in [converter] will be wrapped up in a
-     *                                       [NullableToNonNullConverter] & used for non-null form of [R]
+     * @param wrapForNonNullTypeIfRequired - If `true` & if the non-null form of [R] doesn't have
+     * any registered converter, the passed in [converter] will be wrapped up in a
+     * [NullableToNonNullConverter] & used for non-null form of [R]
      */
-    fun <R> registerForNullableType(clazz: Class<R>, converter: Converter<R?>, wrapForNonNullTypeIfRequired: Boolean) {
+    fun <R> registerForNullableType(
+            clazz: Class<R>, converter: Converter<R?>, wrapForNonNullTypeIfRequired: Boolean) {
+
         putIn(clazz, converter, convertersForNullableTypes)
         if (wrapForNonNullTypeIfRequired) {
             synchronized(convertersForNonNullTypes) {
@@ -43,7 +47,9 @@ class TableConfigurationImpl<S : Sink>(
 
 
     /**
-     * Registers a [Converter] for the non-null form of [R] which can ge retrieved from [getConverterForNonNullType]
+     * Registers a [Converter] for the non-null form of [R] which can ge retrieved from
+     * [getConverterForNonNullType]
+     *
      * CAUTION: Overwrites converters that were previously registered for the same form of [R]
      */
     fun <R : Any> registerForNonNullType(clazz: Class<R>, converter: Converter<R>) {
@@ -54,15 +60,20 @@ class TableConfigurationImpl<S : Sink>(
 
     companion object {
 
-        private fun putIn(clazz: Class<*>, converter: Converter<*>, to: MutableMap<Class<*>, Converter<*>>) {
+        private fun putIn(
+                clazz: Class<*>, converter: Converter<*>,
+                to: MutableMap<Class<*>, Converter<*>>) {
+
             to[clazz] = converter
         }
 
 
-        private fun <R> getFrom(clazz: Class<*>, from: Map<Class<*>, Converter<*>>, isNullableType: Boolean):
-                Converter<R> {
+        private fun <R> getFrom(
+                clazz: Class<*>, from: Map<Class<*>, Converter<*>>,
+                isNullableType: Boolean): Converter<R> {
 
             val converter = from[clazz]
+
             @Suppress("UNCHECKED_CAST")
             return when {
                 converter != null -> converter as Converter<R>
@@ -72,7 +83,9 @@ class TableConfigurationImpl<S : Sink>(
                         else -> "non-null"
                     }
 
-                    throw MissingConverterException("Converter not found for $nullability form of $clazz")
+                    throw MissingConverterException(
+                            "Converter not found for $nullability form of $clazz"
+                    )
                 }
             }
         }

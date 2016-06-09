@@ -27,7 +27,7 @@ internal fun <T : Any> List<WhereSection<T>>.buildWhere(): Where {
 }
 
 
-// ------------------------------------------- Start of add to section -------------------------------------------------
+// ------------------------------- Start of add to section -----------------------------------------
 
 private fun <T : Any> WhereSection<T>.addTo(clause: StringBuilder, args: MutableList<Any?>) {
     when (this) {
@@ -55,13 +55,17 @@ private fun <T : Any> NoArgPredicate<T, *>.addTo(clauseBuilder: StringBuilder) {
 }
 
 
-private fun <T : Any, C> OneArgPredicate<T, C>.addTo(clause: StringBuilder, args: MutableList<Any?>) {
+private fun <T : Any, C> OneArgPredicate<T, C>.addTo(
+        clause: StringBuilder, args: MutableList<Any?>) {
+
     clause.appendOneArgPredicate(this)
     args.add(column.computeStorageFormOf(value))
 }
 
 
-private fun <T : Any, C> BetweenPredicate<T, C>.addTo(clause: StringBuilder, args: MutableList<Any?>) {
+private fun <T : Any, C> BetweenPredicate<T, C>.addTo(
+        clause: StringBuilder, args: MutableList<Any?>) {
+
     clause.appendBetweenPredicate(this)
     args.add(column.computeStorageFormOf(low))
     args.add(column.computeStorageFormOf(high))
@@ -98,10 +102,10 @@ private fun <T : Any> CompoundConnector<T>.addTo(clause: StringBuilder, args: Mu
     clause.append(')')
 }
 
-// --------------------------------------------- End of add to section -------------------------------------------------
+// ---------------------------------- End of add to section ----------------------------------------
 
 
-// -------------------------------------- Start of append predicate section --------------------------------------------
+// ---------------------------- Start of append predicate section ----------------------------------
 
 private fun <T : Any> StringBuilder.appendNoArgPredicate(predicate: NoArgPredicate<T, *>) {
     append("${predicate.column.name} ${predicate.type.sqlText()}")
@@ -122,10 +126,10 @@ private fun <T : Any> StringBuilder.appendLikePredicate(predicate: LikePredicate
     append("${predicate.column.name} LIKE $ARG_PLACEHOLDER")
 }
 
-// --------------------------------------- End of append predicate section ---------------------------------------------
+// ----------------------------- End of append predicate section -----------------------------------
 
 
-// ------------------------------------------- Start of SQL text section -----------------------------------------------
+// --------------------------------- Start of SQL text section -------------------------------------
 
 private fun NoArgPredicate.Type.sqlText(): String {
     return when (this) {
@@ -162,7 +166,7 @@ private fun CompoundConnector.Type.sqlText(): String {
     }
 }
 
-// --------------------------------------------- End of SQL text section -----------------------------------------------
+// ----------------------------------- End of SQL text section -------------------------------------
 
 
 private fun <T: Any> throwIfSectionsIfEmpty(sections: List<WhereSection<T>>) {

@@ -6,9 +6,11 @@ import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.Source
+import com.jayrave.falkon.engine.bindAll
+import com.jayrave.falkon.engine.executeAndClose
 import java.util.*
 
-internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) : QueryBuilder<T> {
+internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : QueryBuilder<T> {
 
     private var distinct: Boolean = false
     private var selectedColumns: Iterable<Column<T, *>>? = null
@@ -68,10 +70,10 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) 
         val groupBy = groupByColumns?.map { it.name }
         val orderBy = orderByInfoList?.map { Pair(it.column.name, it.ascending) }
 
-        return table.configuration.engine.query(
-                table.name, distinct, columns, where?.clause, where?.arguments, groupBy, null,
-                orderBy, limitCount, offsetCount
-        )
+        return table.configuration.engine.compileQuery(
+                table.name, distinct, columns, where?.clause, groupBy, null, orderBy,
+                limitCount, offsetCount
+        ).bindAll(where?.arguments).executeAndClose()
     }
 
     private fun combine(column: Column<T, *>, vararg others: Column<T, *>): List<Column<T, *>> {
@@ -101,12 +103,16 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *, *>) 
             return this
         }
 
-        override fun select(column: Column<T, *>, vararg others: Column<T, *>): AdderOrEnderAfterWhere<T> {
+        override fun select(column: Column<T, *>, vararg others: Column<T, *>):
+                AdderOrEnderAfterWhere<T> {
+
             this@QueryBuilderImpl.select(column, *others)
             return this
         }
 
-        override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): AdderOrEnderAfterWhere<T> {
+        override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>):
+                AdderOrEnderAfterWhere<T> {
+
             this@QueryBuilderImpl.groupBy(column, *others)
             return this
         }

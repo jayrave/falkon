@@ -5,11 +5,11 @@ import com.jayrave.falkon.dao.where.WhereBuilder
 
 interface DeleteBuilder<T : Any> {
 
-    val table: Table<T, *, *, *>
+    val table: Table<T, *, *>
 
     /**
-     * Use to build the WHERE clause of DELETE SQL statement. Each call would erase the previously configured
-     * WHERE clause and start creating a new one
+     * Use to build the WHERE clause of DELETE SQL statement. Each call would erase the
+     * previously configured WHERE clause and start creating a new one
      */
     fun where(): WhereBuilder<T, AdderOrEnder<T>>
 
