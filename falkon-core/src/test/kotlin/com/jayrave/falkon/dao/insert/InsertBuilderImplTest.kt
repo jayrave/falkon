@@ -4,8 +4,6 @@ import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledInsertForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
-import com.jayrave.falkon.testLib.iterableContainsInAnyOrder
-import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -15,18 +13,18 @@ class InsertBuilderImplTest {
     fun testInsertWithSingleColumn() {
         val bundle = Bundle.default()
         val table = bundle.table
-        val engineSpy = bundle.engineSpy
+        val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
         builder.set(table.int, 5).insert()
 
-        // Verify interactions with engine
-        verify(engineSpy).compileInsert(eq(table.name), iterableContainsInAnyOrder(table.int.name))
-        verifyNoMoreInteractions(engineSpy)
-
         // Verify interactions with compiled statement
-        assertThat(engineSpy.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engineSpy.compiledInserts.first()
+        assertThat(engine.compiledInserts).hasSize(1)
+        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(statement.sql).isEqualTo(
+                EngineForTestingBuilders.buildDummyInsertSql(table.name, listOf(table.int.name))
+        )
+
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
         assertThat(statement.isExecuted).isTrue()
@@ -38,20 +36,18 @@ class InsertBuilderImplTest {
     fun testInsertWithMultipleColumns() {
         val bundle = Bundle.default()
         val table = bundle.table
-        val engineSpy = bundle.engineSpy
+        val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
         builder.set(table.int, 5).set(table.string, "test").insert()
 
-        // Verify interactions with engine
-        verify(engineSpy).compileInsert(
-                eq(table.name), iterableContainsInAnyOrder(table.int.name, table.string.name)
-        )
-        verifyNoMoreInteractions(engineSpy)
-
         // Verify interactions with compiled statement
-        assertThat(engineSpy.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engineSpy.compiledInserts.first()
+        assertThat(engine.compiledInserts).hasSize(1)
+        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyInsertSql(
+                table.name, listOf(table.int.name, table.string.name)
+        ))
+
         assertThat(statement.boundArgs).hasSize(2)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
         assertThat(statement.stringBoundAt(2)).isEqualTo("test")
@@ -64,20 +60,20 @@ class InsertBuilderImplTest {
     fun testSetOverwritesExistingValueForTheSameColumn() {
         val bundle = Bundle.default()
         val table = bundle.table
-        val engineSpy = bundle.engineSpy
+        val engine = bundle.engine
 
         val initialValue = 5
         val overwritingValue = initialValue + 1
         val builder = InsertBuilderImpl(table)
         builder.set(table.int, initialValue).set(table.int, overwritingValue).insert()
 
-        // Verify interactions with engine
-        verify(engineSpy).compileInsert(eq(table.name), iterableContainsInAnyOrder(table.int.name))
-        verifyNoMoreInteractions(engineSpy)
-
         // Verify interactions with compiled statement
-        assertThat(engineSpy.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engineSpy.compiledInserts.first()
+        assertThat(engine.compiledInserts).hasSize(1)
+        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(statement.sql).isEqualTo(
+                EngineForTestingBuilders.buildDummyInsertSql(table.name, listOf(table.int.name))
+        )
+
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(overwritingValue)
         assertThat(statement.isExecuted).isTrue()
@@ -89,11 +85,11 @@ class InsertBuilderImplTest {
     fun testDefiningSetDoesNotFireAnUpdateCall() {
         val bundle = Bundle.default()
         val table = bundle.table
-        val engineSpy = bundle.engineSpy
+        val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
         builder.set(table.int, 5)
-        verifyZeroInteractions(engineSpy)
+        assertThat(engine.compiledInserts).isEmpty()
     }
 
 
@@ -115,7 +111,7 @@ class InsertBuilderImplTest {
     fun testAllTypesAreBoundCorrectly() {
         val bundle = Bundle.default()
         val table = bundle.table
-        val engineSpy = bundle.engineSpy
+        val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
         builder
@@ -129,19 +125,15 @@ class InsertBuilderImplTest {
                 .set(table.nullable, null)
                 .insert()
 
-        // Verify interactions with engine
-        verify(engineSpy).compileInsert(
-                eq(table.name),
-                iterableContainsInAnyOrder(
-                        table.short.name, table.int.name, table.long.name, table.float.name,
-                        table.double.name, table.string.name, table.blob.name, table.nullable.name
-                )
-        )
-        verifyNoMoreInteractions(engineSpy)
-
         // Verify interactions with compiled statement
-        assertThat(engineSpy.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engineSpy.compiledInserts.first()
+        assertThat(engine.compiledInserts).hasSize(1)
+        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyInsertSql(
+                table.name, listOf(table.short.name, table.int.name, table.long.name,
+                table.float.name, table.double.name, table.string.name, table.blob.name,
+                table.nullable.name)
+        ))
+
         assertThat(statement.boundArgs).hasSize(8)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
@@ -158,7 +150,7 @@ class InsertBuilderImplTest {
 
     private fun testInsertReturnsAppropriateFlag(numberOfRowsInserted: Int, expectedFlag: Boolean) {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                insertProvider = { OneShotCompiledInsertForTest(numberOfRowsInserted) }
+                insertProvider = { OneShotCompiledInsertForTest(it, numberOfRowsInserted) }
         )
 
         val bundle = Bundle.default(engine)
@@ -169,14 +161,13 @@ class InsertBuilderImplTest {
 
 
 
-    private class Bundle(val table: TableForTest, val engineSpy: EngineForTestingBuilders) {
+    private class Bundle(val table: TableForTest, val engine: EngineForTestingBuilders) {
         companion object {
             fun default(engine: EngineForTestingBuilders =
             EngineForTestingBuilders.createWithOneShotStatements()): Bundle {
 
-                val engineSpy = spy(engine)
-                val table = TableForTest(defaultTableConfiguration(engineSpy))
-                return Bundle(table, engineSpy)
+                val table = TableForTest(defaultTableConfiguration(engine))
+                return Bundle(table, engine)
             }
         }
     }

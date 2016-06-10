@@ -9,6 +9,7 @@ import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.bindAll
+import com.jayrave.falkon.engine.compileUpdate
 import com.jayrave.falkon.engine.executeAndClose
 
 internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : UpdateBuilder<T> {

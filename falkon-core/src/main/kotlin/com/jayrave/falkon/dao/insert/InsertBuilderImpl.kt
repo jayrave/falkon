@@ -5,6 +5,7 @@ import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
 import com.jayrave.falkon.engine.bindAll
+import com.jayrave.falkon.engine.compileInsert
 import com.jayrave.falkon.engine.executeAndClose
 
 internal class InsertBuilderImpl<T : Any>(override val table: Table<T, *, *>) : InsertBuilder<T> {

@@ -9,6 +9,15 @@ package com.jayrave.falkon.engine
  */
 interface CompiledStatement<R> {
 
+    /**
+     * The SQL string this [CompiledStatement] represents
+     */
+    val sql: String
+
+    /**
+     * Execute this [CompiledStatement] for the currently bound arguments and
+     * return the appropriate result
+     */
     fun execute(): R
 
     /**

@@ -7,7 +7,8 @@ import java.util.*
 /**
  * [CompiledStatement]s for which bindings can't be cleared
  */
-internal open class OneShotCompiledStatementForTest<R>(private val returnValue: R) :
+internal open class OneShotCompiledStatementForTest<R>(
+        override val sql: String = "dummy", private val returnValue: R) :
         CompiledStatement<R> {
 
     private val mutableBoundArgs = HashMap<Int, Any?>()
@@ -94,21 +95,21 @@ internal open class OneShotCompiledStatementForTest<R>(private val returnValue: 
 }
 
 
-internal class OneShotCompiledInsertForTest(returnValue: Int = 1) :
+internal class OneShotCompiledInsertForTest(sql: String, returnValue: Int = 1) :
         CompiledInsert,
-        OneShotCompiledStatementForTest<Int>(returnValue)
+        OneShotCompiledStatementForTest<Int>(sql, returnValue)
 
 
-internal class OneShotCompiledUpdateForTest(returnValue: Int = 1) :
+internal class OneShotCompiledUpdateForTest(sql: String, returnValue: Int = 1) :
         CompiledUpdate,
-        OneShotCompiledStatementForTest<Int>(returnValue)
+        OneShotCompiledStatementForTest<Int>(sql, returnValue)
 
 
-internal class OneShotCompiledDeleteForTest(returnValue: Int = 1) :
+internal class OneShotCompiledDeleteForTest(sql: String, returnValue: Int = 1) :
         CompiledDelete,
-        OneShotCompiledStatementForTest<Int>(returnValue)
+        OneShotCompiledStatementForTest<Int>(sql, returnValue)
 
 
-internal class OneShotCompiledQueryForTest(returnValue: Source = mock()) :
+internal class OneShotCompiledQueryForTest(sql: String, returnValue: Source = mock()) :
         CompiledQuery,
-        OneShotCompiledStatementForTest<Source>(returnValue)
+        OneShotCompiledStatementForTest<Source>(sql, returnValue)

@@ -7,6 +7,7 @@ import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.engine.bindAll
+import com.jayrave.falkon.engine.compileQuery
 import com.jayrave.falkon.engine.executeAndClose
 import java.util.*
 

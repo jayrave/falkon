@@ -12,13 +12,13 @@ interface Engine {
     fun <R> executeInTransaction(operation: () -> R): R?
 
 
-    // ----------------------------------- Compile from parts --------------------------------------
+    // ---------------------------------- Build SQL from parts -------------------------------------
 
     /**
      * [tableName] the table to insert into
      * [columns] A list of columns for which values will be bound later
      */
-    fun compileInsert(tableName: String, columns: Iterable<String>): CompiledInsert
+    fun buildInsertSql(tableName: String, columns: Iterable<String>): String
 
     /**
      * [tableName] the table to update
@@ -26,15 +26,14 @@ interface Engine {
      * [whereClause] the optional WHERE clause (excluding the keyword WHERE). Passing null will
      * update all rows
      */
-    fun compileUpdate(tableName: String, columns: Iterable<String>, whereClause: String?):
-            CompiledUpdate
+    fun buildUpdateSql(tableName: String, columns: Iterable<String>, whereClause: String?): String
 
     /**
      * [tableName] the table to delete from
      * [whereClause] the optional WHERE clause (excluding the keyword WHERE). Passing null will
      * delete all rows
      */
-    fun compileDelete(tableName: String, whereClause: String?): CompiledDelete
+    fun buildDeleteSql(tableName: String, whereClause: String?): String
 
     /**
      * [tableName] the table to delete from
@@ -50,13 +49,12 @@ interface Engine {
      * [offset] Skips the requested number of rows from the beginning and then forms the result
      * set. Passing null denotes no offset
      */
-    fun compileQuery(
+    fun buildQuerySql(
             tableName: String, distinct: Boolean, columns: Iterable<String>?, whereClause: String?,
             groupBy: Iterable<String>?, having: String?, orderBy: Iterable<Pair<String, Boolean>>?,
-            limit: Long?, offset: Long?): CompiledQuery
+            limit: Long?, offset: Long?): String
 
-
-    // ----------------------------------- Compile from parts --------------------------------------
+    // ---------------------------------- Build SQL from parts -------------------------------------
 
 
     // --------------------------------- Compile raw statements ------------------------------------
