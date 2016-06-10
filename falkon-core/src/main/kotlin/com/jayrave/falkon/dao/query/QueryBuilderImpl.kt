@@ -2,6 +2,7 @@ package com.jayrave.falkon.dao.query
 
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.Table
+import com.jayrave.falkon.dao.lib.IterableBackedIterable
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
@@ -63,13 +64,23 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
     }
 
     override fun query(): Source {
-        val columns = selectedColumns?.map { it.name }
         val where = whereBuilder?.build()
-        val groupBy = groupByColumns?.map { it.name }
+
+        val tempSelectedColumns = selectedColumns
+        val columns = when (tempSelectedColumns) {
+            null -> null
+            else -> IterableBackedIterable(tempSelectedColumns) { it.name }
+        }
+
+        val tempGroupByColumns = groupByColumns
+        val groupBy = when (tempGroupByColumns) {
+            null -> null
+            else -> IterableBackedIterable(tempGroupByColumns) { it.name }
+        }
 
         return table.configuration.engine.compileQuery(
-                table.name, distinct, columns, where?.clause, groupBy, null, orderByInfoList,
-                limitCount, offsetCount
+                table.name, distinct, columns, where?.clause, groupBy,
+                null, orderByInfoList, limitCount, offsetCount
         ).bindAll(where?.arguments).executeAndClose()
     }
 
