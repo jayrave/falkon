@@ -38,12 +38,14 @@ interface Engine {
     /**
      * [tableName] the table to delete from
      * [distinct] `true` if you want each row to be unique, `false` otherwise
-     * [columns] A list of which columns to return. Passing null will return all columns
+     * [columns] A list of which columns to return, applied in iteration order. Passing null will
+     * return all columns
      * [whereClause] the optional WHERE clause (excluding the keyword WHERE)
-     * [groupBy] A list of columns to SQL GROUP BY clause. Passing null will skip grouping
+     * [groupBy] A list of columns to SQL GROUP BY clause applied in iteration order. Passing null
+     * will skip grouping
      * [having] Formatted as SQL HAVING clause (excluding `HAVING` itself). Optional
-     * [orderBy] A list of columns & flags to SQL ORDER BY clause. Passing null will skip
-     * ordering. When [orderBy] is true ASCENDING order is used; otherwise DESCENDING is used
+     * [orderBy] A list of [OrderInfo] to SQL ORDER BY clause applied in iteration order.
+     * Passing null will skip ordering
      * [limit] Limits the number of rows returned by the query, formatted as LIMIT clause.
      * Passing null denotes no limit
      * [offset] Skips the requested number of rows from the beginning and then forms the result
@@ -51,7 +53,7 @@ interface Engine {
      */
     fun buildQuerySql(
             tableName: String, distinct: Boolean, columns: Iterable<String>?, whereClause: String?,
-            groupBy: Iterable<String>?, having: String?, orderBy: Iterable<Pair<String, Boolean>>?,
+            groupBy: Iterable<String>?, having: String?, orderBy: Iterable<OrderInfo>?,
             limit: Long?, offset: Long?): String
 
     // ---------------------------------- Build SQL from parts -------------------------------------

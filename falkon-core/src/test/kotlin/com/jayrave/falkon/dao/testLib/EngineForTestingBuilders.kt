@@ -39,7 +39,7 @@ internal class EngineForTestingBuilders private constructor(
     override fun buildQuerySql(
             tableName: String, distinct: Boolean, columns: Iterable<String>?,
             whereClause: String?, groupBy: Iterable<String>?, having: String?,
-            orderBy: Iterable<Pair<String, Boolean>>?, limit: Long?, offset: Long?): String {
+            orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String {
 
         return buildDummyQuerySql(
                 tableName, distinct, columns, whereClause, groupBy,
@@ -114,13 +114,14 @@ internal class EngineForTestingBuilders private constructor(
         fun buildDummyQuerySql(
                 tableName: String, distinct: Boolean = false, columns: Iterable<String>? = null,
                 whereClause: String? = null, groupBy: Iterable<String>? = null,
-                having: String? = null, orderBy: Iterable<Pair<String, Boolean>>? = null,
+                having: String? = null, orderBy: Iterable<OrderInfo>? = null,
                 limit: Long? = null, offset: Long? = null): String {
 
+            val orderByString = orderBy?.joinToString() { "${it.columnName} ${it.ascending}" }
             return "tableName: $tableName; distinct: $distinct; " +
                     "columns: ${columns?.joinToString()}; whereClause: $whereClause; " +
                     "groupBy: ${groupBy?.joinToString()}; having: $having; " +
-                    "orderBy: ${orderBy?.joinToString()}; limit: $limit; offset: $offset"
+                    "orderBy: $orderByString; limit: $limit; offset: $offset"
         }
     }
 }

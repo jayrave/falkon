@@ -4,6 +4,7 @@ import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.engine.OrderInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -150,7 +151,7 @@ class QueryBuilderImplTest {
         builder.orderBy(table.int, true).query()
 
         assertArgFreeStatementExecutionAndClosure(
-                table, engine, orderBy = listOf(Pair("int", true))
+                table, engine, orderBy = listOf(OrderInfoForTest("int", true))
         )
     }
 
@@ -165,7 +166,8 @@ class QueryBuilderImplTest {
         builder.orderBy(table.int, true).orderBy(table.blob, false).query()
 
         assertArgFreeStatementExecutionAndClosure(
-                table, engine, orderBy = listOf(Pair("int", true), Pair("blob", false))
+                table, engine,
+                orderBy = listOf(OrderInfoForTest("int", true), OrderInfoForTest("blob", false))
         )
     }
 
@@ -180,7 +182,7 @@ class QueryBuilderImplTest {
         builder.orderBy(table.int, true).orderBy(table.int, false).query()
 
         assertArgFreeStatementExecutionAndClosure(
-                table, engine, orderBy = listOf(Pair("int", true))
+                table, engine, orderBy = listOf(OrderInfoForTest("int", true))
         )
     }
 
@@ -281,7 +283,7 @@ class QueryBuilderImplTest {
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
                 tableName = table.name, distinct = true, columns = listOf("string"),
                 whereClause = "double = ?", groupBy = listOf("blob"), having = null,
-                orderBy = listOf(Pair("int", true)), limit = 5, offset = 8
+                orderBy = listOf(OrderInfoForTest("int", true)), limit = 5, offset = 8
         ))
 
         assertThat(statement.boundArgs).hasSize(1)
@@ -295,7 +297,7 @@ class QueryBuilderImplTest {
             table: TableForTest, engine: EngineForTestingBuilders, distinct: Boolean = false,
             columns: Iterable<String>? = null, whereClause: String? = null,
             groupBy: Iterable<String>? = null, having: String? = null,
-            orderBy: Iterable<Pair<String, Boolean>>? = null,
+            orderBy: Iterable<OrderInfo>? = null,
             limit: Long? = null, offset: Long? = null) {
 
         assertThat(engine.compiledQueries).hasSize(1)
@@ -323,4 +325,10 @@ class QueryBuilderImplTest {
             }
         }
     }
+
+
+
+    private data class OrderInfoForTest(
+            override val columnName: String, override val ascending: Boolean) :
+            OrderInfo
 }

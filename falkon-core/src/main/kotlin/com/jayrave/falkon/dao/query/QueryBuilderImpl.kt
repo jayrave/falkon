@@ -5,10 +5,7 @@ import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
-import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.engine.bindAll
-import com.jayrave.falkon.engine.compileQuery
-import com.jayrave.falkon.engine.executeAndClose
+import com.jayrave.falkon.engine.*
 import java.util.*
 
 internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : QueryBuilder<T> {
@@ -17,7 +14,7 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
     private var selectedColumns: Iterable<Column<T, *>>? = null
     private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null
     private var groupByColumns: Iterable<Column<T, *>>? = null
-    private var orderByInfoList: MutableList<OrderInfo>? = null
+    private var orderByInfoList: MutableList<OrderInfoImpl>? = null
     private var limitCount: Long? = null
     private var offsetCount: Long? = null
 
@@ -49,7 +46,7 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
         // Don't add if column is already present in the list
         val columnAlreadyAdded = orderByInfoList!!.any { it.column == column }
         if (!columnAlreadyAdded) {
-            orderByInfoList!!.add(OrderInfo(column, ascending))
+            orderByInfoList!!.add(OrderInfoImpl(column, ascending))
         }
 
         return this
@@ -69,10 +66,9 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
         val columns = selectedColumns?.map { it.name }
         val where = whereBuilder?.build()
         val groupBy = groupByColumns?.map { it.name }
-        val orderBy = orderByInfoList?.map { Pair(it.column.name, it.ascending) }
 
         return table.configuration.engine.compileQuery(
-                table.name, distinct, columns, where?.clause, groupBy, null, orderBy,
+                table.name, distinct, columns, where?.clause, groupBy, null, orderByInfoList,
                 limitCount, offsetCount
         ).bindAll(where?.arguments).executeAndClose()
     }
@@ -139,5 +135,11 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
     }
 
 
-    private data class OrderInfo(val column: Column<*, *>, val ascending: Boolean)
+    private data class OrderInfoImpl(
+            val column: Column<*, *>, override val ascending: Boolean) :
+            OrderInfo {
+
+        override val columnName: String
+            get() = column.name
+    }
 }
