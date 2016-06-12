@@ -11,24 +11,29 @@ const val ARG_PLACEHOLDER = '?'
 
 
 /**
- * A SQL WHERE built from the passed in [WhereSection]s with placeholder denoted by
- * [ARG_PLACEHOLDER]. `null` is returned if the list this is acting on is empty
+ * A SQL WHERE is built from the passed in [WhereSection]s with placeholder denoted by
+ * [ARG_PLACEHOLDER].
+ *
+ * @return - `null` if the iterable is empty or a WHERE clause (along with WHERE keyword)
  */
-internal fun List<WhereSection>.buildWhereClause(): String? {
-    return when (isEmpty()) {
-        true -> null
+internal fun Iterable<WhereSection>.buildWhereClause(): String? {
+    val clause = StringBuilder()
+    var isFirstSection = true
+
+    forEach { section ->
+        when (isFirstSection) {
+            true -> isFirstSection = false
+            else -> clause.append(' ')
+        }
+
+        section.addTo(clause)
+    }
+
+    return when {
+        clause.isEmpty() -> null
         else -> {
-            val clause = StringBuilder()
-
-            val lastIndex = size - 1
-            forEachIndexed { index, section ->
-                section.addTo(clause)
-                if (index != lastIndex) {
-                    clause.append(' ')
-                }
-            }
-
-            return clause.toString()
+            clause.insert(0, "WHERE ")
+            clause.toString()
         }
     }
 }

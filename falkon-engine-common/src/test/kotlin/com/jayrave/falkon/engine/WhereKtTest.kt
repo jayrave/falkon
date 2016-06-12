@@ -22,7 +22,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.EQ, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name = ?"
+        val expectedWhereClause = "WHERE column_name = ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -33,7 +33,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.NOT_EQ, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name != ?"
+        val expectedWhereClause = "WHERE column_name != ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -44,7 +44,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.GREATER_THAN, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name > ?"
+        val expectedWhereClause = "WHERE column_name > ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -55,7 +55,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.GREATER_THAN_OR_EQ, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name >= ?"
+        val expectedWhereClause = "WHERE column_name >= ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -66,7 +66,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.LESS_THAN, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name < ?"
+        val expectedWhereClause = "WHERE column_name < ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -77,7 +77,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.LESS_THAN_OR_EQ, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name <= ?"
+        val expectedWhereClause = "WHERE column_name <= ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -85,7 +85,7 @@ class WhereKtTest {
     @Test
     fun testBetween() {
         val actualWhereClause = listOf(BetweenPredicate("column_name")).buildWhereClause()
-        val expectedWhereClause = "column_name BETWEEN ? AND ?"
+        val expectedWhereClause = "WHERE column_name BETWEEN ? AND ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -96,7 +96,7 @@ class WhereKtTest {
                 OneArgPredicate.Type.LIKE, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name LIKE ?"
+        val expectedWhereClause = "WHERE column_name LIKE ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -107,7 +107,7 @@ class WhereKtTest {
                 NoArgPredicate.Type.IS_NULL, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name IS NULL"
+        val expectedWhereClause = "WHERE column_name IS NULL"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -118,7 +118,7 @@ class WhereKtTest {
                 NoArgPredicate.Type.IS_NOT_NULL, "column_name"
         )).buildWhereClause()
 
-        val expectedWhereClause = "column_name IS NOT NULL"
+        val expectedWhereClause = "WHERE column_name IS NOT NULL"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -126,7 +126,7 @@ class WhereKtTest {
     @Test
     fun testSimpleAnd() {
         val actualWhereClause = listOf(SimpleConnector(SimpleConnector.Type.AND)).buildWhereClause()
-        val expectedWhereClause = "AND"
+        val expectedWhereClause = "WHERE AND"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -134,7 +134,7 @@ class WhereKtTest {
     @Test
     fun testSimpleOr() {
         val actualWhereClause = listOf(SimpleConnector(SimpleConnector.Type.OR)).buildWhereClause()
-        val expectedWhereClause = "OR"
+        val expectedWhereClause = "WHERE OR"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -158,7 +158,7 @@ class WhereKtTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "column_name"))
         )).buildWhereClause()
 
-        val expectedWhereClause = "(column_name = ?)"
+        val expectedWhereClause = "WHERE (column_name = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -170,7 +170,7 @@ class WhereKtTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "column_name"))
         )).buildWhereClause()
 
-        val expectedWhereClause = "(column_name = ?)"
+        val expectedWhereClause = "WHERE (column_name = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -185,7 +185,7 @@ class WhereKtTest {
                 )
         )).buildWhereClause()
 
-        val expectedWhereClause = "(column_name_1 = ? AND column_name_2 = ?)"
+        val expectedWhereClause = "WHERE (column_name_1 = ? AND column_name_2 = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -200,7 +200,7 @@ class WhereKtTest {
                 )
         )).buildWhereClause()
 
-        val expectedWhereClause = "(column_name_1 = ? OR column_name_2 = ?)"
+        val expectedWhereClause = "WHERE (column_name_1 = ? OR column_name_2 = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
 
@@ -238,7 +238,7 @@ class WhereKtTest {
         ).buildWhereClause()
 
         val expectedWhereClause =
-                "column_name_1 = ? OR column_name_2 != ? AND column_name_3 > ? OR " +
+                "WHERE column_name_1 = ? OR column_name_2 != ? AND column_name_3 > ? OR " +
                         "column_name_4 <= ? AND " +
                         "(column_name_5 BETWEEN ? AND ? OR column_name_6 >= ?) OR " +
                         "(column_name_7 < ? AND column_name_8 LIKE ?) AND " +
