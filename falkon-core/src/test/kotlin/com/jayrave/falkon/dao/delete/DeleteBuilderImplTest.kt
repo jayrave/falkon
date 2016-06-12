@@ -4,6 +4,8 @@ import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledDeleteForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
+import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -45,7 +47,7 @@ class DeleteBuilderImplTest {
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, "int = ?"
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
         ))
 
         assertThat(statement.boundArgs).hasSize(1)
@@ -68,7 +70,7 @@ class DeleteBuilderImplTest {
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, "int = ?"
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
         ))
 
         assertThat(statement.boundArgs).hasSize(1)
@@ -92,7 +94,7 @@ class DeleteBuilderImplTest {
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, "string = ?"
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string"))
         ))
 
         assertThat(statement.boundArgs).hasSize(1)
@@ -149,8 +151,24 @@ class DeleteBuilderImplTest {
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, "short = ? AND int = ? AND long = ? AND float = ? AND " +
-                "double = ? AND string = ? AND blob = ? AND nullable > ?"
+                table.name,
+                listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "long"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "float"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "double"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "string"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "blob"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable")
+                )
         ))
 
         assertThat(statement.boundArgs).hasSize(8)

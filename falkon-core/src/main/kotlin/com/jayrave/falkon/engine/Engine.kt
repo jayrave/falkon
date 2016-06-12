@@ -23,24 +23,27 @@ interface Engine {
     /**
      * [tableName] the table to update
      * [columns] A list of columns for which values will be bound later
-     * [whereClause] the optional WHERE clause (excluding the keyword WHERE). Passing null will
-     * update all rows
+     * [whereSections] A list of sections, applied in iteration order used to build the optional
+     * SQL WHERE clause. Passing null denotes no WHERE in the built SQL
      */
-    fun buildUpdateSql(tableName: String, columns: Iterable<String>, whereClause: String?): String
+    fun buildUpdateSql(
+            tableName: String, columns: Iterable<String>,
+            whereSections: Iterable<WhereSection>?): String
 
     /**
      * [tableName] the table to delete from
-     * [whereClause] the optional WHERE clause (excluding the keyword WHERE). Passing null will
-     * delete all rows
+     * [whereSections] A list of sections, applied in iteration order used to build the optional
+     * SQL WHERE clause. Passing null denotes no WHERE in the built SQL
      */
-    fun buildDeleteSql(tableName: String, whereClause: String?): String
+    fun buildDeleteSql(tableName: String, whereSections: Iterable<WhereSection>?): String
 
     /**
      * [tableName] the table to delete from
      * [distinct] `true` if you want each row to be unique, `false` otherwise
      * [columns] A list of which columns to return, applied in iteration order. Passing null will
      * return all columns
-     * [whereClause] the optional WHERE clause (excluding the keyword WHERE)
+     * [whereSections] A list of sections, applied in iteration order used to build the optional
+     * SQL WHERE clause. Passing null denotes no WHERE in the built SQL
      * [groupBy] A list of columns to SQL GROUP BY clause applied in iteration order. Passing null
      * will skip grouping
      * [having] Formatted as SQL HAVING clause (excluding `HAVING` itself). Optional
@@ -52,9 +55,9 @@ interface Engine {
      * set. Passing null denotes no offset
      */
     fun buildQuerySql(
-            tableName: String, distinct: Boolean, columns: Iterable<String>?, whereClause: String?,
-            groupBy: Iterable<String>?, having: String?, orderBy: Iterable<OrderInfo>?,
-            limit: Long?, offset: Long?): String
+            tableName: String, distinct: Boolean, columns: Iterable<String>?,
+            whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
+            having: String?, orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String
 
     // ---------------------------------- Build SQL from parts -------------------------------------
 

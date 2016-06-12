@@ -5,6 +5,8 @@ import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.OrderInfo
+import com.jayrave.falkon.engine.WhereSection
+import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -90,7 +92,8 @@ class QueryBuilderImplTest {
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
-                tableName = table.name, whereClause = "int = ?"
+                tableName = table.name,
+                whereSections = listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
         ))
 
         assertThat(statement.boundArgs).hasSize(1)
@@ -282,7 +285,8 @@ class QueryBuilderImplTest {
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
                 tableName = table.name, distinct = true, columns = listOf("string"),
-                whereClause = "double = ?", groupBy = listOf("blob"), having = null,
+                whereSections = listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "double")),
+                groupBy = listOf("blob"), having = null,
                 orderBy = listOf(OrderInfoForTest("int", true)), limit = 5, offset = 8
         ))
 
@@ -295,7 +299,7 @@ class QueryBuilderImplTest {
 
     private fun assertArgFreeStatementExecutionAndClosure(
             table: TableForTest, engine: EngineForTestingBuilders, distinct: Boolean = false,
-            columns: Iterable<String>? = null, whereClause: String? = null,
+            columns: Iterable<String>? = null, whereSections: Iterable<WhereSection>? = null,
             groupBy: Iterable<String>? = null, having: String? = null,
             orderBy: Iterable<OrderInfo>? = null,
             limit: Long? = null, offset: Long? = null) {
@@ -304,7 +308,7 @@ class QueryBuilderImplTest {
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
                 tableName = table.name, distinct = distinct, columns = columns,
-                whereClause = whereClause, groupBy = groupBy, having = having,
+                whereSections = whereSections, groupBy = groupBy, having = having,
                 orderBy = orderBy, limit = limit, offset = offset
         ))
 

@@ -12,28 +12,31 @@ fun Engine.compileInsert(tableName: String, columns: Iterable<String>): Compiled
 /**
  * Convenience method to compile an SQL UPDATE from its parts
  */
-fun Engine.compileUpdate(tableName: String, columns: Iterable<String>, whereClause: String?):
-        CompiledUpdate {
-    return compileUpdate(buildUpdateSql(tableName, columns, whereClause))
+fun Engine.compileUpdate(
+        tableName: String, columns: Iterable<String>,
+        whereSections: Iterable<WhereSection>?): CompiledUpdate {
+    return compileUpdate(buildUpdateSql(tableName, columns, whereSections))
 }
 
 /**
  * Convenience method to compile an SQL DELETE from its parts
  */
-fun Engine.compileDelete(tableName: String, whereClause: String?): CompiledDelete {
-    return compileDelete(buildDeleteSql(tableName, whereClause))
+fun Engine.compileDelete(
+        tableName: String, whereSections: Iterable<WhereSection>?): CompiledDelete {
+    return compileDelete(buildDeleteSql(tableName, whereSections))
 }
 
 /**
  * Convenience method to compile an SQL SELECT from its parts
  */
 fun Engine.compileQuery(
-        tableName: String, distinct: Boolean, columns: Iterable<String>?, whereClause: String?,
-        groupBy: Iterable<String>?, having: String?, orderBy: Iterable<OrderInfo>?,
-        limit: Long?, offset: Long?): CompiledQuery {
+        tableName: String, distinct: Boolean, columns: Iterable<String>?,
+        whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
+        having: String?, orderBy: Iterable<OrderInfo>?, limit: Long?,
+        offset: Long?): CompiledQuery {
 
     return compileQuery(buildQuerySql(
-            tableName, distinct, columns, whereClause, groupBy, having, orderBy, limit, offset
+            tableName, distinct, columns, whereSections, groupBy, having, orderBy, limit, offset
     ))
 }
 

@@ -21,7 +21,7 @@ internal class DeleteBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
     override fun delete(): Int {
         val where: Where? = whereBuilder?.build()
         return table.configuration.engine
-                .compileDelete(table.name, where?.clause)
+                .compileDelete(table.name, where?.whereSections)
                 .bindAll(where?.arguments)
                 .executeAndClose()
     }

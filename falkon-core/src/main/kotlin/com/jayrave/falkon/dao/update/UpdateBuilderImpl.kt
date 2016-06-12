@@ -29,8 +29,10 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
     private fun update(): Int {
         val map = dataConsumer.map
         val where: Where? = whereBuilder?.build()
+        val columns: Iterable<String> = LinkedHashMapBackedIterable.forKeys(map)
+
         return table.configuration.engine
-                .compileUpdate(table.name, LinkedHashMapBackedIterable.forKeys(map), where?.clause)
+                .compileUpdate(table.name, columns, where?.whereSections)
                 .bindAll(LinkedHashMapBackedIterable.forValues(map))
                 .bindAll(where?.arguments, map.size + 1) // 1-based index
                 .executeAndClose()

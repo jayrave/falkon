@@ -1,11 +1,12 @@
 package com.jayrave.falkon.dao.where
 
+import com.jayrave.falkon.engine.WhereSection
+
 /**
- * [clause] contains the WHERE section of an SQL statement (without the WHERE keyword). Could
- * contain `?` as placeholders for arguments to be bound
- * [arguments] contains arguments for which `?` placeholder was used
+ * [whereSections] contains the WHERE sections of an SQL statement
+ * [arguments] contains arguments for placeholders used in sections
  */
 internal data class Where(
-        val clause: String,
+        val whereSections: Iterable<WhereSection>,
         val arguments: Iterable<Any?>
 )

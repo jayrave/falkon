@@ -4,6 +4,7 @@ import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledUpdateForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -45,7 +46,8 @@ class UpdateBuilderImplTest {
         assertThat(engine.compiledUpdates).hasSize(1)
         val statement: OneShotCompiledUpdateForTest = engine.compiledUpdates.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyUpdateSql(
-                table.name, listOf(table.int.name), "string = ?"
+                table.name, listOf(table.int.name),
+                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string"))
         ))
 
         assertThat(statement.boundArgs).hasSize(2)
