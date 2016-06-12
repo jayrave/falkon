@@ -1,13 +1,12 @@
 package com.jayrave.falkon.dao.where
 
-import com.jayrave.falkon.*
-import com.jayrave.falkon.dao.Dao
+import com.jayrave.falkon.dao.testLib.ModelForTest
+import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.buildWhereClauseWithPlaceholders
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
 import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -23,7 +22,7 @@ class WhereBuilderImplTest {
     fun testEmptyWhere() {
         val actualWhere = builder.build()
         val expectedWhere = Where(emptyList(), emptyList())
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -34,7 +33,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")), listOf(5)
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -45,7 +44,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int")), listOf(5)
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -56,7 +55,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "int")), listOf(5)
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -67,7 +66,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "int")), listOf(5)
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -78,7 +77,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "int")), listOf(5)
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -89,7 +88,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "int")), listOf(5)
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -97,7 +96,7 @@ class WhereBuilderImplTest {
     fun testBetween() {
         val actualWhere = builder.between(table.int, 5, 8).build()
         val expectedWhere = Where(listOf(BetweenPredicate("int")), listOf(5, 8))
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -108,7 +107,7 @@ class WhereBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.LIKE, "int")), listOf("5")
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -119,7 +118,7 @@ class WhereBuilderImplTest {
                 listOf(NoArgPredicate(NoArgPredicate.Type.IS_NULL, "int")), emptyList()
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -130,7 +129,7 @@ class WhereBuilderImplTest {
                 listOf(NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")), emptyList()
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -145,7 +144,7 @@ class WhereBuilderImplTest {
                 ), listOf(5, "test")
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -160,7 +159,7 @@ class WhereBuilderImplTest {
                 ), listOf(5, "test")
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -194,7 +193,7 @@ class WhereBuilderImplTest {
                 )), listOf(5, "test")
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -216,42 +215,42 @@ class WhereBuilderImplTest {
                 )), listOf(5, "test")
         )
 
-        assertEquals(actualWhere, expectedWhere)
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
     @Test
     fun testWhereWithAllSections() {
         val actualWhere = builder
-                .eq(table.int, 5).or()
-                .notEq(table.nullableString, "test 1").and()
-                .gt(table.string, "test 2").or()
-                .le(table.nullableInt, 7).and()
+                .eq(table.short, 5).or()
+                .notEq(table.int, 6).and()
+                .gt(table.nullable, 7).or()
+                .le(table.float, 8f).and()
                 .or {
-                    between(table.int, 8, 9)
-                    ge(table.string, "test 3")
+                    between(table.double, 9.0, 10.0)
+                    ge(table.string, "test 1")
                 }.or()
                 .and {
-                    lt(table.string, "test 4")
-                    like(table.nullableInt, "test 5")
+                    lt(table.blob, byteArrayOf(11))
+                    like(table.long, "12")
                 }.and()
-                .isNull(table.nullableInt).or()
+                .isNull(table.nullable).or()
                 .isNotNull(table.int).build()
 
         val expectedWhere = Where(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "nullable_string"),
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int"),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "string"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable"),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "nullable_int"),
+                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "float"),
                         SimpleConnector(SimpleConnector.Type.AND),
                         CompoundConnector(
                                 CompoundConnector.Type.OR,
                                 listOf(
-                                        BetweenPredicate("int"),
+                                        BetweenPredicate("double"),
                                         OneArgPredicate(
                                                 OneArgPredicate.Type.GREATER_THAN_OR_EQ, "string"
                                         )
@@ -260,50 +259,17 @@ class WhereBuilderImplTest {
                         CompoundConnector(
                                 CompoundConnector.Type.AND,
                                 listOf(
-                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "string"),
-                                        OneArgPredicate(OneArgPredicate.Type.LIKE, "nullable_int")
+                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "blob"),
+                                        OneArgPredicate(OneArgPredicate.Type.LIKE, "long")
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable"),
                         SimpleConnector(SimpleConnector.Type.OR),
                         NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")
-                ), listOf(5, "test 1", "test 2", 7, 8, 9, "test 3", "test 4", "test 5")
+                ), listOf(5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12")
         )
 
-        assertEquals(actualWhere, expectedWhere)
-    }
-
-
-
-    private class ModelForTest(
-            val int: Int = 0,
-            val string: String = "test",
-            val nullableInt: Int? = null,
-            val nullableString: String? = null
-    )
-
-
-
-    private class TableForTest(
-            configuration: TableConfiguration = defaultConfiguration()) :
-            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int>>("test", configuration) {
-
-        override val dao: Dao<ModelForTest, Int> = mock()
-        override val idColumn: Column<ModelForTest, Int> = mock()
-        override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
-
-        val int = col(ModelForTest::int)
-        val string = col(ModelForTest::string)
-        val nullableInt = col(ModelForTest::nullableInt)
-        val nullableString = col(ModelForTest::nullableString)
-
-        companion object {
-            private fun defaultConfiguration(): TableConfiguration {
-                val configuration = TableConfigurationImpl(mock())
-                configuration.registerDefaultConverters()
-                return configuration
-            }
-        }
+        assertWhereEquality(actualWhere, expectedWhere)
     }
 
 
@@ -329,14 +295,19 @@ class WhereBuilderImplTest {
 
     companion object {
 
-        private fun assertEquals(actualWhere: Where, expectedWhere: Where) {
+        private fun assertWhereEquality(actualWhere: Where, expectedWhere: Where) {
             assertThat(actualWhere.buildString()).isEqualTo(expectedWhere.buildString())
         }
 
 
         private fun Where.buildString(): String {
             val clauseWithPlaceholders = buildWhereClauseWithPlaceholders(whereSections)
-            val argsString = arguments.joinToString()
+            val argsString = arguments.joinToString() {
+                when (it) {
+                    is ByteArray -> String(it)
+                    else -> it.toString()
+                }
+            }
 
             return "Where clause: $clauseWithPlaceholders; args: $argsString"
         }
