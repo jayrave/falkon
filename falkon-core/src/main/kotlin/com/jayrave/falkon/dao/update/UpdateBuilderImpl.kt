@@ -8,9 +8,9 @@ import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
+import com.jayrave.falkon.engine.CompiledUpdate
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.compileUpdate
-import com.jayrave.falkon.engine.executeAndClose
 
 internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : UpdateBuilder<T> {
 
@@ -26,7 +26,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
         return whereBuilder!!
     }
 
-    private fun update(): Int {
+    private fun update(): CompiledUpdate {
         val map = dataConsumer.map
         val where: Where? = whereBuilder?.build()
         val columns: Iterable<String> = LinkedHashMapBackedIterable.forKeys(map)
@@ -35,7 +35,6 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
                 .compileUpdate(table.name, columns, where?.whereSections)
                 .bindAll(LinkedHashMapBackedIterable.forValues(map))
                 .bindAll(where?.arguments, map.size + 1) // 1-based index
-                .executeAndClose()
     }
 
 
@@ -51,7 +50,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return this@UpdateBuilderImpl.where()
         }
 
-        override fun update(): Int {
+        override fun build(): CompiledUpdate {
             return this@UpdateBuilderImpl.update()
         }
     }
@@ -71,7 +70,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return delegate
         }
 
-        override fun update(): Int {
+        override fun build(): CompiledUpdate {
             return this@UpdateBuilderImpl.update()
         }
     }

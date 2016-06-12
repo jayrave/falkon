@@ -17,7 +17,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
 
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, 5).update()
+        builder.set(table.int, 5).build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -28,8 +28,6 @@ class UpdateBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -40,7 +38,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
 
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, 5).where().eq(table.string, "test").update()
+        builder.set(table.int, 5).where().eq(table.string, "test").build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -53,8 +51,6 @@ class UpdateBuilderImplTest {
         assertThat(statement.boundArgs).hasSize(2)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
         assertThat(statement.stringBoundAt(2)).isEqualTo("test")
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -65,7 +61,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
 
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, 5).set(table.string, "test").update()
+        builder.set(table.int, 5).set(table.string, "test").build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -77,8 +73,6 @@ class UpdateBuilderImplTest {
         assertThat(statement.boundArgs).hasSize(2)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
         assertThat(statement.stringBoundAt(2)).isEqualTo("test")
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -91,7 +85,7 @@ class UpdateBuilderImplTest {
         val initialValue = 5
         val overwritingValue = initialValue + 1
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, initialValue).set(table.int, overwritingValue).update()
+        builder.set(table.int, initialValue).set(table.int, overwritingValue).build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -102,8 +96,6 @@ class UpdateBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(overwritingValue)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -116,20 +108,6 @@ class UpdateBuilderImplTest {
         val builder = UpdateBuilderImpl(table)
         builder.set(table.int, 5)
         assertThat(engine.compiledUpdates).isEmpty()
-    }
-
-
-    @Test
-    fun testUpdateReportsCorrectRowCount() {
-        val numberOfRowsAffected = 8745
-        val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                updateProvider = { OneShotCompiledUpdateForTest(it, numberOfRowsAffected) }
-        )
-
-        val bundle = Bundle.default(engine)
-        val table = bundle.table
-        val builder = UpdateBuilderImpl(table)
-        assertThat(builder.set(table.int, 5).update()).isEqualTo(numberOfRowsAffected)
     }
 
 
@@ -149,7 +127,7 @@ class UpdateBuilderImplTest {
                 .set(table.string, "test")
                 .set(table.blob, byteArrayOf(10))
                 .set(table.nullable, null)
-                .update()
+                .build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -169,8 +147,6 @@ class UpdateBuilderImplTest {
         assertThat(statement.stringBoundAt(6)).isEqualTo("test")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
         assertThat(statement.isNullBoundAt(8)).isTrue()
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
