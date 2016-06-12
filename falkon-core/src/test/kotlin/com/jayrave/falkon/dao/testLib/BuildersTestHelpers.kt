@@ -56,7 +56,7 @@ internal fun buildWhereClauseWithPlaceholders(whereSections: Iterable<WhereSecti
     val sb = whereSections?.foldIndexed(StringBuilder()) { index, sb, section ->
         when {
             firstSection -> firstSection = false
-            else -> sb.append("; ")
+            else -> sb.append(", ")
         }
 
         when (section) {

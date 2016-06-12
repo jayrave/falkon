@@ -6,6 +6,7 @@ import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.OrderInfo
 import com.jayrave.falkon.engine.WhereSection
+import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -276,6 +277,62 @@ class QueryBuilderImplTest {
                 .query()
 
         verifyComplexWhere(table, engine)
+    }
+
+
+    @Test
+    fun testAllTypesAreBoundCorrectly() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val engine = bundle.engine
+
+        val builder = QueryBuilderImpl(table)
+        builder.where()
+                .eq(table.short, 5.toShort()).and()
+                .eq(table.int, 6).and()
+                .eq(table.long, 7L).and()
+                .eq(table.float, 8F).and()
+                .eq(table.double, 9.toDouble()).and()
+                .eq(table.string, "test").and()
+                .eq(table.blob, byteArrayOf(10)).and()
+                .gt(table.nullable, null)
+                .query()
+
+        // Verify interactions with compiled statement
+        assertThat(engine.compiledQueries).hasSize(1)
+        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
+                table.name,
+                whereSections = listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "long"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "float"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "double"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "string"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "blob"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable")
+                )
+        ))
+
+        assertThat(statement.boundArgs).hasSize(8)
+        assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
+        assertThat(statement.intBoundAt(2)).isEqualTo(6)
+        assertThat(statement.longBoundAt(3)).isEqualTo(7L)
+        assertThat(statement.floatBoundAt(4)).isEqualTo(8F)
+        assertThat(statement.doubleBoundAt(5)).isEqualTo(9.toDouble())
+        assertThat(statement.stringBoundAt(6)).isEqualTo("test")
+        assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
+        assertThat(statement.isNullBoundAt(8)).isTrue()
+        assertThat(statement.isExecuted).isTrue()
+        assertThat(statement.isClosed).isTrue()
     }
 
 
