@@ -16,7 +16,7 @@ class InsertBuilderImplTest {
         val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
-        builder.set(table.int, 5).insert()
+        builder.set(table.int, 5).build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -27,8 +27,6 @@ class InsertBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -39,7 +37,7 @@ class InsertBuilderImplTest {
         val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
-        builder.set(table.int, 5).set(table.string, "test").insert()
+        builder.set(table.int, 5).set(table.string, "test").build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -51,8 +49,6 @@ class InsertBuilderImplTest {
         assertThat(statement.boundArgs).hasSize(2)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
         assertThat(statement.stringBoundAt(2)).isEqualTo("test")
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -65,7 +61,7 @@ class InsertBuilderImplTest {
         val initialValue = 5
         val overwritingValue = initialValue + 1
         val builder = InsertBuilderImpl(table)
-        builder.set(table.int, initialValue).set(table.int, overwritingValue).insert()
+        builder.set(table.int, initialValue).set(table.int, overwritingValue).build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -76,8 +72,6 @@ class InsertBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(overwritingValue)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -90,20 +84,6 @@ class InsertBuilderImplTest {
         val builder = InsertBuilderImpl(table)
         builder.set(table.int, 5)
         assertThat(engine.compiledInserts).isEmpty()
-    }
-
-
-    @Test
-    fun testInsertReturnsTrueForSingleRowInsertion() {
-        testInsertReturnsAppropriateFlag(1, true)
-    }
-
-
-    @Test
-    fun testInsertReturnsFalseForNonSingleRowInsertion() {
-        testInsertReturnsAppropriateFlag(-1, false)
-        testInsertReturnsAppropriateFlag(0, false)
-        testInsertReturnsAppropriateFlag(2, false)
     }
 
 
@@ -123,7 +103,7 @@ class InsertBuilderImplTest {
                 .set(table.string, "test")
                 .set(table.blob, byteArrayOf(10))
                 .set(table.nullable, null)
-                .insert()
+                .build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -143,20 +123,6 @@ class InsertBuilderImplTest {
         assertThat(statement.stringBoundAt(6)).isEqualTo("test")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
         assertThat(statement.isNullBoundAt(8)).isTrue()
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
-    }
-
-
-    private fun testInsertReturnsAppropriateFlag(numberOfRowsInserted: Int, expectedFlag: Boolean) {
-        val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                insertProvider = { OneShotCompiledInsertForTest(it, numberOfRowsInserted) }
-        )
-
-        val bundle = Bundle.default(engine)
-        val table = bundle.table
-        val builder = InsertBuilderImpl(table)
-        assertThat(builder.set(table.int, 5).insert()).isEqualTo(expectedFlag)
     }
 
 

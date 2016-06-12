@@ -2,6 +2,7 @@ package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.Table
+import com.jayrave.falkon.engine.CompiledInsert
 
 interface InsertBuilder<T : Any> {
 
@@ -23,7 +24,7 @@ interface AdderOrEnder<T : Any> {
     fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T>
 
     /**
-     * @return `true` if the insertion was successful; `false` otherwise
+     * @return [CompiledInsert] for this [InsertBuilder]
      */
-    fun insert(): Boolean
+    fun build(): CompiledInsert
 }

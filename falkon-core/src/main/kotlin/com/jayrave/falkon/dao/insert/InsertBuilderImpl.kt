@@ -4,9 +4,9 @@ import com.jayrave.falkon.Column
 import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
+import com.jayrave.falkon.engine.CompiledInsert
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.compileInsert
-import com.jayrave.falkon.engine.executeAndClose
 
 internal class InsertBuilderImpl<T : Any>(override val table: Table<T, *, *>) : InsertBuilder<T> {
 
@@ -25,12 +25,11 @@ internal class InsertBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return this
         }
 
-        override fun insert(): Boolean {
+        override fun build(): CompiledInsert {
             val map = dataConsumer.map
             return table.configuration.engine
                     .compileInsert(table.name, LinkedHashMapBackedIterable.forKeys(map))
                     .bindAll(LinkedHashMapBackedIterable.forValues(map))
-                    .executeAndClose() == 1
         }
     }
 }
