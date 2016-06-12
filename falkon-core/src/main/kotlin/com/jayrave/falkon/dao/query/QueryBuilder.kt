@@ -3,7 +3,7 @@ package com.jayrave.falkon.dao.query
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.where.WhereBuilder
-import com.jayrave.falkon.engine.Source
+import com.jayrave.falkon.engine.CompiledQuery
 
 interface QueryBuilder<T : Any> : AdderOrEnder<T, QueryBuilder<T>> {
 
@@ -55,9 +55,9 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun offset(count: Long): Z
 
     /**
-     * @return [Source] that holds the result set satisfying the given conditions
+     * @return [CompiledQuery] for this [QueryBuilder]
      */
-    fun query(): Source
+    fun build(): CompiledQuery
 }
 
 

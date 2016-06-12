@@ -6,7 +6,10 @@ import com.jayrave.falkon.dao.lib.IterableBackedIterable
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
-import com.jayrave.falkon.engine.*
+import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.engine.OrderInfo
+import com.jayrave.falkon.engine.bindAll
+import com.jayrave.falkon.engine.compileQuery
 import java.util.*
 
 internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : QueryBuilder<T> {
@@ -63,7 +66,7 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
         return this
     }
 
-    override fun query(): Source {
+    override fun build(): CompiledQuery {
         val where = whereBuilder?.build()
 
         val tempSelectedColumns = selectedColumns
@@ -81,7 +84,7 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
         return table.configuration.engine.compileQuery(
                 table.name, distinct, columns, where?.whereSections, groupBy,
                 null, orderByInfoList, limitCount, offsetCount
-        ).bindAll(where?.arguments).executeAndClose()
+        ).bindAll(where?.arguments)
     }
 
     private fun combine(column: Column<T, *>, vararg others: Column<T, *>): List<Column<T, *>> {
@@ -140,8 +143,8 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
             return this
         }
 
-        override fun query(): Source {
-            return this@QueryBuilderImpl.query()
+        override fun build(): CompiledQuery {
+            return this@QueryBuilderImpl.build()
         }
     }
 

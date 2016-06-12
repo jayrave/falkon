@@ -20,9 +20,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.query()
+        builder.build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, distinct = false)
+        assertArgFreeStatement(table, engine, distinct = false)
     }
 
 
@@ -33,9 +33,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.distinct().query()
+        builder.distinct().build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, distinct = true)
+        assertArgFreeStatement(table, engine, distinct = true)
     }
 
 
@@ -46,9 +46,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.select(table.int).query()
+        builder.select(table.int).build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, columns = listOf("int"))
+        assertArgFreeStatement(table, engine, columns = listOf("int"))
     }
 
 
@@ -59,9 +59,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.select(table.int, table.string).query()
+        builder.select(table.int, table.string).build()
 
-        assertArgFreeStatementExecutionAndClosure(
+        assertArgFreeStatement(
                 table, engine, columns = listOf("int", "string")
         )
     }
@@ -74,9 +74,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.select(table.int).select(table.int).query()
+        builder.select(table.int).select(table.int).build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, columns = listOf("int"))
+        assertArgFreeStatement(table, engine, columns = listOf("int"))
     }
 
 
@@ -87,7 +87,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.where().eq(table.int, 5).query()
+        builder.where().eq(table.int, 5).build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledQueries).hasSize(1)
@@ -99,8 +99,6 @@ class QueryBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -111,9 +109,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.groupBy(table.int).query()
+        builder.groupBy(table.int).build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, groupBy = listOf("int"))
+        assertArgFreeStatement(table, engine, groupBy = listOf("int"))
     }
 
 
@@ -124,9 +122,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.groupBy(table.string, table.blob).query()
+        builder.groupBy(table.string, table.blob).build()
 
-        assertArgFreeStatementExecutionAndClosure(
+        assertArgFreeStatement(
                 table, engine, groupBy = listOf("string", "blob")
         )
     }
@@ -139,9 +137,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.groupBy(table.int).groupBy(table.string).query()
+        builder.groupBy(table.int).groupBy(table.string).build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, groupBy = listOf("string"))
+        assertArgFreeStatement(table, engine, groupBy = listOf("string"))
     }
 
 
@@ -152,9 +150,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.orderBy(table.int, true).query()
+        builder.orderBy(table.int, true).build()
 
-        assertArgFreeStatementExecutionAndClosure(
+        assertArgFreeStatement(
                 table, engine, orderBy = listOf(OrderInfoForTest("int", true))
         )
     }
@@ -167,9 +165,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.orderBy(table.int, true).orderBy(table.blob, false).query()
+        builder.orderBy(table.int, true).orderBy(table.blob, false).build()
 
-        assertArgFreeStatementExecutionAndClosure(
+        assertArgFreeStatement(
                 table, engine,
                 orderBy = listOf(OrderInfoForTest("int", true), OrderInfoForTest("blob", false))
         )
@@ -183,9 +181,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.orderBy(table.int, true).orderBy(table.int, false).query()
+        builder.orderBy(table.int, true).orderBy(table.int, false).build()
 
-        assertArgFreeStatementExecutionAndClosure(
+        assertArgFreeStatement(
                 table, engine, orderBy = listOf(OrderInfoForTest("int", true))
         )
     }
@@ -198,9 +196,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.limit(50).query()
+        builder.limit(50).build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, limit = 50)
+        assertArgFreeStatement(table, engine, limit = 50)
     }
 
 
@@ -211,9 +209,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.offset(72).query()
+        builder.offset(72).build()
 
-        assertArgFreeStatementExecutionAndClosure(table, engine, offset = 72)
+        assertArgFreeStatement(table, engine, offset = 72)
     }
 
 
@@ -232,7 +230,7 @@ class QueryBuilderImplTest {
                 .limit(5)
                 .offset(8)
                 .where().eq(table.double, 5.0)
-                .query()
+                .build()
 
         verifyComplexWhere(table, engine)
     }
@@ -253,7 +251,7 @@ class QueryBuilderImplTest {
                 .orderBy(table.int, true)
                 .limit(5)
                 .offset(8)
-                .query()
+                .build()
 
         verifyComplexWhere(table, engine)
     }
@@ -274,7 +272,7 @@ class QueryBuilderImplTest {
                 .groupBy(table.blob)
                 .select(table.string)
                 .distinct()
-                .query()
+                .build()
 
         verifyComplexWhere(table, engine)
     }
@@ -296,7 +294,7 @@ class QueryBuilderImplTest {
                 .eq(table.string, "test").and()
                 .eq(table.blob, byteArrayOf(10)).and()
                 .gt(table.nullable, null)
-                .query()
+                .build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledQueries).hasSize(1)
@@ -331,8 +329,6 @@ class QueryBuilderImplTest {
         assertThat(statement.stringBoundAt(6)).isEqualTo("test")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
         assertThat(statement.isNullBoundAt(8)).isTrue()
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -349,12 +345,10 @@ class QueryBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
-    private fun assertArgFreeStatementExecutionAndClosure(
+    private fun assertArgFreeStatement(
             table: TableForTest, engine: EngineForTestingBuilders, distinct: Boolean = false,
             columns: Iterable<String>? = null, whereSections: Iterable<WhereSection>? = null,
             groupBy: Iterable<String>? = null, having: String? = null,
@@ -370,8 +364,6 @@ class QueryBuilderImplTest {
         ))
 
         assertThat(statement.boundArgs).isEmpty()
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
