@@ -1,64 +1,32 @@
 package com.jayrave.falkon.engine
 
+import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
+import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
 
 class DeleteKtTest {
 
     private val tableName = "test"
 
     @Test
-    fun testCompileDeleteStatementWithoutWhere() {
-        val whereClause = null
-        val whereArgs = null
-        val compiledStatement = compileDeleteStatement(
-                tableName, whereClause, whereArgs,
-                statementCompiler, argsBinder
-        )
-
-        assertCompiledStatement(compiledStatement, tableName, whereClause, whereArgs)
+    fun testBuildDeleteSqlFromPartsWithoutWhere() {
+        val actualSql = buildDeleteSqlFromParts(tableName, null)
+        val expectedSql = "DELETE FROM $tableName"
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
     @Test
-    fun testCompileDeleteStatementWithWhere() {
-        val whereClause = "anything = ? AND nothing = ?"
-        val whereArgs = listOf("test", 7)
-        val compiledStatement = compileDeleteStatement(
-                tableName, whereClause, whereArgs,
-                statementCompiler, argsBinder
+    fun testBuildDeleteSqlFromPartsWithWhere() {
+        val whereSections = listOf(
+                OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_1"),
+                SimpleConnector(SimpleConnector.Type.AND),
+                OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_2")
         )
 
-        assertCompiledStatement(compiledStatement, tableName, whereClause, whereArgs)
-    }
-
-
-
-    companion object {
-        private fun assertCompiledStatement(
-                cs: CompiledStatementForTest, tableName: String, whereClause: String?,
-                whereArgs: Iterable<Any?>?) {
-
-            var partialSql = cs.sql
-            val mutableBoundArgs = LinkedList(cs.boundArgs)
-
-            // Check statement start
-            partialSql = partialSql.removePrefixOrThrow("DELETE FROM $tableName")
-
-            // Setup for asserting WHERE if required
-            if (!whereClause.isNullOrBlank()) {
-                partialSql = partialSql.removePrefixOrThrow(" ") // A space before WHERE
-            }
-
-            // Assert where clause & args
-            partialSql = assertAndRemoveWhereRelatedInfo(
-                    whereClause, whereArgs, partialSql, mutableBoundArgs
-            )
-
-            // Final assertions
-            assertThat(partialSql).isEmpty()
-            assertThat(mutableBoundArgs).isEmpty()
-        }
+        val actualSql = buildDeleteSqlFromParts(tableName, whereSections)
+        val expectedSql = "DELETE FROM $tableName WHERE column_name_1 = ? AND column_name_2 = ?"
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 }
