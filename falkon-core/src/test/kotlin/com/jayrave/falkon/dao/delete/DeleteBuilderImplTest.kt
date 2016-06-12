@@ -18,7 +18,7 @@ class DeleteBuilderImplTest {
         val engine = bundle.engine
         
         val builder = DeleteBuilderImpl(table)
-        builder.delete()
+        builder.build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -28,8 +28,6 @@ class DeleteBuilderImplTest {
         ))
 
         assertThat(statement.boundArgs).isEmpty()
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -41,7 +39,7 @@ class DeleteBuilderImplTest {
 
         val builder = DeleteBuilderImpl(table)
         builder.where().eq(table.int, 5)
-        builder.delete()
+        builder.build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -52,8 +50,6 @@ class DeleteBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -64,7 +60,7 @@ class DeleteBuilderImplTest {
         val engine = bundle.engine
 
         val builder = DeleteBuilderImpl(table)
-        builder.where().eq(table.int, 5).delete()
+        builder.where().eq(table.int, 5).build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -75,8 +71,6 @@ class DeleteBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -88,7 +82,7 @@ class DeleteBuilderImplTest {
 
         val builder = DeleteBuilderImpl(table)
         builder.where().eq(table.int, 5)
-        builder.where().eq(table.string, "test").delete()
+        builder.where().eq(table.string, "test").build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -99,8 +93,6 @@ class DeleteBuilderImplTest {
 
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.stringBoundAt(1)).isEqualTo("test")
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
 
 
@@ -113,19 +105,6 @@ class DeleteBuilderImplTest {
         val builder = DeleteBuilderImpl(table)
         builder.where().eq(table.int, 5)
         assertThat(engine.compiledDeletes).isEmpty()
-    }
-
-
-    @Test
-    fun testDeleteReportsCorrectRowCount() {
-        val numberOfRowsAffected = 112
-        val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                deleteProvider = { OneShotCompiledDeleteForTest(it, numberOfRowsAffected) }
-        )
-        
-        val bundle = Bundle.default(engine)
-        val builder = DeleteBuilderImpl(bundle.table)
-        assertThat(builder.delete()).isEqualTo(numberOfRowsAffected)
     }
 
 
@@ -145,7 +124,7 @@ class DeleteBuilderImplTest {
                 .eq(table.string, "test").and()
                 .eq(table.blob, byteArrayOf(10)).and()
                 .gt(table.nullable, null)
-                .delete()
+                .build()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -180,8 +159,6 @@ class DeleteBuilderImplTest {
         assertThat(statement.stringBoundAt(6)).isEqualTo("test")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
         assertThat(statement.isNullBoundAt(8)).isTrue()
-        assertThat(statement.isExecuted).isTrue()
-        assertThat(statement.isClosed).isTrue()
     }
     
     
