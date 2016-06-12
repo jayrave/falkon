@@ -220,6 +220,116 @@ class WhereBuilderImplTest {
 
 
     @Test
+    fun testMultiLevelCompoundAnd() {
+        val actualWhere = builder
+                .and {
+                    eq(table.int, 5)
+                    gt(table.string, "test")
+                    and {
+                        le(table.short, 6)
+                        isNull(table.nullable)
+                        or {
+                            ge(table.double, 7.0)
+                            isNotNull(table.nullable)
+                        }
+                    }
+                    or {
+                        notEq(table.blob, byteArrayOf(8))
+                        lt(table.long, 9)
+                    }
+                }.build()
+
+        val expectedWhere = Where(
+                listOf(CompoundConnector(
+                        CompoundConnector.Type.AND,
+                        listOf(
+                                OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "string"),
+                                CompoundConnector(
+                                        CompoundConnector.Type.AND,
+                                        listOf(
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "short"),
+                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable"),
+                                                CompoundConnector(
+                                                        CompoundConnector.Type.OR,
+                                                        listOf(
+                                                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "double"),
+                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable")
+                                                        )
+                                                )
+                                        )
+                                ),
+                                CompoundConnector(
+                                        CompoundConnector.Type.OR,
+                                        listOf(
+                                                OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "blob"),
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "long")
+                                        )
+                                )
+                        )
+                )), listOf(5, "test", 6, 7.0, byteArrayOf(8), 9)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testMultiLevelCompoundOr() {
+        val actualWhere = builder
+                .or {
+                    eq(table.int, 5)
+                    gt(table.string, "test")
+                    or {
+                        le(table.short, 6)
+                        isNull(table.nullable)
+                        and {
+                            ge(table.double, 7.0)
+                            isNotNull(table.nullable)
+                        }
+                    }
+                    and {
+                        notEq(table.blob, byteArrayOf(8))
+                        lt(table.long, 9)
+                    }
+                }.build()
+
+        val expectedWhere = Where(
+                listOf(CompoundConnector(
+                        CompoundConnector.Type.OR,
+                        listOf(
+                                OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "string"),
+                                CompoundConnector(
+                                        CompoundConnector.Type.OR,
+                                        listOf(
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "short"),
+                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable"),
+                                                CompoundConnector(
+                                                        CompoundConnector.Type.AND,
+                                                        listOf(
+                                                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "double"),
+                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable")
+                                                        )
+                                                )
+                                        )
+                                ),
+                                CompoundConnector(
+                                        CompoundConnector.Type.AND,
+                                        listOf(
+                                                OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "blob"),
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "long")
+                                        )
+                                )
+                        )
+                )), listOf(5, "test", 6, 7.0, byteArrayOf(8), 9)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
     fun testWhereWithAllSections() {
         val actualWhere = builder
                 .eq(table.short, 5).or()
