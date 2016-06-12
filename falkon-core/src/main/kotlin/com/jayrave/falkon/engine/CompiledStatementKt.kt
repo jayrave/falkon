@@ -7,7 +7,7 @@ package com.jayrave.falkon.engine
  * @param index the 1-based index where [value] will be bound
  * @param value the parameter value
  */
-fun <R> CompiledStatement<R>.bind(index: Int, value: Any?): CompiledStatement<R> {
+fun <CS: CompiledStatement<R>, R> CS.bind(index: Int, value: Any?): CS {
     when (value) {
         null -> bindNull(index)
         is Short -> bindShort(index, value)
@@ -29,9 +29,7 @@ fun <R> CompiledStatement<R>.bind(index: Int, value: Any?): CompiledStatement<R>
  * @param values to be bound
  * @param startIndex the 1-based index from where binding should be started
  */
-fun <R> CompiledStatement<R>.bindAll(values: Iterable<Any?>?, startIndex: Int = 1):
-        CompiledStatement<R> {
-
+fun <CS: CompiledStatement<R>, R> CS.bindAll(values: Iterable<Any?>?, startIndex: Int = 1): CS {
     values?.forEachIndexed { index, value ->
         bind(startIndex + index, value)
     }
