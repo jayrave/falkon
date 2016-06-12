@@ -8,7 +8,8 @@ import java.util.*
  * [CompiledStatement]s for which bindings can't be cleared
  */
 internal open class OneShotCompiledStatementForTest<R>(
-        override val sql: String = "dummy", private val returnValue: R) :
+        override val sql: String = "dummy", private val returnValue: R,
+        private val shouldThrowOnExecution: Boolean = false) :
         CompiledStatement<R> {
 
     private val mutableBoundArgs = HashMap<Int, Any?>()
@@ -16,8 +17,14 @@ internal open class OneShotCompiledStatementForTest<R>(
     val boundArgs: Map<Int, Any?>
         get() = mutableBoundArgs
 
+    val wasExecutionAttempted: Boolean
+        get() = numberOfTimesExecutionAttempted > 0
+
     val isExecuted: Boolean
         get() = numberOfTimesExecuted > 0
+
+    var numberOfTimesExecutionAttempted: Int = 0
+        private set
 
     var numberOfTimesExecuted: Int = 0
         private set
@@ -26,6 +33,13 @@ internal open class OneShotCompiledStatementForTest<R>(
         private set
 
     override fun execute(): R {
+        numberOfTimesExecutionAttempted++
+
+        // Check and throw exception if required
+        if (shouldThrowOnExecution) {
+            throw RuntimeException()
+        }
+
         numberOfTimesExecuted++
         return returnValue
     }
@@ -95,21 +109,25 @@ internal open class OneShotCompiledStatementForTest<R>(
 }
 
 
-internal class OneShotCompiledInsertForTest(sql: String, returnValue: Int = 1) :
+internal class OneShotCompiledInsertForTest(
+        sql: String, returnValue: Int = 1, shouldThrowOnExecution: Boolean = false) :
         CompiledInsert,
-        OneShotCompiledStatementForTest<Int>(sql, returnValue)
+        OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
-internal class OneShotCompiledUpdateForTest(sql: String, returnValue: Int = 1) :
+internal class OneShotCompiledUpdateForTest(
+        sql: String, returnValue: Int = 1, shouldThrowOnExecution: Boolean = false) :
         CompiledUpdate,
-        OneShotCompiledStatementForTest<Int>(sql, returnValue)
+        OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
-internal class OneShotCompiledDeleteForTest(sql: String, returnValue: Int = 1) :
+internal class OneShotCompiledDeleteForTest(
+        sql: String, returnValue: Int = 1, shouldThrowOnExecution: Boolean = false) :
         CompiledDelete,
-        OneShotCompiledStatementForTest<Int>(sql, returnValue)
+        OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
-internal class OneShotCompiledQueryForTest(sql: String, returnValue: Source = mock()) :
+internal class OneShotCompiledQueryForTest(
+        sql: String, returnValue: Source = mock(), shouldThrowOnExecution: Boolean = false) :
         CompiledQuery,
-        OneShotCompiledStatementForTest<Source>(sql, returnValue)
+        OneShotCompiledStatementForTest<Source>(sql, returnValue, shouldThrowOnExecution)
