@@ -1,44 +1,35 @@
 package com.jayrave.falkon.engine
 
-import java.util.*
-
 /**
- * @return a compiled statement for the passed in parameters if it has the potential
- * to directly insert some rows; else null
+ * @return a SQL statement built from the parts passed in if at least one column name is
+ * passed in else `null` is returned
  */
-inline fun <CS : Any> compileInsertStatement(
-        tableName: String, columnNamesToValuesMap: Map<String, Any?>,
-        statementCompiler: (String) -> CS,
-        argsBinder: (compiledStatement: CS, index: Int, arg: Any?) -> Any?): CS? {
+fun buildInsertSqlFromParts(
+        tableName: String, columns: Iterable<String>,
+        argPlaceholder: String = "?"): String? {
 
-    return when {
-        columnNamesToValuesMap.isEmpty() -> null
+    // Add basic insert stuff
+    val insertSql = StringBuilder(120)
+    insertSql.append("INSERT INTO $tableName ")
+
+    // Add column names
+    var columnCount = 0
+    insertSql.append(columns.joinToString(separator = ", ", prefix = "(", postfix = ")") {
+        columnCount++
+        it
+    })
+
+    // Add required placeholders (return null if there are no columns to set value to)
+    return when (columnCount) {
+        0 -> null
         else -> {
-            val insertSql = StringBuilder(120)
-            insertSql.append("INSERT INTO $tableName ")
-
-            // Add column names section
-            val valuesForColumns = ArrayList<Any?>(columnNamesToValuesMap.size)
-            insertSql.append(columnNamesToValuesMap.entries.joinToString(
-                    separator = ", ", prefix = "(", postfix = ")") {
-                valuesForColumns.add(it.value)
-                it.key
-            })
-
-            // Add placeholders
             insertSql.append(" VALUES ")
-            insertSql.append(valuesForColumns.joinToString(
+            insertSql.append((0..columnCount - 1).joinToString(
                     separator = ", ", prefix = "(", postfix = ")") {
-                "?"
+                argPlaceholder
             })
 
-            // Bind column values
-            val compiledStatement = statementCompiler.invoke(insertSql.toString())
-            valuesForColumns.forEachIndexed { index, value ->
-                argsBinder.invoke(compiledStatement, index, value)
-            }
-
-            return compiledStatement
+            insertSql.toString()
         }
     }
 }
