@@ -339,8 +339,8 @@ class QueryBuilderImplTest {
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
                 tableName = table.name, distinct = true, columns = listOf("string"),
                 whereSections = listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "double")),
-                groupBy = listOf("blob"), having = null,
-                orderBy = listOf(OrderInfoForTest("int", true)), limit = 5, offset = 8
+                groupBy = listOf("blob"), orderBy = listOf(OrderInfoForTest("int", true)),
+                limit = 5, offset = 8
         ))
 
         assertThat(statement.boundArgs).hasSize(1)
@@ -351,16 +351,15 @@ class QueryBuilderImplTest {
     private fun assertArgFreeStatement(
             table: TableForTest, engine: EngineForTestingBuilders, distinct: Boolean = false,
             columns: Iterable<String>? = null, whereSections: Iterable<WhereSection>? = null,
-            groupBy: Iterable<String>? = null, having: String? = null,
-            orderBy: Iterable<OrderInfo>? = null,
+            groupBy: Iterable<String>? = null, orderBy: Iterable<OrderInfo>? = null,
             limit: Long? = null, offset: Long? = null) {
 
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyQuerySql(
                 tableName = table.name, distinct = distinct, columns = columns,
-                whereSections = whereSections, groupBy = groupBy, having = having,
-                orderBy = orderBy, limit = limit, offset = offset
+                whereSections = whereSections, groupBy = groupBy, orderBy = orderBy,
+                limit = limit, offset = offset
         ))
 
         assertThat(statement.boundArgs).isEmpty()

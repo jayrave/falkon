@@ -32,11 +32,10 @@ fun Engine.compileDelete(
 fun Engine.compileQuery(
         tableName: String, distinct: Boolean, columns: Iterable<String>?,
         whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-        having: String?, orderBy: Iterable<OrderInfo>?, limit: Long?,
-        offset: Long?): CompiledQuery {
+        orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): CompiledQuery {
 
     return compileQuery(buildQuerySql(
-            tableName, distinct, columns, whereSections, groupBy, having, orderBy, limit, offset
+            tableName, distinct, columns, whereSections, groupBy, orderBy, limit, offset
     ))
 }
 

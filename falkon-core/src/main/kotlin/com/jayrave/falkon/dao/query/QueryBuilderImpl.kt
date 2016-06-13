@@ -83,7 +83,7 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
 
         return table.configuration.engine.compileQuery(
                 table.name, distinct, columns, where?.whereSections, groupBy,
-                null, orderByInfoList, limitCount, offsetCount
+                orderByInfoList, limitCount, offsetCount
         ).bindAll(where?.arguments)
     }
 

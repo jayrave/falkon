@@ -46,7 +46,6 @@ interface Engine {
      * SQL WHERE clause. Passing null denotes no WHERE in the built SQL
      * [groupBy] A list of columns to SQL GROUP BY clause applied in iteration order. Passing null
      * will skip grouping
-     * [having] Formatted as SQL HAVING clause (excluding `HAVING` itself). Optional
      * [orderBy] A list of [OrderInfo] to SQL ORDER BY clause applied in iteration order.
      * Passing null will skip ordering
      * [limit] Limits the number of rows returned by the query, formatted as LIMIT clause.
@@ -57,7 +56,7 @@ interface Engine {
     fun buildQuerySql(
             tableName: String, distinct: Boolean, columns: Iterable<String>?,
             whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-            having: String?, orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String
+            orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String
 
     // ---------------------------------- Build SQL from parts -------------------------------------
 
