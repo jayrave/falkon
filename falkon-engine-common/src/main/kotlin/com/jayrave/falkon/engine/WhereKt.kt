@@ -7,16 +7,13 @@ import com.jayrave.falkon.engine.WhereSection.Predicate
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
 import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
 
-const val ARG_PLACEHOLDER = '?'
-
-
 /**
  * A SQL WHERE is built from the passed in [WhereSection]s with placeholder denoted by
  * [ARG_PLACEHOLDER].
  *
  * @return - `null` if the iterable is empty or a WHERE clause (along with WHERE keyword)
  */
-internal fun Iterable<WhereSection>.buildWhereClause(): String? {
+internal fun Iterable<WhereSection>.buildWhereClause(argPlaceholder: String = "?"): String? {
     val clause = StringBuilder()
     var isFirstSection = true
 
@@ -26,7 +23,7 @@ internal fun Iterable<WhereSection>.buildWhereClause(): String? {
             else -> clause.append(' ')
         }
 
-        section.addTo(clause)
+        section.addTo(clause, argPlaceholder)
     }
 
     return when {
@@ -41,20 +38,20 @@ internal fun Iterable<WhereSection>.buildWhereClause(): String? {
 
 // ------------------------------- Start of add to section -----------------------------------------
 
-private fun WhereSection.addTo(clause: StringBuilder) {
+private fun WhereSection.addTo(clause: StringBuilder, argPlaceholder: String) {
     when (this) {
         is Predicate -> {
             when (this) {
                 is NoArgPredicate -> this.addTo(clause)
-                is OneArgPredicate -> this.addTo(clause)
-                is BetweenPredicate -> this.addTo(clause)
+                is OneArgPredicate -> this.addTo(clause, argPlaceholder)
+                is BetweenPredicate -> this.addTo(clause, argPlaceholder)
             }
         }
 
         is Connector -> {
             when (this) {
                 is SimpleConnector -> this.addTo(clause)
-                is CompoundConnector -> this.addTo(clause)
+                is CompoundConnector -> this.addTo(clause, argPlaceholder)
             }
         }
     }
@@ -66,13 +63,13 @@ private fun NoArgPredicate.addTo(clauseBuilder: StringBuilder) {
 }
 
 
-private fun OneArgPredicate.addTo(clause: StringBuilder) {
-    clause.appendOneArgPredicate(this)
+private fun OneArgPredicate.addTo(clause: StringBuilder, argPlaceholder: String) {
+    clause.appendOneArgPredicate(this, argPlaceholder)
 }
 
 
-private fun BetweenPredicate.addTo(clause: StringBuilder) {
-    clause.appendBetweenPredicate(this)
+private fun BetweenPredicate.addTo(clause: StringBuilder, argPlaceholder: String) {
+    clause.appendBetweenPredicate(this, argPlaceholder)
 }
 
 
@@ -81,7 +78,7 @@ private fun SimpleConnector.addTo(clause: StringBuilder) {
 }
 
 
-private fun CompoundConnector.addTo(clause: StringBuilder) {
+private fun CompoundConnector.addTo(clause: StringBuilder, argPlaceholder: String) {
     if (sections.isEmpty()) {
         throw SQLSyntaxErrorException(
                 "There should be at least 1 predicate for " +
@@ -96,7 +93,7 @@ private fun CompoundConnector.addTo(clause: StringBuilder) {
 
     val lastSectionIndex = sections.size - 1
     sections.forEachIndexed { index, predicate ->
-        predicate.addTo(clause)
+        predicate.addTo(clause, argPlaceholder)
         if (index != lastSectionIndex) {
             clause.append(" $connectorText ")
         }
@@ -116,13 +113,15 @@ private fun StringBuilder.appendNoArgPredicate(predicate: NoArgPredicate) {
 }
 
 
-private fun StringBuilder.appendOneArgPredicate(predicate: OneArgPredicate) {
-    append("${predicate.columnName} ${predicate.type.sqlText()} $ARG_PLACEHOLDER")
+private fun StringBuilder.appendOneArgPredicate(
+        predicate: OneArgPredicate, argPlaceholder: String) {
+    append("${predicate.columnName} ${predicate.type.sqlText()} $argPlaceholder")
 }
 
 
-private fun StringBuilder.appendBetweenPredicate(predicate: BetweenPredicate) {
-    append("${predicate.columnName} BETWEEN $ARG_PLACEHOLDER AND $ARG_PLACEHOLDER")
+private fun StringBuilder.appendBetweenPredicate(
+        predicate: BetweenPredicate, argPlaceholder: String) {
+    append("${predicate.columnName} BETWEEN $argPlaceholder AND $argPlaceholder")
 }
 
 // ----------------------------- End of append predicate section -----------------------------------

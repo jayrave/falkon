@@ -3,16 +3,19 @@ package com.jayrave.falkon.engine
 /**
  * @return a SQL statement built from the parts passed in
  */
-fun buildDeleteSqlFromParts(tableName: String, whereSections: Iterable<WhereSection>?): String {
+fun buildDeleteSqlFromParts(
+        tableName: String, whereSections: Iterable<WhereSection>?,
+        argPlaceholder: String = "?"): String {
+
     // Add basic delete stuff
-    val updateSql = StringBuilder(120)
-    updateSql.append("DELETE FROM $tableName")
+    val deleteSql = StringBuilder(120)
+    deleteSql.append("DELETE FROM $tableName")
 
     // Add where clause if required
-    val whereSql = whereSections?.buildWhereClause()
+    val whereSql = whereSections?.buildWhereClause(argPlaceholder)
     if (whereSql != null) {
-        updateSql.append(" $whereSql")
+        deleteSql.append(" $whereSql")
     }
 
-    return updateSql.toString()
+    return deleteSql.toString()
 }

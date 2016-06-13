@@ -23,7 +23,7 @@ fun buildUpdateSqlFromParts(
         0 -> return null // No columns are set. Return null
         else -> {
             // Add where clause if required
-            val whereSql = whereSections?.buildWhereClause()
+            val whereSql = whereSections?.buildWhereClause(argPlaceholder)
             if (whereSql != null) {
                 updateSql.append(" $whereSql")
             }
