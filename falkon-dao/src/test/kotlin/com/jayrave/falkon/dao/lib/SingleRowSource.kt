@@ -8,7 +8,7 @@ import java.util.*
  */
 class SingleRowSource(map: Map<String, Any?>) : Source {
 
-    override val position: Int = 0
+    override val position: Int = 1 // position is 1-based
     private val values: List<Any?>
     private val columnNameToIndexMap: Map<String, Int>
     init  {
@@ -16,7 +16,7 @@ class SingleRowSource(map: Map<String, Any?>) : Source {
         columnNameToIndexMap = HashMap()
         map.forEach { entry ->
             val index = values.size
-            columnNameToIndexMap[entry.key] = index
+            columnNameToIndexMap[entry.key] = index + 1 // columnIndex is 1-based
             values.add(index, entry.value)
         }
     }
@@ -30,7 +30,7 @@ class SingleRowSource(map: Map<String, Any?>) : Source {
 
     override fun moveToPosition(position: Int): Boolean {
         return when (position) {
-            0 -> true
+            1 -> true
             else -> false
         }
     }
@@ -56,34 +56,38 @@ class SingleRowSource(map: Map<String, Any?>) : Source {
     }
 
     override fun getShort(columnIndex: Int): Short {
-        return values[columnIndex] as Short
+        return getValue(columnIndex) as Short
     }
 
     override fun getInt(columnIndex: Int): Int {
-        return values[columnIndex] as Int
+        return getValue(columnIndex) as Int
     }
 
     override fun getLong(columnIndex: Int): Long {
-        return values[columnIndex] as Long
+        return getValue(columnIndex) as Long
     }
 
     override fun getFloat(columnIndex: Int): Float {
-        return values[columnIndex] as Float
+        return getValue(columnIndex) as Float
     }
 
     override fun getDouble(columnIndex: Int): Double {
-        return values[columnIndex] as Double
+        return getValue(columnIndex) as Double
     }
 
     override fun getString(columnIndex: Int): String {
-        return values[columnIndex] as String
+        return getValue(columnIndex) as String
     }
 
     override fun getBlob(columnIndex: Int): ByteArray {
-        return values[columnIndex] as ByteArray
+        return getValue(columnIndex) as ByteArray
     }
 
     override fun isNull(columnIndex: Int): Boolean {
-        return values[columnIndex] == null
+        return getValue(columnIndex) == null
+    }
+
+    private fun getValue(columnIndex: Int): Any? {
+        return values[columnIndex - 1] // columnIndex is 1-based
     }
 }

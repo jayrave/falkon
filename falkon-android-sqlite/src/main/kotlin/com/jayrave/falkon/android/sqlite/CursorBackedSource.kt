@@ -3,24 +3,80 @@ package com.jayrave.falkon.android.sqlite
 import android.database.Cursor
 import com.jayrave.falkon.engine.Source
 
+/**
+ * [Source] indices are 1-based but [Cursor] indices are 0-based. Appropriate conversion
+ * will be done
+ */
 class CursorBackedSource(private val cursor: Cursor) : Source {
 
     override val position: Int
-        get() = cursor.position
+        get() = indexFromCursorConversion(cursor.position)
 
-    override fun move(offset: Int): Boolean = cursor.move(offset)
-    override fun moveToPosition(position: Int): Boolean = cursor.moveToPosition(position)
-    override fun moveToFirst(): Boolean = cursor.moveToFirst()
-    override fun moveToLast(): Boolean = cursor.moveToLast()
-    override fun moveToNext(): Boolean = cursor.moveToNext()
-    override fun moveToPrevious(): Boolean = cursor.moveToPrevious()
-    override fun getColumnIndex(columnName: String): Int = cursor.getColumnIndex(columnName)
-    override fun getShort(columnIndex: Int): Short = cursor.getShort(columnIndex)
-    override fun getInt(columnIndex: Int): Int = cursor.getInt(columnIndex)
-    override fun getLong(columnIndex: Int): Long = cursor.getLong(columnIndex)
-    override fun getFloat(columnIndex: Int): Float = cursor.getFloat(columnIndex)
-    override fun getDouble(columnIndex: Int): Double = cursor.getDouble(columnIndex)
-    override fun getString(columnIndex: Int): String = cursor.getString(columnIndex)
-    override fun getBlob(columnIndex: Int): ByteArray = cursor.getBlob(columnIndex)
-    override fun isNull(columnIndex: Int): Boolean = cursor.isNull(columnIndex)
+    override fun move(offset: Int): Boolean {
+        return cursor.move(offset)
+    }
+
+    override fun moveToPosition(position: Int): Boolean {
+        return cursor.moveToPosition(indexToCursorConversion(position))
+    }
+
+    override fun moveToFirst(): Boolean {
+        return cursor.moveToFirst()
+    }
+
+    override fun moveToLast(): Boolean {
+        return cursor.moveToLast()
+    }
+
+    override fun moveToNext(): Boolean {
+        return cursor.moveToNext()
+    }
+
+    override fun moveToPrevious(): Boolean {
+        return cursor.moveToPrevious()
+    }
+
+    override fun getColumnIndex(columnName: String): Int {
+        return indexFromCursorConversion(cursor.getColumnIndex(columnName))
+    }
+
+    override fun getShort(columnIndex: Int): Short {
+        return cursor.getShort(indexToCursorConversion(columnIndex))
+    }
+
+    override fun getInt(columnIndex: Int): Int {
+        return cursor.getInt(indexToCursorConversion(columnIndex))
+    }
+
+    override fun getLong(columnIndex: Int): Long {
+        return cursor.getLong(indexToCursorConversion(columnIndex))
+    }
+
+    override fun getFloat(columnIndex: Int): Float {
+        return cursor.getFloat(indexToCursorConversion(columnIndex))
+    }
+
+    override fun getDouble(columnIndex: Int): Double {
+        return cursor.getDouble(indexToCursorConversion(columnIndex))
+    }
+
+    override fun getString(columnIndex: Int): String {
+        return cursor.getString(indexToCursorConversion(columnIndex))
+    }
+
+    override fun getBlob(columnIndex: Int): ByteArray {
+        return cursor.getBlob(indexToCursorConversion(columnIndex))
+    }
+
+    override fun isNull(columnIndex: Int): Boolean {
+        return cursor.isNull(indexToCursorConversion(columnIndex))
+    }
+
+    private fun indexFromCursorConversion(index: Int): Int {
+        return index + 1
+    }
+
+    private fun indexToCursorConversion(index: Int): Int {
+        return index - 1
+    }
 }

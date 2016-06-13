@@ -2,11 +2,9 @@ package com.jayrave.falkon.android.sqlite
 
 import android.database.Cursor
 import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-/**
- * Just to make sure that the calls are forwarded to appropriate methods in [Cursor]
- */
 class CursorBackedSourceTest {
 
     private val cursorMock: Cursor = mock()
@@ -14,9 +12,13 @@ class CursorBackedSourceTest {
 
     @Test
     fun testGetPosition() {
-        source.position
+        whenever(cursorMock.position).thenReturn(5)
+        val actualPosition = source.position
+        val expectedPosition = 6 // Since cursor uses 0-based index
+        assertThat(actualPosition).isEqualTo(expectedPosition)
         verify(cursorMock).position
         verifyNoMoreInteractions(cursorMock)
+
     }
 
     @Test
@@ -29,7 +31,7 @@ class CursorBackedSourceTest {
     @Test
     fun testMoveToPosition() {
         source.moveToPosition(5)
-        verify(cursorMock).moveToPosition(5)
+        verify(cursorMock).moveToPosition(4) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
@@ -63,7 +65,11 @@ class CursorBackedSourceTest {
 
     @Test
     fun testGetColumnIndex() {
-        source.getColumnIndex("test")
+        val columnName = "test"
+        whenever(cursorMock.getColumnIndex(eq(columnName))).thenReturn(5)
+        val actualIndex = source.getColumnIndex("test")
+        val expectedIndex = 6 // Since cursor uses 0-based index
+        assertThat(actualIndex).isEqualTo(expectedIndex)
         verify(cursorMock).getColumnIndex(eq("test"))
         verifyNoMoreInteractions(cursorMock)
     }
@@ -71,35 +77,35 @@ class CursorBackedSourceTest {
     @Test
     fun testGetShort() {
         source.getShort(5)
-        verify(cursorMock).getShort(eq(5))
+        verify(cursorMock).getShort(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetInt() {
         source.getInt(5)
-        verify(cursorMock).getInt(eq(5))
+        verify(cursorMock).getInt(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetLong() {
         source.getLong(5)
-        verify(cursorMock).getLong(eq(5))
+        verify(cursorMock).getLong(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetFloat() {
         source.getFloat(5)
-        verify(cursorMock).getFloat(eq(5))
+        verify(cursorMock).getFloat(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetDouble() {
         source.getDouble(5)
-        verify(cursorMock).getDouble(eq(5))
+        verify(cursorMock).getDouble(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
@@ -107,7 +113,7 @@ class CursorBackedSourceTest {
     fun testGetString() {
         whenever(cursorMock.getString(any())).thenReturn("test")
         source.getString(5)
-        verify(cursorMock).getString(eq(5))
+        verify(cursorMock).getString(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
@@ -115,14 +121,14 @@ class CursorBackedSourceTest {
     fun testGetBlob() {
         whenever(cursorMock.getBlob(any())).thenReturn(byteArrayOf(5))
         source.getBlob(5)
-        verify(cursorMock).getBlob(eq(5))
+        verify(cursorMock).getBlob(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testIsNull() {
         source.isNull(5)
-        verify(cursorMock).isNull(5)
+        verify(cursorMock).isNull(4) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 }
