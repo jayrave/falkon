@@ -13,7 +13,9 @@ import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
  *
  * @return - `null` if the iterable is empty or a WHERE clause (along with WHERE keyword)
  */
-internal fun Iterable<WhereSection>.buildWhereClause(argPlaceholder: String = "?"): String? {
+internal fun Iterable<WhereSection>.buildWhereClause(
+        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER): String? {
+
     val clause = StringBuilder()
     var isFirstSection = true
 

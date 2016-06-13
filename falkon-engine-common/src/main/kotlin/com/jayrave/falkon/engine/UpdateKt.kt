@@ -6,7 +6,7 @@ package com.jayrave.falkon.engine
  */
 fun buildUpdateSqlFromParts(
         tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
-        argPlaceholder: String = "?"): String? {
+        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER): String? {
 
     // Add basic update stuff
     val updateSql = StringBuilder(120)

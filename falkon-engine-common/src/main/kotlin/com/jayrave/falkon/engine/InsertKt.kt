@@ -6,7 +6,7 @@ package com.jayrave.falkon.engine
  */
 fun buildInsertSqlFromParts(
         tableName: String, columns: Iterable<String>,
-        argPlaceholder: String = "?"): String? {
+        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER): String? {
 
     // Add basic insert stuff
     val insertSql = StringBuilder(120)
