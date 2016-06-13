@@ -1,42 +1,34 @@
 package com.jayrave.falkon.engine
 
-import java.util.*
-
 /**
- * @return a compiled statement for the passed in parameters if it has the potential
- * to directly update some rows; else null
+ * @return a SQL statement built from the parts passed in if at least one column name is
+ * passed in else `null` is returned
  */
-inline fun <CS : Any> compileUpdateStatement(
-        tableName: String, columnNamesToValuesMap: Map<String, Any?>, whereClause: String?,
-        whereArgs: Iterable<Any?>?, statementCompiler: (String) -> CS,
-        argsBinder: (compiledStatement: CS, index: Int, arg: Any?) -> Any?): CS? {
+fun buildUpdateSqlFromParts(
+        tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
+        argPlaceholder: String = "?"): String? {
 
-    return when {
-        columnNamesToValuesMap.isEmpty() -> null
+    // Add basic update stuff
+    val updateSql = StringBuilder(120)
+    updateSql.append("UPDATE $tableName SET ")
+
+    // Add column names & their value placeholders
+    var columnCount = 0
+    updateSql.append(columns.joinToString(separator = ", ") {
+        columnCount++
+        "$it = $argPlaceholder"
+    })
+
+    when (columnCount) {
+        0 -> return null // No columns are set. Return null
         else -> {
-            val updateSql = StringBuilder(120)
-            updateSql.append("UPDATE $tableName SET ")
-
-            val valuesForColumns = ArrayList<Any?>(columnNamesToValuesMap.size)
-            updateSql.append(columnNamesToValuesMap.entries.joinToString(separator = ", ") {
-                valuesForColumns.add(it.value)
-                "${it.key} = ?"
-            })
-
-            if (!whereClause.isNullOrBlank()) {
-                updateSql.append(" WHERE $whereClause")
+            // Add where clause if required
+            val whereSql = whereSections?.buildWhereClause()
+            if (whereSql != null) {
+                updateSql.append(" $whereSql")
             }
-
-            val compiledStatement = statementCompiler.invoke(updateSql.toString())
-            valuesForColumns.forEachIndexed { index, value ->
-                argsBinder.invoke(compiledStatement, index, value)
-            }
-
-            whereArgs?.forEachIndexed { index, arg ->
-                argsBinder.invoke(compiledStatement, valuesForColumns.size + index, arg)
-            }
-
-            return compiledStatement
         }
     }
+
+    return updateSql.toString()
 }
