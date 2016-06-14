@@ -105,7 +105,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetColumnIndex() {
-        whenever(resultSetMock.findColumn("test")).thenReturn(5)
+        whenever(resultSetMock.findColumn(eq("test"))).thenReturn(5)
         val actualColumnIndex = source.getColumnIndex("test")
 
         assertThat(actualColumnIndex).isEqualTo(5)
@@ -115,7 +115,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetShort() {
-        whenever(resultSetMock.getShort(5)).thenReturn(6)
+        whenever(resultSetMock.getShort(eq(5))).thenReturn(6)
         val actualValue = source.getShort(5)
 
         assertThat(actualValue).isEqualTo(6)
@@ -125,7 +125,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetInt() {
-        whenever(resultSetMock.getInt(5)).thenReturn(6)
+        whenever(resultSetMock.getInt(eq(5))).thenReturn(6)
         val actualValue = source.getInt(5)
 
         assertThat(actualValue).isEqualTo(6)
@@ -135,7 +135,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetLong() {
-        whenever(resultSetMock.getLong(5)).thenReturn(6)
+        whenever(resultSetMock.getLong(eq(5))).thenReturn(6)
         val actualValue = source.getLong(5)
 
         assertThat(actualValue).isEqualTo(6)
@@ -145,7 +145,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetFloat() {
-        whenever(resultSetMock.getFloat(5)).thenReturn(6F)
+        whenever(resultSetMock.getFloat(eq(5))).thenReturn(6F)
         val actualValue = source.getFloat(5)
 
         assertThat(actualValue).isEqualTo(6F)
@@ -155,7 +155,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetDouble() {
-        whenever(resultSetMock.getDouble(5)).thenReturn(6.0)
+        whenever(resultSetMock.getDouble(eq(5))).thenReturn(6.0)
         val actualValue = source.getDouble(5)
 
         assertThat(actualValue).isEqualTo(6.0)
@@ -165,7 +165,7 @@ class ResultSetBackedSourceTest {
 
     @Test
     fun testGetString() {
-        whenever(resultSetMock.getString(5)).thenReturn("test")
+        whenever(resultSetMock.getString(eq(5))).thenReturn("test")
         val actualValue = source.getString(5)
 
         assertThat(actualValue).isEqualTo("test")
@@ -178,8 +178,8 @@ class ResultSetBackedSourceTest {
         val blobMock: Blob = mock()
         val inputByteArray = byteArrayOf(5)
         whenever(blobMock.length()).thenReturn(5)
-        whenever(blobMock.getBytes(1, 5)).thenReturn(inputByteArray)
-        whenever(resultSetMock.getBlob(5)).thenReturn(blobMock)
+        whenever(blobMock.getBytes(eq(1), eq(5))).thenReturn(inputByteArray)
+        whenever(resultSetMock.getBlob(eq(5))).thenReturn(blobMock)
         val actualValue = source.getBlob(5)
 
         assertThat(actualValue).isEqualTo(inputByteArray)
