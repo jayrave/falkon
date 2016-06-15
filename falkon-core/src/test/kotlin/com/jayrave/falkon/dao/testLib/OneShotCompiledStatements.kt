@@ -44,38 +44,43 @@ internal open class OneShotCompiledStatementForTest<R>(
         return returnValue
     }
 
-    override fun bindShort(index: Int, value: Short?): CompiledStatement<R> {
+    override fun bindShort(index: Int, value: Short): CompiledStatement<R> {
         mutableBoundArgs[index] = value
         return this
     }
 
-    override fun bindInt(index: Int, value: Int?): CompiledStatement<R> {
+    override fun bindInt(index: Int, value: Int): CompiledStatement<R> {
         mutableBoundArgs[index] = value
         return this
     }
 
-    override fun bindLong(index: Int, value: Long?): CompiledStatement<R> {
+    override fun bindLong(index: Int, value: Long): CompiledStatement<R> {
         mutableBoundArgs[index] = value
         return this
     }
 
-    override fun bindFloat(index: Int, value: Float?): CompiledStatement<R> {
+    override fun bindFloat(index: Int, value: Float): CompiledStatement<R> {
         mutableBoundArgs[index] = value
         return this
     }
 
-    override fun bindDouble(index: Int, value: Double?): CompiledStatement<R> {
+    override fun bindDouble(index: Int, value: Double): CompiledStatement<R> {
         mutableBoundArgs[index] = value
         return this
     }
 
-    override fun bindString(index: Int, value: String?): CompiledStatement<R> {
+    override fun bindString(index: Int, value: String): CompiledStatement<R> {
         mutableBoundArgs[index] = value
         return this
     }
 
-    override fun bindBlob(index: Int, value: ByteArray?): CompiledStatement<R> {
+    override fun bindBlob(index: Int, value: ByteArray): CompiledStatement<R> {
         mutableBoundArgs[index] = value
+        return this
+    }
+
+    override fun bindNull(index: Int, type: Type): CompiledStatement<R> {
+        mutableBoundArgs[index] = null
         return this
     }
 

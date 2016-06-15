@@ -16,16 +16,7 @@ fun <CS: CompiledStatement<R>, R> CS.bind(index: Int, value: Any): CS {
         is Float -> bindFloat(index, value)
         is Double -> bindDouble(index, value)
         is ByteArray -> bindBlob(index, value)
-        is TypedNull -> when (value.type) {
-            Type.SHORT ->  bindShort(index, null)
-            Type.INT -> bindInt(index, null)
-            Type.LONG -> bindLong(index, null)
-            Type.FLOAT -> bindFloat(index, null)
-            Type.DOUBLE -> bindDouble(index, null)
-            Type.STRING -> bindString(index, null)
-            Type.BLOB -> bindBlob(index, null)
-        }
-
+        is TypedNull -> bindNull(index, value.type)
         else -> bindString(index, value.toString())
     }
 
