@@ -3,6 +3,8 @@ package com.jayrave.falkon.dao.where
 import com.jayrave.falkon.dao.testLib.ModelForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.buildWhereClauseWithPlaceholders
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
@@ -227,10 +229,10 @@ class WhereBuilderImplTest {
                     gt(table.string, "test")
                     and {
                         le(table.short, 6)
-                        isNull(table.nullable)
+                        isNull(table.nullableInt)
                         or {
                             ge(table.double, 7.0)
-                            isNotNull(table.nullable)
+                            isNotNull(table.nullableInt)
                         }
                     }
                     or {
@@ -249,12 +251,12 @@ class WhereBuilderImplTest {
                                         CompoundConnector.Type.AND,
                                         listOf(
                                                 OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "short"),
-                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable"),
+                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
                                                 CompoundConnector(
                                                         CompoundConnector.Type.OR,
                                                         listOf(
                                                                 OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "double"),
-                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable")
+                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable_int")
                                                         )
                                                 )
                                         )
@@ -282,10 +284,10 @@ class WhereBuilderImplTest {
                     gt(table.string, "test")
                     or {
                         le(table.short, 6)
-                        isNull(table.nullable)
+                        isNull(table.nullableInt)
                         and {
                             ge(table.double, 7.0)
-                            isNotNull(table.nullable)
+                            isNotNull(table.nullableInt)
                         }
                     }
                     and {
@@ -304,12 +306,12 @@ class WhereBuilderImplTest {
                                         CompoundConnector.Type.OR,
                                         listOf(
                                                 OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "short"),
-                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable"),
+                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
                                                 CompoundConnector(
                                                         CompoundConnector.Type.AND,
                                                         listOf(
                                                                 OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "double"),
-                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable")
+                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable_int")
                                                         )
                                                 )
                                         )
@@ -334,7 +336,7 @@ class WhereBuilderImplTest {
         val actualWhere = builder
                 .eq(table.short, 5).or()
                 .notEq(table.int, 6).and()
-                .gt(table.nullable, 7).or()
+                .gt(table.nullableInt, 7).or()
                 .le(table.float, 8f).and()
                 .or {
                     between(table.double, 9.0, 10.0)
@@ -344,7 +346,7 @@ class WhereBuilderImplTest {
                     lt(table.blob, byteArrayOf(11))
                     like(table.long, "12")
                 }.and()
-                .isNull(table.nullable).or()
+                .isNull(table.nullableInt).or()
                 .isNotNull(table.int).build()
 
         val expectedWhere = Where(
@@ -353,7 +355,7 @@ class WhereBuilderImplTest {
                         SimpleConnector(SimpleConnector.Type.OR),
                         OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int"),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int"),
                         SimpleConnector(SimpleConnector.Type.OR),
                         OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "float"),
                         SimpleConnector(SimpleConnector.Type.AND),
@@ -373,10 +375,50 @@ class WhereBuilderImplTest {
                                         OneArgPredicate(OneArgPredicate.Type.LIKE, "long")
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable"),
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
                         SimpleConnector(SimpleConnector.Type.OR),
                         NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")
                 ), listOf(5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12")
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testNullHandling() {
+        val actualWhere = builder
+                .gt(table.nullableShort, null).and()
+                .gt(table.nullableInt, null).and()
+                .gt(table.nullableLong, null).and()
+                .gt(table.nullableFloat, null).and()
+                .gt(table.nullableDouble, null).and()
+                .gt(table.nullableString, null).and()
+                .gt(table.nullableBlob, null).
+                build()
+
+        val expectedWhere = Where(
+                listOf(
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_short"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_long"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_float"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_double"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_string"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_blob")
+                ),
+
+                listOf(
+                        TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
+                        TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
+                        TypedNull(Type.BLOB)
+                )
         )
 
         assertWhereEquality(actualWhere, expectedWhere)

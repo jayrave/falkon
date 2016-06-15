@@ -102,7 +102,7 @@ class InsertBuilderImplTest {
                 .set(table.double, 9.toDouble())
                 .set(table.string, "test")
                 .set(table.blob, byteArrayOf(10))
-                .set(table.nullable, null)
+                .set(table.nullableInt, null)
                 .build()
 
         // Verify interactions with compiled statement
@@ -111,7 +111,7 @@ class InsertBuilderImplTest {
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyInsertSql(
                 table.name, listOf(table.short.name, table.int.name, table.long.name,
                 table.float.name, table.double.name, table.string.name, table.blob.name,
-                table.nullable.name)
+                table.nullableInt.name)
         ))
 
         assertThat(statement.boundArgs).hasSize(8)

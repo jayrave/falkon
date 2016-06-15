@@ -17,7 +17,13 @@ internal class ModelForTest(
         val double: Double = 0.toDouble(),
         val string: String = "test",
         val blob: ByteArray = byteArrayOf(0),
-        val nullable: Int? = null
+        val nullableShort: Short? = null,
+        val nullableInt: Int? = null,
+        val nullableLong: Long? = null,
+        val nullableFloat: Float? = null,
+        val nullableDouble: Double? = null,
+        val nullableString: String? = null,
+        val nullableBlob: ByteArray? = null
 )
 
 
@@ -36,7 +42,13 @@ internal class TableForTest(
     val double = col(ModelForTest::double)
     val string = col(ModelForTest::string)
     val blob = col(ModelForTest::blob)
-    val nullable = col(ModelForTest::nullable)
+    val nullableShort = col(ModelForTest::nullableShort)
+    val nullableInt = col(ModelForTest::nullableInt)
+    val nullableLong = col(ModelForTest::nullableLong)
+    val nullableFloat = col(ModelForTest::nullableFloat)
+    val nullableDouble = col(ModelForTest::nullableDouble)
+    val nullableString = col(ModelForTest::nullableString)
+    val nullableBlob = col(ModelForTest::nullableBlob)
 }
 
 

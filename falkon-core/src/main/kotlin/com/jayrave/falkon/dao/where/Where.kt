@@ -8,5 +8,5 @@ import com.jayrave.falkon.engine.WhereSection
  */
 internal data class Where(
         val whereSections: Iterable<WhereSection>,
-        val arguments: Iterable<Any?>
+        val arguments: Iterable<Any>
 )

@@ -1,5 +1,7 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.testLib.StaticDataProducer
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -7,6 +9,17 @@ import org.junit.Test
 import java.util.*
 
 class ColumnImplTest {
+
+    @Test
+    fun testColumnImplReturnsTheCorrectDbType() {
+        val uuidColumn: Column<Any, UUID> = buildColumnImplForTest(nonNullUuidConverter())
+        val longColumn: Column<Any, Long> = buildColumnImplForTest(
+                NullableToNonNullConverter(NullableLongConverter())
+        )
+
+        assertThat(uuidColumn.dbType).isEqualTo(Type.STRING)
+        assertThat(longColumn.dbType).isEqualTo(Type.LONG)
+    }
 
     @Test
     fun testComputeStorageFormOfForNonNullType() {
@@ -73,7 +86,7 @@ class ColumnImplTest {
                 nullableUuidConverter(), nullToSqlSubstitute = buildNullSubstitute<UUID?>(null)
         )
 
-        assertThat(column.computeStorageFormOf(null)).isNull()
+        assertThat(column.computeStorageFormOf(null)).isEqualTo(TypedNull(Type.STRING))
     }
 
     @Test
@@ -122,6 +135,9 @@ class ColumnImplTest {
 
 
         private class NullableUuidConverter : Converter<UUID?> {
+
+            override val dbType: Type = Type.STRING
+
             override fun from(dataProducer: DataProducer): UUID? {
                 return when (dataProducer.isNull()) {
                     true -> null

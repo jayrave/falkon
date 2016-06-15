@@ -123,7 +123,7 @@ class DeleteBuilderImplTest {
                 .eq(table.double, 9.toDouble()).and()
                 .eq(table.string, "test").and()
                 .eq(table.blob, byteArrayOf(10)).and()
-                .gt(table.nullable, null)
+                .gt(table.nullableInt, null)
                 .build()
 
         // Verify interactions with compiled statement
@@ -146,7 +146,7 @@ class DeleteBuilderImplTest {
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.EQ, "blob"),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable")
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int")
                 )
         ))
 

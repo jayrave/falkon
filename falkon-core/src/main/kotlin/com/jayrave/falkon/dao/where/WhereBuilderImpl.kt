@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.where
 
 import com.jayrave.falkon.Column
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.engine.WhereSection
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
@@ -142,18 +143,18 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
     private data class ArgAwareWhereSection(
             val whereSection: WhereSection,
-            val args: Iterable<Any?>
+            val args: Iterable<Any>
     )
 
 
 
-    private class ArgsIterable(private val sections: List<ArgAwareWhereSection>) : Iterable<Any?> {
+    private class ArgsIterable(private val sections: List<ArgAwareWhereSection>) : Iterable<Any> {
 
-        override fun iterator(): Iterator<Any?> = ArgAwareWhereSectionsBackedIterator()
+        override fun iterator(): Iterator<Any> = ArgAwareWhereSectionsBackedIterator()
 
-        private inner class ArgAwareWhereSectionsBackedIterator : Iterator<Any?> {
+        private inner class ArgAwareWhereSectionsBackedIterator : Iterator<Any> {
 
-            private var iterator = emptyList<Any?>().iterator()
+            private var iterator = emptyList<Any>().iterator()
             private var currentSectionIndex = -1
 
             override fun hasNext(): Boolean {
@@ -167,7 +168,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
                 return hasNext
             }
 
-            override fun next(): Any? {
+            override fun next(): Any {
                 return iterator.next()
             }
         }
@@ -184,7 +185,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.EQ, column.name),
-                    listOf(value)
+                    listOf(getAppropriateArg(column, value))
             ))
         }
 
@@ -194,7 +195,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.NOT_EQ, column.name),
-                    listOf(value)
+                    listOf(getAppropriateArg(column, value))
             ))
         }
 
@@ -204,7 +205,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, column.name),
-                    listOf(value)
+                    listOf(getAppropriateArg(column, value))
             ))
         }
 
@@ -214,7 +215,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, column.name),
-                    listOf(value)
+                    listOf(getAppropriateArg(column, value))
             ))
         }
 
@@ -224,7 +225,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.LESS_THAN, column.name),
-                    listOf(value)
+                    listOf(getAppropriateArg(column, value))
             ))
         }
 
@@ -234,7 +235,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, column.name),
-                    listOf(value)
+                    listOf(getAppropriateArg(column, value))
             ))
         }
 
@@ -243,7 +244,10 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
                 sections: MutableList<ArgAwareWhereSection>,
                 column: Column<T, C>, low: C, high: C) {
 
-            sections.add(ArgAwareWhereSection(BetweenPredicate(column.name), listOf(low, high)))
+            sections.add(ArgAwareWhereSection(
+                    BetweenPredicate(column.name),
+                    listOf(getAppropriateArg(column, low), getAppropriateArg(column, high))
+            ))
         }
 
 
@@ -312,6 +316,14 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
                             ListBackedList(innerAdderSections, transformer)
                     ), ArgsIterable(innerAdderSections)
             ))
+        }
+
+
+        private fun <T: Any, C> getAppropriateArg(column: Column<T, C>, value: C): Any {
+            return when (value) {
+                null -> TypedNull(column.dbType)
+                else -> value as Any
+            }
         }
 
 

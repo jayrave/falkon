@@ -24,48 +24,43 @@ interface CompiledStatement<R> {
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindShort(index: Int, value: Short): CompiledStatement<R>
+    fun bindShort(index: Int, value: Short?): CompiledStatement<R>
 
     /**
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindInt(index: Int, value: Int): CompiledStatement<R>
+    fun bindInt(index: Int, value: Int?): CompiledStatement<R>
 
     /**
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindLong(index: Int, value: Long): CompiledStatement<R>
+    fun bindLong(index: Int, value: Long?): CompiledStatement<R>
 
     /**
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindFloat(index: Int, value: Float): CompiledStatement<R>
+    fun bindFloat(index: Int, value: Float?): CompiledStatement<R>
 
     /**
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindDouble(index: Int, value: Double): CompiledStatement<R>
+    fun bindDouble(index: Int, value: Double?): CompiledStatement<R>
 
     /**
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindString(index: Int, value: String): CompiledStatement<R>
+    fun bindString(index: Int, value: String?): CompiledStatement<R>
 
     /**
      * @param index the 1-based index where [value] will be bound
      * @param value the parameter value
      */
-    fun bindBlob(index: Int, value: ByteArray): CompiledStatement<R>
-
-    /**
-     * @param index the 1-based index where `null` will be bound
-     */
-    fun bindNull(index: Int): CompiledStatement<R>
+    fun bindBlob(index: Int, value: ByteArray?): CompiledStatement<R>
 
     /**
      * Releases database resources immediately. Calling this method on a already

@@ -1,5 +1,7 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.testLib.StaticDataProducer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -27,7 +29,7 @@ class NullableShortConverterTest {
     fun testToWithNullValue() {
         val consumer = ValueHoldingDataConsumer()
         converter.to(null, consumer)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.SHORT))
     }
 
     @Test

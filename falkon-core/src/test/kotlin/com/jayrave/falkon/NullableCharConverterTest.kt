@@ -1,5 +1,7 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.exceptions.ConversionException
 import com.jayrave.falkon.testLib.StaticDataProducer
 import org.assertj.core.api.Assertions.assertThat
@@ -28,23 +30,20 @@ class NullableCharConverterTest {
 
     @Test
     fun testToWithNullValue() {
-        assertThat(testToWithValue(null)).isNull()
+        val consumer = ValueHoldingDataConsumer()
+        converter.to(null, consumer)
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.STRING))
     }
 
     @Test
     fun testToWithNonNullValue() {
-        val inputValue = 'a'
-        assertThat(testToWithValue(inputValue)).isEqualTo(inputValue.toString())
+        val consumer = ValueHoldingDataConsumer()
+        converter.to('a', consumer)
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo("a")
     }
 
     private fun testFromWithValue(inputValue: String?): Char? {
         val dataProducer = StaticDataProducer.createForString(inputValue)
         return converter.from(dataProducer)
-    }
-
-    private fun testToWithValue(inputValue: Char?): String? {
-        val consumer = ValueHoldingDataConsumer()
-        converter.to(inputValue, consumer)
-        return consumer.mostRecentConsumedValue as String?
     }
 }

@@ -1,5 +1,7 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
+
 /**
  * Column defines how a property of a type corresponds to the column of a SQL table
  *      [T] => Table type
@@ -11,6 +13,11 @@ interface Column<T : Any, C> {
      * Name of the SQL column
      */
     val name: String
+
+    /**
+     * The [Type] this column will be stored as in the database
+     */
+    val dbType: Type
 
     /**
      * To extract the property from the containing object

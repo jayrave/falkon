@@ -1,24 +1,33 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.testLib.StaticDataProducer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class NullableToNonNullConverterTest {
 
-    private val nullableConverter = NullableStringConverter()
-    private val nonNullConverter = NullableToNonNullConverter(nullableConverter)
+    @Test
+    fun testDbTypeIsDelegated() {
+        val intConverter = NullableToNonNullConverter(NullableIntConverter())
+        val stringConverter = NullableToNonNullConverter(NullableStringConverter())
+
+        assertThat(intConverter.dbType).isEqualTo(Type.INT)
+        assertThat(stringConverter.dbType).isEqualTo(Type.STRING)
+    }
 
     @Test(expected = KotlinNullPointerException::class)
     fun testFromWithNullValueThrows() {
         val dataProducer = StaticDataProducer.createForString(null)
-        nonNullConverter.from(dataProducer)
+        NullableToNonNullConverter(NullableStringConverter()).from(dataProducer)
     }
 
     @Test
     fun testFromWithNonNullValue() {
         val inputValue = "full counter"
         val dataProducer = StaticDataProducer.createForString(inputValue)
+        val nullableConverter = NullableStringConverter()
+        val nonNullConverter = NullableToNonNullConverter(nullableConverter)
 
         val valueProducedByNullableConverter = nullableConverter.from(dataProducer)
         val valueProducedByNonNullConverter = nonNullConverter.from(dataProducer)
@@ -32,6 +41,8 @@ class NullableToNonNullConverterTest {
         val inputValue = "dark nebula"
         val consumerForNullableConverter = ValueHoldingDataConsumer()
         val consumerForNonNullConverter = ValueHoldingDataConsumer()
+        val nullableConverter = NullableStringConverter()
+        val nonNullConverter = NullableToNonNullConverter(nullableConverter)
 
         nullableConverter.to(inputValue, consumerForNullableConverter)
         nonNullConverter.to(inputValue, consumerForNonNullConverter)

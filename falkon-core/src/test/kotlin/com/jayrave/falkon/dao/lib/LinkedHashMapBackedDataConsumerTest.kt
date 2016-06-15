@@ -1,5 +1,7 @@
 package com.jayrave.falkon.dao.lib
 
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.exceptions.DataConsumerException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -20,7 +22,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullShort() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as Short?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.SHORT))
+        )
     }
     
     @Test(expected = DataConsumerException::class)
@@ -47,7 +51,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullInt() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as Int?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.INT))
+        )
     }
 
     @Test(expected = DataConsumerException::class)
@@ -74,7 +80,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullLong() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as Long?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.LONG))
+        )
     }
 
     @Test(expected = DataConsumerException::class)
@@ -101,7 +109,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullFloat() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as Float?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.FLOAT))
+        )
     }
 
     @Test(expected = DataConsumerException::class)
@@ -128,7 +138,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullDouble() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as Double?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.DOUBLE))
+        )
     }
 
     @Test(expected = DataConsumerException::class)
@@ -155,7 +167,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullString() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as String?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.STRING))
+        )
     }
 
     @Test(expected = DataConsumerException::class)
@@ -182,7 +196,9 @@ class LinkedHashMapBackedDataConsumerTest {
     fun testPutNullBlob() {
         val dataConsumer = buildConsumerAndSetColumnName()
         dataConsumer.put(null as ByteArray?)
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
+        assertThat(dataConsumer.map).containsOnly(
+                MapEntry.entry(DEFAULT_COLUMN_NAME, TypedNull(Type.BLOB))
+        )
     }
 
     @Test(expected = DataConsumerException::class)
@@ -195,25 +211,6 @@ class LinkedHashMapBackedDataConsumerTest {
         val dataConsumer = buildConsumerAndSetColumnName()
         failIfThrows { dataConsumer.put(byteArrayOf(5)) }
         dataConsumer.put(byteArrayOf(5))
-    }
-
-    @Test
-    fun testPutNull() {
-        val dataConsumer = buildConsumerAndSetColumnName()
-        dataConsumer.putNull()
-        assertThat(dataConsumer.map).containsOnly(MapEntry.entry(DEFAULT_COLUMN_NAME, null))
-    }
-
-    @Test(expected = DataConsumerException::class)
-    fun testPutNullWithoutColumnNameThrows() {
-        buildConsumer().putNull()
-    }
-
-    @Test(expected = DataConsumerException::class)
-    fun testPutNullResetsColumnName() {
-        val dataConsumer = buildConsumerAndSetColumnName()
-        failIfThrows { dataConsumer.putNull() }
-        dataConsumer.putNull()
     }
 
     private fun buildConsumer(): LinkedHashMapBackedDataConsumer {

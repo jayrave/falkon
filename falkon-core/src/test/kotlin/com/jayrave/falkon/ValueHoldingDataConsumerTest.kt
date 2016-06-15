@@ -1,5 +1,7 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -10,7 +12,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullShort() {
         consumer.put(null as Short?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.SHORT))
     }
 
     @Test
@@ -23,7 +25,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullInt() {
         consumer.put(null as Int?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.INT))
     }
 
     @Test
@@ -36,7 +38,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullLong() {
         consumer.put(null as Long?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.LONG))
     }
 
     @Test
@@ -49,7 +51,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullFloat() {
         consumer.put(null as Float?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.FLOAT))
     }
 
     @Test
@@ -62,7 +64,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullDouble() {
         consumer.put(null as Double?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.DOUBLE))
     }
 
     @Test
@@ -75,7 +77,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullString() {
         consumer.put(null as String?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.STRING))
     }
 
     @Test
@@ -88,7 +90,7 @@ class ValueHoldingDataConsumerTest {
     @Test
     fun testPutNullBlob() {
         consumer.put(null as ByteArray?)
-        assertThat(consumer.mostRecentConsumedValue).isNull()
+        assertThat(consumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.BLOB))
     }
 
     @Test
@@ -96,11 +98,5 @@ class ValueHoldingDataConsumerTest {
         val inputValue = byteArrayOf(1)
         consumer.put(inputValue)
         assertThat(consumer.mostRecentConsumedValue).isEqualTo(inputValue)
-    }
-
-    @Test
-    fun testPutNull() {
-        consumer.putNull()
-        assertThat(consumer.mostRecentConsumedValue).isNull()
     }
 }

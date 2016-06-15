@@ -1,6 +1,8 @@
 package com.jayrave.falkon.dao.lib
 
 import com.jayrave.falkon.NullHandlingDataConsumer
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.exceptions.DataConsumerException
 import java.util.*
 
@@ -11,7 +13,7 @@ import java.util.*
  */
 class LinkedHashMapBackedDataConsumer : NullHandlingDataConsumer() {
     
-    val map = LinkedHashMap<String, Any?>()
+    val map = LinkedHashMap<String, Any>()
 
     private var columnName: String? = null
 
@@ -43,8 +45,8 @@ class LinkedHashMapBackedDataConsumer : NullHandlingDataConsumer() {
         map.put(getAndNullifyColumnName(), blob)
     }
 
-    override fun putNull() {
-        map.put(getAndNullifyColumnName(), null)
+    override fun putNull(type: Type) {
+        map.put(getAndNullifyColumnName(), TypedNull(type))
     }
 
     fun setColumnName(columnName: String) {

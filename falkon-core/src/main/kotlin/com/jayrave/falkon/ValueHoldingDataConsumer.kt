@@ -1,11 +1,14 @@
 package com.jayrave.falkon
 
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
+
 /**
  * A consumer that stores the most recent value it is asked to consume in [mostRecentConsumedValue]
  */
 internal class ValueHoldingDataConsumer : NullHandlingDataConsumer() {
 
-    var mostRecentConsumedValue: Any? = null
+    lateinit var mostRecentConsumedValue: Any
         private set
 
     override fun put(short: Short) { mostRecentConsumedValue = short }
@@ -15,5 +18,5 @@ internal class ValueHoldingDataConsumer : NullHandlingDataConsumer() {
     override fun put(double: Double) { mostRecentConsumedValue = double }
     override fun putNonNullString(string: String) { mostRecentConsumedValue = string }
     override fun putNonNullBlob(blob: ByteArray) { mostRecentConsumedValue = blob }
-    override fun putNull() { mostRecentConsumedValue = null }
+    override fun putNull(type: Type) { mostRecentConsumedValue = TypedNull(type) }
 }

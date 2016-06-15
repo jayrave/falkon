@@ -126,7 +126,7 @@ class UpdateBuilderImplTest {
                 .set(table.double, 9.toDouble())
                 .set(table.string, "test")
                 .set(table.blob, byteArrayOf(10))
-                .set(table.nullable, null)
+                .set(table.nullableInt, null)
                 .build()
 
         // Verify interactions with compiled statement
@@ -135,7 +135,7 @@ class UpdateBuilderImplTest {
         assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyUpdateSql(
                 table.name, listOf(table.short.name, table.int.name, table.long.name,
                 table.float.name, table.double.name, table.string.name, table.blob.name,
-                table.nullable.name), null
+                table.nullableInt.name), null
         ))
 
         assertThat(statement.boundArgs).hasSize(8)

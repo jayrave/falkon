@@ -8,5 +8,4 @@ interface DataConsumer {
     fun put(double: Double?)
     fun put(string: String?)
     fun put(blob: ByteArray?)
-    fun putNull()
 }
