@@ -10,7 +10,6 @@ dependencies {
     compile falkonModules.core
     compile falkonModules.engineCommon
 
-    compile libraries.h2
     compile libraries.kotlinStdlib
 
     testCompile libraries.assertJ
