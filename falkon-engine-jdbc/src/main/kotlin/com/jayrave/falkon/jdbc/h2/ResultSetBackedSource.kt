@@ -3,7 +3,7 @@ package com.jayrave.falkon.jdbc.h2
 import com.jayrave.falkon.engine.Source
 import java.sql.ResultSet
 
-class ResultSetBackedSource(private val resultSet: ResultSet) : Source {
+internal class ResultSetBackedSource(private val resultSet: ResultSet) : Source {
 
     override val position: Int
         get() = resultSet.row
