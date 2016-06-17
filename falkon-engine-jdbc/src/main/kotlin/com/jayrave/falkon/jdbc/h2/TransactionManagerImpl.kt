@@ -25,7 +25,7 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
         connectionList.addLast(connection)
 
         // Create result reference
-        var result: R? = null
+        val result: R?
 
         // Switch off auto commit => this is a transaction
         connection.delegate.autoCommit = false
@@ -36,8 +36,9 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
             connection.delegate.commit()
 
         } catch (e: Exception) {
-            // An exception got thrown!! Rollback transaction
+            // An exception got thrown!! Rollback transaction & rethrow exception
             connection.delegate.rollback()
+            throw e
 
         } finally {
             // Reset auto commit flag, close connection & remove it from the list
@@ -52,7 +53,7 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
 
     override fun getConnectionIfInTransaction(): Connection? {
         // Return the inner most connection
-        return connectionListsForTransactions.get()?.last
+        return connectionListsForTransactions.get()?.peekLast()
     }
 
 
