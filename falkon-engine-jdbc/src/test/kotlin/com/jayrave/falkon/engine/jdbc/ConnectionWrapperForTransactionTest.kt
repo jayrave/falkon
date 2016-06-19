@@ -1,4 +1,4 @@
-package com.jayrave.falkon.jdbc.h2
+package com.jayrave.falkon.engine.jdbc
 
 import com.nhaarman.mockito_kotlin.mock
 import org.junit.Test

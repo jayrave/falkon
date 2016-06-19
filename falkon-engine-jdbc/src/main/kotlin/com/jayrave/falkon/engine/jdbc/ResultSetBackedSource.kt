@@ -1,4 +1,4 @@
-package com.jayrave.falkon.jdbc.h2
+package com.jayrave.falkon.engine.jdbc
 
 import com.jayrave.falkon.engine.Source
 import java.sql.ResultSet
