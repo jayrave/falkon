@@ -1,4 +1,4 @@
-package com.jayrave.falkon.android.sqlite
+package com.jayrave.falkon.engine.android.sqlite
 
 import android.os.Build
 import org.junit.runner.RunWith

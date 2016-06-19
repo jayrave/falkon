@@ -1,4 +1,4 @@
-package com.jayrave.falkon.android.sqlite
+package com.jayrave.falkon.engine.android.sqlite
 
 import android.database.Cursor
 import com.nhaarman.mockito_kotlin.*

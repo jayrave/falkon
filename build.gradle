@@ -58,11 +58,11 @@ allprojects {
 
 
 ext.falkonModules = [
-        androidSqlite: project(':falkon-android-sqlite'),
-        core         : project(':falkon-core'),
-        dao          : project(':falkon-dao'),
-        engineCommon : project(':falkon-engine-common'),
-        engineJdbc   : project(':falkon-engine-jdbc')
+        core               : project(':falkon-core'),
+        dao                : project(':falkon-dao'),
+        engineAndroidSqlite: project(':falkon-engine-android-sqlite'),
+        engineCommon       : project(':falkon-engine-common'),
+        engineJdbc         : project(':falkon-engine-jdbc')
 ]
 
 
