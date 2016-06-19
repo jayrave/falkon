@@ -19,7 +19,7 @@ internal class EngineForTestingBuilders private constructor(
     val compiledDeletes = ArrayList<OneShotCompiledDeleteForTest>()
     val compiledQueries = ArrayList<OneShotCompiledQueryForTest>()
 
-    override fun <R> executeInTransaction(operation: () -> R): R? {
+    override fun <R> executeInTransaction(operation: () -> R): R {
         throw UnsupportedOperationException()
     }
 

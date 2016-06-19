@@ -9,7 +9,7 @@ interface Engine {
      * All changes and queries appear to be Atomic, Consistent, Isolated, and Durable (ACID)
      * when executed inside a transaction
      */
-    fun <R> executeInTransaction(operation: () -> R): R?
+    fun <R> executeInTransaction(operation: () -> R): R
 
 
     // ---------------------------------- Build SQL from parts -------------------------------------
