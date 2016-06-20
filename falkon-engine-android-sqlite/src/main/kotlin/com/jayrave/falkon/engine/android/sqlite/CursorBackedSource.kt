@@ -7,7 +7,7 @@ import com.jayrave.falkon.engine.Source
  * [Source] indices are 1-based but [Cursor] indices are 0-based. Appropriate conversion
  * will be done
  */
-class CursorBackedSource(private val cursor: Cursor) : Source {
+internal class CursorBackedSource(private val cursor: Cursor) : Source {
 
     override val position: Int
         get() = indexFromCursorConversion(cursor.position)

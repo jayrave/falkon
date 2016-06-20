@@ -14,6 +14,7 @@ class CursorBackedSourceTest {
     fun testGetPosition() {
         whenever(cursorMock.position).thenReturn(5)
         val actualPosition = source.position
+
         val expectedPosition = 6 // Since cursor uses 0-based index
         assertThat(actualPosition).isEqualTo(expectedPosition)
         verify(cursorMock).position
@@ -23,112 +24,174 @@ class CursorBackedSourceTest {
 
     @Test
     fun testMove() {
-        source.move(5)
-        verify(cursorMock).move(eq(5))
+        whenever(cursorMock.move(eq(5))).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.move(5)
+        val invalidMoveReturnValue = source.move(5)
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        verify(cursorMock, times(2)).move(eq(5))
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testMoveToPosition() {
-        source.moveToPosition(5)
-        verify(cursorMock).moveToPosition(4) // Since cursor uses 0-based index
+        whenever(cursorMock.moveToPosition(eq(5))).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.moveToPosition(6)
+        val invalidMoveReturnValue = source.moveToPosition(6)
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        val expectedPosition = 5 // Since cursor uses 0-based index
+        verify(cursorMock, times(2)).moveToPosition(eq(expectedPosition))
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testMoveToFirst() {
-        source.moveToFirst()
-        verify(cursorMock).moveToFirst()
+        whenever(cursorMock.moveToFirst()).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.moveToFirst()
+        val invalidMoveReturnValue = source.moveToFirst()
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        verify(cursorMock, times(2)).moveToFirst()
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testMoveToLast() {
-        source.moveToLast()
-        verify(cursorMock).moveToLast()
+        whenever(cursorMock.moveToLast()).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.moveToLast()
+        val invalidMoveReturnValue = source.moveToLast()
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        verify(cursorMock, times(2)).moveToLast()
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testMoveToNext() {
-        source.moveToNext()
-        verify(cursorMock).moveToNext()
+        whenever(cursorMock.moveToNext()).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.moveToNext()
+        val invalidMoveReturnValue = source.moveToNext()
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        verify(cursorMock, times(2)).moveToNext()
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testMoveToPrevious() {
-        source.moveToPrevious()
-        verify(cursorMock).moveToPrevious()
+        whenever(cursorMock.moveToPrevious()).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.moveToPrevious()
+        val invalidMoveReturnValue = source.moveToPrevious()
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        verify(cursorMock, times(2)).moveToPrevious()
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetColumnIndex() {
-        val columnName = "test"
-        whenever(cursorMock.getColumnIndex(eq(columnName))).thenReturn(5)
-        val actualIndex = source.getColumnIndex("test")
+        whenever(cursorMock.getColumnIndex(eq("test"))).thenReturn(5)
+        val actualColumnIndex = source.getColumnIndex("test")
+
         val expectedIndex = 6 // Since cursor uses 0-based index
-        assertThat(actualIndex).isEqualTo(expectedIndex)
+        assertThat(actualColumnIndex).isEqualTo(expectedIndex)
         verify(cursorMock).getColumnIndex(eq("test"))
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetShort() {
-        source.getShort(5)
+        whenever(cursorMock.getShort(eq(4))).thenReturn(6)
+        val actualValue = source.getShort(5)
+
+        assertThat(actualValue).isEqualTo(6)
         verify(cursorMock).getShort(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetInt() {
-        source.getInt(5)
+        whenever(cursorMock.getInt(eq(4))).thenReturn(6)
+        val actualValue = source.getInt(5)
+
+        assertThat(actualValue).isEqualTo(6)
         verify(cursorMock).getInt(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetLong() {
-        source.getLong(5)
+        whenever(cursorMock.getLong(eq(4))).thenReturn(6)
+        val actualValue = source.getLong(5)
+
+        assertThat(actualValue).isEqualTo(6)
         verify(cursorMock).getLong(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetFloat() {
-        source.getFloat(5)
+        whenever(cursorMock.getFloat(eq(4))).thenReturn(6F)
+        val actualValue = source.getFloat(5)
+
+        assertThat(actualValue).isEqualTo(6F)
         verify(cursorMock).getFloat(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetDouble() {
-        source.getDouble(5)
+        whenever(cursorMock.getDouble(eq(4))).thenReturn(6.0)
+        val actualValue = source.getDouble(5)
+
+        assertThat(actualValue).isEqualTo(6.0)
         verify(cursorMock).getDouble(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetString() {
-        whenever(cursorMock.getString(any())).thenReturn("test")
-        source.getString(5)
-        verify(cursorMock).getString(eq(4)) // Since cursor uses 0-based index
+        whenever(cursorMock.getString(eq(4))).thenReturn("test")
+        val actualValue = source.getString(5)
+
+        assertThat(actualValue).isEqualTo("test")
+        verify(cursorMock).getString(eq(4))  // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testGetBlob() {
-        whenever(cursorMock.getBlob(any())).thenReturn(byteArrayOf(5))
-        source.getBlob(5)
+        whenever(cursorMock.getBlob(eq(4))).thenReturn(byteArrayOf(6))
+        val actualValue = source.getBlob(5)
+
+        assertThat(actualValue).isEqualTo(byteArrayOf(6))
         verify(cursorMock).getBlob(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 
     @Test
     fun testIsNull() {
-        source.isNull(5)
-        verify(cursorMock).isNull(4) // Since cursor uses 0-based index
+        whenever(cursorMock.isNull(eq(4))).thenReturn(true).thenReturn(false)
+        val validMoveReturnValue = source.isNull(5)
+        val invalidMoveReturnValue = source.isNull(5)
+
+        assertThat(validMoveReturnValue).isTrue()
+        assertThat(invalidMoveReturnValue).isFalse()
+
+        verify(cursorMock, times(2)).isNull(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
 }
