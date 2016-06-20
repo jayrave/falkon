@@ -5,7 +5,7 @@ import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class QueryKtTest {
+class BuildQueryFromPartsTest {
 
     private val tableName = "test"
 
@@ -150,7 +150,7 @@ class QueryKtTest {
             groupBy: Iterable<String>? = null, orderBy: Iterable<OrderInfo>? = null,
             limit: Long? = null, offset: Long? = null): String {
 
-        return buildQuerySqlFromParts(
+        return SqlBuilderFromParts.buildQuerySql(
                 tableName = tableName, distinct = distinct, columns = columns,
                 whereSections = whereSections, groupBy = groupBy, orderBy = orderBy,
                 limit = limit, offset = offset

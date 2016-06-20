@@ -3,9 +3,9 @@ package com.jayrave.falkon.engine
 /**
  * @return a SQL statement built from the parts passed in
  */
-fun buildDeleteSqlFromParts(
+internal fun buildDeleteSqlFromParts(
         tableName: String, whereSections: Iterable<WhereSection>?,
-        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER): String {
+        argPlaceholder: String): String {
 
     // Add basic delete stuff
     val deleteSql = StringBuilder(120)

@@ -9,12 +9,11 @@ import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
 
 /**
  * A SQL WHERE is built from the passed in [WhereSection]s with placeholder denoted by
- * [ARG_PLACEHOLDER].
+ * [argPlaceholder]
  *
  * @return - `null` if the iterable is empty or a WHERE clause (along with WHERE keyword)
  */
-internal fun Iterable<WhereSection>.buildWhereClause(
-        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER): String? {
+internal fun Iterable<WhereSection>.buildWhereClause(argPlaceholder: String): String? {
 
     val clause = StringBuilder()
     var isFirstSection = true

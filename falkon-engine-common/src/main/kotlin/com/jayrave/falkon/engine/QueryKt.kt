@@ -3,13 +3,11 @@ package com.jayrave.falkon.engine
 /**
  * @return a SQL statement built from the parts
  */
-fun buildQuerySqlFromParts(
+internal fun buildQuerySqlFromParts(
         tableName: String, distinct: Boolean, columns: Iterable<String>?,
         whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-        orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?,
-        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER,
-        orderByAscendingFlag: String = "ASC", orderByDescendingFlag: String = "DESC"):
-        String {
+        orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?, argPlaceholder: String,
+        orderByAscendingKey: String, orderByDescendingKey: String): String {
 
     val querySql = StringBuilder(120)
     querySql.append("SELECT")
@@ -19,7 +17,7 @@ fun buildQuerySqlFromParts(
     querySql.append(" FROM $tableName")
     querySql.addWhereIfPossible(whereSections, argPlaceholder)
     querySql.addGroupIfPossible(groupBy)
-    querySql.addOrderByIfPossible(orderBy, orderByAscendingFlag, orderByDescendingFlag)
+    querySql.addOrderByIfPossible(orderBy, orderByAscendingKey, orderByDescendingKey)
     querySql.addLimitIfPossible(limit)
     querySql.addOffsetIfPossible(offset)
 

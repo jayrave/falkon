@@ -4,9 +4,8 @@ package com.jayrave.falkon.engine
  * @return a SQL statement built from the parts passed in if at least one column name is
  * passed in else `null` is returned
  */
-fun buildInsertSqlFromParts(
-        tableName: String, columns: Iterable<String>,
-        argPlaceholder: String = DEFAULT_ARG_PLACEHOLDER): String? {
+internal fun buildInsertSqlFromParts(
+        tableName: String, columns: Iterable<String>, argPlaceholder: String): String? {
 
     // Add basic insert stuff
     val insertSql = StringBuilder(120)

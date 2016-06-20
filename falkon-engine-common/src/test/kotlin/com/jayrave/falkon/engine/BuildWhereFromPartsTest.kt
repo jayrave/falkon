@@ -7,11 +7,11 @@ import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class WhereKtTest {
+class BuildWhereFromPartsTest {
 
     @Test
     fun testEmptyWhere() {
-        val actualWhereClause = listOf<WhereSection>().buildWhereClause()
+        val actualWhereClause = listOf<WhereSection>().buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
         assertThat(actualWhereClause).isNull()
     }
 
@@ -20,7 +20,7 @@ class WhereKtTest {
     fun testEq() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.EQ, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name = ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -31,7 +31,7 @@ class WhereKtTest {
     fun testNotEq() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.NOT_EQ, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name != ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -42,7 +42,7 @@ class WhereKtTest {
     fun testGt() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.GREATER_THAN, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name > ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -53,7 +53,7 @@ class WhereKtTest {
     fun testGe() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.GREATER_THAN_OR_EQ, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name >= ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -64,7 +64,7 @@ class WhereKtTest {
     fun testLt() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.LESS_THAN, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name < ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -75,7 +75,7 @@ class WhereKtTest {
     fun testLe() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.LESS_THAN_OR_EQ, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name <= ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -84,7 +84,10 @@ class WhereKtTest {
 
     @Test
     fun testBetween() {
-        val actualWhereClause = listOf(BetweenPredicate("column_name")).buildWhereClause()
+        val actualWhereClause = listOf(
+                BetweenPredicate("column_name")
+        ).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
         val expectedWhereClause = "WHERE column_name BETWEEN ? AND ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
@@ -94,7 +97,7 @@ class WhereKtTest {
     fun testLike() {
         val actualWhereClause = listOf(OneArgPredicate(
                 OneArgPredicate.Type.LIKE, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name LIKE ?"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -105,7 +108,7 @@ class WhereKtTest {
     fun testIsNull() {
         val actualWhereClause = listOf(NoArgPredicate(
                 NoArgPredicate.Type.IS_NULL, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name IS NULL"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -116,7 +119,7 @@ class WhereKtTest {
     fun testIsNotNull() {
         val actualWhereClause = listOf(NoArgPredicate(
                 NoArgPredicate.Type.IS_NOT_NULL, "column_name"
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE column_name IS NOT NULL"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -125,7 +128,10 @@ class WhereKtTest {
 
     @Test
     fun testSimpleAnd() {
-        val actualWhereClause = listOf(SimpleConnector(SimpleConnector.Type.AND)).buildWhereClause()
+        val actualWhereClause = listOf(SimpleConnector(
+                SimpleConnector.Type.AND
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
         val expectedWhereClause = "WHERE AND"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
@@ -133,7 +139,10 @@ class WhereKtTest {
 
     @Test
     fun testSimpleOr() {
-        val actualWhereClause = listOf(SimpleConnector(SimpleConnector.Type.OR)).buildWhereClause()
+        val actualWhereClause = listOf(SimpleConnector(
+                SimpleConnector.Type.OR
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
         val expectedWhereClause = "WHERE OR"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
     }
@@ -141,13 +150,17 @@ class WhereKtTest {
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testCompoundAndWithNoPredicateThrows() {
-        listOf(CompoundConnector(CompoundConnector.Type.AND, emptyList())).buildWhereClause()
+        listOf(CompoundConnector(
+                CompoundConnector.Type.AND, emptyList()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
     }
 
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testCompoundOrWithNoPredicateThrows() {
-        listOf(CompoundConnector(CompoundConnector.Type.OR, emptyList())).buildWhereClause()
+        listOf(CompoundConnector(
+                CompoundConnector.Type.OR, emptyList()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
     }
 
 
@@ -156,7 +169,7 @@ class WhereKtTest {
         val actualWhereClause = listOf(CompoundConnector(
                 CompoundConnector.Type.AND,
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "column_name"))
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE (column_name = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -168,7 +181,7 @@ class WhereKtTest {
         val actualWhereClause = listOf(CompoundConnector(
                 CompoundConnector.Type.OR,
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "column_name"))
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE (column_name = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -183,7 +196,7 @@ class WhereKtTest {
                         OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_1"),
                         OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_2")
                 )
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE (column_name_1 = ? AND column_name_2 = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -198,7 +211,7 @@ class WhereKtTest {
                         OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_1"),
                         OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_2")
                 )
-        )).buildWhereClause()
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause = "WHERE (column_name_1 = ? OR column_name_2 = ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
@@ -235,7 +248,7 @@ class WhereKtTest {
                 NoArgPredicate(NoArgPredicate.Type.IS_NULL, "column_name_9"),
                 SimpleConnector(SimpleConnector.Type.OR),
                 NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "column_name_10")
-        ).buildWhereClause()
+        ).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
 
         val expectedWhereClause =
                 "WHERE column_name_1 = ? OR column_name_2 != ? AND column_name_3 > ? OR " +
