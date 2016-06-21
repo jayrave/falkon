@@ -8,9 +8,9 @@ import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
-import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.sql.SQLSyntaxErrorException
 
 class WhereBuilderImplTest {
 

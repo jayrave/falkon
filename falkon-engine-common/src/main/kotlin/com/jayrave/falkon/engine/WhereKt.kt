@@ -5,7 +5,7 @@ import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
-import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
+import java.sql.SQLSyntaxErrorException
 
 /**
  * A SQL WHERE is built from the passed in [WhereSection]s with placeholder denoted by

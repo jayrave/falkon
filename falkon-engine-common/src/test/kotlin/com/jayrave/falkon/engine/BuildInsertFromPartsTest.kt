@@ -1,8 +1,8 @@
 package com.jayrave.falkon.engine
 
-import com.jayrave.falkon.exceptions.SQLException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.sql.SQLSyntaxErrorException
 
 class BuildInsertFromPartsTest {
 
@@ -15,7 +15,7 @@ class BuildInsertFromPartsTest {
     }
 
 
-    @Test(expected = SQLException::class)
+    @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildInsertSqlOrThrowThrowsForEmptyColumnsIterable() {
         SqlBuilderFromParts.buildInsertSqlOrThrow("test", emptyList())
     }

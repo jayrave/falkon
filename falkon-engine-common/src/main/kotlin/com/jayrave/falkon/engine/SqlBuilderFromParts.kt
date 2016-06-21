@@ -1,6 +1,6 @@
 package com.jayrave.falkon.engine
 
-import com.jayrave.falkon.exceptions.SQLException
+import java.sql.SQLSyntaxErrorException
 
 /**
  * A convenience object to build SQL commands from the passed in parts. This object is mainly
@@ -17,7 +17,7 @@ object SqlBuilderFromParts {
 
 
     /**
-     * @throws SQLException if the passed in [columns] is empty
+     * @throws SQLSyntaxErrorException if the passed in [columns] is empty
      */
     fun buildInsertSqlOrThrow(
             tableName: String, columns: Iterable<String>,
@@ -26,7 +26,7 @@ object SqlBuilderFromParts {
         val insertSql = buildInsertSqlOrNull(tableName, columns, argPlaceholder)
         when {
             insertSql != null -> return insertSql
-            else -> throw SQLException("Trying to build INSERT without any columns")
+            else -> throw SQLSyntaxErrorException("Trying to build INSERT without any columns")
         }
     }
 
@@ -40,7 +40,7 @@ object SqlBuilderFromParts {
 
 
     /**
-     * @throws SQLException if the passed in [columns] is empty
+     * @throws SQLSyntaxErrorException if the passed in [columns] is empty
      */
     fun buildUpdateSqlOrThrow(
             tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
@@ -49,7 +49,7 @@ object SqlBuilderFromParts {
         val updateSql = buildUpdateSqlOrNull(tableName, columns, whereSections, argPlaceholder)
         when {
             updateSql != null -> return updateSql
-            else -> throw SQLException("Trying to build UPDATE without any columns")
+            else -> throw SQLSyntaxErrorException("Trying to build UPDATE without any columns")
         }
     }
 

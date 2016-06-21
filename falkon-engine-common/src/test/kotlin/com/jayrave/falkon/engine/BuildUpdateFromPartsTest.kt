@@ -2,9 +2,9 @@ package com.jayrave.falkon.engine
 
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
-import com.jayrave.falkon.exceptions.SQLException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.sql.SQLSyntaxErrorException
 
 class BuildUpdateFromPartsTest {
 
@@ -17,7 +17,7 @@ class BuildUpdateFromPartsTest {
     }
 
 
-    @Test(expected = SQLException::class)
+    @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildUpdateSqlOrThrowThrowsForEmptyColumnsIterable() {
         SqlBuilderFromParts.buildUpdateSqlOrThrow("test", emptyList(), null)
     }

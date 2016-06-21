@@ -6,7 +6,7 @@ import com.jayrave.falkon.engine.WhereSection
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
-import com.jayrave.falkon.exceptions.SQLSyntaxErrorException
+import java.sql.SQLSyntaxErrorException
 import java.util.*
 
 /**
