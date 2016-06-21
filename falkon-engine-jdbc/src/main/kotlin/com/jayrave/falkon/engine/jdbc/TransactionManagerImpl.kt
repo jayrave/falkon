@@ -17,7 +17,7 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
             ThreadLocal<LinkedList<ConnectionWrapperForTransaction>?>()
 
 
-    override fun <R> executeInTransaction(operation: () -> R): R? {
+    override fun <R> executeInTransaction(operation: () -> R): R {
         val connectionList = getConnectionList()
 
         // Create new connection & add to list
@@ -25,7 +25,7 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
         connectionList.addLast(connection)
 
         // Create result reference
-        val result: R?
+        val result: R
 
         // Switch off auto commit => this is a transaction
         connection.delegate.autoCommit = false

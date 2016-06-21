@@ -6,11 +6,11 @@ import org.junit.Test
 import java.sql.Connection
 import javax.sql.DataSource
 
-class ConnectionManagerTest {
+class ConnectionManagerImplTest {
 
     private val dataSourceMock = mock<DataSource>()
     private val transactionManagerMock = mock<TransactionManager>()
-    private val connectionManager = ConnectionManager(dataSourceMock, transactionManagerMock)
+    private val connectionManager = ConnectionManagerImpl(dataSourceMock, transactionManagerMock)
 
     @Test
     fun testAcquireConnectionReturnsNonNullConnectionFromTransactionManager() {
