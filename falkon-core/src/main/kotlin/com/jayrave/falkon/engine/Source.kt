@@ -114,4 +114,15 @@ interface Source {
      * [columnIndex] 1-based index to check
      */
     fun isNull(columnIndex: Int): Boolean
+
+    /**
+     * Releases all database resources held by this source. This is a no-op on
+     * already closed sources
+     */
+    fun close()
+
+    /**
+     * @return whether this source is closed or not
+     */
+    fun isClosed(): Boolean
 }

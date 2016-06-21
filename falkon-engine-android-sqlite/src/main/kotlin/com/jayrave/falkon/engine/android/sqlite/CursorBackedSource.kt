@@ -72,6 +72,14 @@ internal class CursorBackedSource(private val cursor: Cursor) : Source {
         return cursor.isNull(indexToCursorConversion(columnIndex))
     }
 
+    override fun close() {
+        cursor.close()
+    }
+
+    override fun isClosed(): Boolean {
+        return cursor.isClosed
+    }
+
     private fun indexFromCursorConversion(index: Int): Int {
         return index + 1
     }

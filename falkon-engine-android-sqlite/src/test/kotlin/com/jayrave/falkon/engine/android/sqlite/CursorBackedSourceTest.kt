@@ -194,4 +194,24 @@ class CursorBackedSourceTest {
         verify(cursorMock, times(2)).isNull(eq(4)) // Since cursor uses 0-based index
         verifyNoMoreInteractions(cursorMock)
     }
+
+    @Test
+    fun testClose() {
+        source.close()
+        verify(cursorMock).close()
+        verifyNoMoreInteractions(cursorMock)
+    }
+
+    @Test
+    fun testIsClosed() {
+        whenever(cursorMock.isClosed).thenReturn(false).thenReturn(true)
+        val firstIsClosedReturnValue = source.isClosed()
+        val secondIsClosedReturnValue = source.isClosed()
+
+        assertThat(firstIsClosedReturnValue).isFalse()
+        assertThat(secondIsClosedReturnValue).isTrue()
+
+        verify(cursorMock, times(2)).isClosed
+        verifyNoMoreInteractions(cursorMock)
+    }
 }

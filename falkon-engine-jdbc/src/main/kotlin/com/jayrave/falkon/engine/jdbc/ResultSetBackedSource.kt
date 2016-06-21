@@ -31,4 +31,7 @@ internal class ResultSetBackedSource(private val resultSet: ResultSet) : Source 
         resultSet.getObject(columnIndex)
         return resultSet.wasNull()
     }
+
+    override fun close() = resultSet.close()
+    override fun isClosed() = resultSet.isClosed
 }

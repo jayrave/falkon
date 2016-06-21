@@ -200,4 +200,24 @@ class ResultSetBackedSourceTest {
         verify(resultSetMock, times(2)).wasNull()
         verifyNoMoreInteractions(resultSetMock)
     }
+
+    @Test
+    fun testClose() {
+        source.close()
+        verify(resultSetMock).close()
+        verifyNoMoreInteractions(resultSetMock)
+    }
+
+    @Test
+    fun testIsClosed() {
+        whenever(resultSetMock.isClosed).thenReturn(false).thenReturn(true)
+        val firstIsClosedReturnValue = source.isClosed()
+        val secondIsClosedReturnValue = source.isClosed()
+
+        assertThat(firstIsClosedReturnValue).isFalse()
+        assertThat(secondIsClosedReturnValue).isTrue()
+
+        verify(resultSetMock, times(2)).isClosed
+        verifyNoMoreInteractions(resultSetMock)
+    }
 }

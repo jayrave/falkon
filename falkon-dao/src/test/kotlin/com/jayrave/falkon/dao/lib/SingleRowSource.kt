@@ -9,6 +9,8 @@ import java.util.*
 class SingleRowSource(map: Map<String, Any?>) : Source {
 
     override val position: Int = 1 // position is 1-based
+
+    private var isClosed: Boolean = false
     private val values: List<Any?>
     private val columnNameToIndexMap: Map<String, Int>
     init  {
@@ -35,56 +37,23 @@ class SingleRowSource(map: Map<String, Any?>) : Source {
         }
     }
 
-    override fun moveToFirst(): Boolean {
-        return true
-    }
+    override fun moveToFirst() = true
+    override fun moveToLast() = true
+    override fun moveToNext() = false
+    override fun moveToPrevious() = false
+    override fun getColumnIndex(columnName: String) = columnNameToIndexMap[columnName]!!
+    override fun getShort(columnIndex: Int) = getValue(columnIndex) as Short
+    override fun getInt(columnIndex: Int) = getValue(columnIndex) as Int
+    override fun getLong(columnIndex: Int) = getValue(columnIndex) as Long
+    override fun getFloat(columnIndex: Int) = getValue(columnIndex) as Float
+    override fun getDouble(columnIndex: Int) = getValue(columnIndex) as Double
+    override fun getString(columnIndex: Int) = getValue(columnIndex) as String
+    override fun getBlob(columnIndex: Int) = getValue(columnIndex) as ByteArray
+    override fun isNull(columnIndex: Int) = getValue(columnIndex) == null
 
-    override fun moveToLast(): Boolean {
-        return true
-    }
-
-    override fun moveToNext(): Boolean {
-        return false
-    }
-
-    override fun moveToPrevious(): Boolean {
-        return false
-    }
-
-    override fun getColumnIndex(columnName: String): Int {
-        return columnNameToIndexMap[columnName]!!
-    }
-
-    override fun getShort(columnIndex: Int): Short {
-        return getValue(columnIndex) as Short
-    }
-
-    override fun getInt(columnIndex: Int): Int {
-        return getValue(columnIndex) as Int
-    }
-
-    override fun getLong(columnIndex: Int): Long {
-        return getValue(columnIndex) as Long
-    }
-
-    override fun getFloat(columnIndex: Int): Float {
-        return getValue(columnIndex) as Float
-    }
-
-    override fun getDouble(columnIndex: Int): Double {
-        return getValue(columnIndex) as Double
-    }
-
-    override fun getString(columnIndex: Int): String {
-        return getValue(columnIndex) as String
-    }
-
-    override fun getBlob(columnIndex: Int): ByteArray {
-        return getValue(columnIndex) as ByteArray
-    }
-
-    override fun isNull(columnIndex: Int): Boolean {
-        return getValue(columnIndex) == null
+    override fun isClosed() = isClosed
+    override fun close() {
+        isClosed = true
     }
 
     private fun getValue(columnIndex: Int): Any? {
