@@ -1,6 +1,8 @@
 package com.jayrave.falkon.engine.jdbc
 
-import org.assertj.core.api.Assertions.assertThat
+import com.jayrave.falkon.engine.Source
+import com.jayrave.falkon.engine.test.NativeQueryExecutor
+import com.jayrave.falkon.engine.test.NativeSqlExecutor
 import org.h2.jdbcx.JdbcConnectionPool
 import org.junit.After
 import org.junit.Before
@@ -10,6 +12,21 @@ abstract class BaseClassForIntegrationTests {
 
     protected lateinit var dataSource: DataSource
     protected lateinit var engine: JdbcEngine
+
+    protected val sqlExecutorUsingDataSource = object : NativeSqlExecutor {
+        override fun execute(sql: String) {
+            dataSource.connection.prepareStatement(sql).execute()
+        }
+    }
+
+    protected val queryExecutorUsingDataSource = object : NativeQueryExecutor {
+        override fun execute(query: String): Source {
+            return ResultSetBackedSource(
+                    dataSource.connection.prepareStatement(query).executeQuery()
+            )
+        }
+    }
+
 
     @Before
     fun setUp() {
@@ -27,28 +44,5 @@ abstract class BaseClassForIntegrationTests {
         // By default h2 closes the database when all existing connections to it are closed.
         // This makes sure that we have a clean slate for every test
         dataSource.connection.prepareStatement("SHUTDOWN").execute()
-    }
-
-
-    protected fun executeStatementUsingDataSource(statement: String) {
-        dataSource.connection.prepareStatement(statement).execute()
-    }
-
-
-    protected fun countNumberOfRowsUsingDataSource(tableName: String): Int {
-        val resultSet = dataSource
-                .connection
-                .prepareStatement("SELECT COUNT(*) AS count FROM $tableName")
-                .executeQuery()
-
-        assertThat(resultSet.first()).isTrue()
-        val count = resultSet.getInt("count")
-        assertThat(resultSet.next()).isFalse()
-        return count
-    }
-
-
-    protected fun assertCountUsingDataSource(tableName: String, expectedCount: Int) {
-        assertThat(countNumberOfRowsUsingDataSource(tableName)).isEqualTo(expectedCount)
     }
 }
