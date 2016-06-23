@@ -6,8 +6,10 @@ package com.jayrave.falkon.engine
 interface Engine {
 
     /**
-     * All changes and queries appear to be Atomic, Consistent, Isolated, and Durable (ACID)
-     * when executed inside a transaction
+     * All changes and queries when executed inside a transaction will be ACID (Atomic,
+     * Consistent, Isolated, and Durable). Behaviour of database resources passed passed
+     * outside of transaction is implementation dependent. Examples of such resources
+     * are [CompiledStatement], [Source] etc.
      */
     fun <R> executeInTransaction(operation: () -> R): R
 
