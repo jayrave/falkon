@@ -28,6 +28,7 @@ dependencies {
 
     compile libraries.kotlinStdlib
 
+    testCompile falkonModules.engineTestCommon
     testCompile libraries.assertJ
     testCompile libraries.jUnit
     testCompile libraries.mockito
