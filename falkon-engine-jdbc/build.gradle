@@ -13,6 +13,7 @@ dependencies {
     compile libraries.kotlinStdlib
 
     testCompile libraries.assertJ
+    testCompile libraries.h2
     testCompile libraries.jUnit
     testCompile libraries.mockito
     testCompile libraries.mockitoKotlin
