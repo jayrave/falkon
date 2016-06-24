@@ -1,7 +1,7 @@
 package com.jayrave.falkon
 
 import com.jayrave.falkon.dao.Dao
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.testLib.defaultTableConfiguration
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -85,19 +85,8 @@ class BaseTableTest {
 
 
 
-    private class TableConfigurationForTest(
-            override val engine: Engine = mock(),
-            override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
-            TableConfiguration {
-
-        override fun <R> getConverterForNullableType(clazz: Class<R>) = mock<Converter<R>>()
-        override fun <R : Any> getConverterForNonNullType(clazz: Class<R>) = mock<Converter<R>>()
-    }
-
-
-
     private abstract class TableForTest(
-            configuration: TableConfiguration = TableConfigurationForTest()) :
+            configuration: TableConfiguration = defaultTableConfiguration()) :
             BaseTable<ModelForTest, Int, Dao<ModelForTest, Int>>("test", configuration) {
 
         override val dao: Dao<ModelForTest, Int> = mock()

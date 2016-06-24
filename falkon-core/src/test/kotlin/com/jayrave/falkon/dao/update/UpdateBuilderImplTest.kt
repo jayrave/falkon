@@ -2,9 +2,9 @@ package com.jayrave.falkon.dao.update
 
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledUpdateForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
+import com.jayrave.falkon.testLib.TableForTest
+import com.jayrave.falkon.testLib.defaultTableConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

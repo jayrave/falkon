@@ -1,13 +1,13 @@
 package com.jayrave.falkon.dao.where
 
-import com.jayrave.falkon.dao.testLib.ModelForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.buildWhereClauseWithPlaceholders
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.engine.WhereSection.Predicate.*
+import com.jayrave.falkon.testLib.ModelForTest
+import com.jayrave.falkon.testLib.TableForTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.sql.SQLSyntaxErrorException

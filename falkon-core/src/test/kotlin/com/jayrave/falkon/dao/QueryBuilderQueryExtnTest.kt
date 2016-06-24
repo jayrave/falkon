@@ -3,9 +3,9 @@ package com.jayrave.falkon.dao
 import com.jayrave.falkon.dao.query.QueryBuilderImpl
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Source
+import com.jayrave.falkon.testLib.TableForTest
+import com.jayrave.falkon.testLib.defaultTableConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test

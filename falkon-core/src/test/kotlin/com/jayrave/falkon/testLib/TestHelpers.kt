@@ -1,12 +1,8 @@
-package com.jayrave.falkon.dao.testLib
+package com.jayrave.falkon.testLib
 
 import com.jayrave.falkon.*
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.WhereSection
-import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
-import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
-import com.jayrave.falkon.engine.WhereSection.Predicate.*
 import com.nhaarman.mockito_kotlin.mock
 
 internal class ModelForTest(
@@ -56,35 +52,4 @@ internal fun defaultTableConfiguration(engine: Engine = mock()): TableConfigurat
     val configuration = TableConfigurationImpl(engine)
     configuration.registerDefaultConverters()
     return configuration
-}
-
-
-/**
- * Stringifies the passed in list of [WhereSection]s. Mostly used for assertions as
- * [WhereSection] doesn't override #toString
- */
-internal fun buildWhereClauseWithPlaceholders(whereSections: Iterable<WhereSection>?): String? {
-    var firstSection = true
-    val sb = whereSections?.foldIndexed(StringBuilder()) { index, sb, section ->
-        when {
-            firstSection -> firstSection = false
-            else -> sb.append(", ")
-        }
-
-        when (section) {
-            is NoArgPredicate -> sb.append("${section.type} ${section.columnName}")
-            is OneArgPredicate -> sb.append("${section.type} ${section.columnName}")
-            is BetweenPredicate -> sb.append("BETWEEN ${section.columnName}")
-            is SimpleConnector -> sb.append("${section.type}")
-            is CompoundConnector -> sb.append(
-                    "${section.type} ${buildWhereClauseWithPlaceholders(section.sections)}"
-            )
-
-            else -> throw IllegalArgumentException("Don't know to handle: $section")
-        }
-
-        sb
-    }
-
-    return sb?.toString()
 }
