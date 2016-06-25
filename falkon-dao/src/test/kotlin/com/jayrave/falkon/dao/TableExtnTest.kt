@@ -1,14 +1,18 @@
 package com.jayrave.falkon.dao
 
+import com.jayrave.falkon.dao.testLib.ModelForTest
+import com.jayrave.falkon.dao.testLib.TableForTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.util.*
 
 class TableExtnTest {
 
     @Test
     fun testExtractIdFrom() {
-        val model = ModelForTest(id = 42)
+        val inputId = UUID.randomUUID()
+        val model = ModelForTest(id = inputId)
         val actualValue = TableForTest().extractIdFrom(model)
-        assertThat(actualValue).isEqualTo(42)
+        assertThat(actualValue).isEqualTo(inputId)
     }
 }
