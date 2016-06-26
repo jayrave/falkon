@@ -1,7 +1,6 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.engine.executeAndClose
+import com.jayrave.falkon.engine.CompiledStatement
 
 // ------------------------------------------ Insert -----------------------------------------------
 
@@ -9,7 +8,7 @@ import com.jayrave.falkon.engine.executeAndClose
  * @return `true` if the insertion was successful; `false` otherwise
  */
 fun <T : Any> com.jayrave.falkon.dao.insert.AdderOrEnder<T>.insert(): Boolean {
-    return build().executeAndClose() == 1
+    return build().safeCloseAfterExecution() == 1
 }
 
 // ------------------------------------------ Insert -----------------------------------------------
@@ -21,14 +20,14 @@ fun <T : Any> com.jayrave.falkon.dao.insert.AdderOrEnder<T>.insert(): Boolean {
  * @return number of rows affected by this update operation
  */
 fun <T : Any> com.jayrave.falkon.dao.update.AdderOrEnder<T>.update(): Int {
-    return build().executeAndClose()
+    return build().safeCloseAfterExecution()
 }
 
 /**
  * @return number of rows affected by this update operation
  */
 fun <T : Any> com.jayrave.falkon.dao.update.PredicateAdderOrEnder<T>.update(): Int {
-    return build().executeAndClose()
+    return build().safeCloseAfterExecution()
 }
 
 // ------------------------------------------ Update -----------------------------------------------
@@ -40,34 +39,31 @@ fun <T : Any> com.jayrave.falkon.dao.update.PredicateAdderOrEnder<T>.update(): I
  * @return number of rows affected by this delete operation
  */
 fun <T : Any> com.jayrave.falkon.dao.delete.DeleteBuilder<T>.delete(): Int {
-    return build().executeAndClose()
+    return build().safeCloseAfterExecution()
 }
 
 /**
  * @return number of rows affected by this delete operation
  */
 fun <T : Any> com.jayrave.falkon.dao.delete.AdderOrEnder<T>.delete(): Int {
-    return build().executeAndClose()
+    return build().safeCloseAfterExecution()
 }
 
 // ------------------------------------------ Delete -----------------------------------------------
 
 
-// ------------------------------------------ Query ------------------------------------------------
+// A #query convenience function is not included here as it doesn't make sense to. Source that is
+// returned from a CompiledQuery could end up not working if the CompiledQuery itself is closed
+
 
 /**
- * @return [Source] that holds the result set satisfying the given conditions
+ * Executes the statement, closes it (no matter if exception is thrown or not) and
+ * returns the result of execution
  */
-fun <T : Any, Z : com.jayrave.falkon.dao.query.AdderOrEnder<T, Z>>
-        com.jayrave.falkon.dao.query.AdderOrEnder<T, Z>.query(): Source {
-    return build().executeAndClose()
+fun <R> CompiledStatement<R>.safeCloseAfterExecution(): R {
+    try {
+        return execute()
+    } finally {
+        close()
+    }
 }
-
-/**
- * @return [Source] that holds the result set satisfying the given conditions
- */
-fun <T : Any> com.jayrave.falkon.dao.query.PredicateAdderOrEnder<T>.query(): Source {
-    return build().executeAndClose()
-}
-
-// ------------------------------------------ Query ------------------------------------------------

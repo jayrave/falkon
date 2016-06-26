@@ -37,15 +37,3 @@ fun <CS: CompiledStatement<R>, R> CS.bindAll(values: Iterable<Any>?, startIndex:
 
     return this
 }
-
-
-/**
- * Executes the statement, closes it and returns the result of execution
- */
-fun <R> CompiledStatement<R>.executeAndClose(): R {
-    try {
-        return execute()
-    } finally {
-        close()
-    }
-}
