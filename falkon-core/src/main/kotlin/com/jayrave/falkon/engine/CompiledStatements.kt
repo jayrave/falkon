@@ -7,7 +7,7 @@ package com.jayrave.falkon.engine
  *      - Performance. Could be compiled once and used multiple times
  *      - Prevent SQL injection as parameters are bound and not inline
  */
-interface CompiledStatement<R> {
+interface CompiledStatement<R> : AutoCloseable {
 
     /**
      * The SQL string this [CompiledStatement] represents
@@ -72,7 +72,7 @@ interface CompiledStatement<R> {
      * Releases database resources immediately. Calling this method on a already
      * closed statement has no effect
      */
-    fun close()
+    override fun close()
 
     /**
      * Clears all existing bindings

@@ -5,7 +5,7 @@ package com.jayrave.falkon.engine
  * [Source] implementations are not required to be synchronized so code using a Source from
  * multiple threads should perform its own synchronization
  */
-interface Source {
+interface Source : AutoCloseable {
 
     /**
      * Returns the current position the source is at in the row set. The value is 1-based.
@@ -119,7 +119,7 @@ interface Source {
      * Releases all database resources held by this source. This is a no-op on
      * already closed sources
      */
-    fun close()
+    override fun close()
 
     /**
      * @return whether this source is closed or not
