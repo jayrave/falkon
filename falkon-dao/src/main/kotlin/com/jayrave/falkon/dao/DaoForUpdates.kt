@@ -25,7 +25,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(vararg ts: T): Int {
  * @return number of rows updated by this operation
  */
 fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
-    var numberOfRowsAffected = 0
+    var numberOfRowsUpdated = 0
     val engine = table.configuration.engine
     val orderedNonIdColumns = OrderedColumns.forNonIdColumnsOf(table)
 
@@ -49,7 +49,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
                         }
                     }
 
-                    numberOfRowsAffected += compiledUpdate.execute()
+                    numberOfRowsUpdated += compiledUpdate.execute()
                 }
             } finally {
                 // No matter what happens, CompiledUpdate must be closed
@@ -59,7 +59,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
         }
     }
 
-    return numberOfRowsAffected
+    return numberOfRowsUpdated
 }
 
 
@@ -67,7 +67,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
  * @param item Item to build [CompiledUpdate] for
  * @param orderedNonIdColumns the list of ordered, non-id, non empty columns
  *
- * @return [CompiledUpdate] if there is at least one column other than the ID column else null
+ * @return [CompiledUpdate] corresponding to the passed in [item]
  * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
  */
 private fun <T: Any, ID: Any> buildCompiledUpdate(

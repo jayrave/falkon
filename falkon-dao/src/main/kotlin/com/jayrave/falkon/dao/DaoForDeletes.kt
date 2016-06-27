@@ -57,7 +57,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.deleteById(ids: Iterable<ID>): Int {
 private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
         items: Iterable<ITEM>, idExtractor: (ITEM) -> ID): Int {
     
-    var numberOfRowsAffected = 0
+    var numberOfRowsDeleted = 0
     var compiledDelete: CompiledDelete? = null
 
     try {
@@ -78,7 +78,7 @@ private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
                     }
                 }
 
-                numberOfRowsAffected += compiledDelete!!.execute()
+                numberOfRowsDeleted += compiledDelete!!.execute()
             }
         }
 
@@ -88,5 +88,5 @@ private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
         compiledDelete?.close()
     }
 
-    return numberOfRowsAffected
+    return numberOfRowsDeleted
 }
