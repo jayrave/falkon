@@ -1,12 +1,12 @@
 package com.jayrave.falkon.dao
 
+import com.jayrave.falkon.dao.testLib.EngineForTestingDaoExtn
 import com.jayrave.falkon.dao.testLib.ExceptionForTesting
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.CompiledQuery
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Source
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
@@ -57,12 +57,16 @@ class DaoForQueriesExtnDbResourcesClosureTest {
             operation: (TableForTest) -> Any?) {
 
         val sourceForTest = SourceForTest.buildEmptySource()
-        val compiledQueryMock = buildSuccessfullyExecutingCompiledQuery(sourceForTest)
-        operation.invoke(buildTableForTestWithMockEngine(compiledQueryMock))
+        val engine = buildEngineForTestingDaoExtn(
+                buildSuccessfullyExecutingCompiledQuery(sourceForTest)
+        )
+
+        operation.invoke(buildTableForTest(engine))
 
         // Verify source & compiled query closure
         assertThat(sourceForTest.isClosed()).isTrue()
-        verify(compiledQueryMock).close()
+        assertThat(engine.compiledQueries).hasSize(1)
+        verify(engine.compiledQueries.first()).close()
     }
 
     private fun testSourceAndCompiledQueryAreClosedEventOnSourceException(
@@ -70,10 +74,12 @@ class DaoForQueriesExtnDbResourcesClosureTest {
 
         var exceptionCaught = false
         val sourceForTest = SourceForTest.buildSourceThatThrowsExceptionOnTryingToMove()
-        val compiledQueryMock = buildSuccessfullyExecutingCompiledQuery(sourceForTest)
+        val engine = buildEngineForTestingDaoExtn(
+                buildSuccessfullyExecutingCompiledQuery(sourceForTest)
+        )
 
         try {
-            operation.invoke(buildTableForTestWithMockEngine(compiledQueryMock))
+            operation.invoke(buildTableForTest(engine))
         } catch (e: ExceptionForTesting) {
             exceptionCaught = true
         }
@@ -85,17 +91,18 @@ class DaoForQueriesExtnDbResourcesClosureTest {
         // Verify exception was thrown and source & compiled query were closed
         assertThat(exceptionCaught).isTrue()
         assertThat(sourceForTest.isClosed()).isTrue()
-        verify(compiledQueryMock).close()
+        assertThat(engine.compiledQueries).hasSize(1)
+        verify(engine.compiledQueries.first()).close()
     }
 
     private fun testCompiledQueryIsClosedEventOnCompiledQueryException(
             operation: (TableForTest) -> Any?) {
 
         var exceptionCaught = false
-        val compiledQueryMock = buildCompiledQueryThatThrowsOnExecuting()
+        val engine = buildEngineForTestingDaoExtn(buildCompiledQueryThatThrowsOnExecuting())
 
         try {
-            operation.invoke(buildTableForTestWithMockEngine(compiledQueryMock))
+            operation.invoke(buildTableForTest(engine))
         } catch (e: ExceptionForTesting) {
             exceptionCaught = true
         }
@@ -106,7 +113,8 @@ class DaoForQueriesExtnDbResourcesClosureTest {
 
         // Verify exception was thrown and compiled query was closed
         assertThat(exceptionCaught).isTrue()
-        verify(compiledQueryMock).close()
+        assertThat(engine.compiledQueries).hasSize(1)
+        verify(engine.compiledQueries.first()).close()
     }
 
 
@@ -152,6 +160,7 @@ class DaoForQueriesExtnDbResourcesClosureTest {
 
 
     companion object {
+
         private fun buildSuccessfullyExecutingCompiledQuery(source: Source): CompiledQuery {
             val compiledQueryMock = mock<CompiledQuery>()
             whenever(compiledQueryMock.execute()).thenAnswer { source }
@@ -166,13 +175,17 @@ class DaoForQueriesExtnDbResourcesClosureTest {
         }
 
 
-        private fun buildTableForTestWithMockEngine(compiledQuery: CompiledQuery): TableForTest {
-            // Mock engine to return the required CompiledQuery
-            val engineMock = mock<Engine>()
-            whenever(engineMock.compileQuery(any())).thenReturn(compiledQuery)
+        private fun buildEngineForTestingDaoExtn(compiledQuery: CompiledQuery):
+                EngineForTestingDaoExtn {
 
-            val configuration = defaultTableConfiguration(engineMock)
-            return TableForTest(configuration)
+            return EngineForTestingDaoExtn.createWithMockStatements(
+                    queryProvider = { compiledQuery }
+            )
+        }
+
+
+        private fun buildTableForTest(engine: Engine): TableForTest {
+            return TableForTest(defaultTableConfiguration(engine))
         }
     }
 }
