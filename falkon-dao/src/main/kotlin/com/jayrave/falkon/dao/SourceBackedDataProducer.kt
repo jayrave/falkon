@@ -8,7 +8,7 @@ import com.jayrave.falkon.exceptions.DataProducerException
  * A [DataProducer] that gets the required value from the underlying [Source]. Failing to call
  * [setColumnIndex] before every #get/is*() call will result in [DataProducerException]
  */
-class SourceBackedDataProducer(val source: Source) : DataProducer {
+internal class SourceBackedDataProducer(val source: Source) : DataProducer {
 
     private var columnIndex: Int = INVALID_COLUMN_INDEX
 

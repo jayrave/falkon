@@ -12,7 +12,7 @@ import java.util.*
  * @param predicate to perform filtering on the passed in collection. Only elements for which
  * the predicate returns true are added
  */
-class OrderedColumns<T : Any> private constructor(
+internal class OrderedColumns<T : Any> private constructor(
         collection: Collection<Column<T, *>>, predicate: (Column<T, *>) -> Boolean) :
         List<Column<T, *>> {
 
