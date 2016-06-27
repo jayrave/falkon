@@ -2,6 +2,7 @@ package com.jayrave.falkon
 
 import com.jayrave.falkon.dao.Dao
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
@@ -13,7 +14,9 @@ abstract class BaseTable<T : Any, ID : Any, D : Dao<T, ID>>(
         override val name: String, override val configuration: TableConfiguration) :
         Table<T, ID, D> {
 
-    override final val allColumns: Set<Column<T, *>> = HashSet()
+    override final val allColumns: Set<Column<T, *>> = Collections.newSetFromMap(
+            ConcurrentHashMap()
+    )
 
 
     inline fun <reified C> col(
