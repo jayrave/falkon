@@ -156,6 +156,18 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
+        internal fun assertAbsenceOf(table: TableForTest, vararg models: ModelForTest) {
+            models.forEach {
+                val compiledQuery = table.dao.queryBuilder().where().eq(table.id, it.id).build()
+                val source = compiledQuery.execute()
+                assertThat(source.moveToNext()).isFalse()
+
+                source.close()
+                compiledQuery.close()
+            }
+        }
+
+
         internal fun assertCurrentRowCorrespondsTo(
                 source: Source, model: ModelForTest, table: TableForTest) {
 

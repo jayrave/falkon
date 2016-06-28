@@ -60,18 +60,8 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
         val nonExistingModel = buildModelForTest(1)
         val numberOfRowsUpdated = table.dao.update(nonExistingModel)
 
-        val compiledQuery = table.dao.queryBuilder()
-                .where()
-                .eq(table.id, nonExistingModel.id)
-                .build()
-
-        val source = compiledQuery.execute()
-
-        assertThat(source.moveToNext()).isFalse()
+        assertAbsenceOf(table, nonExistingModel)
         assertThat(numberOfRowsUpdated).isEqualTo(0)
         assertThat(getNumberOfModelsInTableForTest(table)).isEqualTo(8)
-
-        source.close()
-        compiledQuery.close()
     }
 }
