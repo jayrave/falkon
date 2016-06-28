@@ -4,6 +4,7 @@ import com.jayrave.falkon.Column
 import com.jayrave.falkon.dao.testLib.ModelForTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.sql.SQLException
 
 class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
 
@@ -33,15 +34,36 @@ class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
     }
 
 
+    @Test
+    fun testInsertionThrowsIfModelAlreadyExists() {
+        val modelForTest = buildModelForTest(5)
+        table.dao.insert(modelForTest)
+
+        var exceptionCaught = false
+        try {
+            table.dao.insert(modelForTest)
+        } catch (e: SQLException) {
+            exceptionCaught = true
+        }
+
+        // Second insert must have thrown
+        assertThat(exceptionCaught).isTrue()
+    }
+
+
     private fun assertPresenceOfOnly(
             vararg models: ModelForTest, orderedBy: Column<ModelForTest, *> = table.short) {
 
-        val source = table.dao.queryBuilder().orderBy(orderedBy, true).build().execute()
+        val compiledQuery = table.dao.queryBuilder().orderBy(orderedBy, true).build()
+        val source = compiledQuery.execute()
+
         models.forEach {
             assertThat(source.moveToNext()).isTrue()
             assertCurrentRowCorrespondsTo(source, it, table)
         }
 
         assertThat(source.moveToNext()).isFalse()
+        source.close()
+        compiledQuery.close()
     }
 }

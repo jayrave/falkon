@@ -26,10 +26,10 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
             for (item in ts) {
                 compiledInsert = when (compiledInsert) {
 
-                // First item. Build CompiledInsert
+                    // First item. Build CompiledInsert
                     null -> buildCompiledInsert(item, orderedColumns, insertBuilder())
 
-                // Not the first item. Clear bindings & rebind all columns
+                    // Not the first item. Clear bindings & rebind all columns
                     else -> {
                         compiledInsert.clearBindings() // Not required, but being defensive
                         bindAllColumns(item, orderedColumns, compiledInsert)
