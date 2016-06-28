@@ -16,11 +16,10 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(vararg ts: T) {
 
 
 fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
-    val engine = table.configuration.engine
     val orderedColumns = OrderedColumns.forAllColumnsOf(table)
-
     throwIfOrderedColumnsIsEmpty(orderedColumns)
-    engine.executeInTransaction {
+
+    table.configuration.engine.executeInTransaction {
         var compiledInsert: CompiledInsert? = null
         try {
             for (item in ts) {

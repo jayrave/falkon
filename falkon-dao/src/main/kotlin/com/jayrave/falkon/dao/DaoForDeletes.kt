@@ -60,8 +60,8 @@ private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
     var numberOfRowsDeleted = 0
     var compiledDelete: CompiledDelete? = null
 
-    try {
-        table.configuration.engine.executeInTransaction {
+    table.configuration.engine.executeInTransaction {
+        try {
             items.forEach {
                 compiledDelete = when (compiledDelete) {
 
@@ -80,12 +80,12 @@ private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
 
                 numberOfRowsDeleted += compiledDelete!!.execute()
             }
-        }
 
-    }  finally {
-        // No matter what happens, CompiledDelete must be closed
-        // to prevent resource leakage
-        compiledDelete?.close()
+        } finally {
+            // No matter what happens, CompiledDelete must be closed
+            // to prevent resource leakage
+            compiledDelete?.close()
+        }
     }
 
     return numberOfRowsDeleted

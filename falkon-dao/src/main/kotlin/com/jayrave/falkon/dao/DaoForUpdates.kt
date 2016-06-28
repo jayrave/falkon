@@ -27,11 +27,10 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(vararg ts: T): Int {
  */
 fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
     var numberOfRowsUpdated = 0
-    val engine = table.configuration.engine
     val orderedNonIdColumns = OrderedColumns.forNonIdColumnsOf(table)
 
     if (orderedNonIdColumns.isNotEmpty()) {
-        engine.executeInTransaction {
+        table.configuration.engine.executeInTransaction {
             var compiledUpdate: CompiledUpdate? = null
             try {
                 for (item in ts) {
