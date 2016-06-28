@@ -4,6 +4,7 @@ import com.jayrave.falkon.Column
 import com.jayrave.falkon.dao.update.AdderOrEnder
 import com.jayrave.falkon.dao.update.UpdateBuilder
 import com.jayrave.falkon.engine.CompiledUpdate
+import com.jayrave.falkon.engine.bind
 
 /**
  * @return number of rows updated by this operation
@@ -41,10 +42,14 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
                                 item, table.idColumn, orderedNonIdColumns, updateBuilder()
                         )
 
-                        // Not the first item. Clear bindings & rebind required columns
+                        // Not the first item. Clear bindings, rebind required columns & set id
                         else -> {
-                            compiledUpdate.clearBindings() // Not required, but being defensive
+                            compiledUpdate.clearBindings()
                             bindAllNonIdColumns(item, orderedNonIdColumns, compiledUpdate)
+                            compiledUpdate.bind(
+                                    orderedNonIdColumns.size + 1, table.extractIdFrom(item)
+                            )
+
                             compiledUpdate
                         }
                     }

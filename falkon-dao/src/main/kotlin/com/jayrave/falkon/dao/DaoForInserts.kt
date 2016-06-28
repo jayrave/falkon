@@ -31,7 +31,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
 
                     // Not the first item. Clear bindings & rebind all columns
                     else -> {
-                        compiledInsert.clearBindings() // Not required, but being defensive
+                        compiledInsert.clearBindings()
                         bindAllColumns(item, orderedColumns, compiledInsert)
                         compiledInsert
                     }
