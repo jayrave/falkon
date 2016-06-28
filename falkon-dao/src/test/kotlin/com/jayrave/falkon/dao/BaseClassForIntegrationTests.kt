@@ -70,14 +70,65 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
+        internal fun insertModelUsingInsertBuilder(
+                table: TableForTest, model: ModelForTest) {
+
+            table.dao.insertBuilder()
+                    .set(table.id, model.id)
+                    .set(table.short, model.short)
+                    .set(table.int, model.int)
+                    .set(table.long, model.long)
+                    .set(table.float, model.float)
+                    .set(table.double, model.double)
+                    .set(table.string, model.string)
+                    .set(table.blob, model.blob)
+                    .set(table.nullableShort, model.nullableShort)
+                    .set(table.nullableInt, model.nullableInt)
+                    .set(table.nullableLong, model.nullableLong)
+                    .set(table.nullableFloat, model.nullableFloat)
+                    .set(table.nullableDouble, model.nullableDouble)
+                    .set(table.nullableString, model.nullableString)
+                    .set(table.nullableBlob, model.nullableBlob)
+                    .insert()
+        }
+
+
+        internal fun insertModelsUsingInsertBuilder(
+                table: TableForTest, vararg models: ModelForTest) {
+            table.configuration.engine.executeInTransaction {
+                models.forEach { insertModelUsingInsertBuilder(table, it) }
+            }
+        }
+
+
+        internal fun getNumberOfModelsInTableForTest(table: TableForTest): Int {
+            val compiledQuery = table
+                    .configuration
+                    .engine
+                    .compileQuery("SELECT COUNT(*) as count from ${table.name}")
+
+            val source = compiledQuery.execute()
+
+            assertThat(source.moveToNext()).isTrue()
+            val count = source.getInt(source.getColumnIndex("count"))
+
+            source.close()
+            compiledQuery.close()
+            return count
+        }
+
+
         /**
          * @param seedValue will be used as is for short & every subsequent parameter will
          * be 1 more than the previous parameter
          */
-        internal fun buildModelForTest(seedValue: Short, id: UUID = UUID.randomUUID()): ModelForTest {
+        internal fun buildModelForTest(
+                seedValue: Short, id: UUID = UUID.randomUUID()): ModelForTest {
+
             return ModelForTest(
                     id, short = seedValue, int = seedValue + 1, long = seedValue + 2L,
-                    float = seedValue + 3F, double = seedValue + 4.0, string = "test ${seedValue + 5}",
+                    float = seedValue + 3F, double = seedValue + 4.0,
+                    string = "test ${seedValue + 5}",
                     blob = byteArrayOf((seedValue + 6).toByte())
             )
         }
