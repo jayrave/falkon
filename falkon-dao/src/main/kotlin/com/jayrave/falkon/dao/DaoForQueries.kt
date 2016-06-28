@@ -37,7 +37,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.findAll(): List<T> {
     compiledQuery.safeCloseAfterOp {
         val source = execute()
 
-        execute().safeCloseAfterOp {
+        source.safeCloseAfterOp {
             val dataProducer = SourceBackedDataProducer(source)
             val result = LinkedList<T>()
             while (source.moveToNext()) {
