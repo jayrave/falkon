@@ -87,10 +87,7 @@ private fun <T: Any> bindAllColumns(
         item: T, orderedColumns: OrderedColumns<T>, compiledInsert: CompiledInsert) {
 
     throwIfOrderedColumnsIsEmpty(orderedColumns)
-    orderedColumns.forEachIndexed { index, column ->
-        // index + 1 since compiled statement index is 1-based
-        compiledInsert.bindColumn(index + 1, column, item)
-    }
+    compiledInsert.bindOrderedColumns(orderedColumns, item)
 }
 
 

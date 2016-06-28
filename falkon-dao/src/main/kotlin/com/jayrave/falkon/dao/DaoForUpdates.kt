@@ -105,10 +105,7 @@ private fun <T: Any> bindAllNonIdColumns(
         item: T, orderedNonIdColumns: OrderedColumns<T>, compiledUpdate: CompiledUpdate) {
 
     throwIfOrderedNonIdColumnsIsEmpty(orderedNonIdColumns)
-    orderedNonIdColumns.forEachIndexed { index, column ->
-        // index + 1 since compiled statement index is 1-based
-        compiledUpdate.bindColumn(index + 1, column, item)
-    }
+    compiledUpdate.bindOrderedColumns(orderedNonIdColumns, item)
 }
 
 
