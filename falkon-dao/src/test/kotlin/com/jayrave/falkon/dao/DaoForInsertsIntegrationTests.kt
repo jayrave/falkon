@@ -1,7 +1,5 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.dao.testLib.ModelForTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.sql.SQLException
@@ -10,27 +8,36 @@ class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testInsertionOfSingleModel() {
+        insertAdditionalRandomModels(table, 7)
         val modelForTest = buildModelForTest(5)
         table.dao.insert(modelForTest)
-        assertPresenceOfOnly(modelForTest)
+
+        assertPresenceOf(table, modelForTest)
+        assertThat(getNumberOfModelsInTableForTest(table)).isEqualTo(8)
     }
 
 
     @Test
     fun testInsertionOfVarargModels() {
+        insertAdditionalRandomModels(table, 6)
         val modelForTest1 = buildModelForTest(5)
         val modelForTest2 = buildModelForTest(8)
         table.dao.insert(modelForTest1, modelForTest2)
-        assertPresenceOfOnly(modelForTest1, modelForTest2)
+
+        assertPresenceOf(table, modelForTest1, modelForTest2)
+        assertThat(getNumberOfModelsInTableForTest(table)).isEqualTo(8)
     }
 
 
     @Test
     fun testInsertionOfModelIterable() {
+        insertAdditionalRandomModels(table, 6)
         val modelForTest1 = buildModelForTest(5)
         val modelForTest2 = buildModelForTest(8)
         table.dao.insert(listOf(modelForTest1, modelForTest2))
-        assertPresenceOfOnly(modelForTest1, modelForTest2)
+
+        assertPresenceOf(table, modelForTest1, modelForTest2)
+        assertThat(getNumberOfModelsInTableForTest(table)).isEqualTo(8)
     }
 
 
@@ -48,22 +55,5 @@ class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
 
         // Second insert must have thrown
         assertThat(exceptionCaught).isTrue()
-    }
-
-
-    private fun assertPresenceOfOnly(
-            vararg models: ModelForTest, orderedBy: Column<ModelForTest, *> = table.short) {
-
-        val compiledQuery = table.dao.queryBuilder().orderBy(orderedBy, true).build()
-        val source = compiledQuery.execute()
-
-        models.forEach {
-            assertThat(source.moveToNext()).isTrue()
-            assertCurrentRowCorrespondsTo(source, it, table)
-        }
-
-        assertThat(source.moveToNext()).isFalse()
-        source.close()
-        compiledQuery.close()
     }
 }

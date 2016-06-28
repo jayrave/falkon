@@ -70,6 +70,22 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
+        /**
+         * @param seedValue will be used as is for short & every subsequent parameter will
+         * be 1 more than the previous parameter
+         */
+        internal fun buildModelForTest(
+                seedValue: Short, id: UUID = UUID.randomUUID()): ModelForTest {
+
+            return ModelForTest(
+                    id, short = seedValue, int = seedValue + 1, long = seedValue + 2L,
+                    float = seedValue + 3F, double = seedValue + 4.0,
+                    string = "test ${seedValue + 5}",
+                    blob = byteArrayOf((seedValue + 6).toByte())
+            )
+        }
+
+
         internal fun insertModelUsingInsertBuilder(
                 table: TableForTest, model: ModelForTest) {
 
@@ -101,6 +117,13 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
+        internal fun insertAdditionalRandomModels(table: TableForTest, count: Int) {
+            (0..count - 1).forEach {
+                insertModelUsingInsertBuilder(table, buildModelForTest(seedValue = it.toShort()))
+            }
+        }
+
+
         internal fun getNumberOfModelsInTableForTest(table: TableForTest): Int {
             val compiledQuery = table
                     .configuration
@@ -118,19 +141,18 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
-        /**
-         * @param seedValue will be used as is for short & every subsequent parameter will
-         * be 1 more than the previous parameter
-         */
-        internal fun buildModelForTest(
-                seedValue: Short, id: UUID = UUID.randomUUID()): ModelForTest {
+        internal fun assertPresenceOf(table: TableForTest, vararg models: ModelForTest) {
+            models.forEach {
+                val compiledQuery = table.dao.queryBuilder().where().eq(table.id, it.id).build()
+                val source = compiledQuery.execute()
 
-            return ModelForTest(
-                    id, short = seedValue, int = seedValue + 1, long = seedValue + 2L,
-                    float = seedValue + 3F, double = seedValue + 4.0,
-                    string = "test ${seedValue + 5}",
-                    blob = byteArrayOf((seedValue + 6).toByte())
-            )
+                assertThat(source.moveToNext()).isTrue()
+                assertCurrentRowCorrespondsTo(source, it, table)
+                assertThat(source.moveToNext()).isFalse()
+
+                source.close()
+                compiledQuery.close()
+            }
         }
 
 
