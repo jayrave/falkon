@@ -74,6 +74,25 @@ internal fun TableConfigurationImpl.registerUuidConverters() {
 }
 
 
+internal fun ModelForTest.testEquality(modelForTest: ModelForTest): Boolean {
+    return id == modelForTest.id &&
+            short == modelForTest.short &&
+            int == modelForTest.int &&
+            long == modelForTest.long &&
+            float == modelForTest.float &&
+            double == modelForTest.double &&
+            string == modelForTest.string &&
+            Arrays.equals(blob, modelForTest.blob) &&
+            nullableShort == modelForTest.nullableShort &&
+            nullableInt == modelForTest.nullableInt &&
+            nullableLong == modelForTest.nullableLong &&
+            nullableFloat == modelForTest.nullableFloat &&
+            nullableDouble == modelForTest.nullableDouble &&
+            nullableString == modelForTest.nullableString &&
+            Arrays.equals(nullableBlob, modelForTest.nullableBlob)
+}
+
+
 private class NullableUuidConverter : Converter<UUID?> {
 
     override val dbType: Type = Type.STRING
