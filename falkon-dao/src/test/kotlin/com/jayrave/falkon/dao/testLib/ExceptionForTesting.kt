@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao.testLib
 
-class ExceptionForTesting : Exception {
+internal class ExceptionForTesting : Exception {
 
     constructor() : super()
 

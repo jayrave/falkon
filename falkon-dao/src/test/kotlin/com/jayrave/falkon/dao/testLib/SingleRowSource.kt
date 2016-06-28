@@ -6,7 +6,7 @@ import java.util.*
 /**
  * A [Source] that can hold only one row at a time and always points at the row
  */
-class SingleRowSource(map: Map<String, Any?>) : Source {
+internal class SingleRowSource(map: Map<String, Any?>) : Source {
 
     override val position: Int = 1 // position is 1-based
 
