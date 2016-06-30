@@ -2,6 +2,7 @@ package com.jayrave.falkon.dao.update
 
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.Table
+import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
@@ -10,7 +11,7 @@ import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledUpdate
 import com.jayrave.falkon.engine.bindAll
-import com.jayrave.falkon.engine.compileUpdate
+import com.jayrave.falkon.engine.closeIfOpThrows
 
 internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : UpdateBuilder<T> {
 
@@ -26,15 +27,28 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
         return whereBuilder!!
     }
 
-    private fun update(): CompiledUpdate {
+    private fun build(): Update {
         val map = dataConsumer.map
         val where: Where? = whereBuilder?.build()
         val columns: Iterable<String> = LinkedHashMapBackedIterable.forKeys(map)
 
+        val sql = table.configuration
+                .engine
+                .buildUpdateSql(table.name, columns, where?.whereSections)
+
+        val arguments = IterablesBackedIterable(listOf(
+                LinkedHashMapBackedIterable.forValues(map),
+                where?.arguments ?: emptyList()
+        ))
+
+        return Update(sql, arguments)
+    }
+
+    private fun update(): CompiledUpdate {
+        val update = build()
         return table.configuration.engine
-                .compileUpdate(table.name, columns, where?.whereSections)
-                .bindAll(LinkedHashMapBackedIterable.forValues(map))
-                .bindAll(where?.arguments, map.size + 1) // 1-based index
+                .compileUpdate(update.sql)
+                .closeIfOpThrows { bindAll(update.arguments) }
     }
 
 
@@ -48,6 +62,10 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
 
         override fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
             return this@UpdateBuilderImpl.where()
+        }
+
+        override fun build(): Update {
+            return this@UpdateBuilderImpl.build()
         }
 
         override fun compile(): CompiledUpdate {
@@ -68,6 +86,10 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
         override fun or(): AfterSimpleConnectorAdder<T, PredicateAdderOrEnder<T>> {
             delegate.or()
             return delegate
+        }
+
+        override fun build(): Update {
+            return this@UpdateBuilderImpl.build()
         }
 
         override fun compile(): CompiledUpdate {
