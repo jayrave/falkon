@@ -15,6 +15,7 @@ fun Engine.compileInsert(tableName: String, columns: Iterable<String>): Compiled
 fun Engine.compileUpdate(
         tableName: String, columns: Iterable<String>,
         whereSections: Iterable<WhereSection>?): CompiledUpdate {
+
     return compileUpdate(buildUpdateSql(tableName, columns, whereSections))
 }
 
@@ -23,6 +24,7 @@ fun Engine.compileUpdate(
  */
 fun Engine.compileDelete(
         tableName: String, whereSections: Iterable<WhereSection>?): CompiledDelete {
+
     return compileDelete(buildDeleteSql(tableName, whereSections))
 }
 
@@ -45,10 +47,12 @@ fun Engine.compileQuery(
 // -------------------------------------- Execute raw SQL ------------------------------------------
 
 /**
- * Convenience method to compile the raw SQL, bind arguments and execute it
+ * Convenience method to compile the raw SQL, bind arguments, execute it
  */
 fun Engine.executeSql(rawSql: String, bindArgs: Iterable<Any>? = null) {
-    compileSql(rawSql).bindAll(bindArgs).execute()
+    compileSql(rawSql)
+            .closeIfOpThrows { bindAll(bindArgs) }
+            .safeCloseAfterExecution()
 }
 
 /**
@@ -56,7 +60,9 @@ fun Engine.executeSql(rawSql: String, bindArgs: Iterable<Any>? = null) {
  * @return number of rows inserted
  */
 fun Engine.executeInsert(rawSql: String, bindArgs: Iterable<Any>? = null): Int {
-    return compileInsert(rawSql).bindAll(bindArgs).execute()
+    return compileInsert(rawSql)
+            .closeIfOpThrows { bindAll(bindArgs) }
+            .safeCloseAfterExecution()
 }
 
 /**
@@ -64,7 +70,9 @@ fun Engine.executeInsert(rawSql: String, bindArgs: Iterable<Any>? = null): Int {
  * @return number of rows updated
  */
 fun Engine.executeUpdate(rawSql: String, bindArgs: Iterable<Any>? = null): Int {
-    return compileUpdate(rawSql).bindAll(bindArgs).execute()
+    return compileUpdate(rawSql)
+            .closeIfOpThrows { bindAll(bindArgs) }
+            .safeCloseAfterExecution()
 }
 
 /**
@@ -72,15 +80,14 @@ fun Engine.executeUpdate(rawSql: String, bindArgs: Iterable<Any>? = null): Int {
  * @return number of rows deleted
  */
 fun Engine.executeDelete(rawSql: String, bindArgs: Iterable<Any>? = null): Int {
-    return compileDelete(rawSql).bindAll(bindArgs).execute()
+    return compileDelete(rawSql)
+            .closeIfOpThrows { bindAll(bindArgs) }
+            .safeCloseAfterExecution()
 }
 
-/**
- * Convenience method to compile the raw SQL, bind arguments and execute it
- * @return the source that contains the rows matching the query
- */
-fun Engine.executeQuery(rawSql: String, bindArgs: Iterable<Any>? = null): Source {
-    return compileQuery(rawSql).bindAll(bindArgs).execute()
-}
+
+// An #executeQuery convenience function is not included here as it doesn't make sense to.
+// Source that is returned from a CompiledQuery could end up not working if the CompiledQuery
+// itself is closed
 
 // -------------------------------------- Execute raw SQL ------------------------------------------
