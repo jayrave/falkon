@@ -55,6 +55,11 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun offset(count: Long): Z
 
     /**
+     * @return [Query] for this [QueryBuilder]
+     */
+    fun build(): Query
+
+    /**
      * @return [CompiledQuery] for this [QueryBuilder]
      */
     fun compile(): CompiledQuery
