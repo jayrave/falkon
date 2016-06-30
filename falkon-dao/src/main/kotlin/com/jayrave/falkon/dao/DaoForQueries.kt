@@ -3,6 +3,7 @@ package com.jayrave.falkon.dao
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.Value
 import com.jayrave.falkon.engine.Source
+import com.jayrave.falkon.lib.safeCloseAfterOp
 import java.util.*
 
 /**
