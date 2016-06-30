@@ -1,9 +1,7 @@
 package com.jayrave.falkon.engine
 
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
+import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import java.util.concurrent.Callable
 
@@ -118,6 +116,60 @@ class CompiledStatementKtTest {
                 string = "test 17", blob = byteArrayOf(18), nullType = Type.BLOB,
                 nonNativeValue = callableMock
         )
+    }
+
+
+    @Test
+    fun testCloseIfOpThrowsDoesNotCloseIfNothingThrows() {
+        val compiledStatement = mock<CompiledStatement<Unit>>()
+        compiledStatement.closeIfOpThrows<CompiledStatement<Unit>, Unit, Unit> { Unit }
+        verifyZeroInteractions(compiledStatement)
+    }
+
+
+    @Test
+    fun testCloseIfOpThrowsClosesIfOpThrows() {
+        val compiledStatement = mock<CompiledStatement<Unit>>()
+        var exceptionWasThrown = false
+        try {
+            compiledStatement.closeIfOpThrows<CompiledStatement<Unit>, Unit, Unit> {
+                throw Throwable()
+            }
+
+        } catch (t: Throwable) {
+            exceptionWasThrown = true
+        }
+
+        if (!exceptionWasThrown) {
+            fail("exception must have been thrown")
+        }
+
+        verify(compiledStatement).close()
+        verifyNoMoreInteractions(compiledStatement)
+    }
+
+
+    @Test
+    fun testCloseIfOpThrowsSwallowsExceptionsThrownOnClose() {
+        val compiledStatement = mock<CompiledStatement<Unit>>()
+        whenever(compiledStatement.close()).thenThrow(RuntimeException::class.java)
+
+        var exceptionWasThrown = false
+        try {
+            compiledStatement.closeIfOpThrows<CompiledStatement<Unit>, Unit, Unit> {
+                throw Throwable()
+            }
+
+        } catch (t: Throwable) {
+            exceptionWasThrown = true
+        }
+
+        if (!exceptionWasThrown) {
+            fail("exception must have been thrown")
+        }
+
+        verify(compiledStatement).close()
+        verifyNoMoreInteractions(compiledStatement)
     }
 
 

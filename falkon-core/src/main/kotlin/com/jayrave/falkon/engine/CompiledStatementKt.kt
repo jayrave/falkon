@@ -37,3 +37,22 @@ fun <CS: CompiledStatement<R>, R> CS.bindAll(values: Iterable<Any>?, startIndex:
 
     return this
 }
+
+
+/**
+ * Executes the given operation. Closes the statement if the operation throws
+ */
+inline fun <CS : CompiledStatement<R>, R, Z> CS.closeIfOpThrows(operation: CS.() -> Z): Z {
+    try {
+        return operation.invoke(this)
+    } catch (t: Throwable) {
+        try {
+            close()
+        } catch (e: Exception) {
+            // Don't let any exception while closing the statement to
+            // hide the original throwable that was thrown
+        }
+
+        throw t
+    }
+}
