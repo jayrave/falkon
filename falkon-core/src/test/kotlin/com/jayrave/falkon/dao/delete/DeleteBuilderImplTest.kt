@@ -18,7 +18,7 @@ class DeleteBuilderImplTest {
         val engine = bundle.engine
         
         val builder = DeleteBuilderImpl(table)
-        builder.build()
+        builder.compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -39,7 +39,7 @@ class DeleteBuilderImplTest {
 
         val builder = DeleteBuilderImpl(table)
         builder.where().eq(table.int, 5)
-        builder.build()
+        builder.compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -60,7 +60,7 @@ class DeleteBuilderImplTest {
         val engine = bundle.engine
 
         val builder = DeleteBuilderImpl(table)
-        builder.where().eq(table.int, 5).build()
+        builder.where().eq(table.int, 5).compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -82,7 +82,7 @@ class DeleteBuilderImplTest {
 
         val builder = DeleteBuilderImpl(table)
         builder.where().eq(table.int, 5)
-        builder.where().eq(table.string, "test").build()
+        builder.where().eq(table.string, "test").compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)
@@ -124,7 +124,7 @@ class DeleteBuilderImplTest {
                 .eq(table.string, "test").and()
                 .eq(table.blob, byteArrayOf(10)).and()
                 .gt(table.nullableInt, null)
-                .build()
+                .compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledDeletes).hasSize(1)

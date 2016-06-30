@@ -94,7 +94,7 @@ private fun <T: Any, ID: Any> buildCompiledUpdate(
     return adderOrEnder!!
             .where()
             .eq(idColumn, idColumn.extractPropertyFrom(item))
-            .build()
+            .compile()
 }
 
 

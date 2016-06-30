@@ -69,7 +69,7 @@ private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
                     null -> deleteBuilder()
                             .where()
                             .eq(table.idColumn, idExtractor.invoke(it))
-                            .build()
+                            .compile()
 
                     // Not the first item. Just clear bindings for CompiledDelete & rebind id
                     else -> {

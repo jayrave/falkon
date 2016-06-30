@@ -8,7 +8,7 @@ import com.jayrave.falkon.engine.CompiledStatement
  * @return `true` if the insertion was successful; `false` otherwise
  */
 fun <T : Any> com.jayrave.falkon.dao.insert.AdderOrEnder<T>.insert(): Boolean {
-    return build().safeCloseAfterExecution() == 1
+    return compile().safeCloseAfterExecution() == 1
 }
 
 // ------------------------------------------ Insert -----------------------------------------------
@@ -20,14 +20,14 @@ fun <T : Any> com.jayrave.falkon.dao.insert.AdderOrEnder<T>.insert(): Boolean {
  * @return number of rows affected by this update operation
  */
 fun <T : Any> com.jayrave.falkon.dao.update.AdderOrEnder<T>.update(): Int {
-    return build().safeCloseAfterExecution()
+    return compile().safeCloseAfterExecution()
 }
 
 /**
  * @return number of rows affected by this update operation
  */
 fun <T : Any> com.jayrave.falkon.dao.update.PredicateAdderOrEnder<T>.update(): Int {
-    return build().safeCloseAfterExecution()
+    return compile().safeCloseAfterExecution()
 }
 
 // ------------------------------------------ Update -----------------------------------------------
@@ -39,14 +39,14 @@ fun <T : Any> com.jayrave.falkon.dao.update.PredicateAdderOrEnder<T>.update(): I
  * @return number of rows affected by this delete operation
  */
 fun <T : Any> com.jayrave.falkon.dao.delete.DeleteBuilder<T>.delete(): Int {
-    return build().safeCloseAfterExecution()
+    return compile().safeCloseAfterExecution()
 }
 
 /**
  * @return number of rows affected by this delete operation
  */
 fun <T : Any> com.jayrave.falkon.dao.delete.AdderOrEnder<T>.delete(): Int {
-    return build().safeCloseAfterExecution()
+    return compile().safeCloseAfterExecution()
 }
 
 // ------------------------------------------ Delete -----------------------------------------------

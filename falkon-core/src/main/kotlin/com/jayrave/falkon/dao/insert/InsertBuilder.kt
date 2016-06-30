@@ -26,5 +26,5 @@ interface AdderOrEnder<T : Any> {
     /**
      * @return [CompiledInsert] for this [InsertBuilder]
      */
-    fun build(): CompiledInsert
+    fun compile(): CompiledInsert
 }

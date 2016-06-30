@@ -66,7 +66,7 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
         return this
     }
 
-    override fun build(): CompiledQuery {
+    override fun compile(): CompiledQuery {
         val where = whereBuilder?.build()
 
         val tempSelectedColumns = selectedColumns
@@ -143,8 +143,8 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *, *>) : Q
             return this
         }
 
-        override fun build(): CompiledQuery {
-            return this@QueryBuilderImpl.build()
+        override fun compile(): CompiledQuery {
+            return this@QueryBuilderImpl.compile()
         }
     }
 

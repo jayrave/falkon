@@ -17,7 +17,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
 
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, 5).build()
+        builder.set(table.int, 5).compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -38,7 +38,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
 
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, 5).where().eq(table.string, "test").build()
+        builder.set(table.int, 5).where().eq(table.string, "test").compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -61,7 +61,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
 
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, 5).set(table.string, "test").build()
+        builder.set(table.int, 5).set(table.string, "test").compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -85,7 +85,7 @@ class UpdateBuilderImplTest {
         val initialValue = 5
         val overwritingValue = initialValue + 1
         val builder = UpdateBuilderImpl(table)
-        builder.set(table.int, initialValue).set(table.int, overwritingValue).build()
+        builder.set(table.int, initialValue).set(table.int, overwritingValue).compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)
@@ -127,7 +127,7 @@ class UpdateBuilderImplTest {
                 .set(table.string, "test")
                 .set(table.blob, byteArrayOf(10))
                 .set(table.nullableInt, null)
-                .build()
+                .compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledUpdates).hasSize(1)

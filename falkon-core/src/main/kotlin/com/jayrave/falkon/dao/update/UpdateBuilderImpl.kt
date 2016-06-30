@@ -50,7 +50,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return this@UpdateBuilderImpl.where()
         }
 
-        override fun build(): CompiledUpdate {
+        override fun compile(): CompiledUpdate {
             return this@UpdateBuilderImpl.update()
         }
     }
@@ -70,7 +70,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return delegate
         }
 
-        override fun build(): CompiledUpdate {
+        override fun compile(): CompiledUpdate {
             return this@UpdateBuilderImpl.update()
         }
     }

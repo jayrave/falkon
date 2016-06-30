@@ -16,7 +16,7 @@ class InsertBuilderImplTest {
         val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
-        builder.set(table.int, 5).build()
+        builder.set(table.int, 5).compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -37,7 +37,7 @@ class InsertBuilderImplTest {
         val engine = bundle.engine
 
         val builder = InsertBuilderImpl(table)
-        builder.set(table.int, 5).set(table.string, "test").build()
+        builder.set(table.int, 5).set(table.string, "test").compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -61,7 +61,7 @@ class InsertBuilderImplTest {
         val initialValue = 5
         val overwritingValue = initialValue + 1
         val builder = InsertBuilderImpl(table)
-        builder.set(table.int, initialValue).set(table.int, overwritingValue).build()
+        builder.set(table.int, initialValue).set(table.int, overwritingValue).compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)
@@ -103,7 +103,7 @@ class InsertBuilderImplTest {
                 .set(table.string, "test")
                 .set(table.blob, byteArrayOf(10))
                 .set(table.nullableInt, null)
-                .build()
+                .compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledInserts).hasSize(1)

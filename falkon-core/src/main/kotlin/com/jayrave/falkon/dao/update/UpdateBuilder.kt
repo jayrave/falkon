@@ -33,7 +33,7 @@ interface AdderOrEnder<T : Any> {
     /**
      * @return [CompiledUpdate] for this [UpdateBuilder]
      */
-    fun build(): CompiledUpdate
+    fun compile(): CompiledUpdate
 }
 
 
@@ -43,5 +43,5 @@ interface AdderOrEnder<T : Any> {
 interface PredicateAdderOrEnder<T : Any> :
         com.jayrave.falkon.dao.where.AdderOrEnder<T, PredicateAdderOrEnder<T>> {
 
-    fun build(): CompiledUpdate
+    fun compile(): CompiledUpdate
 }

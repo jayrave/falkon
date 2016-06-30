@@ -71,7 +71,7 @@ private fun <T: Any> buildCompiledInsert(
         }
     }
 
-    return adderOrEnder!!.build()
+    return adderOrEnder!!.compile()
 }
 
 

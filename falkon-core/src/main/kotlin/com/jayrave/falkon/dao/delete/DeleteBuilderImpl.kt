@@ -18,7 +18,7 @@ internal class DeleteBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
         return whereBuilder!!
     }
 
-    override fun build(): CompiledDelete {
+    override fun compile(): CompiledDelete {
         val where: Where? = whereBuilder?.build()
         return table.configuration.engine
                 .compileDelete(table.name, where?.whereSections)
@@ -40,8 +40,8 @@ internal class DeleteBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return delegate
         }
 
-        override fun build(): CompiledDelete {
-            return this@DeleteBuilderImpl.build()
+        override fun compile(): CompiledDelete {
+            return this@DeleteBuilderImpl.compile()
         }
     }
 }

@@ -25,7 +25,7 @@ internal class InsertBuilderImpl<T : Any>(override val table: Table<T, *, *>) : 
             return this
         }
 
-        override fun build(): CompiledInsert {
+        override fun compile(): CompiledInsert {
             val map = dataConsumer.map
             return table.configuration.engine
                     .compileInsert(table.name, LinkedHashMapBackedIterable.forKeys(map))

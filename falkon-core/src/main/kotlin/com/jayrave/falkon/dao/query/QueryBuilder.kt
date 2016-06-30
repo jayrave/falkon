@@ -57,7 +57,7 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     /**
      * @return [CompiledQuery] for this [QueryBuilder]
      */
-    fun build(): CompiledQuery
+    fun compile(): CompiledQuery
 }
 
 

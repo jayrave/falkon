@@ -13,7 +13,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.findById(id: ID): T? {
             .where()
             .eq(table.idColumn, id)
             .limit(1) // to be defensive
-            .build()
+            .compile()
 
     compiledQuery.safeCloseAfterOp {
         val source = execute()
@@ -33,7 +33,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.findById(id: ID): T? {
  * All [T]s of this table
  */
 fun <T: Any, ID : Any> Dao<T, ID>.findAll(): List<T> {
-    val compiledQuery = queryBuilder().build()
+    val compiledQuery = queryBuilder().compile()
     compiledQuery.safeCloseAfterOp {
         val source = execute()
 

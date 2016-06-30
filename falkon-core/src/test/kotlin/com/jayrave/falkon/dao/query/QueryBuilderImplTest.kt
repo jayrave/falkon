@@ -20,7 +20,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.build()
+        builder.compile()
 
         assertArgFreeStatement(table, engine, distinct = false)
     }
@@ -33,7 +33,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.distinct().build()
+        builder.distinct().compile()
 
         assertArgFreeStatement(table, engine, distinct = true)
     }
@@ -46,7 +46,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.select(table.int).build()
+        builder.select(table.int).compile()
 
         assertArgFreeStatement(table, engine, columns = listOf("int"))
     }
@@ -59,7 +59,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.select(table.int, table.string).build()
+        builder.select(table.int, table.string).compile()
 
         assertArgFreeStatement(
                 table, engine, columns = listOf("int", "string")
@@ -74,7 +74,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.select(table.int).select(table.int).build()
+        builder.select(table.int).select(table.int).compile()
 
         assertArgFreeStatement(table, engine, columns = listOf("int"))
     }
@@ -87,7 +87,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.where().eq(table.int, 5).build()
+        builder.where().eq(table.int, 5).compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledQueries).hasSize(1)
@@ -109,7 +109,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.groupBy(table.int).build()
+        builder.groupBy(table.int).compile()
 
         assertArgFreeStatement(table, engine, groupBy = listOf("int"))
     }
@@ -122,7 +122,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.groupBy(table.string, table.blob).build()
+        builder.groupBy(table.string, table.blob).compile()
 
         assertArgFreeStatement(
                 table, engine, groupBy = listOf("string", "blob")
@@ -137,7 +137,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.groupBy(table.int).groupBy(table.string).build()
+        builder.groupBy(table.int).groupBy(table.string).compile()
 
         assertArgFreeStatement(table, engine, groupBy = listOf("string"))
     }
@@ -150,7 +150,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.orderBy(table.int, true).build()
+        builder.orderBy(table.int, true).compile()
 
         assertArgFreeStatement(
                 table, engine, orderBy = listOf(OrderInfoForTest("int", true))
@@ -165,7 +165,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.orderBy(table.int, true).orderBy(table.blob, false).build()
+        builder.orderBy(table.int, true).orderBy(table.blob, false).compile()
 
         assertArgFreeStatement(
                 table, engine,
@@ -181,7 +181,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.orderBy(table.int, true).orderBy(table.int, false).build()
+        builder.orderBy(table.int, true).orderBy(table.int, false).compile()
 
         assertArgFreeStatement(
                 table, engine, orderBy = listOf(OrderInfoForTest("int", true))
@@ -196,7 +196,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.limit(50).build()
+        builder.limit(50).compile()
 
         assertArgFreeStatement(table, engine, limit = 50)
     }
@@ -209,7 +209,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
 
         val builder = QueryBuilderImpl(table)
-        builder.offset(72).build()
+        builder.offset(72).compile()
 
         assertArgFreeStatement(table, engine, offset = 72)
     }
@@ -230,7 +230,7 @@ class QueryBuilderImplTest {
                 .limit(5)
                 .offset(8)
                 .where().eq(table.double, 5.0)
-                .build()
+                .compile()
 
         verifyComplexWhere(table, engine)
     }
@@ -251,7 +251,7 @@ class QueryBuilderImplTest {
                 .orderBy(table.int, true)
                 .limit(5)
                 .offset(8)
-                .build()
+                .compile()
 
         verifyComplexWhere(table, engine)
     }
@@ -272,7 +272,7 @@ class QueryBuilderImplTest {
                 .groupBy(table.blob)
                 .select(table.string)
                 .distinct()
-                .build()
+                .compile()
 
         verifyComplexWhere(table, engine)
     }
@@ -294,7 +294,7 @@ class QueryBuilderImplTest {
                 .eq(table.string, "test").and()
                 .eq(table.blob, byteArrayOf(10)).and()
                 .gt(table.nullableInt, null)
-                .build()
+                .compile()
 
         // Verify interactions with compiled statement
         assertThat(engine.compiledQueries).hasSize(1)
