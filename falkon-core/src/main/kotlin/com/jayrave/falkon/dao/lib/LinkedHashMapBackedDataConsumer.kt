@@ -11,7 +11,7 @@ import java.util.*
  * Failing to call [setColumnName] before every #put*() call will result 
  * in [DataConsumerException]
  */
-class LinkedHashMapBackedDataConsumer : NullHandlingDataConsumer() {
+internal class LinkedHashMapBackedDataConsumer : NullHandlingDataConsumer() {
     
     val map = LinkedHashMap<String, Any>()
 
