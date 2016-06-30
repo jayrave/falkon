@@ -173,6 +173,39 @@ class CompiledStatementKtTest {
     }
 
 
+    @Test
+    fun testCompiledStatementClosesOnSuccessfulExecution() {
+        val compiledStatementMock = mock<CompiledStatement<Unit>>()
+        compiledStatementMock.safeCloseAfterExecution()
+
+        verify(compiledStatementMock).execute()
+        verify(compiledStatementMock).close()
+        verifyNoMoreInteractions(compiledStatementMock)
+    }
+
+
+    @Test
+    fun testCompiledStatementClosesEvenIfExceptionIsThrown() {
+        val compiledStatementMock = mock<CompiledStatement<Unit>>()
+        whenever(compiledStatementMock.execute()).thenThrow(RuntimeException::class.java)
+
+        var exceptionWasThrown = false
+        try {
+            compiledStatementMock.safeCloseAfterExecution()
+        } catch (e: RuntimeException) {
+            exceptionWasThrown = true
+        }
+
+        if (!exceptionWasThrown) {
+            fail("exception must have been thrown")
+        }
+
+        verify(compiledStatementMock).execute()
+        verify(compiledStatementMock).close()
+        verifyNoMoreInteractions(compiledStatementMock)
+    }
+
+
     private fun verifyInteractionsForBindAll(
             startIndex: Int, short: Short, int: Int, long: Long, float: Float, double: Double,
             string: String, blob: ByteArray, nullType: Type, nonNativeValue: Any) {

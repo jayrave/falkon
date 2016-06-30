@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.engine.CompiledStatement
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 
 // ------------------------------------------ Insert -----------------------------------------------
 
@@ -54,16 +54,3 @@ fun <T : Any> com.jayrave.falkon.dao.delete.AdderOrEnder<T>.delete(): Int {
 
 // A #query convenience function is not included here as it doesn't make sense to. Source that is
 // returned from a CompiledQuery could end up not working if the CompiledQuery itself is closed
-
-
-/**
- * Executes the statement, closes it (no matter if exception is thrown or not) and
- * returns the result of execution
- */
-fun <R> CompiledStatement<R>.safeCloseAfterExecution(): R {
-    try {
-        return execute()
-    } finally {
-        close()
-    }
-}

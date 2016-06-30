@@ -1,5 +1,7 @@
 package com.jayrave.falkon.engine
 
+import com.jayrave.falkon.lib.safeCloseAfterOp
+
 /**
  *  - Every [Type] will be bound by calling the appropriate `bind` method on [CompiledStatement]
  *  - [TypedNull] will be bound by calling the appropriate bind method
@@ -55,4 +57,13 @@ inline fun <CS : CompiledStatement<R>, R, Z> CS.closeIfOpThrows(operation: CS.()
 
         throw t
     }
+}
+
+
+/**
+ * Executes the statement, closes it (no matter if exception is thrown or not) and
+ * returns the result of execution
+ */
+fun <R> CompiledStatement<R>.safeCloseAfterExecution(): R {
+    return safeCloseAfterOp { execute() }
 }
