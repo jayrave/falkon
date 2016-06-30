@@ -24,6 +24,11 @@ interface AdderOrEnder<T : Any> {
     fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T>
 
     /**
+     * @return [Insert] for this [InsertBuilder]
+     */
+    fun build(): Insert
+
+    /**
      * @return [CompiledInsert] for this [InsertBuilder]
      */
     fun compile(): CompiledInsert
