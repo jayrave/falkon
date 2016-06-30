@@ -15,6 +15,11 @@ interface DeleteBuilder<T : Any> {
     fun where(): WhereBuilder<T, AdderOrEnder<T>>
 
     /**
+     * @return [Delete] for this [DeleteBuilder]
+     */
+    fun build(): Delete
+
+    /**
      * @return [CompiledDelete] for this [DeleteBuilder]
      */
     fun compile(): CompiledDelete
@@ -25,5 +30,6 @@ interface DeleteBuilder<T : Any> {
  * To access some [DeleteBuilder] methods conveniently after chaining calls on [WhereBuilder]
  */
 interface AdderOrEnder<T : Any> : com.jayrave.falkon.dao.where.AdderOrEnder<T, AdderOrEnder<T>> {
+    fun build(): Delete
     fun compile(): CompiledDelete
 }
