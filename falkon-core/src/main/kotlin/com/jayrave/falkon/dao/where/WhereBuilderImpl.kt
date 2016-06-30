@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.where
 
 import com.jayrave.falkon.Column
+import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.engine.WhereSection
 import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
@@ -23,7 +24,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
     private val adderOrEnder: Z by lazy { adderOrEnderCreator.invoke(this) }
 
     internal fun build(): Where {
-        return Where(ListBackedList(sections, transformer), ArgsIterable(sections))
+        return Where(ListBackedList(sections, transformer), IterablesBackedIterable(sections))
     }
 
 
@@ -162,36 +163,10 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
 
 
     private data class ArgAwareWhereSection(
-            val whereSection: WhereSection,
-            val args: Iterable<Any>
-    )
+            val whereSection: WhereSection, val args: Iterable<Any>) :
+            Iterable<Any> {
 
-
-
-    private class ArgsIterable(private val sections: List<ArgAwareWhereSection>) : Iterable<Any> {
-
-        override fun iterator(): Iterator<Any> = ArgAwareWhereSectionsBackedIterator()
-
-        private inner class ArgAwareWhereSectionsBackedIterator : Iterator<Any> {
-
-            private var iterator = emptyList<Any>().iterator()
-            private var currentSectionIndex = -1
-
-            override fun hasNext(): Boolean {
-                var hasNext = iterator.hasNext()
-                while (!hasNext && currentSectionIndex < sections.size - 1) {
-                    // This args list has run out. Move on to the next one
-                    iterator = sections[++currentSectionIndex].args.iterator()
-                    hasNext = iterator.hasNext()
-                }
-
-                return hasNext
-            }
-
-            override fun next(): Any {
-                return iterator.next()
-            }
-        }
+        override fun iterator() = args.iterator()
     }
 
 
@@ -345,7 +320,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
                     CompoundConnector(
                             CompoundConnector.Type.AND,
                             ListBackedList(innerAdderSections, transformer)
-                    ), ArgsIterable(innerAdderSections)
+                    ), IterablesBackedIterable(innerAdderSections)
             ))
         }
 
@@ -364,7 +339,7 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
                     CompoundConnector(
                             CompoundConnector.Type.OR,
                             ListBackedList(innerAdderSections, transformer)
-                    ), ArgsIterable(innerAdderSections)
+                    ), IterablesBackedIterable(innerAdderSections)
             ))
         }
 
