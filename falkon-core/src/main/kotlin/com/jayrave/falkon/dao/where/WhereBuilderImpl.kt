@@ -75,6 +75,18 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
     }
 
 
+    override fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z {
+        handleIsIn(sections, column, firstValue, remainingValues)
+        return adderOrEnder
+    }
+
+
+    override fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z {
+        handleIsNotIn(sections, column, firstValue, remainingValues)
+        return adderOrEnder
+    }
+
+
     override fun <C> isNull(column: Column<T, C>): Z {
         handleIsNull(sections, column)
         return adderOrEnder
@@ -132,6 +144,14 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
         override fun <C> like(column: Column<T, C>, pattern: String) = handleLike(
                 sections, column, pattern
         )
+
+        override fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C) {
+            handleIsIn(sections, column, firstValue, remainingValues)
+        }
+
+        override fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C) {
+            handleIsNotIn(sections, column, firstValue, remainingValues)
+        }
 
         override fun <C> isNull(column: Column<T, C>) = handleIsNull(sections, column)
         override fun <C> isNotNull(column: Column<T, C>) = handleIsNotNull(sections, column)
@@ -257,6 +277,36 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
             sections.add(ArgAwareWhereSection(
                     OneArgPredicate(OneArgPredicate.Type.LIKE, column.name),
                     listOf(pattern)
+            ))
+        }
+
+
+        private fun <T: Any, C> handleIsIn(
+                sections: MutableList<ArgAwareWhereSection>, column: Column<T, C>,
+                firstValue: C, remainingValues: Array<out C>) {
+
+            val args = ArrayList<Any>(remainingValues.size + 1)
+            args.add(getAppropriateArg(column, firstValue))
+            remainingValues.forEach { args.add(getAppropriateArg(column, it)) }
+
+            sections.add(ArgAwareWhereSection(
+                    MultiArgPredicate(MultiArgPredicate.Type.IS_IN, column.name, args.size),
+                    args
+            ))
+        }
+
+
+        private fun <T: Any, C> handleIsNotIn(
+                sections: MutableList<ArgAwareWhereSection>, column: Column<T, C>,
+                firstValue: C, remainingValues: Array<out C>) {
+
+            val args = ArrayList<Any>(remainingValues.size + 1)
+            args.add(getAppropriateArg(column, firstValue))
+            remainingValues.forEach { args.add(getAppropriateArg(column, it)) }
+
+            sections.add(ArgAwareWhereSection(
+                    MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, column.name, args.size),
+                    args
             ))
         }
 

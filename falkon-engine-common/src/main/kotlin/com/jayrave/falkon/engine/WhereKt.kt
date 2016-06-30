@@ -40,21 +40,30 @@ internal fun Iterable<WhereSection>.buildWhereClause(argPlaceholder: String): St
 // ------------------------------- Start of add to section -----------------------------------------
 
 private fun WhereSection.addTo(clause: StringBuilder, argPlaceholder: String) {
-    when (this) {
-        is Predicate -> {
-            when (this) {
-                is NoArgPredicate -> this.addTo(clause)
-                is OneArgPredicate -> this.addTo(clause, argPlaceholder)
-                is BetweenPredicate -> this.addTo(clause, argPlaceholder)
-            }
-        }
+    // Return makes `when` an expression which makes the compiler check whether it is exhaustive
+    return when (this) {
+        is Predicate -> this.addTo(clause, argPlaceholder)
+        is Connector -> this.addTo(clause, argPlaceholder)
+    }
+}
 
-        is Connector -> {
-            when (this) {
-                is SimpleConnector -> this.addTo(clause)
-                is CompoundConnector -> this.addTo(clause, argPlaceholder)
-            }
-        }
+
+private fun Predicate.addTo(clause: StringBuilder, argPlaceholder: String) {
+    // Return makes `when` an expression which makes the compiler check whether it is exhaustive
+    return when (this) {
+        is NoArgPredicate -> this.addTo(clause)
+        is OneArgPredicate -> this.addTo(clause, argPlaceholder)
+        is BetweenPredicate -> this.addTo(clause, argPlaceholder)
+        is MultiArgPredicate -> this.addTo(clause, argPlaceholder)
+    }
+}
+
+
+private fun Connector.addTo(clause: StringBuilder, argPlaceholder: String) {
+    // Return makes `when` an expression which makes the compiler check whether it is exhaustive
+    return when (this) {
+        is SimpleConnector -> this.addTo(clause)
+        is CompoundConnector -> this.addTo(clause, argPlaceholder)
     }
 }
 
@@ -66,6 +75,11 @@ private fun NoArgPredicate.addTo(clauseBuilder: StringBuilder) {
 
 private fun OneArgPredicate.addTo(clause: StringBuilder, argPlaceholder: String) {
     clause.appendOneArgPredicate(this, argPlaceholder)
+}
+
+
+private fun MultiArgPredicate.addTo(clause: StringBuilder, argPlaceholder: String) {
+    clause.appendMultiArgPredicate(this, argPlaceholder)
 }
 
 
@@ -120,6 +134,24 @@ private fun StringBuilder.appendOneArgPredicate(
 }
 
 
+private fun StringBuilder.appendMultiArgPredicate(
+        predicate: MultiArgPredicate, argPlaceholder: String) {
+
+    if (predicate.numberOfArgs <= 0) {
+        throw SQLSyntaxErrorException(
+                "${predicate.type} can't have ${predicate.numberOfArgs} arguments"
+        )
+    }
+
+    val argPlaceholders = (0..predicate.numberOfArgs - 1)
+            .joinToString(separator = ", ", prefix = "(", postfix = ")") {
+                argPlaceholder
+            }
+
+    append("${predicate.columnName} ${predicate.type.sqlText()} $argPlaceholders")
+}
+
+
 private fun StringBuilder.appendBetweenPredicate(
         predicate: BetweenPredicate, argPlaceholder: String) {
     append("${predicate.columnName} BETWEEN $argPlaceholder AND $argPlaceholder")
@@ -147,6 +179,14 @@ private fun OneArgPredicate.Type.sqlText(): String {
         OneArgPredicate.Type.LESS_THAN -> "<"
         OneArgPredicate.Type.LESS_THAN_OR_EQ -> "<="
         OneArgPredicate.Type.LIKE -> "LIKE"
+    }
+}
+
+
+private fun MultiArgPredicate.Type.sqlText(): String {
+    return when (this) {
+        MultiArgPredicate.Type.IS_IN -> "IN"
+        MultiArgPredicate.Type.IS_NOT_IN -> "NOT IN"
     }
 }
 

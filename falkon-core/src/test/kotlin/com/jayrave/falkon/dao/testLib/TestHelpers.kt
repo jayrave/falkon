@@ -21,6 +21,10 @@ internal fun buildWhereClauseWithPlaceholders(whereSections: Iterable<WhereSecti
         when (section) {
             is NoArgPredicate -> sb.append("${section.type} ${section.columnName}")
             is OneArgPredicate -> sb.append("${section.type} ${section.columnName}")
+            is MultiArgPredicate -> sb.append(
+                    "${section.type} ${section.columnName} ${section.numberOfArgs}"
+            )
+
             is BetweenPredicate -> sb.append("BETWEEN ${section.columnName}")
             is SimpleConnector -> sb.append("${section.type}")
             is CompoundConnector -> sb.append(

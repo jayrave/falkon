@@ -23,6 +23,8 @@ interface PredicateAdder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun <C> le(column: Column<T, C>, value: C): Z
     fun <C> between(column: Column<T, C>, low: C, high: C): Z
     fun <C> like(column: Column<T, C>, pattern: String): Z
+    fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z
+    fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z
     fun <C> isNull(column: Column<T, C>): Z
     fun <C> isNotNull(column: Column<T, C>): Z
 }
@@ -75,6 +77,8 @@ interface InnerAdder<T : Any> {
     fun <C> le(column: Column<T, C>, value: C)
     fun <C> between(column: Column<T, C>, low: C, high: C)
     fun <C> like(column: Column<T, C>, pattern: String)
+    fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C)
+    fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C)
     fun <C> isNull(column: Column<T, C>)
     fun <C> isNotNull(column: Column<T, C>)
 

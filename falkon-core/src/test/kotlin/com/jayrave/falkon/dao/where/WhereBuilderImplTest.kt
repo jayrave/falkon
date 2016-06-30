@@ -114,6 +114,52 @@ class WhereBuilderImplTest {
 
 
     @Test
+    fun testIsInWithSingleArg() {
+        val actualWhere = builder.isIn(table.int, 5).build()
+        val expectedWhere = Where(
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "int", 1)), listOf(5)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testIsInWithMultipleArgs() {
+        val actualWhere = builder.isIn(table.int, 5, 6, 7, 8).build()
+        val expectedWhere = Where(
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "int", 4)),
+                listOf(5, 6, 7, 8)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testIsNotInWithSingleArg() {
+        val actualWhere = builder.isNotIn(table.int, 5).build()
+        val expectedWhere = Where(
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "int", 1)), listOf(5)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testIsNotInWithMultipleArgs() {
+        val actualWhere = builder.isNotIn(table.int, 5, 6, 7, 8).build()
+        val expectedWhere = Where(
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "int", 4)),
+                listOf(5, 6, 7, 8)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
     fun testIsNull() {
         val actualWhere = builder.isNull(table.int).build()
         val expectedWhere = Where(
@@ -346,6 +392,8 @@ class WhereBuilderImplTest {
                     lt(table.blob, byteArrayOf(11))
                     like(table.long, "12")
                 }.and()
+                .isIn(table.nullableFloat, 13F, 14F, 15F).or()
+                .isNotIn(table.nullableDouble, 16.0).and()
                 .isNull(table.nullableInt).or()
                 .isNotNull(table.int).build()
 
@@ -375,10 +423,18 @@ class WhereBuilderImplTest {
                                         OneArgPredicate(OneArgPredicate.Type.LIKE, "long")
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "nullable_float", 3),
+                        SimpleConnector(SimpleConnector.Type.OR),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "nullable_double", 1),
+                        SimpleConnector(SimpleConnector.Type.AND),
                         NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
                         SimpleConnector(SimpleConnector.Type.OR),
                         NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")
-                ), listOf(5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12")
+                ),
+                listOf(
+                        5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12",
+                        13F, 14F, 15F, 16.0
+                )
         )
 
         assertWhereEquality(actualWhere, expectedWhere)

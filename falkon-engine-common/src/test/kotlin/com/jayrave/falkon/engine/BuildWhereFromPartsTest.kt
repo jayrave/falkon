@@ -126,6 +126,82 @@ class BuildWhereFromPartsTest {
     }
 
 
+    @Test(expected = SQLSyntaxErrorException::class)
+    fun testIsInWithNegativeNumberOfArgsThrows() {
+        listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_IN, "column_name", -1
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+    }
+
+
+    @Test(expected = SQLSyntaxErrorException::class)
+    fun testIsInWithZeroArgsThrows() {
+        listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_IN, "column_name", 0
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+    }
+
+
+    @Test
+    fun testIsInWithSingleArg() {
+        val actualWhereClause = listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_IN, "column_name", 1
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
+        val expectedWhereClause = "WHERE column_name IN (?)"
+        assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+    }
+
+
+    @Test
+    fun testIsInWithMultipleArgs() {
+        val actualWhereClause = listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_IN, "column_name", 3
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
+        val expectedWhereClause = "WHERE column_name IN (?, ?, ?)"
+        assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+    }
+
+
+    @Test(expected = SQLSyntaxErrorException::class)
+    fun testIsNotInWithNegativeNumberOfArgsThrows() {
+        listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_NOT_IN, "column_name", -1
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+    }
+
+
+    @Test(expected = SQLSyntaxErrorException::class)
+    fun testIsNotInWithZeroArgsThrows() {
+        listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_NOT_IN, "column_name", 0
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+    }
+
+
+    @Test
+    fun testIsNotInWithSingleArg() {
+        val actualWhereClause = listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_NOT_IN, "column_name", 1
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
+        val expectedWhereClause = "WHERE column_name NOT IN (?)"
+        assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+    }
+
+
+    @Test
+    fun testIsNotInWithMultipleArgs() {
+        val actualWhereClause = listOf(MultiArgPredicate(
+                MultiArgPredicate.Type.IS_NOT_IN, "column_name", 3
+        )).buildWhereClause(DEFAULT_ARG_PLACEHOLDER)
+
+        val expectedWhereClause = "WHERE column_name NOT IN (?, ?, ?)"
+        assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+    }
+
+
     @Test
     fun testSimpleAnd() {
         val actualWhereClause = listOf(SimpleConnector(

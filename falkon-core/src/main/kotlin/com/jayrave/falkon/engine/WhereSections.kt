@@ -39,6 +39,20 @@ sealed class WhereSection {
 
 
         /**
+         * Represents conditions that compare the value in a column against a list of values.
+         * Eg., `column_1 in 5, 6`
+         */
+        class MultiArgPredicate(val type: Type, val columnName: String, val numberOfArgs: Int) :
+                Predicate() {
+
+            enum class Type {
+                IS_IN,
+                IS_NOT_IN
+            }
+        }
+
+
+        /**
          * Represents BETWEEN condition that takes in 2 values => low and high. This is usually
          * of the form `column_name BETWEEN low_value AND high_value`
          */
