@@ -78,43 +78,43 @@ class CompiledStatementKtTest {
 
     @Test
     fun testNonNativeValueGetsBoundAsString() {
-        val runnableMock = Runnable {  }
-        compiledStatement.bind(1, runnableMock)
-        verify(compiledStatement).bindString(eq(1), eq(runnableMock.toString()))
+        val noOpRunnable = Runnable {  }
+        compiledStatement.bind(1, noOpRunnable)
+        verify(compiledStatement).bindString(eq(1), eq(noOpRunnable.toString()))
         verifyNoMoreInteractions(compiledStatement)
     }
 
 
     @Test
     fun testBindAllWithDefaultStartIndex() {
-        val callableMock = Callable { }
+        val noOpCallable = Callable { }
         val values = listOf(
                 12.toShort(), 13, 14L, 15F, 16.0, "test 17", byteArrayOf(18),
-                TypedNull(Type.BLOB), callableMock
+                TypedNull(Type.BLOB), noOpCallable
         )
 
         compiledStatement.bindAll(values)
         verifyInteractionsForBindAll(
                 startIndex = 1, short = 12, int = 13, long = 14, float = 15F, double = 16.0,
                 string = "test 17", blob = byteArrayOf(18), nullType = Type.BLOB,
-                nonNativeValue = callableMock
+                nonNativeValue = noOpCallable
         )
     }
 
 
     @Test
     fun testBindAllWithCustomStartIndex() {
-        val callableMock = Callable { }
+        val noOpCallable = Callable { }
         val values = listOf(
                 12.toShort(), 13, 14L, 15F, 16.0, "test 17", byteArrayOf(18),
-                TypedNull(Type.BLOB), callableMock
+                TypedNull(Type.BLOB), noOpCallable
         )
 
         compiledStatement.bindAll(values, 7)
         verifyInteractionsForBindAll(
                 startIndex = 7, short = 12, int = 13, long = 14, float = 15F, double = 16.0,
                 string = "test 17", blob = byteArrayOf(18), nullType = Type.BLOB,
-                nonNativeValue = callableMock
+                nonNativeValue = noOpCallable
         )
     }
 
