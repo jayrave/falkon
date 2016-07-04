@@ -1,8 +1,6 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.dao.Dao
-
-interface Table<T : Any, ID : Any, D : Dao<T, ID>> {
+interface Table<T : Any, ID : Any> {
 
     /**
      * Name of the table this class deals with
@@ -13,11 +11,6 @@ interface Table<T : Any, ID : Any, D : Dao<T, ID>> {
      * Configuration for this table
      */
     val configuration: TableConfiguration
-
-    /**
-     * [Dao] associated with this table
-     */
-    val dao: D
 
     /**
      * The column that represents the primary key for the table this class deals with

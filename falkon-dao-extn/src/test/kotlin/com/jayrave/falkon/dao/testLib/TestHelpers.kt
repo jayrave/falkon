@@ -28,11 +28,10 @@ internal class ModelForTest(
 
 
 internal class TableForTest(
-        configuration: TableConfiguration = defaultTableConfiguration(),
-        dao: Dao<ModelForTest, UUID>? = null) :
-        BaseTable<ModelForTest, UUID, Dao<ModelForTest, UUID>>("test", configuration) {
+        configuration: TableConfiguration = defaultTableConfiguration()) :
+        BaseTable<ModelForTest, UUID>("test", configuration) {
 
-    override val dao: Dao<ModelForTest, UUID> = dao ?: DaoImpl(this)
+    val dao: Dao<ModelForTest, UUID> = DaoImpl(this)
     override val idColumn: Column<ModelForTest, UUID> get() = id
     override fun create(value: Value<ModelForTest>): ModelForTest {
         return ModelForTest(

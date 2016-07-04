@@ -1,6 +1,5 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.dao.Dao
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
@@ -10,9 +9,9 @@ import kotlin.reflect.KProperty1
  * An abstract extension of [Table] that could be sub-classed for easy & pain-free
  * implementation of [Table]
  */
-abstract class BaseTable<T : Any, ID : Any, D : Dao<T, ID>>(
+abstract class BaseTable<T : Any, ID : Any>(
         override val name: String, override val configuration: TableConfiguration) :
-        Table<T, ID, D> {
+        Table<T, ID> {
 
     override final val allColumns: Set<Column<T, *>> = Collections.newSetFromMap(
             ConcurrentHashMap()

@@ -43,16 +43,16 @@ internal class OrderedColumns<T : Any> private constructor(
 
     companion object {
 
-        fun <T: Any> forAllColumnsOf(table: Table<T, *, *>): OrderedColumns<T> {
+        fun <T: Any> forAllColumnsOf(table: Table<T, *>): OrderedColumns<T> {
             return withPredicate(table) { true }
         }
 
-        fun <T: Any> forNonIdColumnsOf(table: Table<T, *, *>): OrderedColumns<T> {
+        fun <T: Any> forNonIdColumnsOf(table: Table<T, *>): OrderedColumns<T> {
             return withPredicate(table) { it != table.idColumn }
         }
 
         private fun <T: Any> withPredicate(
-                table: Table<T, *, *>, predicate: (Column<T, *>) -> Boolean): OrderedColumns<T> {
+                table: Table<T, *>, predicate: (Column<T, *>) -> Boolean): OrderedColumns<T> {
             // According to Table contract, allColumns must be thread-safe. So feel free
             // to just iterate over it without any special construct
             return OrderedColumns(table.allColumns, predicate)

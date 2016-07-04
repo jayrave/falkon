@@ -7,7 +7,7 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compile falkonModules.core
+    compile falkonModules.dao
     compile libraries.kotlinStdlib
 
     testCompile falkonModules.engineJdbc

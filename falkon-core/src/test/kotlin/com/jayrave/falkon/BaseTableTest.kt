@@ -1,7 +1,6 @@
 package com.jayrave.falkon
 
-import com.jayrave.falkon.dao.Dao
-import com.jayrave.falkon.testLib.defaultTableConfiguration
+import com.jayrave.falkon.engine.Engine
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -87,12 +86,20 @@ class BaseTableTest {
 
     private abstract class TableForTest(
             configuration: TableConfiguration = defaultTableConfiguration()) :
-            BaseTable<ModelForTest, Int, Dao<ModelForTest, Int>>("test", configuration) {
+            BaseTable<ModelForTest, Int>("test", configuration) {
 
-        override val dao: Dao<ModelForTest, Int> = mock()
         override val idColumn: Column<ModelForTest, Int> = mock()
         override fun create(value: Value<ModelForTest>): ModelForTest {
             throw UnsupportedOperationException()
+        }
+
+
+        companion object {
+            private fun defaultTableConfiguration(engine: Engine = mock()): TableConfiguration {
+                val configuration = TableConfigurationImpl(engine)
+                configuration.registerDefaultConverters()
+                return configuration
+            }
         }
     }
 }
