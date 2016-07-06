@@ -1,0 +1,11 @@
+apply plugin: 'kotlin'
+
+group = artifactsInfo.group
+version = artifactsInfo.versionString
+
+sourceCompatibility = javaVersions.source
+targetCompatibility = javaVersions.target
+
+dependencies {
+    compile libraries.kotlinStdlib
+}

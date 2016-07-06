@@ -65,7 +65,8 @@ ext.falkonModules = [
         engineAndroidSqlite: project(':falkon-engine-android-sqlite'),
         engineCommon       : project(':falkon-engine-common'),
         engineJdbc         : project(':falkon-engine-jdbc'),
-        engineTestCommon   : project(':falkon-engine-test-common')
+        engineTestCommon   : project(':falkon-engine-test-common'),
+        sqlBuilder         : project(':falkon-sql-builder')
 ]
 
 
