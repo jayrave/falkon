@@ -1,6 +1,6 @@
 package com.jayrave.falkon.sqlBuilders
 
-import com.jayrave.falkon.sqlBuilders.query.WhereSection
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 interface UpdateSqlBuilder {
     fun build(

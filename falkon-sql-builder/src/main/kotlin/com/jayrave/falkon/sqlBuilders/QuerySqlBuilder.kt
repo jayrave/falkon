@@ -1,7 +1,7 @@
 package com.jayrave.falkon.sqlBuilders
 
-import com.jayrave.falkon.sqlBuilders.query.OrderInfo
-import com.jayrave.falkon.sqlBuilders.query.WhereSection
+import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 interface QuerySqlBuilder {
     fun build(

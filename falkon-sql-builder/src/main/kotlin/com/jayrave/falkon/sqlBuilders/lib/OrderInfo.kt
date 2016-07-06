@@ -1,4 +1,4 @@
-package com.jayrave.falkon.sqlBuilders.query
+package com.jayrave.falkon.sqlBuilders.lib
 
 interface OrderInfo {
     val columnName: String
