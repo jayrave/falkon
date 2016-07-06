@@ -66,7 +66,8 @@ ext.falkonModules = [
         engineCommon       : project(':falkon-engine-common'),
         engineJdbc         : project(':falkon-engine-jdbc'),
         engineTestCommon   : project(':falkon-engine-test-common'),
-        sqlBuilder         : project(':falkon-sql-builder')
+        sqlBuilder         : project(':falkon-sql-builder'),
+        sqlBuilderSimple   : project(':falkon-sql-builder-simple')
 ]
 
 
