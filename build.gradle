@@ -63,7 +63,6 @@ ext.falkonModules = [
         daoExtn            : project(':falkon-dao-extn'),
         engine             : project(':falkon-engine'),
         engineAndroidSqlite: project(':falkon-engine-android-sqlite'),
-        engineCommon       : project(':falkon-engine-common'),
         engineJdbc         : project(':falkon-engine-jdbc'),
         engineTestCommon   : project(':falkon-engine-test-common'),
         sqlBuilder         : project(':falkon-sql-builder'),
