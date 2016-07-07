@@ -11,6 +11,7 @@ dependencies {
     compile libraries.kotlinStdlib
 
     testCompile falkonModules.engineJdbc
+    testCompile falkonModules.sqlBuilderSimple
     testCompile libraries.assertJ
     testCompile libraries.h2
     testCompile libraries.jUnit

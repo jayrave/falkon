@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.delete.DeleteBuilderImpl
+import com.jayrave.falkon.dao.delete.testLib.DeleteSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledDeleteForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
@@ -11,10 +12,13 @@ import org.junit.Test
 
 class DeleteBuilderDeleteExtnTest {
 
+    private val argPlaceholder = "?"
+    private val deleteSqlBuilder = DeleteSqlBuilderForTesting()
+
     @Test
     fun testDeleteViaDeleteBuilderReportsCorrectRowCount() {
         testDeleteReportsCorrectRowCount { table: TableForTest ->
-            DeleteBuilderImpl(table).delete()
+            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder).delete()
         }
     }
 
@@ -22,7 +26,10 @@ class DeleteBuilderDeleteExtnTest {
     @Test
     fun testDeleteViaAdderOrEnderReportsCorrectRowCount() {
         testDeleteReportsCorrectRowCount { table: TableForTest ->
-            DeleteBuilderImpl(table).where().eq(table.int, 6).delete()
+            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder)
+                    .where()
+                    .eq(table.int, 6)
+                    .delete()
         }
     }
 
@@ -30,7 +37,7 @@ class DeleteBuilderDeleteExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfDeleteViaDeleteBuilderThrows() {
         testStatementGetsClosedEvenIfDeleteThrows { table: TableForTest ->
-            DeleteBuilderImpl(table).delete()
+            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder).delete()
         }
     }
 
@@ -38,7 +45,10 @@ class DeleteBuilderDeleteExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfDeleteViaAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfDeleteThrows { table: TableForTest ->
-            DeleteBuilderImpl(table).where().eq(table.int, 6).delete()
+            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder)
+                    .where()
+                    .eq(table.int, 6)
+                    .delete()
         }
     }
 

@@ -20,38 +20,6 @@ class JdbcEngine(dataSource: DataSource) : Engine {
     }
 
 
-    override fun buildInsertSql(tableName: String, columns: Iterable<String>): String {
-        return SqlBuilderFromParts.buildInsertSqlOrThrow(tableName, columns)
-    }
-
-
-    override fun buildUpdateSql(
-            tableName: String, columns: Iterable<String>,
-            whereSections: Iterable<WhereSection>?): String {
-
-        return SqlBuilderFromParts.buildUpdateSqlOrThrow(tableName, columns, whereSections)
-    }
-
-
-    override fun buildDeleteSql(
-            tableName: String, whereSections: Iterable<WhereSection>?): String {
-
-        return SqlBuilderFromParts.buildDeleteSql(tableName, whereSections)
-    }
-
-
-    override fun buildQuerySql(
-            tableName: String, distinct: Boolean, columns: Iterable<String>?,
-            whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-            orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String {
-
-        return SqlBuilderFromParts.buildQuerySql(
-                tableName, distinct, columns, whereSections, groupBy,
-                orderBy, limit, offset
-        )
-    }
-
-
     override fun compileSql(rawSql: String): CompiledStatement<Unit> {
         return UnitReturningCompiledStatement(rawSql, connectionManager)
     }

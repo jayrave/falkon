@@ -7,12 +7,16 @@ import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledQuery
-import com.jayrave.falkon.engine.OrderInfo
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
+import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import java.util.*
 
-internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *>) : QueryBuilder<T> {
+internal class QueryBuilderImpl<T : Any>(
+        override val table: Table<T, *>, private val querySqlBuilder: QuerySqlBuilder,
+        private val argPlaceholder: String, private val orderByAscendingKey: String,
+        private val orderByDescendingKey: String) : QueryBuilder<T> {
 
     private var distinct: Boolean = false
     private var selectedColumns: Iterable<Column<T, *>>? = null
@@ -81,9 +85,10 @@ internal class QueryBuilderImpl<T : Any>(override val table: Table<T, *>) : Quer
             else -> IterableBackedIterable(tempGroupByColumns) { it.name }
         }
 
-        val sql = table.configuration.engine.buildQuerySql(
+        val sql = querySqlBuilder.build(
                 table.name, distinct, columns, where?.whereSections, groupBy,
-                orderByInfoList, limitCount, offsetCount
+                orderByInfoList, limitCount, offsetCount, argPlaceholder,
+                orderByAscendingKey, orderByDescendingKey
         )
 
         return Query(sql, where?.arguments)

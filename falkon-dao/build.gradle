@@ -8,6 +8,8 @@ targetCompatibility = javaVersions.target
 
 dependencies {
     compile falkonModules.core
+    compile falkonModules.sqlBuilder
+
     compile libraries.kotlinStdlib
 
     testCompile libraries.assertJ

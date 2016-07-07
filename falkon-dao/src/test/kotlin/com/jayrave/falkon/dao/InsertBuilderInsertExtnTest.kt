@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.insert.InsertBuilderImpl
+import com.jayrave.falkon.dao.insert.testLib.InsertSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledInsertForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
@@ -10,6 +11,9 @@ import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
 
 class InsertBuilderInsertExtnTest {
+
+    private val argPlaceholder = "?"
+    private val insertSqlBuilder = InsertSqlBuilderForTesting()
 
     @Test
     fun testInsertReturnsTrueForSingleRowInsertion() {
@@ -32,7 +36,7 @@ class InsertBuilderInsertExtnTest {
         )
 
         val table = TableForTest(defaultTableConfiguration(engine))
-        val builder = InsertBuilderImpl(table)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder, argPlaceholder)
 
         var exceptionWasThrown = false
         try {
@@ -62,7 +66,7 @@ class InsertBuilderInsertExtnTest {
         )
 
         val table = TableForTest(defaultTableConfiguration(engine))
-        val builder = InsertBuilderImpl(table)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder, argPlaceholder)
         assertThat(builder.set(table.int, 5).insert()).isEqualTo(expectedFlag)
 
         // Assert that the statement was executed and closed

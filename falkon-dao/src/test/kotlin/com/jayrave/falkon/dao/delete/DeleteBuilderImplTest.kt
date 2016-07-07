@@ -1,11 +1,15 @@
 package com.jayrave.falkon.dao.delete
 
+import com.jayrave.falkon.dao.delete.testLib.DeleteSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.OneShotCompiledDeleteForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
-import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
-import com.jayrave.falkon.engine.WhereSection.Predicate.OneArgPredicate
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
+import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -16,17 +20,22 @@ class DeleteBuilderImplTest {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
-        
-        val builder = DeleteBuilderImpl(table)
-        builder.compile()
+        val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        // Verify interactions with compiled statement
+        // build & compile
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        val actualDelete = deleteBuilder.build()
+        deleteBuilder.compile()
+
+        // build expected delete
+        val expectedSql = deleteSqlBuilder.build(table.name, null, ARG_PLACEHOLDER)
+        val expectedDelete = Delete(expectedSql, null)
+
+        // Verify
+        assertEquality(actualDelete, expectedDelete)
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
-        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, null
-        ))
-
+        assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).isEmpty()
     }
 
@@ -36,18 +45,27 @@ class DeleteBuilderImplTest {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
+        val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        val builder = DeleteBuilderImpl(table)
-        builder.where().eq(table.int, 5)
-        builder.compile()
+        // build & compile
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        deleteBuilder.where().eq(table.int, 5)
+        val actualDelete = deleteBuilder.build()
+        deleteBuilder.compile()
 
-        // Verify interactions with compiled statement
+        // build expected delete
+        val expectedSql = deleteSqlBuilder.build(
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")),
+                ARG_PLACEHOLDER
+        )
+
+        val expectedDelete = Delete(expectedSql, listOf(5))
+
+        // Verify
+        assertEquality(actualDelete, expectedDelete)
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
-        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
-        ))
-
+        assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
     }
@@ -58,17 +76,27 @@ class DeleteBuilderImplTest {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
+        val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        val builder = DeleteBuilderImpl(table)
-        builder.where().eq(table.int, 5).compile()
+        // build & compile
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        deleteBuilder.where().eq(table.int, 5)
+        val actualDelete = deleteBuilder.build()
+        deleteBuilder.compile()
 
-        // Verify interactions with compiled statement
+        // build expected delete
+        val expectedSql = deleteSqlBuilder.build(
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")),
+                ARG_PLACEHOLDER
+        )
+
+        val expectedDelete = Delete(expectedSql, listOf(5))
+
+        // Verify
+        assertEquality(actualDelete, expectedDelete)
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
-        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
-        ))
-
+        assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
     }
@@ -79,18 +107,28 @@ class DeleteBuilderImplTest {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
+        val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        val builder = DeleteBuilderImpl(table)
-        builder.where().eq(table.int, 5)
-        builder.where().eq(table.string, "test").compile()
+        // build & compile
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        deleteBuilder.where().eq(table.int, 5)
+        deleteBuilder.where().eq(table.string, "test")
+        val actualDelete = deleteBuilder.build()
+        deleteBuilder.compile()
 
-        // Verify interactions with compiled statement
+        // build expected delete
+        val expectedSql = deleteSqlBuilder.build(
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string")),
+                ARG_PLACEHOLDER
+        )
+
+        val expectedDelete = Delete(expectedSql, listOf("test"))
+
+        // Verify
+        assertEquality(actualDelete, expectedDelete)
         assertThat(engine.compiledDeletes).hasSize(1)
         val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
-        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string"))
-        ))
-
+        assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.stringBoundAt(1)).isEqualTo("test")
     }
@@ -101,9 +139,9 @@ class DeleteBuilderImplTest {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
+        val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        val builder = DeleteBuilderImpl(table)
-        builder.where().eq(table.int, 5)
+        DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER).where().eq(table.int, 5)
         assertThat(engine.compiledDeletes).isEmpty()
     }
 
@@ -113,23 +151,24 @@ class DeleteBuilderImplTest {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
+        val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        val builder = DeleteBuilderImpl(table)
-        builder.where()
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        deleteBuilder.where()
                 .eq(table.short, 5.toShort()).and()
                 .eq(table.int, 6).and()
                 .eq(table.long, 7L).and()
                 .eq(table.float, 8F).and()
                 .eq(table.double, 9.toDouble()).and()
-                .eq(table.string, "test").and()
-                .eq(table.blob, byteArrayOf(10)).and()
+                .eq(table.string, "test 10").and()
+                .eq(table.blob, byteArrayOf(11)).and()
                 .gt(table.nullableInt, null)
-                .compile()
 
-        // Verify interactions with compiled statement
-        assertThat(engine.compiledDeletes).hasSize(1)
-        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
-        assertThat(statement.sql).isEqualTo(EngineForTestingBuilders.buildDummyDeleteSql(
+        val actualDelete = deleteBuilder.build()
+        deleteBuilder.compile()
+
+        // build expected delete
+        val expectedSql = deleteSqlBuilder.build(
                 table.name,
                 listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
@@ -147,29 +186,57 @@ class DeleteBuilderImplTest {
                         OneArgPredicate(OneArgPredicate.Type.EQ, "blob"),
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int")
-                )
-        ))
+                ), ARG_PLACEHOLDER
+        )
 
+        val expectedDelete = Delete(
+                expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
+                byteArrayOf(11), TypedNull(Type.INT))
+        )
+
+        // Verify
+        assertEquality(actualDelete, expectedDelete)
+        assertThat(engine.compiledDeletes).hasSize(1)
+        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
+        assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(8)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
         assertThat(statement.longBoundAt(3)).isEqualTo(7L)
         assertThat(statement.floatBoundAt(4)).isEqualTo(8F)
         assertThat(statement.doubleBoundAt(5)).isEqualTo(9.toDouble())
-        assertThat(statement.stringBoundAt(6)).isEqualTo("test")
-        assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(10))
+        assertThat(statement.stringBoundAt(6)).isEqualTo("test 10")
+        assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(11))
         assertThat(statement.isNullBoundAt(8)).isTrue()
     }
     
     
     
-    private class Bundle(val table: TableForTest, val engine: EngineForTestingBuilders) {
-        companion object {
-            fun default(engine: EngineForTestingBuilders =
-            EngineForTestingBuilders.createWithOneShotStatements()): Bundle {
+    private class Bundle(
+            val table: TableForTest, val engine: EngineForTestingBuilders,
+            val deleteSqlBuilder: DeleteSqlBuilder) {
 
+        companion object {
+            fun default(): Bundle {
+                val engine = EngineForTestingBuilders.createWithOneShotStatements()
                 val table = TableForTest(defaultTableConfiguration(engine))
-                return Bundle(table, engine)
+                return Bundle(table, engine, DeleteSqlBuilderForTesting())
+            }
+        }
+    }
+
+
+
+    companion object {
+        private const val ARG_PLACEHOLDER = "?"
+
+        private fun assertEquality(actualDelete: Delete, expectedDelete: Delete) {
+            assertThat(actualDelete.sql).isEqualTo(expectedDelete.sql)
+            when (actualDelete.arguments) {
+                null -> assertThat(expectedDelete.arguments).isNull()
+                else -> assertThat(actualDelete.arguments).containsExactlyElementsOf(
+                        expectedDelete.arguments
+                )
             }
         }
     }

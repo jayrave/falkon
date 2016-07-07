@@ -5,16 +5,20 @@ import com.jayrave.falkon.dao.testLib.OneShotCompiledUpdateForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.dao.update.UpdateBuilderImpl
+import com.jayrave.falkon.dao.update.testLib.UpdateSqlBuilderForTesting
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
 
 class UpdateBuilderUpdateExtnTest {
 
+    private val argPlaceholder = "?"
+    private val updateSqlBuilder = UpdateSqlBuilderForTesting()
+
     @Test
     fun testUpdateViaAdderOrEnderReportsCorrectRowCount() {
         testUpdateReportsCorrectRowCount { table: TableForTest ->
-            UpdateBuilderImpl(table).set(table.int, 5).update()
+            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder).set(table.int, 5).update()
         }
     }
 
@@ -22,7 +26,11 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testUpdateViaPredicateAdderOrEnderReportsCorrectRowCount() {
         testUpdateReportsCorrectRowCount { table: TableForTest ->
-            UpdateBuilderImpl(table).set(table.int, 5).where().eq(table.int, 6).update()
+            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder)
+                    .set(table.int, 5)
+                    .where()
+                    .eq(table.int, 6)
+                    .update()
         }
     }
 
@@ -30,7 +38,7 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfUpdateViaAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
-            UpdateBuilderImpl(table).set(table.int, 5).update()
+            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder).set(table.int, 5).update()
         }
     }
 
@@ -38,7 +46,11 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfUpdateViaPredicateAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
-            UpdateBuilderImpl(table).set(table.int, 5).where().eq(table.int, 6).update()
+            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder)
+                    .set(table.int, 5)
+                    .where()
+                    .eq(table.int, 6)
+                    .update()
         }
     }
 

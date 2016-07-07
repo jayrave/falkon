@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao.where
 
-import com.jayrave.falkon.engine.WhereSection
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 /**
  * [whereSections] contains the WHERE sections of an SQL statement

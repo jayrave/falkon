@@ -1,10 +1,15 @@
 package com.jayrave.falkon.dao.testLib
 
 import com.jayrave.falkon.*
+import com.jayrave.falkon.dao.Configuration
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.dao.DaoImpl
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.sqlBuilders.SimpleDeleteSqlBuilder
+import com.jayrave.falkon.sqlBuilders.SimpleInsertSqlBuilder
+import com.jayrave.falkon.sqlBuilders.SimpleQuerySqlBuilder
+import com.jayrave.falkon.sqlBuilders.SimpleUpdateSqlBuilder
 import com.nhaarman.mockito_kotlin.mock
 import java.util.*
 
@@ -31,7 +36,11 @@ internal class TableForTest(
         configuration: TableConfiguration = defaultTableConfiguration()) :
         BaseTable<ModelForTest, UUID>("test", configuration) {
 
-    val dao: Dao<ModelForTest, UUID> = DaoImpl(this)
+    val dao: Dao<ModelForTest, UUID> = DaoImpl(
+            this, Configuration("?", "ASC", "DESC"), SimpleInsertSqlBuilder(),
+            SimpleUpdateSqlBuilder(), SimpleDeleteSqlBuilder(), SimpleQuerySqlBuilder()
+    )
+
     override val idColumn: Column<ModelForTest, UUID> get() = id
     override fun create(value: Value<ModelForTest>): ModelForTest {
         return ModelForTest(

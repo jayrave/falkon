@@ -2,10 +2,10 @@ package com.jayrave.falkon.dao.testLib
 
 import com.jayrave.falkon.*
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.WhereSection
-import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
-import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
-import com.jayrave.falkon.engine.WhereSection.Predicate.*
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnector
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.*
 import com.nhaarman.mockito_kotlin.mock
 
 internal class ModelForTest(

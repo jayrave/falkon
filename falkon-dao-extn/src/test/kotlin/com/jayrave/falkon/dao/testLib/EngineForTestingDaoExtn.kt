@@ -24,33 +24,6 @@ internal class EngineForTestingDaoExtn private constructor(
     }
 
 
-    override fun buildInsertSql(tableName: String, columns: Iterable<String>): String {
-        return DUMMY_SQL
-    }
-
-
-    override fun buildUpdateSql(
-            tableName: String, columns: Iterable<String>,
-            whereSections: Iterable<WhereSection>?): String {
-
-        return DUMMY_SQL
-    }
-
-
-    override fun buildDeleteSql(tableName: String, whereSections: Iterable<WhereSection>?): String {
-        return DUMMY_SQL
-    }
-
-
-    override fun buildQuerySql(
-            tableName: String, distinct: Boolean, columns: Iterable<String>?,
-            whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-            orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String {
-
-        return DUMMY_SQL
-    }
-
-
     override fun compileSql(rawSql: String): CompiledStatement<Unit> {
         throw UnsupportedOperationException()
     }
@@ -81,8 +54,6 @@ internal class EngineForTestingDaoExtn private constructor(
 
 
     companion object {
-        private const val DUMMY_SQL = "dummy sql"
-
         fun createWithMockStatements(
         insertProvider: () -> CompiledInsert = { mock<CompiledInsert>() },
         updateProvider: () -> CompiledUpdate = { mock<CompiledUpdate>() },

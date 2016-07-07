@@ -4,7 +4,6 @@ import com.jayrave.falkon.engine.*
 import java.util.*
 
 /**
- * All build* methods return dummy SQL built by stringifying and concatenating the parameters.
  * All compile* methods build [OneShotCompiledStatementForTest] (and derivatives) with the
  * passed in rawSql string
  */
@@ -21,35 +20,6 @@ internal class EngineForTestingBuilders private constructor(
 
     override fun <R> executeInTransaction(operation: () -> R): R {
         throw UnsupportedOperationException()
-    }
-
-
-    override fun buildInsertSql(tableName: String, columns: Iterable<String>): String {
-        return buildDummyInsertSql(tableName, columns)
-    }
-
-
-    override fun buildUpdateSql(
-            tableName: String, columns: Iterable<String>,
-            whereSections: Iterable<WhereSection>?): String {
-
-        return buildDummyUpdateSql(tableName, columns, whereSections)
-    }
-
-
-    override fun buildDeleteSql(tableName: String, whereSections: Iterable<WhereSection>?): String {
-        return buildDummyDeleteSql(tableName, whereSections)
-    }
-
-
-    override fun buildQuerySql(
-            tableName: String, distinct: Boolean, columns: Iterable<String>?,
-            whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-            orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?): String {
-
-        return buildDummyQuerySql(
-                tableName, distinct, columns, whereSections, groupBy, orderBy, limit, offset
-        )
     }
 
 
@@ -105,42 +75,6 @@ internal class EngineForTestingBuilders private constructor(
             return EngineForTestingBuilders(
                     insertProvider, updateProvider, deleteProvider, queryProvider
             )
-        }
-
-
-        fun buildDummyInsertSql(tableName: String, columns: Iterable<String>): String {
-            return "tableName: $tableName; columns: ${columns.joinToString()}"
-        }
-
-
-        fun buildDummyUpdateSql(
-                tableName: String, columns: Iterable<String>,
-                whereSections: Iterable<WhereSection>?): String {
-
-            val whereClause = buildWhereClauseWithPlaceholders(whereSections)
-            return "tableName: $tableName; columns: ${columns.joinToString()}; " +
-                    "whereClause: $whereClause"
-        }
-
-
-        fun buildDummyDeleteSql(tableName: String, whereSections: Iterable<WhereSection>?): String {
-            val whereClause = buildWhereClauseWithPlaceholders(whereSections)
-            return "tableName: $tableName; whereClause: $whereClause"
-        }
-
-
-        fun buildDummyQuerySql(
-                tableName: String, distinct: Boolean = false, columns: Iterable<String>? = null,
-                whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
-                orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
-                String {
-
-            val whereClause = buildWhereClauseWithPlaceholders(whereSections)
-            val orderByString = orderBy?.joinToString() { "${it.columnName} ${it.ascending}" }
-            return "tableName: $tableName; distinct: $distinct; " +
-                    "columns: ${columns?.joinToString()}; whereClause: $whereClause; " +
-                    "groupBy: ${groupBy?.joinToString()}; orderBy: $orderByString; " +
-                    "limit: $limit; offset: $offset"
         }
     }
 }

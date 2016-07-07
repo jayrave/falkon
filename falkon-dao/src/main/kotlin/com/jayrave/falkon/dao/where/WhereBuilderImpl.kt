@@ -3,10 +3,10 @@ package com.jayrave.falkon.dao.where
 import com.jayrave.falkon.Column
 import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.engine.TypedNull
-import com.jayrave.falkon.engine.WhereSection
-import com.jayrave.falkon.engine.WhereSection.Connector.CompoundConnector
-import com.jayrave.falkon.engine.WhereSection.Connector.SimpleConnector
-import com.jayrave.falkon.engine.WhereSection.Predicate.*
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnector
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.*
 import java.sql.SQLSyntaxErrorException
 import java.util.*
 

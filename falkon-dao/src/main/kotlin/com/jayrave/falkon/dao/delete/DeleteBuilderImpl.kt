@@ -8,8 +8,11 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledDelete
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
 
-internal class DeleteBuilderImpl<T : Any>(override val table: Table<T, *>) : DeleteBuilder<T> {
+internal class DeleteBuilderImpl<T : Any>(
+        override val table: Table<T, *>, private val deleteSqlBuilder: DeleteSqlBuilder,
+        private val argPlaceholder: String) : DeleteBuilder<T> {
 
     private var whereBuilder: WhereBuilderImpl<T, AdderOrEnder<T>>? = null
 
@@ -21,7 +24,7 @@ internal class DeleteBuilderImpl<T : Any>(override val table: Table<T, *>) : Del
     override fun build(): Delete {
         val where: Where? = whereBuilder?.build()
         return Delete(
-                table.configuration.engine.buildDeleteSql(table.name, where?.whereSections),
+                deleteSqlBuilder.build(table.name, where?.whereSections, argPlaceholder),
                 where?.arguments
         )
     }

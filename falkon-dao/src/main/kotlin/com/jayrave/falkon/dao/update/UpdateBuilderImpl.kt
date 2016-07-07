@@ -12,8 +12,11 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledUpdate
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
 
-internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *>) : UpdateBuilder<T> {
+internal class UpdateBuilderImpl<T : Any>(
+        override val table: Table<T, *>, private val updateSqlBuilder: UpdateSqlBuilder,
+        private val argPlaceholder: String) : UpdateBuilder<T> {
 
     private val dataConsumer = LinkedHashMapBackedDataConsumer()
     private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null
@@ -32,10 +35,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *>) : Upd
         val where: Where? = whereBuilder?.build()
         val columns: Iterable<String> = LinkedHashMapBackedIterable.forKeys(map)
 
-        val sql = table.configuration
-                .engine
-                .buildUpdateSql(table.name, columns, where?.whereSections)
-
+        val sql = updateSqlBuilder.build(table.name, columns, where?.whereSections, argPlaceholder)
         val arguments = IterablesBackedIterable(listOf(
                 LinkedHashMapBackedIterable.forValues(map),
                 where?.arguments ?: emptyList()
@@ -44,7 +44,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *>) : Upd
         return Update(sql, arguments)
     }
 
-    private fun update(): CompiledUpdate {
+    private fun compile(): CompiledUpdate {
         val update = build()
         return table.configuration.engine
                 .compileUpdate(update.sql)
@@ -69,7 +69,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *>) : Upd
         }
 
         override fun compile(): CompiledUpdate {
-            return this@UpdateBuilderImpl.update()
+            return this@UpdateBuilderImpl.compile()
         }
     }
 
@@ -93,7 +93,7 @@ internal class UpdateBuilderImpl<T : Any>(override val table: Table<T, *>) : Upd
         }
 
         override fun compile(): CompiledUpdate {
-            return this@UpdateBuilderImpl.update()
+            return this@UpdateBuilderImpl.compile()
         }
     }
 }
