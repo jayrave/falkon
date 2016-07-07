@@ -1,6 +1,5 @@
-package com.jayrave.falkon.engine
+package com.jayrave.falkon.sqlBuilders
 
-import com.jayrave.falkon.sqlBuilders.buildWhereClause
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector

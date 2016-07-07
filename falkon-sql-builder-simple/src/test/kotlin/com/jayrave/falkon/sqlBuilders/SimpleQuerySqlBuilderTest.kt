@@ -1,6 +1,5 @@
-package com.jayrave.falkon.engine
+package com.jayrave.falkon.sqlBuilders
 
-import com.jayrave.falkon.sqlBuilders.SimpleQuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector

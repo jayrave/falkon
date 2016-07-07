@@ -1,6 +1,5 @@
-package com.jayrave.falkon.engine
+package com.jayrave.falkon.sqlBuilders
 
-import com.jayrave.falkon.sqlBuilders.SimpleInsertSqlBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.sql.SQLSyntaxErrorException

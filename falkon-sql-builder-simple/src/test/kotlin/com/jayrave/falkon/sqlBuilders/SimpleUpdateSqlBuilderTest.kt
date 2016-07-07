@@ -1,6 +1,5 @@
-package com.jayrave.falkon.engine
+package com.jayrave.falkon.sqlBuilders
 
-import com.jayrave.falkon.sqlBuilders.SimpleUpdateSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
