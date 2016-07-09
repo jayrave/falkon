@@ -50,13 +50,6 @@ buildscript {
 }
 
 
-allprojects {
-    repositories {
-        jcenter()
-    }
-}
-
-
 ext.falkonModules = [
         core               : project(':falkon-core'),
         dao                : project(':falkon-dao'),
@@ -80,3 +73,15 @@ ext.libraries = [
         mockitoKotlin: "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
         robolectric  : "org.robolectric:robolectric:${librariesVersions.robolectric}"
 ]
+
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
+}
