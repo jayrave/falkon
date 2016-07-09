@@ -5,7 +5,7 @@ buildscript {
     ]
 
     def pluginsVersions = [
-            android: '2.0.0',
+            android: '2.1.2',
             kotlin : baseVersions.kotlin
     ]
 
