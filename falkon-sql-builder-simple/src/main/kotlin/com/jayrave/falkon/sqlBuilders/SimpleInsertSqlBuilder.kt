@@ -19,7 +19,7 @@ class SimpleInsertSqlBuilder : InsertSqlBuilder {
             it
         })
 
-        // Add required placeholders (return null if there are no columns to set value to)
+        // Add required placeholders
         return when (columnCount) {
             0 -> throw SQLSyntaxErrorException(
                     "INSERT SQL without any columns for table: $tableName"
