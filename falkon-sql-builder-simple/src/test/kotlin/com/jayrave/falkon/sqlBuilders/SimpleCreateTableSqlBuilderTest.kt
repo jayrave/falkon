@@ -26,7 +26,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "test", listOf(columnInfo), columnInfo.name, emptyList(), emptyList()
         ))
 
-        val expectedSql = "CREATE TABLE test (column_name TEXT), PRIMARY KEY (column_name)"
+        val expectedSql = "CREATE TABLE test (column_name TEXT, PRIMARY KEY (column_name))"
         assertThat(actualSql).isEqualTo(expectedSql)
     }
 
@@ -41,9 +41,9 @@ class SimpleCreateTableSqlBuilderTest {
                 columnInfo1.name, emptyList(), emptyList()
         ))
 
-        val expectedSql = "CREATE TABLE test " +
-                "(column_name_1 NUMBER, column_name_2 TEXT, column_name_3 BLOB), " +
-                "PRIMARY KEY (column_name_1)"
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT, column_name_3 BLOB, " +
+                "PRIMARY KEY (column_name_1))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -58,9 +58,9 @@ class SimpleCreateTableSqlBuilderTest {
                 columnInfo1.name, emptyList(), emptyList()
         ))
 
-        val expectedSql = "CREATE TABLE test " +
-                "(column_name_1 NUMBER, column_name_2 TEXT NON NULL), " +
-                "PRIMARY KEY (column_name_1)"
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT NOT NULL, " +
+                "PRIMARY KEY (column_name_1))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -75,10 +75,10 @@ class SimpleCreateTableSqlBuilderTest {
                 columnInfo1.name, listOf(listOf(columnInfo2.name)), emptyList()
         ))
 
-        val expectedSql = "CREATE TABLE test " +
-                "(column_name_1 NUMBER, column_name_2 TEXT), " +
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
-                "UNIQUE (column_name_2)"
+                "UNIQUE (column_name_2))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -94,10 +94,10 @@ class SimpleCreateTableSqlBuilderTest {
                 listOf(listOf(columnInfo2.name, columnInfo3.name)), emptyList()
         ))
 
-        val expectedSql = "CREATE TABLE test " +
-                "(column_name_1 NUMBER, column_name_2 TEXT, column_name_3 BLOB), " +
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT, column_name_3 BLOB, " +
                 "PRIMARY KEY (column_name_1), " +
-                "UNIQUE (column_name_2, column_name_3)"
+                "UNIQUE (column_name_2, column_name_3))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -120,11 +120,11 @@ class SimpleCreateTableSqlBuilderTest {
         ))
 
         val expectedSql = "CREATE TABLE test (column_name_1 NUMBER, " +
-                "column_name_2 TEXT, column_name_3 BLOB, column_name_4 TEXT), " +
+                "column_name_2 TEXT, column_name_3 BLOB, column_name_4 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2, column_name_3), " +
                 "UNIQUE (column_name_3, column_name_4), " +
-                "UNIQUE (column_name_4)"
+                "UNIQUE (column_name_4))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -143,10 +143,10 @@ class SimpleCreateTableSqlBuilderTest {
                 emptyList(), listOf(foreignKeyConstraint)
         ))
 
-        val expectedSql = "CREATE TABLE test " +
-                "(column_name_1 NUMBER, column_name_2 TEXT), " +
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
-                "FOREIGN KEY (column_name_2) REFERENCES foreign_table(foreign_column_name)"
+                "FOREIGN KEY (column_name_2) REFERENCES foreign_table(foreign_column_name))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -169,11 +169,11 @@ class SimpleCreateTableSqlBuilderTest {
                 emptyList(), listOf(foreignKeyConstraint1, foreignKeyConstraint2)
         ))
 
-        val expectedSql = "CREATE TABLE test " +
-                "(column_name_1 NUMBER, column_name_2 TEXT), " +
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
                 "FOREIGN KEY (column_name_1) REFERENCES foreign_table_1(foreign_column_name_1), " +
-                "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2)"
+                "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -205,13 +205,13 @@ class SimpleCreateTableSqlBuilderTest {
         ))
 
         val expectedSql = "CREATE TABLE test (column_name_1 NUMBER, " +
-                "column_name_2 TEXT NON NULL, column_name_3 BLOB NON NULL, column_name_4 TEXT), " +
+                "column_name_2 TEXT NOT NULL, column_name_3 BLOB NOT NULL, column_name_4 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2, column_name_3), " +
                 "UNIQUE (column_name_3, column_name_4), " +
                 "UNIQUE (column_name_4), " +
                 "FOREIGN KEY (column_name_1) REFERENCES foreign_table_1(foreign_column_name_1), " +
-                "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2)"
+                "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }

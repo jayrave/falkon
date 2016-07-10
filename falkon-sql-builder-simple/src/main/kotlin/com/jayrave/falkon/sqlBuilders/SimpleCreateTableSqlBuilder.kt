@@ -8,13 +8,14 @@ class SimpleCreateTableSqlBuilder : CreateTableSqlBuilder {
     override fun build(tableInfo: TableInfo): String {
         // Add basic create table stuff
         val createTableSql = StringBuilder(120)
-        createTableSql.append("CREATE TABLE ${tableInfo.name}")
+        createTableSql.append("CREATE TABLE ${tableInfo.name} (")
 
         // Add remaining parts
         createTableSql.addColumnDefinitionsOrThrow(tableInfo)
         createTableSql.addPrimaryKeyConstraint(tableInfo)
         createTableSql.addUniquenessConstraints(tableInfo)
         createTableSql.addForeignKeyConstraints(tableInfo)
+        createTableSql.append(")")
 
         // Build & return SQL statement
         return createTableSql.toString()
@@ -24,11 +25,11 @@ class SimpleCreateTableSqlBuilder : CreateTableSqlBuilder {
     private fun StringBuilder.addColumnDefinitionsOrThrow(tableInfo: TableInfo) {
         var columnCount = 0
         val columnInfos = tableInfo.columnInfos
-        append(columnInfos.joinToString(separator = ", ", prefix = " (", postfix = ")") {
+        append(columnInfos.joinToString(separator = ", ") {
             columnCount++
             val columnDefinition = "${it.name} ${it.type}"
             when (it.isNonNull) {
-                true -> "$columnDefinition NON NULL"
+                true -> "$columnDefinition NOT NULL"
                 else -> columnDefinition
             }
         })
