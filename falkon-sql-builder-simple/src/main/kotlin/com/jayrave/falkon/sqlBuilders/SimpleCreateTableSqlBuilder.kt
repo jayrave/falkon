@@ -27,11 +27,27 @@ class SimpleCreateTableSqlBuilder : CreateTableSqlBuilder {
         val columnInfos = tableInfo.columnInfos
         append(columnInfos.joinToString(separator = ", ") {
             columnCount++
-            val columnDefinition = "${it.name} ${it.type}"
-            when (it.isNonNull) {
-                true -> "$columnDefinition NOT NULL"
-                else -> columnDefinition
+
+            // Add name & data type
+            val columnDefinitionBuilder = StringBuilder()
+                    .append(it.name)
+                    .append(" ")
+                    .append(it.dataType)
+
+            // Add size if required
+            if (it.maxSize != null) {
+                columnDefinitionBuilder
+                        .append("(")
+                        .append(it.maxSize.toString())
+                        .append(")")
             }
+
+            // Add nullability if required
+            if (it.isNonNull) {
+                columnDefinitionBuilder.append(" NOT NULL")
+            }
+
+            columnDefinitionBuilder.toString()
         })
 
         if (columnCount == 0) {

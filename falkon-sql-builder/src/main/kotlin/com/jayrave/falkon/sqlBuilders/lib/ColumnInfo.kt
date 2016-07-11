@@ -10,7 +10,12 @@ interface ColumnInfo {
     /**
      * Type of this column
      */
-    val type: String
+    val dataType: String
+
+    /**
+     * Optional max length of the data in this column
+     */
+    val maxSize: Int?
 
     /**
      * Whether this column allows NULL values
