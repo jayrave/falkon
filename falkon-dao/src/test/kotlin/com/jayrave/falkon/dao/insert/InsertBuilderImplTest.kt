@@ -30,7 +30,7 @@ class InsertBuilderImplTest {
                 table.name, listOf(table.int.name), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = Insert(expectedSql, listOf(5))
+        val expectedInsert = InsertImpl(expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
@@ -62,7 +62,7 @@ class InsertBuilderImplTest {
                 table.name, listOf(table.int.name, table.string.name), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = Insert(expectedSql, listOf(5, "test"))
+        val expectedInsert = InsertImpl(expectedSql, listOf(5, "test"))
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
@@ -97,7 +97,7 @@ class InsertBuilderImplTest {
                 table.name, listOf(table.int.name), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = Insert(expectedSql, listOf(6))
+        val expectedInsert = InsertImpl(expectedSql, listOf(6))
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
@@ -152,7 +152,7 @@ class InsertBuilderImplTest {
                 ), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = Insert(
+        val expectedInsert = InsertImpl(
                 expectedSql,
                 listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
         )
