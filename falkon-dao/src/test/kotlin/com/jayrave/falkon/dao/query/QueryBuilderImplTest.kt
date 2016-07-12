@@ -134,7 +134,7 @@ class QueryBuilderImplTest {
                 whereSections = listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
         )
 
-        val expectedQuery = Query(expectedSql, listOf(5))
+        val expectedQuery = QueryImpl(expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualQuery, expectedQuery)
@@ -415,7 +415,7 @@ class QueryBuilderImplTest {
                 )
         )
 
-        val expectedQuery = Query(
+        val expectedQuery = QueryImpl(
                 expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
                 byteArrayOf(11), TypedNull(Type.INT))
         )
@@ -454,7 +454,7 @@ class QueryBuilderImplTest {
                 limit = 5, offset = 8
         )
 
-        val expectedQuery = Query(expectedSql, listOf(5.0))
+        val expectedQuery = QueryImpl(expectedSql, listOf(5.0))
 
         // Verify
         assertEquality(actualQuery, expectedQuery)
@@ -484,7 +484,7 @@ class QueryBuilderImplTest {
                 orderBy = orderBy, limit = limit, offset = offset
         )
 
-        val expectedQuery = Query(expectedSql, null)
+        val expectedQuery = QueryImpl(expectedSql, null)
 
         // Verify
         assertEquality(actualQuery, expectedQuery)

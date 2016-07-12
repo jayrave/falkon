@@ -91,7 +91,7 @@ internal class QueryBuilderImpl<T : Any>(
                 orderByAscendingKey, orderByDescendingKey
         )
 
-        return Query(sql, where?.arguments)
+        return QueryImpl(sql, where?.arguments)
     }
 
     override fun compile(): CompiledQuery {
