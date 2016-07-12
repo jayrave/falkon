@@ -23,7 +23,7 @@ class WhereBuilderImplTest {
     @Test
     fun testEmptyWhere() {
         val actualWhere = builder.build()
-        val expectedWhere = Where(emptyList(), emptyList())
+        val expectedWhere = WhereImpl(emptyList(), emptyList())
         assertWhereEquality(actualWhere, expectedWhere)
     }
 
@@ -31,7 +31,7 @@ class WhereBuilderImplTest {
     @Test
     fun testEq() {
         val actualWhere = builder.eq(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")), listOf(5)
         )
 
@@ -42,7 +42,7 @@ class WhereBuilderImplTest {
     @Test
     fun testNotEq() {
         val actualWhere = builder.notEq(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int")), listOf(5)
         )
 
@@ -53,7 +53,7 @@ class WhereBuilderImplTest {
     @Test
     fun testGt() {
         val actualWhere = builder.gt(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "int")), listOf(5)
         )
 
@@ -64,7 +64,7 @@ class WhereBuilderImplTest {
     @Test
     fun testGe() {
         val actualWhere = builder.ge(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "int")), listOf(5)
         )
 
@@ -75,7 +75,7 @@ class WhereBuilderImplTest {
     @Test
     fun testLt() {
         val actualWhere = builder.lt(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "int")), listOf(5)
         )
 
@@ -86,7 +86,7 @@ class WhereBuilderImplTest {
     @Test
     fun testLe() {
         val actualWhere = builder.le(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "int")), listOf(5)
         )
 
@@ -97,7 +97,7 @@ class WhereBuilderImplTest {
     @Test
     fun testBetween() {
         val actualWhere = builder.between(table.int, 5, 8).build()
-        val expectedWhere = Where(listOf(BetweenPredicate("int")), listOf(5, 8))
+        val expectedWhere = WhereImpl(listOf(BetweenPredicate("int")), listOf(5, 8))
         assertWhereEquality(actualWhere, expectedWhere)
     }
 
@@ -105,7 +105,7 @@ class WhereBuilderImplTest {
     @Test
     fun testLike() {
         val actualWhere = builder.like(table.int, "5").build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(OneArgPredicate(OneArgPredicate.Type.LIKE, "int")), listOf("5")
         )
 
@@ -116,7 +116,7 @@ class WhereBuilderImplTest {
     @Test
     fun testIsInWithSingleArg() {
         val actualWhere = builder.isIn(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "int", 1)), listOf(5)
         )
 
@@ -127,7 +127,7 @@ class WhereBuilderImplTest {
     @Test
     fun testIsInWithMultipleArgs() {
         val actualWhere = builder.isIn(table.int, 5, 6, 7, 8).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "int", 4)),
                 listOf(5, 6, 7, 8)
         )
@@ -139,7 +139,7 @@ class WhereBuilderImplTest {
     @Test
     fun testIsNotInWithSingleArg() {
         val actualWhere = builder.isNotIn(table.int, 5).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "int", 1)), listOf(5)
         )
 
@@ -150,7 +150,7 @@ class WhereBuilderImplTest {
     @Test
     fun testIsNotInWithMultipleArgs() {
         val actualWhere = builder.isNotIn(table.int, 5, 6, 7, 8).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "int", 4)),
                 listOf(5, 6, 7, 8)
         )
@@ -162,7 +162,7 @@ class WhereBuilderImplTest {
     @Test
     fun testIsNull() {
         val actualWhere = builder.isNull(table.int).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(NoArgPredicate(NoArgPredicate.Type.IS_NULL, "int")), emptyList()
         )
 
@@ -173,7 +173,7 @@ class WhereBuilderImplTest {
     @Test
     fun testIsNotNull() {
         val actualWhere = builder.isNotNull(table.int).build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")), emptyList()
         )
 
@@ -184,7 +184,7 @@ class WhereBuilderImplTest {
     @Test
     fun testSimpleAnd() {
         val actualWhere = builder.eq(table.int, 5).and().eq(table.string, "test").build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
                         SimpleConnector(SimpleConnector.Type.AND),
@@ -199,7 +199,7 @@ class WhereBuilderImplTest {
     @Test
     fun testSimpleOr() {
         val actualWhere = builder.eq(table.int, 5).or().eq(table.string, "test").build()
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
                         SimpleConnector(SimpleConnector.Type.OR),
@@ -231,7 +231,7 @@ class WhereBuilderImplTest {
                     eq(table.string, "test")
                 }.build()
 
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(CompoundConnector(
                         CompoundConnector.Type.AND,
                         listOf(
@@ -253,7 +253,7 @@ class WhereBuilderImplTest {
                     eq(table.string, "test")
                 }.build()
 
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(CompoundConnector(
                         CompoundConnector.Type.OR,
                         listOf(
@@ -287,7 +287,7 @@ class WhereBuilderImplTest {
                     }
                 }.build()
 
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(CompoundConnector(
                         CompoundConnector.Type.AND,
                         listOf(
@@ -342,7 +342,7 @@ class WhereBuilderImplTest {
                     }
                 }.build()
 
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(CompoundConnector(
                         CompoundConnector.Type.OR,
                         listOf(
@@ -397,7 +397,7 @@ class WhereBuilderImplTest {
                 .isNull(table.nullableInt).or()
                 .isNotNull(table.int).build()
 
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
                         SimpleConnector(SimpleConnector.Type.OR),
@@ -453,7 +453,7 @@ class WhereBuilderImplTest {
                 .gt(table.nullableBlob, null).
                 build()
 
-        val expectedWhere = Where(
+        val expectedWhere = WhereImpl(
                 listOf(
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_short"),
                         SimpleConnector(SimpleConnector.Type.AND),

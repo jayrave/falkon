@@ -24,7 +24,10 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
     private val adderOrEnder: Z by lazy { adderOrEnderCreator.invoke(this) }
 
     internal fun build(): Where {
-        return Where(ListBackedList(sections, transformer), IterablesBackedIterable(sections))
+        return WhereImpl(
+                ListBackedList(sections, transformer),
+                IterablesBackedIterable(sections)
+        )
     }
 
 
