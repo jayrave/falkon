@@ -1,9 +1,9 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Value
 import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.lib.safeCloseAfterOp
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Value
+import com.jayrave.falkon.mapper.lib.safeCloseAfterOp
 import java.util.*
 
 /**

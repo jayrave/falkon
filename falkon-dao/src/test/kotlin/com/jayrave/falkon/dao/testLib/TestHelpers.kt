@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.testLib
 
-import com.jayrave.falkon.*
 import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.mapper.*
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector

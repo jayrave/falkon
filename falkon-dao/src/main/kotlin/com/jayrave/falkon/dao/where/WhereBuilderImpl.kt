@@ -1,8 +1,8 @@
 package com.jayrave.falkon.dao.where
 
-import com.jayrave.falkon.Column
 import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.engine.TypedNull
+import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector

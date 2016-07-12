@@ -1,7 +1,5 @@
 package com.jayrave.falkon.dao.query
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.lib.IterableBackedIterable
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
@@ -9,6 +7,8 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledQuery
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import java.util.*

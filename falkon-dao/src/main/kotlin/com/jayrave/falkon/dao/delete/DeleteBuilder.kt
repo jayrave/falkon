@@ -1,8 +1,8 @@
 package com.jayrave.falkon.dao.delete
 
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.engine.CompiledDelete
+import com.jayrave.falkon.mapper.Table
 
 interface DeleteBuilder<T : Any> {
 

@@ -1,8 +1,8 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.DataProducer
 import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.exceptions.DataProducerException
+import com.jayrave.falkon.mapper.DataProducer
+import com.jayrave.falkon.mapper.exceptions.DataProducerException
 
 /**
  * A [DataProducer] that gets the required value from the underlying [Source]. Update the

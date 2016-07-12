@@ -1,8 +1,8 @@
 package com.jayrave.falkon.dao.insert
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.engine.CompiledInsert
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 
 interface InsertBuilder<T : Any> {
 

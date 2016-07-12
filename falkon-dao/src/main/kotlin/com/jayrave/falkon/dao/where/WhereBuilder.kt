@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao.where
 
-import com.jayrave.falkon.Column
+import com.jayrave.falkon.mapper.Column
 
 /**
  * Interface which can be used to build the WHERE clause of a SQL statement

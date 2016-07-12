@@ -1,9 +1,9 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Column
 import com.jayrave.falkon.dao.insert.AdderOrEnder
 import com.jayrave.falkon.dao.insert.InsertBuilder
 import com.jayrave.falkon.engine.CompiledInsert
+import com.jayrave.falkon.mapper.Column
 
 fun <T: Any, ID : Any> Dao<T, ID>.insert(t: T) {
     insert(listOf(t))

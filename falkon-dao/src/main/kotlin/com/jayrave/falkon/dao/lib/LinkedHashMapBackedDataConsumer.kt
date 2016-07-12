@@ -1,9 +1,9 @@
 package com.jayrave.falkon.dao.lib
 
-import com.jayrave.falkon.NullHandlingDataConsumer
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
-import com.jayrave.falkon.exceptions.DataConsumerException
+import com.jayrave.falkon.mapper.NullHandlingDataConsumer
+import com.jayrave.falkon.mapper.exceptions.DataConsumerException
 import java.util.*
 
 /**

@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Column
+import com.jayrave.falkon.mapper.Column
 
 /**
  * Extracts the property for the column from the passed in instance ([t])

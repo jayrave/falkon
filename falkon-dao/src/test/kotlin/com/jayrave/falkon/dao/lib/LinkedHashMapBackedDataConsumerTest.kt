@@ -2,7 +2,7 @@ package com.jayrave.falkon.dao.lib
 
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
-import com.jayrave.falkon.exceptions.DataConsumerException
+import com.jayrave.falkon.mapper.exceptions.DataConsumerException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.assertj.core.data.MapEntry

@@ -1,10 +1,10 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Column
 import com.jayrave.falkon.dao.update.AdderOrEnder
 import com.jayrave.falkon.dao.update.UpdateBuilder
 import com.jayrave.falkon.engine.CompiledUpdate
 import com.jayrave.falkon.engine.bind
+import com.jayrave.falkon.mapper.Column
 
 /**
  * @return number of rows updated by this operation

@@ -1,6 +1,5 @@
 package com.jayrave.falkon.dao.delete
 
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
@@ -8,6 +7,7 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledDelete
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
 
 internal class DeleteBuilderImpl<T : Any>(

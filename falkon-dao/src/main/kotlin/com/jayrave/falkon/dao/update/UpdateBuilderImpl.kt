@@ -1,7 +1,5 @@
 package com.jayrave.falkon.dao.update
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
@@ -12,6 +10,8 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledUpdate
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
 
 internal class UpdateBuilderImpl<T : Any>(

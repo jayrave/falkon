@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Table
+import com.jayrave.falkon.mapper.Table
 
 /**
  * Extracts the ID for the table from the passed in model ([t])

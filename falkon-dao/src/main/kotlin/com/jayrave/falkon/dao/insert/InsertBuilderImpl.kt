@@ -1,12 +1,12 @@
 package com.jayrave.falkon.dao.insert
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
 import com.jayrave.falkon.engine.CompiledInsert
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
 
 internal class InsertBuilderImpl<T : Any>(

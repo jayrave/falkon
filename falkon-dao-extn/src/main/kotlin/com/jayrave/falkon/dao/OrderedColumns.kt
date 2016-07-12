@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Table
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 import java.util.*
 
 /**

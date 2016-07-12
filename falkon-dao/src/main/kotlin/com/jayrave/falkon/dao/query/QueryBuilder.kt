@@ -1,9 +1,9 @@
 package com.jayrave.falkon.dao.query
 
-import com.jayrave.falkon.Column
-import com.jayrave.falkon.Table
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 
 interface QueryBuilder<T : Any> : AdderOrEnder<T, QueryBuilder<T>> {
 
