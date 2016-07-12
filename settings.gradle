@@ -1,11 +1,11 @@
 rootProject.name = 'falkon'
 
-include ':falkon-core'
 include ':falkon-dao'
 include ':falkon-dao-extn'
 include ':falkon-engine'
 include ':falkon-engine-android-sqlite'
 include ':falkon-engine-jdbc'
 include ':falkon-engine-test-common'
+include ':falkon-mapper'
 include ':falkon-sql-builder'
 include ':falkon-sql-builder-simple'

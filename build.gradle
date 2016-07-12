@@ -51,13 +51,13 @@ buildscript {
 
 
 ext.falkonModules = [
-        core               : project(':falkon-core'),
         dao                : project(':falkon-dao'),
         daoExtn            : project(':falkon-dao-extn'),
         engine             : project(':falkon-engine'),
         engineAndroidSqlite: project(':falkon-engine-android-sqlite'),
         engineJdbc         : project(':falkon-engine-jdbc'),
         engineTestCommon   : project(':falkon-engine-test-common'),
+        mapper             : project(':falkon-mapper'),
         sqlBuilder         : project(':falkon-sql-builder'),
         sqlBuilderSimple   : project(':falkon-sql-builder-simple')
 ]
