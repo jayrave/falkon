@@ -8,12 +8,5 @@ targetCompatibility = javaVersions.target
 
 dependencies {
     compile falkonModules.engine
-
     compile libraries.kotlinStdlib
-    compile libraries.kotlinReflect
-
-    testCompile libraries.assertJ
-    testCompile libraries.jUnit
-    testCompile libraries.mockito
-    testCompile libraries.mockitoKotlin
 }
