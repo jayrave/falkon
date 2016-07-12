@@ -41,7 +41,7 @@ internal class UpdateBuilderImpl<T : Any>(
                 where?.arguments ?: emptyList()
         ))
 
-        return Update(sql, arguments)
+        return UpdateImpl(sql, arguments)
     }
 
     private fun compile(): CompiledUpdate {

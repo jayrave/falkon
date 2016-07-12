@@ -31,7 +31,7 @@ class UpdateBuilderImplTest {
                 table.name, listOf(table.int.name), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = Update(expectedSql, listOf(5))
+        val expectedUpdate = UpdateImpl(expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -65,7 +65,7 @@ class UpdateBuilderImplTest {
                 listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string")), ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = Update(expectedSql, listOf(5, "test"))
+        val expectedUpdate = UpdateImpl(expectedSql, listOf(5, "test"))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -98,7 +98,7 @@ class UpdateBuilderImplTest {
                 table.name, listOf(table.int.name, table.string.name), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = Update(expectedSql, listOf(5, "test"))
+        val expectedUpdate = UpdateImpl(expectedSql, listOf(5, "test"))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -133,7 +133,7 @@ class UpdateBuilderImplTest {
                 table.name, listOf(table.int.name), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = Update(expectedSql, listOf(overwritingValue))
+        val expectedUpdate = UpdateImpl(expectedSql, listOf(overwritingValue))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -188,7 +188,7 @@ class UpdateBuilderImplTest {
                 ), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = Update(
+        val expectedUpdate = UpdateImpl(
                 expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
                 byteArrayOf(11), TypedNull(Type.INT))
         )

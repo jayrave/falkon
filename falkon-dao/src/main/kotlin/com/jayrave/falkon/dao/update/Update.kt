@@ -1,7 +1,14 @@
 package com.jayrave.falkon.dao.update
 
-/**
- * @param sql the SQL statement this Update represents
- * @param arguments contains arguments for placeholders used in sections
- */
-data class Update(val sql: String, val arguments: Iterable<Any>?)
+interface Update {
+
+    /**
+     * the SQL statement this Update represents
+     */
+    val sql: String
+
+    /**
+     * contains arguments for placeholders used in [sql]
+     */
+    val arguments: Iterable<Any>?
+}
