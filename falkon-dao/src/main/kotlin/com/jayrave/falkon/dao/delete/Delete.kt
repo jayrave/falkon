@@ -1,7 +1,14 @@
 package com.jayrave.falkon.dao.delete
 
-/**
- * @param sql the SQL statement this Delete represents
- * @param arguments contains arguments for placeholders used in sections
- */
-data class Delete(val sql: String, val arguments: Iterable<Any>?)
+interface Delete {
+
+    /**
+     * the SQL statement this Delete represents
+     */
+    val sql: String
+
+    /**
+     * contains arguments for placeholders used in [sql]
+     */
+    val arguments: Iterable<Any>?
+}

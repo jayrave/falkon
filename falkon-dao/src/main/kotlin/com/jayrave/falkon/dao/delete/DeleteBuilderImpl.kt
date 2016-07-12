@@ -23,7 +23,7 @@ internal class DeleteBuilderImpl<T : Any>(
 
     override fun build(): Delete {
         val where: Where? = whereBuilder?.build()
-        return Delete(
+        return DeleteImpl(
                 deleteSqlBuilder.build(table.name, where?.whereSections, argPlaceholder),
                 where?.arguments
         )

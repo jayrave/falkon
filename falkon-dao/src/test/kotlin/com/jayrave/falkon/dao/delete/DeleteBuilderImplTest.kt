@@ -29,7 +29,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(table.name, null, ARG_PLACEHOLDER)
-        val expectedDelete = Delete(expectedSql, null)
+        val expectedDelete = DeleteImpl(expectedSql, null)
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -59,7 +59,7 @@ class DeleteBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedDelete = Delete(expectedSql, listOf(5))
+        val expectedDelete = DeleteImpl(expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -90,7 +90,7 @@ class DeleteBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedDelete = Delete(expectedSql, listOf(5))
+        val expectedDelete = DeleteImpl(expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -122,7 +122,7 @@ class DeleteBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedDelete = Delete(expectedSql, listOf("test"))
+        val expectedDelete = DeleteImpl(expectedSql, listOf("test"))
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -189,7 +189,7 @@ class DeleteBuilderImplTest {
                 ), ARG_PLACEHOLDER
         )
 
-        val expectedDelete = Delete(
+        val expectedDelete = DeleteImpl(
                 expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
                 byteArrayOf(11), TypedNull(Type.INT))
         )
