@@ -25,7 +25,7 @@ internal class DeleteBuilderImpl<T : Any>(
         val where: Where? = whereBuilder?.build()
         return DeleteImpl(
                 deleteSqlBuilder.build(table.name, where?.whereSections, argPlaceholder),
-                where?.arguments
+                where?.arguments ?: emptyList()
         )
     }
 

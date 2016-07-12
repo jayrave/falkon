@@ -29,7 +29,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(table.name, null, ARG_PLACEHOLDER)
-        val expectedDelete = DeleteImpl(expectedSql, null)
+        val expectedDelete = DeleteImpl(expectedSql, emptyList())
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -232,12 +232,7 @@ class DeleteBuilderImplTest {
 
         private fun assertEquality(actualDelete: Delete, expectedDelete: Delete) {
             assertThat(actualDelete.sql).isEqualTo(expectedDelete.sql)
-            when (actualDelete.arguments) {
-                null -> assertThat(expectedDelete.arguments).isNull()
-                else -> assertThat(actualDelete.arguments).containsExactlyElementsOf(
-                        expectedDelete.arguments
-                )
-            }
+            assertThat(actualDelete.arguments).containsExactlyElementsOf(expectedDelete.arguments)
         }
     }
 }

@@ -10,5 +10,5 @@ interface Insert {
     /**
      * contains arguments for placeholders used in [sql]
      */
-    val arguments: Iterable<Any>?
+    val arguments: Iterable<Any>
 }

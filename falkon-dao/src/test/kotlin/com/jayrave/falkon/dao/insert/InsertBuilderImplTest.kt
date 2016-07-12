@@ -195,12 +195,7 @@ class InsertBuilderImplTest {
 
         private fun assertEquality(actualInsert: Insert, expectedInsert: Insert) {
             assertThat(actualInsert.sql).isEqualTo(expectedInsert.sql)
-            when (actualInsert.arguments) {
-                null -> assertThat(expectedInsert.arguments).isNull()
-                else -> assertThat(actualInsert.arguments).containsExactlyElementsOf(
-                        expectedInsert.arguments
-                )
-            }
+            assertThat(actualInsert.arguments).containsExactlyElementsOf(expectedInsert.arguments)
         }
     }
 }

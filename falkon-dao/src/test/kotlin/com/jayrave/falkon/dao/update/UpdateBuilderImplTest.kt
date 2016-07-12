@@ -231,12 +231,7 @@ class UpdateBuilderImplTest {
 
         private fun assertEquality(actualUpdate: Update, expectedUpdate: Update) {
             assertThat(actualUpdate.sql).isEqualTo(expectedUpdate.sql)
-            when (actualUpdate.arguments) {
-                null -> assertThat(expectedUpdate.arguments).isNull()
-                else -> assertThat(actualUpdate.arguments).containsExactlyElementsOf(
-                        expectedUpdate.arguments
-                )
-            }
+            assertThat(actualUpdate.arguments).containsExactlyElementsOf(expectedUpdate.arguments)
         }
     }
 }

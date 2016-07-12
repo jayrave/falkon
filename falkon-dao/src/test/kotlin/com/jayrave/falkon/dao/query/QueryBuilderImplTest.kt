@@ -484,7 +484,7 @@ class QueryBuilderImplTest {
                 orderBy = orderBy, limit = limit, offset = offset
         )
 
-        val expectedQuery = QueryImpl(expectedSql, null)
+        val expectedQuery = QueryImpl(expectedSql, emptyList())
 
         // Verify
         assertEquality(actualQuery, expectedQuery)
@@ -541,12 +541,7 @@ class QueryBuilderImplTest {
 
         private fun assertEquality(actualQuery: Query, expectedQuery: Query) {
             assertThat(actualQuery.sql).isEqualTo(expectedQuery.sql)
-            when (actualQuery.arguments) {
-                null -> assertThat(expectedQuery.arguments).isNull()
-                else -> assertThat(actualQuery.arguments).containsExactlyElementsOf(
-                        expectedQuery.arguments
-                )
-            }
+            assertThat(actualQuery.arguments).containsExactlyElementsOf(expectedQuery.arguments)
         }
     }
 }
