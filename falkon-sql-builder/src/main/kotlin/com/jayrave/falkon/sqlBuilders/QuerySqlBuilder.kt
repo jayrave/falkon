@@ -1,5 +1,6 @@
 package com.jayrave.falkon.sqlBuilders
 
+import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
@@ -10,6 +11,8 @@ interface QuerySqlBuilder {
      * @param [distinct] `true` if you want each row to be unique, `false` otherwise
      * @param [columns] A list of which columns to return, applied in iteration order.
      * Passing null will return all columns
+     * @param [joinInfos] A list of join information, applied in iterator order used to build
+     * the optional SQL JOIN clause. Passing null denotes no JOIN in the build SQL
      * @param [whereSections] A list of sections, applied in iteration order used to build
      * the optional SQL WHERE clause. Passing null denotes no WHERE in the built SQL
      * @param [groupBy] A list of columns to SQL GROUP BY clause applied in iteration order.
@@ -28,6 +31,7 @@ interface QuerySqlBuilder {
             tableName: String,
             distinct: Boolean,
             columns: Iterable<String>?,
+            joinInfos: Iterable<JoinInfo>?,
             whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?,
             orderBy: Iterable<OrderInfo>?,

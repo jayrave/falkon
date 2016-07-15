@@ -1,5 +1,6 @@
 package com.jayrave.falkon.sqlBuilders
 
+import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
@@ -42,6 +43,55 @@ class SimpleQuerySqlBuilderTest {
         )
 
         val expectedSql = "SELECT column_name_1, column_name_2 FROM $tableName"
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun testWithOneJoin() {
+        val actualSql = callBuildQuerySqlFromParts(
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, "$tableName.column_name_1",
+                        "table_2", "table_2.column_name_1"
+                ))
+        )
+
+        val expectedSql = "SELECT * FROM $tableName " +
+                "INNER JOIN table_2 ON $tableName.column_name_1 = table_2.column_name_1"
+
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun testWithMultiJoins() {
+        val actualSql = callBuildQuerySqlFromParts(
+                joinInfos = listOf(
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN, "$tableName.column_name_1",
+                                "table_2", "table_2.column_name_1"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.LEFT_OUTER_JOIN, "$tableName.column_name_2",
+                                "table_3", "table_3.column_name_1"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.RIGHT_OUTER_JOIN, "$tableName.column_name_3",
+                                "table_4", "table_4.column_name_1"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.FULL_OUTER_JOIN, "$tableName.column_name_4",
+                                "table_5", "table_5.column_name_1"
+                        )
+                )
+        )
+
+        val expectedSql = "SELECT * FROM $tableName " +
+                "INNER JOIN table_2 ON $tableName.column_name_1 = table_2.column_name_1 " +
+                "LEFT OUTER JOIN table_3 ON $tableName.column_name_2 = table_3.column_name_1 " +
+                "RIGHT OUTER JOIN table_4 ON $tableName.column_name_3 = table_4.column_name_1 " +
+                "FULL OUTER JOIN table_5 ON $tableName.column_name_4 = table_5.column_name_1"
+
         assertThat(actualSql).isEqualTo(expectedSql)
     }
 
@@ -148,17 +198,25 @@ class SimpleQuerySqlBuilderTest {
 
     private fun callBuildQuerySqlFromParts(
             tableName: String = this.tableName, distinct: Boolean = false,
-            columns: Iterable<String>? = null, whereSections: Iterable<WhereSection>? = null,
-            groupBy: Iterable<String>? = null, orderBy: Iterable<OrderInfo>? = null,
-            limit: Long? = null, offset: Long? = null): String {
+            columns: Iterable<String>? = null, joinInfos: Iterable<JoinInfo>? = null,
+            whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
+            orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
+            String {
 
         return SimpleQuerySqlBuilder().build(
                 tableName = tableName, distinct = distinct, columns = columns,
-                whereSections = whereSections, groupBy = groupBy, orderBy = orderBy,
-                limit = limit, offset = offset, argPlaceholder = "?",
+                joinInfos = joinInfos, whereSections = whereSections, groupBy = groupBy,
+                orderBy = orderBy, limit = limit, offset = offset, argPlaceholder = "?",
                 orderByAscendingKey = "ASC", orderByDescendingKey = "DESC"
         )
     }
+
+
+    private class JoinInfoForTest(
+            override val type: JoinInfo.Type,
+            override val qualifiedLocalColumnName: String,
+            override val nameOfTableToJoin: String,
+            override val qualifiedColumnNameFromTableToJoin: String) : JoinInfo
 
 
     private class OrderInfoForTest(

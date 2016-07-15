@@ -504,8 +504,9 @@ class QueryBuilderImplTest {
 
         return querySqlBuilder.build(
                 tableName = tableName, distinct = distinct, columns = columns,
-                whereSections = whereSections, groupBy = groupBy, orderBy = orderBy,
-                limit = limit, offset = offset, argPlaceholder = ARG_PLACEHOLDER,
+                joinInfos = null, whereSections = whereSections, groupBy = groupBy,
+                orderBy = orderBy, limit = limit, offset = offset,
+                argPlaceholder = ARG_PLACEHOLDER,
                 orderByAscendingKey = ORDER_BY_ASCENDING_KEY,
                 orderByDescendingKey = ORDER_BY_DESCENDING_KEY
         )

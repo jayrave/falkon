@@ -1,5 +1,6 @@
 package com.jayrave.falkon.sqlBuilders
 
+import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
@@ -7,16 +8,24 @@ class SimpleQuerySqlBuilder : QuerySqlBuilder {
 
     override fun build(
             tableName: String, distinct: Boolean, columns: Iterable<String>?,
-            whereSections: Iterable<WhereSection>?, groupBy: Iterable<String>?,
-            orderBy: Iterable<OrderInfo>?, limit: Long?, offset: Long?, argPlaceholder: String,
-            orderByAscendingKey: String, orderByDescendingKey: String): String {
+            joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,
+            groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
+            offset: Long?, argPlaceholder: String, orderByAscendingKey: String,
+            orderByDescendingKey: String): String {
 
         val querySql = StringBuilder(120)
         querySql.append("SELECT")
 
         querySql.addDistinctIfRequired(distinct)
         querySql.addColumnsToBeSelected(columns)
-        querySql.append(" FROM $tableName")
+        querySql.append(" FROM")
+
+        // JOIN clause takes care of including the table name. If there is no JOIN clause,
+        // the table name has to be included exclusively
+        if (!querySql.addJoinsIfPossible(joinInfos, tableName)) {
+            querySql.append(" $tableName")
+        }
+
         querySql.addWhereIfPossible(whereSections, argPlaceholder)
         querySql.addGroupIfPossible(groupBy)
         querySql.addOrderByIfPossible(orderBy, orderByAscendingKey, orderByDescendingKey)
@@ -40,6 +49,24 @@ class SimpleQuerySqlBuilder : QuerySqlBuilder {
         when (isValidPart(columnSelection)) {
             true -> append(columnSelection) // Add comma separated column names
             else -> append("*") // No columns were exclusively requested. Get back all
+        }
+    }
+
+
+    /**
+     * @return `true` if JOIN clause was added; `false` otherwise
+     */
+    private fun StringBuilder.addJoinsIfPossible(
+            joinInfos: Iterable<JoinInfo>?, firstTableNameForFirstJoin: String)
+            : Boolean {
+
+        val joinSql = joinInfos?.buildJoinClause(firstTableNameForFirstJoin)
+        return when {
+            !isValidPart(joinSql) -> false
+            else -> {
+                append(" $joinSql")
+                true
+            }
         }
     }
 

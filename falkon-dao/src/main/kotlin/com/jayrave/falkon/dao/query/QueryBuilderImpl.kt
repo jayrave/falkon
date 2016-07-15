@@ -86,7 +86,7 @@ internal class QueryBuilderImpl<T : Any>(
         }
 
         val sql = querySqlBuilder.build(
-                table.name, distinct, columns, where?.whereSections, groupBy,
+                table.name, distinct, columns, null, where?.whereSections, groupBy,
                 orderByInfoList, limitCount, offsetCount, argPlaceholder,
                 orderByAscendingKey, orderByDescendingKey
         )
