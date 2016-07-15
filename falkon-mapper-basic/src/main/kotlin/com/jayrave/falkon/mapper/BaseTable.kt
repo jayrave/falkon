@@ -119,7 +119,7 @@ abstract class BaseTable<T : Any, ID : Any>(
          * what it is used for**
          */
         fun <C> getJavaClassFor(clazz: KClass<*>): Class<C> {
-            @Suppress("CAST_NEVER_SUCCEEDS")
+            @Suppress("UNCHECKED_CAST")
             return clazz.java as Class<C>
         }
     }

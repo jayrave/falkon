@@ -58,7 +58,7 @@ ext.falkonModules = [
         engineJdbc         : project(':falkon-engine-jdbc'),
         engineTestCommon   : project(':falkon-engine-test-common'),
         mapper             : project(':falkon-mapper'),
-        mapperDefault      : project(':falkon-mapper-default'),
+        mapperBasic        : project(':falkon-mapper-basic'),
         sqlBuilder         : project(':falkon-sql-builder'),
         sqlBuilderSimple   : project(':falkon-sql-builder-simple')
 ]
