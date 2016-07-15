@@ -17,21 +17,16 @@ import java.sql.SQLSyntaxErrorException
 internal fun Iterable<WhereSection>.buildWhereClause(argPlaceholder: String): String? {
 
     val clause = StringBuilder()
-    var isFirstSection = true
 
     forEach { section ->
-        when (isFirstSection) {
-            true -> isFirstSection = false
-            else -> clause.append(' ')
-        }
-
+        clause.append(' ')
         section.addTo(clause, argPlaceholder)
     }
 
     return when {
         clause.isEmpty() -> null
         else -> {
-            clause.insert(0, "WHERE ")
+            clause.insert(0, "WHERE")
             clause.toString()
         }
     }
