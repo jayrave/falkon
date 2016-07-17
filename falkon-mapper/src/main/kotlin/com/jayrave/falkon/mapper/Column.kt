@@ -7,7 +7,7 @@ import com.jayrave.falkon.engine.Type
  *      [T] => Table type
  *      [C] => Column type
  */
-interface Column<T : Any, C> {
+interface Column<in T : Any, C> {
 
     /**
      * Name of the SQL column
