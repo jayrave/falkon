@@ -70,7 +70,7 @@ internal class TableForTest(
 
 
 internal fun defaultTableConfiguration(engine: Engine = mock()): TableConfiguration {
-    val configuration = TableConfigurationImpl(engine)
+    val configuration = TableConfigurationImpl(engine, mock())
     configuration.registerDefaultConverters()
     configuration.registerUuidConverters()
     return configuration

@@ -1,11 +1,12 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.TypeTranslator
 import com.jayrave.falkon.mapper.exceptions.MissingConverterException
 import java.util.concurrent.ConcurrentHashMap
 
 class TableConfigurationImpl(
-        override val engine: Engine,
+        override val engine: Engine, override val typeTranslator: TypeTranslator,
         override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
         TableConfiguration {
 

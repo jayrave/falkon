@@ -9,7 +9,7 @@ class TableConfigurationKtTest {
 
     @Test
     fun testRegisterDefaultConverters() {
-        val configuration = TableConfigurationImpl(mock<Engine>(), mock())
+        val configuration = TableConfigurationImpl(mock<Engine>(), mock(), mock())
         configuration.registerDefaultConverters()
 
         // Check primitives

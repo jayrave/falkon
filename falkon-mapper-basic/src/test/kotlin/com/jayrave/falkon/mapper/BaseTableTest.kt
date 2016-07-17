@@ -96,7 +96,7 @@ class BaseTableTest {
 
         companion object {
             private fun defaultTableConfiguration(engine: Engine = mock()): TableConfiguration {
-                val configuration = TableConfigurationImpl(engine)
+                val configuration = TableConfigurationImpl(engine, mock())
                 configuration.registerDefaultConverters()
                 return configuration
             }

@@ -9,7 +9,7 @@ import java.util.*
 
 class TableConfigurationImplTest {
 
-    val configuration = TableConfigurationImpl(mock<Engine>(), mock())
+    val configuration = TableConfigurationImpl(mock<Engine>(), mock(), mock())
 
     @Test(expected = MissingConverterException::class)
     fun testGetConverterForNullableTypeThrowsForUnregisteredType() {
