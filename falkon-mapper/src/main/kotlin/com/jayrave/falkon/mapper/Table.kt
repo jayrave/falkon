@@ -18,10 +18,11 @@ interface Table<T : Any, ID : Any> {
     val idColumn: Column<T, ID>
 
     /**
-     * A set of all columns that belong to the table this class deals with. Implementations
-     * must make sure that the backing [Set] implementation is thread-safe
+     * A collection of all columns that belong to the table this class deals with. Implementations
+     * must make sure that the backing [Collection] implementation is thread-safe & the iteration
+     * order is the same as the insertion order
      */
-    val allColumns: Set<Column<T, *>>
+    val allColumns: Collection<Column<T, *>>
 
     /**
      * @return A object representing a single row in the table this class deals with.

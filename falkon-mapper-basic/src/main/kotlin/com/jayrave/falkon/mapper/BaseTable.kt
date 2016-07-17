@@ -4,8 +4,7 @@ import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractor
 import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullFromSqlSubstitute
 import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullToSqlSubstitute
 import com.jayrave.falkon.mapper.TableImplementationHelper.getJavaClassFor
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KProperty1
 
 /**
@@ -16,9 +15,8 @@ abstract class BaseTable<T : Any, ID : Any>(
         override val name: String, override val configuration: TableConfiguration) :
         Table<T, ID> {
 
-    override final val allColumns: Set<Column<T, *>> = Collections.newSetFromMap(
-            ConcurrentHashMap()
-    )
+    private val allColumnImpls = ConcurrentLinkedQueue<Column<T, *>>()
+    override final val allColumns: Collection<Column<T, *>> = allColumnImpls
 
 
     inline fun <reified C> col(
@@ -64,7 +62,7 @@ abstract class BaseTable<T : Any, ID : Any>(
                 nullFromSqlSubstitute, nullToSqlSubstitute
         )
 
-        (allColumns as MutableSet).add(column)
+        allColumnImpls.offer(column)
         return column
     }
 

@@ -9,7 +9,7 @@ import com.jayrave.falkon.dao.Dao
 interface EnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>> : Table<T, ID> {
 
     override val idColumn: EnhancedColumn<T, ID>
-    override val allColumns: Set<EnhancedColumn<T, *>>
+    override val allColumns: Collection<EnhancedColumn<T, *>>
 
     /**
      * DAO associated with this table
