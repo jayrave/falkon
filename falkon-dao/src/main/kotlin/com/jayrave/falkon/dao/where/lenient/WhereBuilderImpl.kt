@@ -1,7 +1,6 @@
 package com.jayrave.falkon.dao.where.lenient
 
 import com.jayrave.falkon.dao.lib.IterablesBackedIterable
-import com.jayrave.falkon.dao.where.ListBackedList
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereImpl
 import com.jayrave.falkon.engine.TypedNull

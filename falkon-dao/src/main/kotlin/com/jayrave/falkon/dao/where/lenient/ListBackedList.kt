@@ -1,4 +1,4 @@
-package com.jayrave.falkon.dao.where
+package com.jayrave.falkon.dao.where.lenient
 
 import com.jayrave.falkon.dao.lib.IterableBackedIterable
 import java.util.*
