@@ -8,10 +8,13 @@ targetCompatibility = javaVersions.target
 
 dependencies {
     compile falkonModules.mapperBasic
+    compile falkonModules.dao
+    compile falkonModules.sqlBuilder
 
     compile libraries.kotlinStdlib
     compile libraries.kotlinReflect
 
+    testCompile falkonModules.sqlBuilderSimple
     testCompile libraries.assertJ
     testCompile libraries.jUnit
     testCompile libraries.mockito
