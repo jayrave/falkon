@@ -13,6 +13,7 @@ import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
+import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class UpdateBuilderImpl<T : Any>(
         override val table: Table<T, *>, private val updateSqlBuilder: UpdateSqlBuilder,
@@ -75,17 +76,15 @@ internal class UpdateBuilderImpl<T : Any>(
 
 
     private inner class PredicateAdderOrEnderImpl(
-            private val delegate: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>) :
+            private val delegate: WhereAdderOrEnder<T, PredicateAdderOrEnder<T>>) :
             PredicateAdderOrEnder<T> {
 
         override fun and(): AfterSimpleConnectorAdder<T, PredicateAdderOrEnder<T>> {
-            delegate.and()
-            return delegate
+            return delegate.and()
         }
 
         override fun or(): AfterSimpleConnectorAdder<T, PredicateAdderOrEnder<T>> {
-            delegate.or()
-            return delegate
+            return delegate.or()
         }
 
         override fun build(): Update {

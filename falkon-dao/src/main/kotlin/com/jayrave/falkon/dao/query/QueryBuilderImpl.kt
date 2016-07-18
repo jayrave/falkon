@@ -12,6 +12,7 @@ import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import java.util.*
+import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class QueryBuilderImpl<T : Any>(
         override val table: Table<T, *>, private val querySqlBuilder: QuerySqlBuilder,
@@ -110,17 +111,15 @@ internal class QueryBuilderImpl<T : Any>(
 
 
     private inner class PredicateAdderOrEnderImpl(
-            private val delegate: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>) :
+            private val delegate: WhereAdderOrEnder<T, PredicateAdderOrEnder<T>>) :
             PredicateAdderOrEnder<T> {
 
         override fun and(): AfterSimpleConnectorAdder<T, PredicateAdderOrEnder<T>> {
-            delegate.and()
-            return delegate
+            return delegate.and()
         }
 
         override fun or(): AfterSimpleConnectorAdder<T, PredicateAdderOrEnder<T>> {
-            delegate.or()
-            return delegate
+            return delegate.or()
         }
 
         override fun distinct(): AdderOrEnderAfterWhere<T> {
@@ -171,7 +170,6 @@ internal class QueryBuilderImpl<T : Any>(
             val column: Column<*, *>, override val ascending: Boolean) :
             OrderInfo {
 
-        override val columnName: String
-            get() = column.name
+        override val columnName: String get() = column.name
     }
 }

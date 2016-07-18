@@ -9,6 +9,7 @@ import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
+import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class DeleteBuilderImpl<T : Any>(
         override val table: Table<T, *>, private val deleteSqlBuilder: DeleteSqlBuilder,
@@ -38,17 +39,15 @@ internal class DeleteBuilderImpl<T : Any>(
 
 
     private inner class AdderOrEnderImpl(
-            private val delegate: WhereBuilderImpl<T, AdderOrEnder<T>>) :
+            private val delegate: WhereAdderOrEnder<T, AdderOrEnder<T>>) :
             AdderOrEnder<T> {
 
         override fun and(): AfterSimpleConnectorAdder<T, AdderOrEnder<T>> {
-            delegate.and()
-            return delegate
+            return delegate.and()
         }
 
         override fun or(): AfterSimpleConnectorAdder<T, AdderOrEnder<T>> {
-            delegate.or()
-            return delegate
+            return delegate.or()
         }
 
         override fun build(): Delete {
