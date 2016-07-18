@@ -1,6 +1,6 @@
 package com.jayrave.falkon.mapper
 
-interface EnhancedColumn<in T : Any, C> : Column<T, C> {
+interface EnhancedColumn<T : Any, C> : Column<T, C> {
 
     /**
      * Optional max length of the data in this column. The length should be dependent on

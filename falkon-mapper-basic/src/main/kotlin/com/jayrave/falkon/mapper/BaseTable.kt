@@ -58,7 +58,7 @@ abstract class BaseTable<T : Any, ID : Any>(
             Column<T, C> {
 
         val column = ColumnImpl(
-                name, propertyExtractor, converter,
+                this, name, propertyExtractor, converter,
                 nullFromSqlSubstitute, nullToSqlSubstitute
         )
 

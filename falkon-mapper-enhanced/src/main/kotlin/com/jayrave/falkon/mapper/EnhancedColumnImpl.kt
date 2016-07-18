@@ -4,15 +4,15 @@ import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypeTranslator
 import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 
-class EnhancedColumnImpl<in T : Any, C>(
-        name: String, override val maxSize: Int?, override val isNonNull: Boolean,
-        propertyExtractor: PropertyExtractor<T, C>, converter: Converter<C>,
-        nullFromSqlSubstitute: NullSubstitute<C>, nullToSqlSubstitute: NullSubstitute<C>,
-        typeTranslator: TypeTranslator) :
+class EnhancedColumnImpl<T : Any, C>(
+        table: Table<T, *>, name: String, override val maxSize: Int?,
+        override val isNonNull: Boolean, propertyExtractor: PropertyExtractor<T, C>,
+        converter: Converter<C>, nullFromSqlSubstitute: NullSubstitute<C>,
+        nullToSqlSubstitute: NullSubstitute<C>, typeTranslator: TypeTranslator) :
         EnhancedColumn<T, C>, ColumnInfo {
 
     private val delegate = ColumnImpl(
-            name, propertyExtractor, converter,
+            table, name, propertyExtractor, converter,
             nullFromSqlSubstitute, nullToSqlSubstitute
     )
 
@@ -20,6 +20,7 @@ class EnhancedColumnImpl<in T : Any, C>(
 
     // ------------------------ Start of delegated properties & methods ----------------------------
 
+    override val table: Table<T, *> get() = delegate.table
     override val name: String get() = delegate.name
     override val dbType: Type get() = delegate.dbType
     override val propertyExtractor: PropertyExtractor<T, C> get() = delegate.propertyExtractor

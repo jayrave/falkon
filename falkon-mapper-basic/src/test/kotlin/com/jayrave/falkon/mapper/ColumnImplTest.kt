@@ -130,7 +130,9 @@ class ColumnImplTest {
                 nullToSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute()):
                 Column<Any, C> {
 
-            return ColumnImpl("test", mock(), converter, nullFromSqlSubstitute, nullToSqlSubstitute)
+            return ColumnImpl(
+                    mock(), "test", mock(), converter, nullFromSqlSubstitute, nullToSqlSubstitute
+            )
         }
 
 

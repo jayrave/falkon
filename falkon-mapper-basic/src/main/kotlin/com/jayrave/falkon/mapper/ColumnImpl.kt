@@ -7,9 +7,11 @@ import com.jayrave.falkon.engine.Type
  * [nullFromSqlSubstitute] To get a non-null object for null in SQL land
  * [nullToSqlSubstitute] To write a non-null SQL value for null in kotlin land
  */
-class ColumnImpl<in T : Any, C>(
-        override val name: String, override val propertyExtractor: PropertyExtractor<T, C>,
-        private val converter: Converter<C>, private val nullFromSqlSubstitute: NullSubstitute<C>,
+class ColumnImpl<T : Any, C>(
+        override val table: Table<T, *>, override val name: String,
+        override val propertyExtractor: PropertyExtractor<T, C>,
+        private val converter: Converter<C>,
+        private val nullFromSqlSubstitute: NullSubstitute<C>,
         private val nullToSqlSubstitute: NullSubstitute<C>) : Column<T, C> {
 
     override val dbType: Type = converter.dbType
