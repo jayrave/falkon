@@ -20,9 +20,9 @@ internal class QueryBuilderImpl<T : Any>(
         private val orderByDescendingKey: String) : QueryBuilder<T> {
 
     private var distinct: Boolean = false
-    private var selectedColumns: Iterable<Column<T, *>>? = null
+    private var selectedColumns: MutableList<Column<T, *>>? = null
     private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null
-    private var groupByColumns: Iterable<Column<T, *>>? = null
+    private var groupByColumns: MutableList<Column<T, *>>? = null
     private var orderByInfoList: MutableList<OrderInfoImpl>? = null
     private var limitCount: Long? = null
     private var offsetCount: Long? = null
@@ -32,44 +32,81 @@ internal class QueryBuilderImpl<T : Any>(
         return this
     }
 
+
+    /**
+     * Calling this method again for a column that has been already included will include it
+     * again leading to the SELECT statement that has this column name twice. For example,
+     * if the column name "example_column" is passed twice to this method in the same
+     * invocation or even in two separate invocations, it would result in a SELECT that look like
+     *
+     *      `SELECT example_column, ..., example_column, ... FROM ...`
+     */
     override fun select(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        selectedColumns = combine(column, *others)
+        if (selectedColumns == null) {
+            selectedColumns = LinkedList()
+        }
+
+        selectedColumns!!.add(column)
+        selectedColumns!!.addAll(others)
         return this
     }
+
 
     override fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
         whereBuilder = WhereBuilderImpl { PredicateAdderOrEnderImpl(it) }
         return whereBuilder!!
     }
 
+
+    /**
+     * Calling this method again for a column that has been already included will include it
+     * again leading to a GROUP BY clause that has this column name twice. For example,
+     * if the column name "example_column" is passed twice to this method in the same
+     * invocation or even in two separate invocations, it would result in a SELECT that look like
+     *
+     *      `SELECT ... GROUP BY example_column, ..., example_column, ...`
+     */
     override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        groupByColumns = combine(column, *others)
+        if (groupByColumns == null) {
+            groupByColumns = LinkedList()
+        }
+
+        groupByColumns!!.add(column)
+        groupByColumns!!.addAll(others)
         return this
     }
 
+
+    /**
+     * Calling this method again for a column that has been already included will include it
+     * again leading to an ORDER BY clause that has this column name twice. For example,
+     * if the column name "example_column" is passed twice to this method, it would result
+     * in a SELECT that look like (where `ASC|DESC` says that it would be either ASC|DESC
+     * depending on the passed in flag [ascending])
+     *
+     *      `SELECT ... ORDER BY example_column ASC|DESC, ..., example_column ASC|DESC, ...`
+     */
     override fun orderBy(column: Column<T, *>, ascending: Boolean): QueryBuilder<T> {
         if (orderByInfoList == null) {
             orderByInfoList = LinkedList()
         }
 
-        // Don't add if column is already present in the list
-        val columnAlreadyAdded = orderByInfoList!!.any { it.column == column }
-        if (!columnAlreadyAdded) {
-            orderByInfoList!!.add(OrderInfoImpl(column, ascending))
-        }
-
+        orderByInfoList!!.add(OrderInfoImpl(column, ascending))
         return this
     }
+
 
     override fun limit(count: Long): QueryBuilder<T> {
         limitCount = count
         return this
     }
 
+
     override fun offset(count: Long): QueryBuilder<T> {
         offsetCount = count
         return this
     }
+
 
     override fun build(): Query {
         val where = whereBuilder?.build()
@@ -95,18 +132,12 @@ internal class QueryBuilderImpl<T : Any>(
         return QueryImpl(sql, where?.arguments ?: emptyList())
     }
 
+
     override fun compile(): CompiledQuery {
         val query = build()
         return table.configuration.engine
                 .compileQuery(query.sql)
                 .closeIfOpThrows { bindAll(query.arguments) }
-    }
-
-    private fun combine(column: Column<T, *>, vararg others: Column<T, *>): List<Column<T, *>> {
-        val result = LinkedList<Column<T, *>>()
-        result.add(column)
-        result.addAll(others)
-        return result
     }
 
 

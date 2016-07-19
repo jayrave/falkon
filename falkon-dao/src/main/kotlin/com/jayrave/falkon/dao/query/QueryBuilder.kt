@@ -25,32 +25,39 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun distinct(): Z
 
     /**
-     * Add columns to be included in the result set. Columns which are already added are skipped
+     * Add columns to be included in the result set. This method can be called multiple times
+     * to add more columns to the result set. Behaviour on calling this method again for a column
+     * that has already been included is implementation dependent
+     *
      * NOTE: If this isn't called, by default all columns will be included in the result set
      */
     fun select(column: Column<T, *>, vararg others: Column<T, *>): Z
 
     /**
-     * Adds the given columns to GROUP BY clause. Columns which are already in the GROUP BY clause
-     * are skipped. Columns are added to the GROUP BY clause in a "first come, first serve" order
+     * Adds the given columns to GROUP BY clause. This method can be called multiple times
+     * to add more columns to the GROUP BY clause. Columns are added to the GROUP BY clause
+     * in a "first come, first serve" order. Behaviour on calling this method again for a
+     * column that has already been included is implementation dependent
      */
     fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): Z
 
     /**
-     * Adds ORDER BY clause for the passed in column. If called for a column that has already been
-     * included in the ORDER BY clause, this is a no-op. Multiple columns can be added by calling
-     * this multiple times with different [Column]s. Columns are added to the ORDER BY clause in
-     * a "first come, first serve" order
+     * Adds ORDER BY clause for the passed in column. This method can be called multiple times
+     * to add more columns to the ORDER BY clause. Columns are added to the ORDER BY clause in
+     * a "first come, first serve" order. Behaviour on calling this method again for a
+     * column that has already been included is implementation dependent
      */
     fun orderBy(column: Column<T, *>, ascending: Boolean): Z
 
     /**
-     * Adds LIMIT clause which dictates the maximum number of rows the query can return
+     * Adds LIMIT clause which dictates the maximum number of rows the query can return.
+     * Calling this method again would overwrite the previously configured limit
      */
     fun limit(count: Long): Z
 
     /**
-     * Adds OFFSET clause which dictates how many rows should be skipped in the result set
+     * Adds OFFSET clause which dictates how many rows should be skipped in the result set.
+     * Calling this method again would overwrite the previously configured offset
      */
     fun offset(count: Long): Z
 

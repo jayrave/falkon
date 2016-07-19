@@ -94,7 +94,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testRedefiningSelectedColumnsOverwritesExisting() {
+    fun testMultipleSelectCallsAppend() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -103,11 +103,11 @@ class QueryBuilderImplTest {
         val builder = QueryBuilderImpl(
                 table, querySqlBuilder, ARG_PLACEHOLDER,
                 ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).select(table.int).select(table.int)
+        ).select(table.int).select(table.string)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
-                columns = listOf("int")
+                columns = listOf("int", "string")
         )
     }
 
@@ -185,7 +185,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testRedefiningGroupByOverwritesExisting() {
+    fun testMultipleGroupByCallsAppend() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -198,7 +198,7 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
-                querySqlBuilder = querySqlBuilder, groupBy = listOf("string")
+                querySqlBuilder = querySqlBuilder, groupBy = listOf("int", "string")
         )
     }
 
@@ -242,7 +242,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testSubsequentOrderByForTheSameColumnIsNoOp() {
+    fun testSubsequentOrderByForTheSameColumnAppends() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -255,7 +255,7 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
-                orderBy = listOf(OrderInfoForTest("int", true))
+                orderBy = listOf(OrderInfoForTest("int", true), OrderInfoForTest("int", false))
         )
     }
 
