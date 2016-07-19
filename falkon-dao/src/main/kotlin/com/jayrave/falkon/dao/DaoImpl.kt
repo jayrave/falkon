@@ -16,26 +16,25 @@ import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
 
 open class DaoImpl<T : Any, ID : Any>(
         override val table: Table<T, ID>,
-        private val configuration: Configuration,
+        private var argPlaceholder: String,
         private val insertSqlBuilder: InsertSqlBuilder,
         private val updateSqlBuilder: UpdateSqlBuilder,
         private val deleteSqlBuilder: DeleteSqlBuilder,
         private val querySqlBuilder: QuerySqlBuilder) : Dao<T, ID> {
 
     override final fun insertBuilder(): InsertBuilder<T> = InsertBuilderImpl(
-            table, insertSqlBuilder, configuration.argPlaceholder
+            table, insertSqlBuilder, argPlaceholder
     )
 
     override final fun updateBuilder(): UpdateBuilder<T> = UpdateBuilderImpl(
-            table, updateSqlBuilder, configuration.argPlaceholder
+            table, updateSqlBuilder, argPlaceholder
     )
 
     override final fun deleteBuilder(): DeleteBuilder<T>  = DeleteBuilderImpl(
-            table, deleteSqlBuilder, configuration.argPlaceholder
+            table, deleteSqlBuilder, argPlaceholder
     )
 
     override final fun queryBuilder(): QueryBuilder<T> = QueryBuilderImpl(
-            table, querySqlBuilder, configuration.argPlaceholder,
-            configuration.orderByAscendingKey, configuration.orderByDescendingKey
+            table, querySqlBuilder, argPlaceholder
     )
 }

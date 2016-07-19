@@ -27,8 +27,6 @@ interface QuerySqlBuilder {
      * @param [offset] Skips the requested number of rows from the beginning and then forms
      * the result set. Passing null denotes no offset
      * @param [argPlaceholder] to use as placeholders to prevent SQL injection
-     * @param [orderByAscendingKey] text to use to denote ascending order in order by clause
-     * @param [orderByDescendingKey] text to use to denote descending order in order by clause
      */
     fun build(
             tableName: String,
@@ -40,8 +38,6 @@ interface QuerySqlBuilder {
             orderBy: Iterable<OrderInfo>?,
             limit: Long?,
             offset: Long?,
-            argPlaceholder: String,
-            orderByAscendingKey: String,
-            orderByDescendingKey: String
+            argPlaceholder: String
     ): String
 }

@@ -16,8 +16,7 @@ import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class QueryBuilderImpl<T : Any>(
         override val table: Table<T, *>, private val querySqlBuilder: QuerySqlBuilder,
-        private val argPlaceholder: String, private val orderByAscendingKey: String,
-        private val orderByDescendingKey: String) : QueryBuilder<T> {
+        private val argPlaceholder: String) : QueryBuilder<T> {
 
     private var distinct: Boolean = false
     private var selectedColumns: MutableList<Column<T, *>>? = null
@@ -125,8 +124,7 @@ internal class QueryBuilderImpl<T : Any>(
 
         val sql = querySqlBuilder.build(
                 table.name, distinct, columns, null, where?.whereSections, groupBy,
-                orderByInfoList, limitCount, offsetCount, argPlaceholder,
-                orderByAscendingKey, orderByDescendingKey
+                orderByInfoList, limitCount, offsetCount, argPlaceholder
         )
 
         return QueryImpl(sql, where?.arguments ?: emptyList())

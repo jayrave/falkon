@@ -1,6 +1,5 @@
 package com.jayrave.falkon.dao.testLib
 
-import com.jayrave.falkon.dao.Configuration
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.dao.DaoImpl
 import com.jayrave.falkon.engine.Engine
@@ -37,8 +36,8 @@ internal class TableForTest(
         BaseTable<ModelForTest, UUID>("test", configuration) {
 
     val dao: Dao<ModelForTest, UUID> = DaoImpl(
-            this, Configuration("?", "ASC", "DESC"), SimpleInsertSqlBuilder(),
-            SimpleUpdateSqlBuilder(), SimpleDeleteSqlBuilder(), SimpleQuerySqlBuilder()
+            this, "?", SimpleInsertSqlBuilder(), SimpleUpdateSqlBuilder(),
+            SimpleDeleteSqlBuilder(), SimpleQuerySqlBuilder()
     )
 
     override val idColumn: Column<ModelForTest, UUID> get() = id

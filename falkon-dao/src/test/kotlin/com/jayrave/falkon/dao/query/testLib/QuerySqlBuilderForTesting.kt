@@ -12,8 +12,7 @@ class QuerySqlBuilderForTesting : QuerySqlBuilder {
             tableName: String, distinct: Boolean, columns: Iterable<String>?,
             joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
-            offset: Long?, argPlaceholder: String, orderByAscendingKey: String,
-            orderByDescendingKey: String): String {
+            offset: Long?, argPlaceholder: String): String {
 
         val columnsString = columns?.joinToString()
         val whereString = buildWhereClauseWithPlaceholders(whereSections)

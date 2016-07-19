@@ -24,11 +24,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        )
-
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
                 querySqlBuilder = querySqlBuilder, distinct = false
@@ -43,11 +39,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).distinct()
-
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER).distinct()
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
                 querySqlBuilder = querySqlBuilder, distinct = true
@@ -62,11 +54,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).select(table.int)
-
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER).select(table.int)
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
                 columns = listOf("int")
@@ -81,10 +69,8 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).select(table.int, table.string)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .select(table.int, table.string)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
@@ -100,10 +86,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).select(table.int).select(table.string)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .select(table.int)
+                .select(table.string)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
@@ -120,10 +105,9 @@ class QueryBuilderImplTest {
         val querySqlBuilder = bundle.querySqlBuilder
 
         // build & compile
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).where().eq(table.int, 5)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .where()
+                .eq(table.int, 5)
 
         val actualQuery = builder.build()
         builder.compile()
@@ -153,11 +137,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).groupBy(table.int)
-
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER).groupBy(table.int)
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
                 querySqlBuilder = querySqlBuilder, groupBy = listOf("int")
@@ -172,10 +152,8 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).groupBy(table.string, table.blob)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .groupBy(table.string, table.blob)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
@@ -191,10 +169,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).groupBy(table.int).groupBy(table.string)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .groupBy(table.int)
+                .groupBy(table.string)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
@@ -210,10 +187,8 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).orderBy(table.int, true)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .orderBy(table.int, true)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
@@ -229,10 +204,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).orderBy(table.int, true).orderBy(table.blob, false)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .orderBy(table.int, true)
+                .orderBy(table.blob, false)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
@@ -248,10 +222,9 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).orderBy(table.int, true).orderBy(table.int, false)
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+                .orderBy(table.int, true)
+                .orderBy(table.int, false)
 
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder, querySqlBuilder = querySqlBuilder,
@@ -267,11 +240,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).limit(50)
-
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER).limit(50)
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
                 querySqlBuilder = querySqlBuilder, limit = 50
@@ -286,11 +255,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        ).offset(72)
-
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER).offset(72)
         assertArgFreeStatement(
                 table, engine, adderOrEnder = builder,
                 querySqlBuilder = querySqlBuilder, offset = 72
@@ -305,10 +270,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        )
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
                 .distinct()
                 .select(table.string)
                 .groupBy(table.blob)
@@ -328,10 +290,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        )
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
                 .where().eq(table.double, 5.0)
                 .distinct()
                 .select(table.string)
@@ -351,10 +310,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        )
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
                 .limit(5)
                 .orderBy(table.int, true)
                 .where().eq(table.double, 5.0)
@@ -375,10 +331,7 @@ class QueryBuilderImplTest {
         val querySqlBuilder = bundle.querySqlBuilder
 
         // build & compile
-        val builder = QueryBuilderImpl(
-                table, querySqlBuilder, ARG_PLACEHOLDER,
-                ORDER_BY_ASCENDING_KEY, ORDER_BY_DESCENDING_KEY
-        )
+        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
                 .where()
                 .eq(table.short, 5.toShort()).and()
                 .eq(table.int, 6).and()
@@ -506,9 +459,7 @@ class QueryBuilderImplTest {
                 tableName = tableName, distinct = distinct, columns = columns,
                 joinInfos = null, whereSections = whereSections, groupBy = groupBy,
                 orderBy = orderBy, limit = limit, offset = offset,
-                argPlaceholder = ARG_PLACEHOLDER,
-                orderByAscendingKey = ORDER_BY_ASCENDING_KEY,
-                orderByDescendingKey = ORDER_BY_DESCENDING_KEY
+                argPlaceholder = ARG_PLACEHOLDER
         )
     }
 
@@ -537,8 +488,6 @@ class QueryBuilderImplTest {
 
     companion object {
         private const val ARG_PLACEHOLDER = "?"
-        private const val ORDER_BY_ASCENDING_KEY = "ASC"
-        private const val ORDER_BY_DESCENDING_KEY = "DESC"
 
         private fun assertEquality(actualQuery: Query, expectedQuery: Query) {
             assertThat(actualQuery.sql).isEqualTo(expectedQuery.sql)

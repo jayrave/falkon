@@ -10,8 +10,7 @@ class SimpleQuerySqlBuilder : QuerySqlBuilder {
             tableName: String, distinct: Boolean, columns: Iterable<String>?,
             joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
-            offset: Long?, argPlaceholder: String, orderByAscendingKey: String,
-            orderByDescendingKey: String): String {
+            offset: Long?, argPlaceholder: String): String {
 
         val querySql = StringBuilder(120)
         querySql.append("SELECT")
@@ -28,7 +27,7 @@ class SimpleQuerySqlBuilder : QuerySqlBuilder {
 
         querySql.addWhereIfPossible(whereSections, argPlaceholder)
         querySql.addGroupIfPossible(groupBy)
-        querySql.addOrderByIfPossible(orderBy, orderByAscendingKey, orderByDescendingKey)
+        querySql.addOrderByIfPossible(orderBy)
         querySql.addLimitIfPossible(limit)
         querySql.addOffsetIfPossible(offset)
 
@@ -89,13 +88,10 @@ class SimpleQuerySqlBuilder : QuerySqlBuilder {
     }
 
 
-    private fun StringBuilder.addOrderByIfPossible(
-            orderBy: Iterable<OrderInfo>?, orderByAscendingFlag: String,
-            orderByDescendingFlag: String) {
-
+    private fun StringBuilder.addOrderByIfPossible(orderBy: Iterable<OrderInfo>?) {
         val orderBySql = orderBy.joinToStringIfHasItems(prefix = " ORDER BY ") {
-            val flag = if (it.ascending) orderByAscendingFlag else orderByDescendingFlag
-            "${it.columnName} $flag"
+            val order = if (it.ascending) "ASC" else "DESC"
+            "${it.columnName} $order"
         }
 
         if (isValidPart(orderBySql)) {

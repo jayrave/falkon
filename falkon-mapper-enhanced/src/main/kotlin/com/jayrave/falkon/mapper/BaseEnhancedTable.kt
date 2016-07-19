@@ -137,7 +137,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             EnhancedColumn<T, C> {
 
         val column = EnhancedColumnImpl(
-                name, maxSize, isNonNull, propertyExtractor, converter,
+                this, name, maxSize, isNonNull, propertyExtractor, converter,
                 nullFromSqlSubstitute, nullToSqlSubstitute, configuration.typeTranslator
         )
 
