@@ -9,8 +9,9 @@ interface InsertBuilder<T : Any> {
     val table: Table<T, *>
 
     /**
-     * Calling this method again for a column that has already been set should overwrite the
-     * existing value
+     * Sets the value a column should have after insert. This method can be called multiple times
+     * to set values for multiple columns. Behaviour on calling this method again for a column
+     * that has already been set is implementation dependent
      */
     fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T>
 }

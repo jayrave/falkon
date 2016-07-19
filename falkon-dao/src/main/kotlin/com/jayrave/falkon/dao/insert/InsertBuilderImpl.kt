@@ -15,6 +15,10 @@ internal class InsertBuilderImpl<T : Any>(
 
     private val dataConsumer = LinkedHashMapBackedDataConsumer()
 
+    /**
+     * Calling this method again for a column that has been already set will overwrite the
+     * existing value for that column
+     */
     override fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T> {
         return AdderOrEnderImpl().set(column, value)
     }
@@ -22,6 +26,9 @@ internal class InsertBuilderImpl<T : Any>(
 
     private inner class AdderOrEnderImpl : AdderOrEnder<T> {
 
+        /**
+         * @see [InsertBuilderImpl.set]
+         */
         override fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T> {
             dataConsumer.setColumnName(column.name)
             column.putStorageFormIn(value, dataConsumer)
