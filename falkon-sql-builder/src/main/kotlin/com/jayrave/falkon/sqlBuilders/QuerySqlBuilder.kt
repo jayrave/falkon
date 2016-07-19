@@ -4,10 +4,13 @@ import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
+/**
+ * All the table & column names passed here could contain SQL aliases & could also be qualified
+ */
 interface QuerySqlBuilder {
 
     /**
-     * @param [tableName] the table to delete from
+     * @param [tableName] the table to query from
      * @param [distinct] `true` if you want each row to be unique, `false` otherwise
      * @param [columns] A list of which columns to return, applied in iteration order.
      * Passing null will return all columns

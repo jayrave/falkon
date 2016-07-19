@@ -175,6 +175,10 @@ class SimpleQuerySqlBuilderTest {
     fun testWithEverything() {
         val actualSql = callBuildQuerySqlFromParts(
                 distinct = true, columns = listOf("column_name_1", "column_name_2"),
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, "$tableName.column_name_1",
+                        "table_2", "table_2.column_name_1"
+                )),
                 whereSections = listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_3"),
                         SimpleConnector(SimpleConnector.Type.AND),
@@ -187,6 +191,39 @@ class SimpleQuerySqlBuilderTest {
 
         @Suppress("ConvertToStringTemplate")
         val expectedSql = "SELECT DISTINCT column_name_1, column_name_2 FROM $tableName " +
+                "INNER JOIN table_2 ON $tableName.column_name_1 = table_2.column_name_1 " +
+                "WHERE column_name_3 = ? AND column_name_4 = ? " +
+                "GROUP BY column_name_5 " +
+                "ORDER BY column_name_6 DESC " +
+                "LIMIT 5 OFFSET 6"
+
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun testWithEverythingWithAliases() {
+        val actualSql = callBuildQuerySqlFromParts(
+                tableName = "$tableName AS t1",
+                distinct = true, columns = listOf("column_name_1 AS t1c1", "column_name_2 AS t1c2"),
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, "t1c1",
+                        "table_2 AS t2", "t2.column_name_1"
+                )),
+                whereSections = listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_3"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_4")
+                ),
+                groupBy = listOf("column_name_5"),
+                orderBy = listOf(OrderInfoForTest("column_name_6", false)),
+                limit = 5, offset = 6
+        )
+
+        @Suppress("ConvertToStringTemplate")
+        val expectedSql = "SELECT DISTINCT column_name_1 AS t1c1, column_name_2 AS t1c2 " +
+                "FROM $tableName AS t1 " +
+                "INNER JOIN table_2 AS t2 ON t1c1 = t2.column_name_1 " +
                 "WHERE column_name_3 = ? AND column_name_4 = ? " +
                 "GROUP BY column_name_5 " +
                 "ORDER BY column_name_6 DESC " +
