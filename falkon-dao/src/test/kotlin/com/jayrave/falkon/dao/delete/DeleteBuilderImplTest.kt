@@ -219,7 +219,7 @@ class DeleteBuilderImplTest {
         companion object {
             fun default(): Bundle {
                 val engine = EngineForTestingBuilders.createWithOneShotStatements()
-                val table = TableForTest(defaultTableConfiguration(engine))
+                val table = TableForTest(configuration = defaultTableConfiguration(engine))
                 return Bundle(table, engine, DeleteSqlBuilderForTesting())
             }
         }

@@ -61,7 +61,7 @@ class UpdateBuilderUpdateExtnTest {
                 updateProvider = { OneShotCompiledUpdateForTest(it, numberOfRowsAffected) }
         )
 
-        val table = TableForTest(defaultTableConfiguration(engine))
+        val table = TableForTest(configuration = defaultTableConfiguration(engine))
         assertThat(updateOp.invoke(table)).isEqualTo(numberOfRowsAffected)
     }
 
@@ -73,7 +73,7 @@ class UpdateBuilderUpdateExtnTest {
 
         var exceptionWasThrown = false
         try {
-            updateOp.invoke(TableForTest(defaultTableConfiguration(engine)))
+            updateOp.invoke(TableForTest(configuration = defaultTableConfiguration(engine)))
         } catch (e: Exception) {
             exceptionWasThrown = true
         }

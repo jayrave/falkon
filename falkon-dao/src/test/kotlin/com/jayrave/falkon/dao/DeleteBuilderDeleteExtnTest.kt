@@ -59,7 +59,7 @@ class DeleteBuilderDeleteExtnTest {
                 deleteProvider = { OneShotCompiledDeleteForTest(it, numberOfRowsAffected) }
         )
 
-        val table = TableForTest(defaultTableConfiguration(engine))
+        val table = TableForTest(configuration = defaultTableConfiguration(engine))
         assertThat(deleteOp.invoke(table)).isEqualTo(numberOfRowsAffected)
     }
 
@@ -71,7 +71,7 @@ class DeleteBuilderDeleteExtnTest {
 
         var exceptionWasThrown = false
         try {
-            deleteOp.invoke(TableForTest(defaultTableConfiguration(engine)))
+            deleteOp.invoke(TableForTest(configuration = defaultTableConfiguration(engine)))
         } catch (e: Exception) {
             exceptionWasThrown = true
         }

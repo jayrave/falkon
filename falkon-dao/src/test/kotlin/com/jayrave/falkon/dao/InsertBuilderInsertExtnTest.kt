@@ -35,7 +35,7 @@ class InsertBuilderInsertExtnTest {
                 insertProvider = { OneShotCompiledInsertForTest(it, shouldThrowOnExecution = true) }
         )
 
-        val table = TableForTest(defaultTableConfiguration(engine))
+        val table = TableForTest(configuration = defaultTableConfiguration(engine))
         val builder = InsertBuilderImpl(table, insertSqlBuilder, argPlaceholder)
 
         var exceptionWasThrown = false
@@ -65,7 +65,7 @@ class InsertBuilderInsertExtnTest {
                 insertProvider = { OneShotCompiledInsertForTest(it, numberOfRowsInserted) }
         )
 
-        val table = TableForTest(defaultTableConfiguration(engine))
+        val table = TableForTest(configuration = defaultTableConfiguration(engine))
         val builder = InsertBuilderImpl(table, insertSqlBuilder, argPlaceholder)
         assertThat(builder.set(table.int, 5).insert()).isEqualTo(expectedFlag)
 

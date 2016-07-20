@@ -23,8 +23,8 @@ internal class ModelForTest(
 
 
 internal class TableForTest(
-        configuration: TableConfiguration = defaultTableConfiguration()) :
-        BaseTable<ModelForTest, Int>("test", configuration) {
+        name: String = "test", configuration: TableConfiguration = defaultTableConfiguration()) :
+        BaseTable<ModelForTest, Int>(name, configuration) {
 
     override val idColumn: Column<ModelForTest, Int> = mock()
     override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
