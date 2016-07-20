@@ -7,3 +7,14 @@ import com.jayrave.falkon.mapper.Column
  */
 internal val Column<*, *>.qualifiedName: String
     get() = "${table.name}.$name"
+
+
+/**
+ * @return [qualifiedName] or [Column.name] depending on [qualifyColumnName]
+ */
+internal fun Column<*, *>.getAppropriateName(qualifyColumnName: Boolean): String {
+    return when (qualifyColumnName) {
+        true -> qualifiedName
+        else -> name
+    }
+}
