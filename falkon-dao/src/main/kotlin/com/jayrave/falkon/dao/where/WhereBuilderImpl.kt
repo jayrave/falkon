@@ -18,9 +18,10 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
         AfterSimpleConnectorAdder<T, Z> {
 
     private val adderOrEnder: Z by lazy { adderOrEnderCreator.invoke(this) }
-    private val lenientWhereBuilder = LenientWhereBuilderImpl<AdderOrEnderForLenientBuilder>() {
-        AdderOrEnderForLenientBuilder(it)
-    }
+    private val lenientWhereBuilder =
+            LenientWhereBuilderImpl<AdderOrEnderForLenientBuilder>(false) {
+                AdderOrEnderForLenientBuilder(it)
+            }
 
 
     internal fun build(): Where = lenientWhereBuilder.build()
