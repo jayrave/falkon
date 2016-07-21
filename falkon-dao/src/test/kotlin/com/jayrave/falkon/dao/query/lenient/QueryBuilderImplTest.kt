@@ -15,6 +15,7 @@ import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.NoArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -296,6 +297,65 @@ class QueryBuilderImplTest {
                         )
                 )
         )
+    }
+
+
+    @Test
+    fun testJoinWithWhereFromMultipleTables() {
+        val bundle = Bundle.default()
+        val table1 = bundle.table
+        val table2 = TableForTest(name = "table_for_join_1")
+        val table3 = TableForTest(name = "table_for_join_2")
+        val builder = bundle.newBuilder(qualifyColumnNames = true)
+
+        builder
+                .fromTable(table1)
+                .join(table1.int, table2.nullableDouble)
+                .join(table1.int, table3.nullableFloat)
+                .where()
+                .eq(table1.float, 5F)
+                .and()
+                .gt(table2.nullableLong, 6)
+                .or()
+                .isNull(table3.nullableString)
+
+        // build & compile
+        val actualQuery = builder.build()
+        builder.compile()
+
+        // build expected query
+        val expectedSql = buildQuerySql(
+                tableName = bundle.table.name, querySqlBuilder = bundle.querySqlBuilder,
+                joinInfos = listOf(
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
+                                table2.name, "${table2.name}.${table2.nullableDouble.name}"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
+                                table3.name, "${table3.name}.${table3.nullableFloat.name}"
+                        )
+                ),
+                whereSections = listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "${table1.name}.${table1.float.name}"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "${table2.name}.${table2.nullableLong.name}"),
+                        SimpleConnector(SimpleConnector.Type.OR),
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "${table3.name}.${table3.nullableString.name}")
+                )
+        )
+
+        val expectedQuery = QueryImpl(expectedSql, listOf(5F, 6L))
+
+        // Verify
+        val engine = bundle.engine
+        assertEquality(actualQuery, expectedQuery)
+        assertThat(engine.compiledQueries).hasSize(1)
+        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.sql).isEqualTo(expectedSql)
+        assertThat(statement.boundArgs).hasSize(2)
+        assertThat(statement.floatBoundAt(1)).isEqualTo(5F)
+        assertThat(statement.longBoundAt(2)).isEqualTo(6L)
     }
 
 
