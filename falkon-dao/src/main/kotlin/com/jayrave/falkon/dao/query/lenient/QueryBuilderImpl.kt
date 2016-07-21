@@ -149,13 +149,17 @@ internal class QueryBuilderImpl(
         val tempSelectedColumns = selectedColumns
         val columns = when (tempSelectedColumns) {
             null -> null
-            else -> IterableBackedIterable(tempSelectedColumns) { it.name }
+            else -> IterableBackedIterable(tempSelectedColumns) {
+                it.getAppropriateName(qualifyColumnNames)
+            }
         }
 
         val tempGroupByColumns = groupByColumns
         val groupBy = when (tempGroupByColumns) {
             null -> null
-            else -> IterableBackedIterable(tempGroupByColumns) { it.name }
+            else -> IterableBackedIterable(tempGroupByColumns) {
+                it.getAppropriateName(qualifyColumnNames)
+            }
         }
 
         val sql = querySqlBuilder.build(

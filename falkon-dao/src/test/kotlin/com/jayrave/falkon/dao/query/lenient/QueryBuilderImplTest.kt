@@ -360,6 +360,122 @@ class QueryBuilderImplTest {
 
 
     @Test
+    fun testQueryWithAllOptions() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val tableForJoin = TableForTest("table_for_join")
+        val builder = bundle.newBuilder()
+
+        builder
+                .fromTable(table)
+                .distinct()
+                .select(table.int)
+                .join(table.long, tableForJoin.blob)
+                .where().eq(table.double, 5.0)
+                .groupBy(table.blob)
+                .orderBy(table.nullableFloat, true)
+                .limit(5)
+                .offset(8)
+
+        // build & compile
+        val actualQuery = builder.build()
+        builder.compile()
+
+        // build expected query
+        val primaryTableName = table.name
+        val tableForJoinName = tableForJoin.name
+        val expectedSql = buildQuerySql(
+                tableName = primaryTableName,
+                querySqlBuilder = bundle.querySqlBuilder,
+                distinct = true,
+                columns = listOf("int"),
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, "long", tableForJoinName, "blob"
+                )),
+                whereSections = listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "double")
+                ),
+                groupBy = listOf("blob"),
+                orderBy = listOf(OrderInfoForTest("nullable_float", true)),
+                limit = 5, offset = 8
+        )
+
+        val expectedQuery = QueryImpl(expectedSql, listOf(5.0))
+
+        // Verify
+        val engine = bundle.engine
+        assertEquality(actualQuery, expectedQuery)
+        assertThat(engine.compiledQueries).hasSize(1)
+        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.sql).isEqualTo(expectedSql)
+        assertThat(statement.boundArgs).hasSize(1)
+        assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)
+    }
+
+
+    @Test
+    fun testQueryWithAllOptionsAndQualifiedColumns() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val tableForJoin = TableForTest("table_for_join")
+        val builder = bundle.newBuilder(qualifyColumnNames = true)
+
+        builder
+                .fromTable(table)
+                .distinct()
+                .select(table.int, tableForJoin.string)
+                .join(table.long, tableForJoin.blob)
+                .where().eq(table.double, 5.0).and().notEq(tableForJoin.int, 6)
+                .groupBy(table.blob, tableForJoin.nullableInt)
+                .orderBy(table.nullableFloat, true)
+                .orderBy(tableForJoin.int, false)
+                .limit(5)
+                .offset(8)
+
+        // build & compile
+        val actualQuery = builder.build()
+        builder.compile()
+
+        // build expected query
+        val primaryTableName = table.name
+        val tableForJoinName = tableForJoin.name
+        val expectedSql = buildQuerySql(
+                tableName = primaryTableName,
+                querySqlBuilder = bundle.querySqlBuilder,
+                distinct = true,
+                columns = listOf("$primaryTableName.int", "$tableForJoinName.string"),
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, "$primaryTableName.long",
+                        tableForJoinName, "$tableForJoinName.blob"
+                )),
+                whereSections = listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, "$primaryTableName.double"),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "$tableForJoinName.int")
+                ),
+                groupBy = listOf("$primaryTableName.blob", "$tableForJoinName.nullable_int"),
+                orderBy = listOf(
+                        OrderInfoForTest("$primaryTableName.nullable_float", true),
+                        OrderInfoForTest("$tableForJoinName.int", false)
+                ),
+                limit = 5, offset = 8
+        )
+
+        val expectedQuery = QueryImpl(expectedSql, listOf(5.0, 6))
+
+        // Verify
+        val engine = bundle.engine
+        assertEquality(actualQuery, expectedQuery)
+        assertThat(engine.compiledQueries).hasSize(1)
+        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.sql).isEqualTo(expectedSql)
+        assertThat(statement.boundArgs).hasSize(2)
+        assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)
+        assertThat(statement.intBoundAt(2)).isEqualTo(6)
+    }
+
+
+    @Test
     fun testAllTypesAreBoundCorrectly() {
         val bundle = Bundle.default()
         val table = bundle.table
