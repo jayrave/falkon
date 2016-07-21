@@ -713,7 +713,7 @@ class QueryBuilderImplTest {
         private const val ARG_PLACEHOLDER = "?"
 
         private fun Bundle.newBuilder(qualifyColumnNames: Boolean = false): QueryBuilderImpl {
-            return QueryBuilderImpl(engine, querySqlBuilder, ARG_PLACEHOLDER, qualifyColumnNames)
+            return QueryBuilderImpl(querySqlBuilder, ARG_PLACEHOLDER, qualifyColumnNames)
         }
 
 

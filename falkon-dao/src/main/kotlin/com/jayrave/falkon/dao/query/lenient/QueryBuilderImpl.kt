@@ -8,7 +8,6 @@ import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.lenient.WhereBuilder
 import com.jayrave.falkon.dao.where.lenient.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledQuery
-import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Column
@@ -20,8 +19,8 @@ import java.util.*
 import com.jayrave.falkon.dao.where.lenient.AdderOrEnder as WhereAdderOrEnder
 
 internal class QueryBuilderImpl(
-        private val engine: Engine, private val querySqlBuilder: QuerySqlBuilder,
-        private val argPlaceholder: String, private val qualifyColumnNames: Boolean) :
+        private val querySqlBuilder: QuerySqlBuilder, private val argPlaceholder: String,
+        private val qualifyColumnNames: Boolean) :
         QueryBuilder,
         AdderOrEnderBeforeWhere {
 
@@ -173,7 +172,7 @@ internal class QueryBuilderImpl(
 
     override fun compile(): CompiledQuery {
         val query = build()
-        return engine
+        return table.configuration.engine
                 .compileQuery(query.sql)
                 .closeIfOpThrows { bindAll(query.arguments) }
     }
