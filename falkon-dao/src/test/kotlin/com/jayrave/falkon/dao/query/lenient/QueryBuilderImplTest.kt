@@ -10,6 +10,7 @@ import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
+import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
@@ -237,6 +238,68 @@ class QueryBuilderImplTest {
 
 
     @Test
+    fun testSingleJoinWithoutWhere() {
+        val bundle = Bundle.default()
+        val table1 = bundle.table
+        val table2 = TableForTest(name = "table_for_join")
+        val builder = bundle.newBuilder(qualifyColumnNames = true)
+
+        builder
+                .fromTable(table1)
+                .join(table1.int, table2.nullableDouble)
+
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
+                        table2.name, "${table2.name}.${table2.nullableDouble.name}"
+                ))
+        )
+    }
+
+
+    @Test
+    fun testMultiJoinWithoutWhere() {
+        val bundle = Bundle.default()
+        val table1 = bundle.table
+        val table2 = TableForTest(name = "table_for_join_1")
+        val table3 = TableForTest(name = "table_for_join_2")
+        val table4 = TableForTest(name = "table_for_join_3")
+        val builder = bundle.newBuilder(qualifyColumnNames = true)
+
+        builder
+                .fromTable(table1)
+                .join(table1.int, table2.nullableDouble)
+                .join(table2.long, table3.string)
+                .join(table3.blob, table4.float)
+                .join(table4.nullableShort, table2.nullableBlob)
+
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                joinInfos = listOf(
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
+                                table2.name, "${table2.name}.${table2.nullableDouble.name}"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN, "${table2.name}.${table2.long.name}",
+                                table3.name, "${table3.name}.${table3.string.name}"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN, "${table3.name}.${table3.blob.name}",
+                                table4.name, "${table4.name}.${table4.float.name}"
+                        ),
+                        JoinInfoForTest(
+                                JoinInfo.Type.INNER_JOIN,
+                                "${table4.name}.${table4.nullableShort.name}",
+                                table2.name, "${table2.name}.${table2.nullableBlob.name}"
+                        )
+                )
+        )
+    }
+
+
+    @Test
     fun testComplexQueryWithWhereAtLast() {
         val bundle = Bundle.default()
         val table = bundle.table
@@ -394,9 +457,9 @@ class QueryBuilderImplTest {
 
     private fun assertArgFreeStatement(
             bundle: Bundle, queryBuilderImpl: QueryBuilderImpl, distinct: Boolean = false,
-            columns: Iterable<String>? = null, whereSections: Iterable<WhereSection>? = null,
-            groupBy: Iterable<String>? = null, orderBy: Iterable<OrderInfo>? = null,
-            limit: Long? = null, offset: Long? = null) {
+            columns: Iterable<String>? = null, joinInfos: Iterable<JoinInfo>? = null,
+            whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
+            orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null) {
 
         // build & compile
         val actualQuery = queryBuilderImpl.build()
@@ -405,8 +468,9 @@ class QueryBuilderImplTest {
         // build expected query
         val expectedSql = buildQuerySql(
                 tableName = bundle.table.name, querySqlBuilder = bundle.querySqlBuilder,
-                distinct = distinct, columns = columns, whereSections = whereSections,
-                groupBy = groupBy, orderBy = orderBy, limit = limit, offset = offset
+                distinct = distinct, columns = columns, joinInfos = joinInfos,
+                whereSections = whereSections, groupBy = groupBy, orderBy = orderBy,
+                limit = limit, offset = offset
         )
 
         val expectedQuery = QueryImpl(expectedSql, emptyList())
@@ -423,13 +487,14 @@ class QueryBuilderImplTest {
 
     private fun buildQuerySql(
             tableName: String, querySqlBuilder: QuerySqlBuilder, distinct: Boolean = false,
-            columns: Iterable<String>? = null, whereSections: Iterable<WhereSection>? = null,
-            groupBy: Iterable<String>? = null, orderBy: Iterable<OrderInfo>? = null,
-            limit: Long? = null, offset: Long? = null): String {
+            columns: Iterable<String>? = null, joinInfos: Iterable<JoinInfo>? = null,
+            whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
+            orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
+            String {
 
         return querySqlBuilder.build(
                 tableName = tableName, distinct = distinct, columns = columns,
-                joinInfos = null, whereSections = whereSections, groupBy = groupBy,
+                joinInfos = joinInfos, whereSections = whereSections, groupBy = groupBy,
                 orderBy = orderBy, limit = limit, offset = offset,
                 argPlaceholder = ARG_PLACEHOLDER
         )
@@ -450,6 +515,15 @@ class QueryBuilderImplTest {
             }
         }
     }
+
+
+
+    private data class JoinInfoForTest(
+            override val type: JoinInfo.Type,
+            override val qualifiedLocalColumnName: String,
+            override val nameOfTableToJoin: String,
+            override val qualifiedColumnNameFromTableToJoin: String) :
+            JoinInfo
 
 
 

@@ -69,14 +69,13 @@ internal class QueryBuilderImpl(
 
 
     override fun join(column: Column<*, *>, onColumn: Column<*, *>): AdderOrEnderBeforeWhere {
-
         if (joinInfoList == null) {
             joinInfoList = LinkedList()
         }
 
         joinInfoList!!.add(JoinInfoImpl(
                 JoinInfo.Type.INNER_JOIN, column.getAppropriateName(qualifyColumnNames),
-                onColumn.getAppropriateName(qualifyColumnNames), column.table.name
+                onColumn.table.name, onColumn.getAppropriateName(qualifyColumnNames)
         ))
 
         return this

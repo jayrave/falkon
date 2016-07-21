@@ -19,7 +19,7 @@ class QuerySqlBuilderForTesting : QuerySqlBuilder {
         val groupByString = groupBy?.joinToString()
         val orderByString = orderBy?.joinToString() { "${it.columnName} ${it.ascending}" }
         val joinString = joinInfos?.joinToString {
-            "${it.nameOfTableToJoin} ${it.qualifiedLocalColumnName} " +
+            "${it.type} ${it.qualifiedLocalColumnName} " +
                     "${it.nameOfTableToJoin} ${it.qualifiedColumnNameFromTableToJoin}"
         }
 
