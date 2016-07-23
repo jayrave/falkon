@@ -1,7 +1,8 @@
 buildscript {
 
     def baseVersions = [
-            kotlin: '1.0.3'
+            kotlin        : '1.0.3',
+            supportLibrary: '23.1.1',
     ]
 
     def pluginsVersions = [
@@ -29,14 +30,15 @@ buildscript {
     ]
 
     ext.librariesVersions = [
-            assertJ      : '1.7.1',
-            h2           : '1.4.192',
-            jUnit        : '4.12',
-            kotlinReflect: baseVersions.kotlin,
-            kotlinStdlib : baseVersions.kotlin,
-            mockito      : '2.0.53-beta',
-            mockitoKotlin: '0.4.1',
-            robolectric  : '3.0'
+            assertJ         : '1.7.1',
+            h2              : '1.4.192',
+            jUnit           : '4.12',
+            kotlinReflect   : baseVersions.kotlin,
+            kotlinStdlib    : baseVersions.kotlin,
+            mockito         : '2.0.53-beta',
+            mockitoKotlin   : '0.4.1',
+            robolectric     : '3.0',
+            supportAppCompat: baseVersions.supportLibrary,
     ]
 
     repositories {
@@ -66,14 +68,15 @@ ext.falkonModules = [
 
 
 ext.libraries = [
-        assertJ      : "org.assertj:assertj-core:${librariesVersions.assertJ}",
-        h2           : "com.h2database:h2:${librariesVersions.h2}",
-        jUnit        : "junit:junit:${librariesVersions.jUnit}",
-        kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
-        kotlinStdlib : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
-        mockito      : "org.mockito:mockito-core:${librariesVersions.mockito}",
-        mockitoKotlin: "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
-        robolectric  : "org.robolectric:robolectric:${librariesVersions.robolectric}"
+        assertJ         : "org.assertj:assertj-core:${librariesVersions.assertJ}",
+        h2              : "com.h2database:h2:${librariesVersions.h2}",
+        jUnit           : "junit:junit:${librariesVersions.jUnit}",
+        kotlinReflect   : "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
+        kotlinStdlib    : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
+        mockito         : "org.mockito:mockito-core:${librariesVersions.mockito}",
+        mockitoKotlin   : "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
+        robolectric     : "org.robolectric:robolectric:${librariesVersions.robolectric}",
+        supportAppCompat: "com.android.support:appcompat-v7:${librariesVersions.supportAppCompat}",
 ]
 
 

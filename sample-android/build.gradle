@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion androidConstants.compileSdk
+    buildToolsVersion androidConstants.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.jayrave.falkon.sample_android"
+        minSdkVersion androidConstants.minSdk
+        targetSdkVersion androidConstants.targetSdk
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+}
+
+dependencies {
+
+    // ------------------------------------- Falkon modules ----------------------------------------
+
+    // Provides EnhancedTable interface & base implementations. By default, enhanced tables
+    // also have `DAO`s associated with them
+    compile falkonModules.mapperEnhanced
+
+    // Simple SQL builders
+    compile falkonModules.sqlBuilderSimple
+
+    // Engine implementation using the default SQLite in Android
+    compile falkonModules.engineAndroidSqlite
+
+    // To get extension functionality on the DAO. This adds fancy functions to DAO, which
+    // would allow inserting, updated & deleting models without using builders. Also simple
+    // query methods like #findById & #findAll are provided too
+    compile falkonModules.daoExtn
+
+    // ------------------------------------- Falkon modules ----------------------------------------
+
+    compile libraries.kotlinStdlib
+    compile libraries.supportAppCompat
+}
