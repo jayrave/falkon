@@ -1,65 +1,24 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.mapper.Column
-import com.jayrave.falkon.mapper.Value
-import com.jayrave.falkon.mapper.lib.safeCloseAfterOp
-import java.util.*
+import com.jayrave.falkon.mapper.lib.extractAllModelsAndClose
+import com.jayrave.falkon.mapper.lib.extractFirstModelAndClose
 
 /**
- * [T] that has the passed in [ID] as its primary key
+ * @return [T] that has the passed in [ID] as its primary key
  */
 fun <T: Any, ID : Any> Dao<T, ID>.findById(id: ID): T? {
-    val compiledQuery = queryBuilder()
+    return queryBuilder()
             .where()
             .eq(table.idColumn, id)
             .limit(1) // to be defensive
             .compile()
-
-    compiledQuery.safeCloseAfterOp {
-        val source = execute()
-
-        source.safeCloseAfterOp {
-            val itemPresent = source.moveToFirst()
-            return when (itemPresent) {
-                true -> this@findById.createInstanceFrom(source)
-                else -> null
-            }
-        }
-    }
+            .extractFirstModelAndClose(table)
 }
 
 
 /**
- * All [T]s of this table
+ * @return all records of this table converted into [T]s
  */
 fun <T: Any, ID : Any> Dao<T, ID>.findAll(): List<T> {
-    val compiledQuery = queryBuilder().compile()
-    compiledQuery.safeCloseAfterOp {
-        val source = execute()
-
-        source.safeCloseAfterOp {
-            val dataProducer = SourceBackedDataProducer(source)
-            val result = LinkedList<T>()
-            while (source.moveToNext()) {
-                result.add(createInstanceFrom(source, dataProducer))
-            }
-
-            return result
-        }
-    }
-}
-
-
-private fun <T: Any> Dao<T, *>.createInstanceFrom(
-        source: Source,
-        dataProducer: SourceBackedDataProducer = SourceBackedDataProducer(source)): T {
-
-    return table.create(object : Value<T> {
-        override fun <C> of(column: Column<T, C>): C {
-            // Update data producer to point to the current column
-            dataProducer.setColumnIndex(source.getColumnIndex(column.name))
-            return column.computePropertyFrom(dataProducer)
-        }
-    })
+    return queryBuilder().compile().extractAllModelsAndClose(table)
 }

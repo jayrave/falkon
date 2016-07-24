@@ -1,4 +1,4 @@
-package com.jayrave.falkon.dao
+package com.jayrave.falkon.mapper.lib
 
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.DataProducer
