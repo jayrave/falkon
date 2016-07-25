@@ -31,7 +31,7 @@ internal class UpdateBuilderImpl<T : Any>(
     }
 
     private fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
-        whereBuilder = WhereBuilderImpl { PredicateAdderOrEnderImpl(it) }
+        whereBuilder = WhereBuilderImpl({ PredicateAdderOrEnderImpl(it) })
         return whereBuilder!!
     }
 

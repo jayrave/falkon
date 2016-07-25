@@ -18,7 +18,7 @@ internal class DeleteBuilderImpl<T : Any>(
     private var whereBuilder: WhereBuilderImpl<T, AdderOrEnder<T>>? = null
 
     override fun where(): WhereBuilder<T, AdderOrEnder<T>> {
-        whereBuilder = WhereBuilderImpl { AdderOrEnderImpl(it) }
+        whereBuilder = WhereBuilderImpl({ AdderOrEnderImpl(it) })
         return whereBuilder!!
     }
 

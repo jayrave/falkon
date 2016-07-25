@@ -52,7 +52,7 @@ internal class QueryBuilderImpl<T : Any>(
 
 
     override fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
-        whereBuilder = WhereBuilderImpl { PredicateAdderOrEnderImpl(it) }
+        whereBuilder = WhereBuilderImpl({ PredicateAdderOrEnderImpl(it) })
         return whereBuilder!!
     }
 

@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.where
 
+import com.jayrave.falkon.dao.lib.getAppropriateName
 import com.jayrave.falkon.dao.testLib.ModelForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.assertWhereEquality
@@ -7,22 +8,39 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnect
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.*
 import org.junit.Test
+import com.jayrave.falkon.dao.where.lenient.AdderOrEnder as LenientAdderOrEnder
+import com.jayrave.falkon.dao.where.lenient.WhereBuilderImpl as LenienWhereBuilderImpl
 
 /**
  * As of July 17, 2016, [com.jayrave.falkon.dao.where.lenient.WhereBuilderImpl] is being used
- * by [WhereBuilderImpl] under the hood. Therefore, this test class has only one smoke test
+ * by [WhereBuilderImpl] under the hood. Therefore, this test class has only a few smoke tests
  * that touches almost all the functionality of [WhereBuilderImpl]
  */
 class WhereBuilderImplTest {
 
     private val table = TableForTest()
-    private val builder: WhereBuilderImpl<ModelForTest, AdderOrEnderForTest> = WhereBuilderImpl {
-        AdderOrEnderForTest(it)
+    private lateinit var builder: WhereBuilderImpl<ModelForTest, AdderOrEnderForTest>
+
+
+    @Test
+    fun testWhereWithAllSectionsWithoutBackingImplementationInjection() {
+        builder = WhereBuilderImpl({ AdderOrEnderForTest(it) })
+        performTestWhereWithAllSections(false)
     }
 
 
     @Test
-    fun testWhereWithAllSections() {
+    fun testWhereWithAllSectionsWithBackingImplementationInjection() {
+        val lenientWhereBuilderImpl = LenienWhereBuilderImpl<LenientAdderOrEnderForTest>(true) {
+            LenientAdderOrEnderForTest(it)
+        }
+
+        builder = WhereBuilderImpl({ AdderOrEnderForTest(it) }, lenientWhereBuilderImpl)
+        performTestWhereWithAllSections(true)
+    }
+
+
+    private fun performTestWhereWithAllSections(qualifiedColumnNames: Boolean) {
         val actualWhere = builder
                 .eq(table.short, 5).or()
                 .notEq(table.int, 6).and()
@@ -44,37 +62,37 @@ class WhereBuilderImplTest {
 
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.getAppropriateName(qualifiedColumnNames)),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table.int.getAppropriateName(qualifiedColumnNames)),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.getAppropriateName(qualifiedColumnNames)),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "float"),
+                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, table.float.getAppropriateName(qualifiedColumnNames)),
                         SimpleConnector(SimpleConnector.Type.AND),
                         CompoundConnector(
                                 CompoundConnector.Type.OR,
                                 listOf(
-                                        BetweenPredicate("double"),
+                                        BetweenPredicate(table.double.getAppropriateName(qualifiedColumnNames)),
                                         OneArgPredicate(
-                                                OneArgPredicate.Type.GREATER_THAN_OR_EQ, "string"
+                                                OneArgPredicate.Type.GREATER_THAN_OR_EQ, table.string.getAppropriateName(qualifiedColumnNames)
                                         )
                                 )
                         ), SimpleConnector(SimpleConnector.Type.OR),
                         CompoundConnector(
                                 CompoundConnector.Type.AND,
                                 listOf(
-                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "blob"),
-                                        OneArgPredicate(OneArgPredicate.Type.LIKE, "long")
+                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table.blob.getAppropriateName(qualifiedColumnNames)),
+                                        OneArgPredicate(OneArgPredicate.Type.LIKE, table.long.getAppropriateName(qualifiedColumnNames))
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
-                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "nullable_float", 3),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.nullableFloat.getAppropriateName(qualifiedColumnNames), 3),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "nullable_double", 1),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.nullableDouble.getAppropriateName(qualifiedColumnNames), 1),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.getAppropriateName(qualifiedColumnNames)),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")
+                        NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.int.getAppropriateName(qualifiedColumnNames))
                 ),
                 listOf(
                         5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12",
@@ -88,10 +106,20 @@ class WhereBuilderImplTest {
 
 
     private inner class AdderOrEnderForTest(
-            val delegate: AdderOrEnder<ModelForTest, AdderOrEnderForTest>) :
+            private val delegate: AdderOrEnder<ModelForTest, AdderOrEnderForTest>) :
             AdderOrEnder<ModelForTest, AdderOrEnderForTest> {
 
         fun build() = builder.build()
+        override fun and() = delegate.and()
+        override fun or() = delegate.or()
+    }
+
+
+
+    private inner class LenientAdderOrEnderForTest(
+            private val delegate: LenientAdderOrEnder<LenientAdderOrEnderForTest>) :
+            LenientAdderOrEnder<LenientAdderOrEnderForTest> {
+
         override fun and() = delegate.and()
         override fun or() = delegate.or()
     }
