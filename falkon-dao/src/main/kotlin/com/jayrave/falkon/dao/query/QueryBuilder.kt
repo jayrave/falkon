@@ -29,9 +29,7 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
      * to add more columns to the result set. Behaviour on calling this method again for a column
      * that has already been included is implementation dependent
      *
-     * *NOTE:* If this isn't called, by default all columns will be included in the result set.
-     * In both cases (default & custom column selection), column names are used straight up
-     * which are given by [Column.name]
+     * *NOTE:* If this isn't called, by default all columns will be included in the result set
      */
     fun select(column: Column<T, *>, vararg others: Column<T, *>): Z
 
