@@ -1,33 +1,30 @@
 package com.jayrave.falkon.dao.query
 
-import com.jayrave.falkon.dao.lib.IterableBackedIterable
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledQuery
-import com.jayrave.falkon.engine.bindAll
-import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
-import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
-import java.util.*
+import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuilderImpl
 import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
+/**
+ * By default, all column names are qualified
+ */
 internal class QueryBuilderImpl<T : Any>(
-        override val table: Table<T, *>, private val querySqlBuilder: QuerySqlBuilder,
-        private val argPlaceholder: String) : QueryBuilder<T> {
+        override val table: Table<T, *>, querySqlBuilder: QuerySqlBuilder,
+        argPlaceholder: String) : QueryBuilder<T> {
 
-    private var distinct: Boolean = false
-    private var selectedColumns: MutableList<Column<T, *>>? = null
-    private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null
-    private var groupByColumns: MutableList<Column<T, *>>? = null
-    private var orderByInfoList: MutableList<OrderInfoImpl>? = null
-    private var limitCount: Long? = null
-    private var offsetCount: Long? = null
+    private val lenientQueryBuilder: LenientQueryBuilderImpl
+    init {
+        lenientQueryBuilder = LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder, true)
+        lenientQueryBuilder.fromTable(table)
+    }
 
     override fun distinct(): QueryBuilder<T> {
-        distinct = true
+        lenientQueryBuilder.distinct()
         return this
     }
 
@@ -41,19 +38,18 @@ internal class QueryBuilderImpl<T : Any>(
      *      `SELECT example_column, ..., example_column, ... FROM ...`
      */
     override fun select(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        if (selectedColumns == null) {
-            selectedColumns = LinkedList()
-        }
-
-        selectedColumns!!.add(column)
-        selectedColumns!!.addAll(others)
+        lenientQueryBuilder.select(column, *others)
         return this
     }
 
 
     override fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
-        whereBuilder = WhereBuilderImpl({ PredicateAdderOrEnderImpl(it) })
-        return whereBuilder!!
+        val lenientWhereBuilderImpl = lenientQueryBuilder.where()
+        val whereBuilder = WhereBuilderImpl<T, PredicateAdderOrEnder<T>>(
+                { PredicateAdderOrEnderImpl(it) }, lenientWhereBuilderImpl
+        )
+
+        return whereBuilder
     }
 
 
@@ -66,12 +62,7 @@ internal class QueryBuilderImpl<T : Any>(
      *      `SELECT ... GROUP BY example_column, ..., example_column, ...`
      */
     override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        if (groupByColumns == null) {
-            groupByColumns = LinkedList()
-        }
-
-        groupByColumns!!.add(column)
-        groupByColumns!!.addAll(others)
+        lenientQueryBuilder.groupBy(column, *others)
         return this
     }
 
@@ -86,57 +77,25 @@ internal class QueryBuilderImpl<T : Any>(
      *      `SELECT ... ORDER BY example_column ASC|DESC, ..., example_column ASC|DESC, ...`
      */
     override fun orderBy(column: Column<T, *>, ascending: Boolean): QueryBuilder<T> {
-        if (orderByInfoList == null) {
-            orderByInfoList = LinkedList()
-        }
-
-        orderByInfoList!!.add(OrderInfoImpl(column, ascending))
+        lenientQueryBuilder.orderBy(column, ascending)
         return this
     }
 
 
     override fun limit(count: Long): QueryBuilder<T> {
-        limitCount = count
+        lenientQueryBuilder.limit(count)
         return this
     }
 
 
     override fun offset(count: Long): QueryBuilder<T> {
-        offsetCount = count
+        lenientQueryBuilder.offset(count)
         return this
     }
 
 
-    override fun build(): Query {
-        val where = whereBuilder?.build()
-
-        val tempSelectedColumns = selectedColumns
-        val columns = when (tempSelectedColumns) {
-            null -> null
-            else -> IterableBackedIterable(tempSelectedColumns) { it.name }
-        }
-
-        val tempGroupByColumns = groupByColumns
-        val groupBy = when (tempGroupByColumns) {
-            null -> null
-            else -> IterableBackedIterable(tempGroupByColumns) { it.name }
-        }
-
-        val sql = querySqlBuilder.build(
-                table.name, distinct, columns, null, where?.whereSections, groupBy,
-                orderByInfoList, limitCount, offsetCount, argPlaceholder
-        )
-
-        return QueryImpl(sql, where?.arguments ?: emptyList())
-    }
-
-
-    override fun compile(): CompiledQuery {
-        val query = build()
-        return table.configuration.engine
-                .compileQuery(query.sql)
-                .closeIfOpThrows { bindAll(query.arguments) }
-    }
+    override fun build(): Query = lenientQueryBuilder.build()
+    override fun compile(): CompiledQuery = lenientQueryBuilder.compile()
 
 
     private inner class PredicateAdderOrEnderImpl(
@@ -185,20 +144,7 @@ internal class QueryBuilderImpl<T : Any>(
             return this
         }
 
-        override fun build(): Query {
-            return this@QueryBuilderImpl.build()
-        }
-
-        override fun compile(): CompiledQuery {
-            return this@QueryBuilderImpl.compile()
-        }
-    }
-
-
-    private data class OrderInfoImpl(
-            val column: Column<*, *>, override val ascending: Boolean) :
-            OrderInfo {
-
-        override val columnName: String get() = column.name
+        override fun build(): Query = this@QueryBuilderImpl.build()
+        override fun compile(): CompiledQuery = this@QueryBuilderImpl.compile()
     }
 }
