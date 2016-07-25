@@ -1,21 +1,17 @@
 package com.jayrave.falkon.dao.query.lenient
 
-import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
-import com.jayrave.falkon.dao.query.testLib.QuerySqlBuilderForTesting
-import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
+import com.jayrave.falkon.dao.query.testLib.*
 import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
-import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
-import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.NoArgPredicate
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -101,7 +97,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -349,7 +345,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -464,7 +460,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -525,7 +521,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -588,7 +584,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -622,7 +618,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -653,7 +649,7 @@ class QueryBuilderImplTest {
 
         // Verify
         val engine = bundle.engine
-        assertEquality(actualQuery, expectedQuery)
+        assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
         assertThat(statement.sql).isEqualTo(expectedSql)
@@ -661,65 +657,10 @@ class QueryBuilderImplTest {
     }
 
 
-    private fun buildQuerySql(
-            tableName: String, querySqlBuilder: QuerySqlBuilder, distinct: Boolean = false,
-            columns: Iterable<String>? = null, joinInfos: Iterable<JoinInfo>? = null,
-            whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
-            orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
-            String {
-
-        return querySqlBuilder.build(
-                tableName = tableName, distinct = distinct, columns = columns,
-                joinInfos = joinInfos, whereSections = whereSections, groupBy = groupBy,
-                orderBy = orderBy, limit = limit, offset = offset,
-                argPlaceholder = ARG_PLACEHOLDER
-        )
-    }
-
-
-
-    private class Bundle(
-            val table: TableForTest, val engine: EngineForTestingBuilders,
-            val querySqlBuilder: QuerySqlBuilder) {
-
-        companion object {
-            fun default(): Bundle {
-                val engine = EngineForTestingBuilders.createWithOneShotStatements()
-                val table = TableForTest(configuration = defaultTableConfiguration(engine))
-                val querySqlBuilder = QuerySqlBuilderForTesting()
-                return Bundle(table, engine, querySqlBuilder)
-            }
-        }
-    }
-
-
-
-    private data class JoinInfoForTest(
-            override val type: JoinInfo.Type,
-            override val qualifiedLocalColumnName: String,
-            override val nameOfTableToJoin: String,
-            override val qualifiedColumnNameFromTableToJoin: String) :
-            JoinInfo
-
-
-
-    private data class OrderInfoForTest(
-            override val columnName: String, override val ascending: Boolean) :
-            OrderInfo
-
-
 
     companion object {
-        private const val ARG_PLACEHOLDER = "?"
-
         private fun Bundle.newBuilder(qualifyColumnNames: Boolean = false): QueryBuilderImpl {
             return QueryBuilderImpl(querySqlBuilder, ARG_PLACEHOLDER, qualifyColumnNames)
-        }
-
-
-        private fun assertEquality(actualQuery: Query, expectedQuery: Query) {
-            assertThat(actualQuery.sql).isEqualTo(expectedQuery.sql)
-            assertThat(actualQuery.arguments).containsExactlyElementsOf(expectedQuery.arguments)
         }
     }
 }
