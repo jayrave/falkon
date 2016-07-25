@@ -5,7 +5,6 @@ import com.jayrave.falkon.dao.lib.getAppropriateName
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
-import com.jayrave.falkon.dao.where.lenient.WhereBuilder
 import com.jayrave.falkon.dao.where.lenient.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledQuery
 import com.jayrave.falkon.engine.bindAll
@@ -81,7 +80,7 @@ internal class QueryBuilderImpl(
     }
 
 
-    override fun where(): WhereBuilder<PredicateAdderOrEnder> {
+    override fun where(): WhereBuilderImpl<PredicateAdderOrEnder> {
         whereBuilder = WhereBuilderImpl(qualifyColumnNames) { PredicateAdderOrEnderImpl(it) }
         return whereBuilder!!
     }
