@@ -36,6 +36,14 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun select(column: Column<T, *>, vararg others: Column<T, *>): Z
 
     /**
+     * Adds JOIN clause. Can be called multiple times to add more tables to the JOIN clause.
+     * Only simple JOINS are possible using this builder. If you need to specify WHERE clauses
+     * on the non-primary tables involved in the JOIN, consider using
+     * [com.jayrave.falkon.dao.query.lenient.QueryBuilder]
+     */
+    fun join(column: Column<T, *>, onColumn: Column<*, *>): Z
+
+    /**
      * Adds the given columns to GROUP BY clause. This method can be called multiple times
      * to add more columns to the GROUP BY clause. Columns are added to the GROUP BY clause
      * in a "first come, first serve" order. Behaviour on calling this method again for a

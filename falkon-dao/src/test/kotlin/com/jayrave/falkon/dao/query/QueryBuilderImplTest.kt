@@ -3,6 +3,8 @@ package com.jayrave.falkon.dao.query
 import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.testLib.*
 import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
+import com.jayrave.falkon.dao.testLib.TableForTest
+import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -42,12 +44,14 @@ class QueryBuilderImplTest {
     fun testQueryWithAllOptions() {
         val bundle = Bundle.default()
         val table = bundle.table
+        val tableForJoin = TableForTest("table_for_join")
         val querySqlBuilder = bundle.querySqlBuilder
 
         val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
         builder
                 .distinct()
                 .select(table.int)
+                .join(table.long, tableForJoin.blob)
                 .where().eq(table.double, 5.0)
                 .groupBy(table.blob)
                 .orderBy(table.nullableFloat, true)
@@ -65,6 +69,10 @@ class QueryBuilderImplTest {
                 querySqlBuilder = bundle.querySqlBuilder,
                 distinct = true,
                 columns = listOf(table.int.qualifiedName),
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.INNER_JOIN, table.long.qualifiedName,
+                        tableForJoin.name, tableForJoin.blob.qualifiedName
+                )),
                 whereSections = listOf(OneArgPredicate(
                         OneArgPredicate.Type.EQ, table.double.qualifiedName
                 )),

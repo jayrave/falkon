@@ -17,14 +17,14 @@ internal class QueryBuilderImpl<T : Any>(
         override val table: Table<T, *>, querySqlBuilder: QuerySqlBuilder,
         argPlaceholder: String) : QueryBuilder<T> {
 
-    private val lenientQueryBuilder: LenientQueryBuilderImpl
+    private val lenientQueryBuilderImpl: LenientQueryBuilderImpl
     init {
-        lenientQueryBuilder = LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder, true)
-        lenientQueryBuilder.fromTable(table)
+        lenientQueryBuilderImpl = LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder, true)
+        lenientQueryBuilderImpl.fromTable(table)
     }
 
     override fun distinct(): QueryBuilder<T> {
-        lenientQueryBuilder.distinct()
+        lenientQueryBuilderImpl.distinct()
         return this
     }
 
@@ -38,13 +38,19 @@ internal class QueryBuilderImpl<T : Any>(
      *      `SELECT example_column, ..., example_column, ... FROM ...`
      */
     override fun select(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        lenientQueryBuilder.select(column, *others)
+        lenientQueryBuilderImpl.select(column, *others)
+        return this
+    }
+
+
+    override fun join(column: Column<T, *>, onColumn: Column<*, *>): QueryBuilder<T> {
+        lenientQueryBuilderImpl.join(column, onColumn)
         return this
     }
 
 
     override fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
-        val lenientWhereBuilderImpl = lenientQueryBuilder.where()
+        val lenientWhereBuilderImpl = lenientQueryBuilderImpl.where()
         val whereBuilder = WhereBuilderImpl<T, PredicateAdderOrEnder<T>>(
                 { PredicateAdderOrEnderImpl(it) }, lenientWhereBuilderImpl
         )
@@ -62,7 +68,7 @@ internal class QueryBuilderImpl<T : Any>(
      *      `SELECT ... GROUP BY example_column, ..., example_column, ...`
      */
     override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        lenientQueryBuilder.groupBy(column, *others)
+        lenientQueryBuilderImpl.groupBy(column, *others)
         return this
     }
 
@@ -77,25 +83,25 @@ internal class QueryBuilderImpl<T : Any>(
      *      `SELECT ... ORDER BY example_column ASC|DESC, ..., example_column ASC|DESC, ...`
      */
     override fun orderBy(column: Column<T, *>, ascending: Boolean): QueryBuilder<T> {
-        lenientQueryBuilder.orderBy(column, ascending)
+        lenientQueryBuilderImpl.orderBy(column, ascending)
         return this
     }
 
 
     override fun limit(count: Long): QueryBuilder<T> {
-        lenientQueryBuilder.limit(count)
+        lenientQueryBuilderImpl.limit(count)
         return this
     }
 
 
     override fun offset(count: Long): QueryBuilder<T> {
-        lenientQueryBuilder.offset(count)
+        lenientQueryBuilderImpl.offset(count)
         return this
     }
 
 
-    override fun build(): Query = lenientQueryBuilder.build()
-    override fun compile(): CompiledQuery = lenientQueryBuilder.compile()
+    override fun build(): Query = lenientQueryBuilderImpl.build()
+    override fun compile(): CompiledQuery = lenientQueryBuilderImpl.compile()
 
 
     private inner class PredicateAdderOrEnderImpl(
@@ -119,6 +125,11 @@ internal class QueryBuilderImpl<T : Any>(
                 AdderOrEnderAfterWhere<T> {
 
             this@QueryBuilderImpl.select(column, *others)
+            return this
+        }
+
+        override fun join(column: Column<T, *>, onColumn: Column<*, *>): AdderOrEnderAfterWhere<T> {
+            this@QueryBuilderImpl.join(column, onColumn)
             return this
         }
 
