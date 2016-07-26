@@ -6,6 +6,9 @@ import com.jayrave.falkon.engine.CompiledQuery
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 
+/**
+ * All column names will be qualified in the built SELECT SQL statement
+ */
 interface QueryBuilder {
 
     /**

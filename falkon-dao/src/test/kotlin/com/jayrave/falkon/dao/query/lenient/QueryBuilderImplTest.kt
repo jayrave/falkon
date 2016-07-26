@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.query.lenient
 
+import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.query.testLib.*
 import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
@@ -35,7 +36,10 @@ class QueryBuilderImplTest {
         val builder = bundle.newBuilder()
 
         builder.fromTable(table).select(table.int)
-        assertArgFreeStatement(bundle = bundle, queryBuilderImpl = builder, columns = listOf("int"))
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                columns = listOf(table.int.qualifiedName)
+        )
     }
 
 
@@ -50,7 +54,8 @@ class QueryBuilderImplTest {
                 .select(table.int, table.string)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = listOf("int", "string")
+                bundle = bundle, queryBuilderImpl = builder,
+                columns = listOf(table.int.qualifiedName, table.string.qualifiedName)
         )
     }
 
@@ -67,7 +72,8 @@ class QueryBuilderImplTest {
                 .select(table.string)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = listOf("int", "string")
+                bundle = bundle, queryBuilderImpl = builder,
+                columns = listOf(table.int.qualifiedName, table.string.qualifiedName)
         )
     }
 
@@ -90,7 +96,9 @@ class QueryBuilderImplTest {
         // build expected query
         val expectedSql = buildQuerySql(
                 tableName = table.name, querySqlBuilder = bundle.querySqlBuilder,
-                whereSections = listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int"))
+                whereSections = listOf(OneArgPredicate(
+                        OneArgPredicate.Type.EQ, table.int.qualifiedName
+                ))
         )
 
         val expectedQuery = QueryImpl(expectedSql, listOf(5))
@@ -116,7 +124,10 @@ class QueryBuilderImplTest {
                 .fromTable(table)
                 .groupBy(table.int)
 
-        assertArgFreeStatement(bundle = bundle, queryBuilderImpl = builder, groupBy = listOf("int"))
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                groupBy = listOf(table.int.qualifiedName)
+        )
     }
 
 
@@ -131,7 +142,8 @@ class QueryBuilderImplTest {
                 .groupBy(table.string, table.blob)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, groupBy = listOf("string", "blob")
+                bundle = bundle, queryBuilderImpl = builder,
+                groupBy = listOf(table.string.qualifiedName, table.blob.qualifiedName)
         )
     }
 
@@ -148,7 +160,8 @@ class QueryBuilderImplTest {
                 .groupBy(table.string)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, groupBy = listOf("int", "string")
+                bundle = bundle, queryBuilderImpl = builder,
+                groupBy = listOf(table.int.qualifiedName, table.string.qualifiedName)
         )
     }
 
@@ -165,7 +178,7 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
-                orderBy = listOf(OrderInfoForTest("int", true))
+                orderBy = listOf(OrderInfoForTest(table.int.qualifiedName, true))
         )
     }
 
@@ -183,7 +196,10 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
-                orderBy = listOf(OrderInfoForTest("int", true), OrderInfoForTest("blob", false))
+                orderBy = listOf(
+                        OrderInfoForTest(table.int.qualifiedName, true),
+                        OrderInfoForTest(table.blob.qualifiedName, false)
+                )
         )
     }
 
@@ -201,7 +217,10 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
-                orderBy = listOf(OrderInfoForTest("int", true), OrderInfoForTest("int", false))
+                orderBy = listOf(
+                        OrderInfoForTest(table.int.qualifiedName, true),
+                        OrderInfoForTest(table.int.qualifiedName, false)
+                )
         )
     }
 
@@ -239,7 +258,7 @@ class QueryBuilderImplTest {
         val bundle = Bundle.default()
         val table1 = bundle.table
         val table2 = TableForTest(name = "table_for_join")
-        val builder = bundle.newBuilder(qualifyColumnNames = true)
+        val builder = bundle.newBuilder()
 
         builder
                 .fromTable(table1)
@@ -248,8 +267,8 @@ class QueryBuilderImplTest {
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
                 joinInfos = listOf(JoinInfoForTest(
-                        JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
-                        table2.name, "${table2.name}.${table2.nullableDouble.name}"
+                        JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
+                        table2.name, table2.nullableDouble.qualifiedName
                 ))
         )
     }
@@ -262,7 +281,7 @@ class QueryBuilderImplTest {
         val table2 = TableForTest(name = "table_for_join_1")
         val table3 = TableForTest(name = "table_for_join_2")
         val table4 = TableForTest(name = "table_for_join_3")
-        val builder = bundle.newBuilder(qualifyColumnNames = true)
+        val builder = bundle.newBuilder()
 
         builder
                 .fromTable(table1)
@@ -275,21 +294,20 @@ class QueryBuilderImplTest {
                 bundle = bundle, queryBuilderImpl = builder,
                 joinInfos = listOf(
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
-                                table2.name, "${table2.name}.${table2.nullableDouble.name}"
+                                JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
+                                table2.name, table2.nullableDouble.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, "${table2.name}.${table2.long.name}",
-                                table3.name, "${table3.name}.${table3.string.name}"
+                                JoinInfo.Type.INNER_JOIN, table2.long.qualifiedName,
+                                table3.name, table3.string.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, "${table3.name}.${table3.blob.name}",
-                                table4.name, "${table4.name}.${table4.float.name}"
+                                JoinInfo.Type.INNER_JOIN, table3.blob.qualifiedName,
+                                table4.name, table4.float.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN,
-                                "${table4.name}.${table4.nullableShort.name}",
-                                table2.name, "${table2.name}.${table2.nullableBlob.name}"
+                                JoinInfo.Type.INNER_JOIN, table4.nullableShort.qualifiedName,
+                                table2.name, table2.nullableBlob.qualifiedName
                         )
                 )
         )
@@ -302,7 +320,7 @@ class QueryBuilderImplTest {
         val table1 = bundle.table
         val table2 = TableForTest(name = "table_for_join_1")
         val table3 = TableForTest(name = "table_for_join_2")
-        val builder = bundle.newBuilder(qualifyColumnNames = true)
+        val builder = bundle.newBuilder()
 
         builder
                 .fromTable(table1)
@@ -324,20 +342,20 @@ class QueryBuilderImplTest {
                 tableName = bundle.table.name, querySqlBuilder = bundle.querySqlBuilder,
                 joinInfos = listOf(
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
-                                table2.name, "${table2.name}.${table2.nullableDouble.name}"
+                                JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
+                                table2.name, table2.nullableDouble.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, "${table1.name}.${table1.int.name}",
-                                table3.name, "${table3.name}.${table3.nullableFloat.name}"
+                                JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
+                                table3.name, table3.nullableFloat.qualifiedName
                         )
                 ),
                 whereSections = listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "${table1.name}.${table1.float.name}"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table1.float.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "${table2.name}.${table2.nullableLong.name}"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table2.nullableLong.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "${table3.name}.${table3.nullableString.name}")
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, table3.nullableString.qualifiedName)
                 )
         )
 
@@ -425,60 +443,6 @@ class QueryBuilderImplTest {
         builder
                 .fromTable(table)
                 .distinct()
-                .select(table.int)
-                .join(table.long, tableForJoin.blob)
-                .where().eq(table.double, 5.0)
-                .groupBy(table.blob)
-                .orderBy(table.nullableFloat, true)
-                .limit(5)
-                .offset(8)
-
-        // build & compile
-        val actualQuery = builder.build()
-        builder.compile()
-
-        // build expected query
-        val primaryTableName = table.name
-        val tableForJoinName = tableForJoin.name
-        val expectedSql = buildQuerySql(
-                tableName = primaryTableName,
-                querySqlBuilder = bundle.querySqlBuilder,
-                distinct = true,
-                columns = listOf("int"),
-                joinInfos = listOf(JoinInfoForTest(
-                        JoinInfo.Type.INNER_JOIN, "long", tableForJoinName, "blob"
-                )),
-                whereSections = listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "double")
-                ),
-                groupBy = listOf("blob"),
-                orderBy = listOf(OrderInfoForTest("nullable_float", true)),
-                limit = 5, offset = 8
-        )
-
-        val expectedQuery = QueryImpl(expectedSql, listOf(5.0))
-
-        // Verify
-        val engine = bundle.engine
-        assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
-        assertThat(statement.sql).isEqualTo(expectedSql)
-        assertThat(statement.boundArgs).hasSize(1)
-        assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)
-    }
-
-
-    @Test
-    fun testQueryWithAllOptionsAndQualifiedColumns() {
-        val bundle = Bundle.default()
-        val table = bundle.table
-        val tableForJoin = TableForTest("table_for_join")
-        val builder = bundle.newBuilder(qualifyColumnNames = true)
-
-        builder
-                .fromTable(table)
-                .distinct()
                 .select(table.int, tableForJoin.string)
                 .join(table.long, tableForJoin.blob)
                 .where().eq(table.double, 5.0).and().notEq(tableForJoin.int, 6)
@@ -493,26 +457,24 @@ class QueryBuilderImplTest {
         builder.compile()
 
         // build expected query
-        val primaryTableName = table.name
-        val tableForJoinName = tableForJoin.name
         val expectedSql = buildQuerySql(
-                tableName = primaryTableName,
+                tableName = table.name,
                 querySqlBuilder = bundle.querySqlBuilder,
                 distinct = true,
-                columns = listOf("$primaryTableName.int", "$tableForJoinName.string"),
+                columns = listOf(table.int.qualifiedName, tableForJoin.string.qualifiedName),
                 joinInfos = listOf(JoinInfoForTest(
-                        JoinInfo.Type.INNER_JOIN, "$primaryTableName.long",
-                        tableForJoinName, "$tableForJoinName.blob"
+                        JoinInfo.Type.INNER_JOIN, table.long.qualifiedName,
+                        tableForJoin.name, tableForJoin.blob.qualifiedName
                 )),
                 whereSections = listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "$primaryTableName.double"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.double.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "$tableForJoinName.int")
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, tableForJoin.int.qualifiedName)
                 ),
-                groupBy = listOf("$primaryTableName.blob", "$tableForJoinName.nullable_int"),
+                groupBy = listOf(table.blob.qualifiedName, tableForJoin.nullableInt.qualifiedName),
                 orderBy = listOf(
-                        OrderInfoForTest("$primaryTableName.nullable_float", true),
-                        OrderInfoForTest("$tableForJoinName.int", false)
+                        OrderInfoForTest(table.nullableFloat.qualifiedName, true),
+                        OrderInfoForTest(tableForJoin.int.qualifiedName, false)
                 ),
                 limit = 5, offset = 8
         )
@@ -559,21 +521,21 @@ class QueryBuilderImplTest {
                 tableName = table.name,
                 querySqlBuilder = bundle.querySqlBuilder,
                 whereSections = listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.int.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "long"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.long.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "float"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.float.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "double"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.double.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "string"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.string.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "blob"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int")
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.qualifiedName)
                 )
         )
 
@@ -606,11 +568,15 @@ class QueryBuilderImplTest {
         queryBuilderImpl.compile()
 
         // build expected query
+        val table = bundle.table
         val expectedSql = buildQuerySql(
-                tableName = bundle.table.name, querySqlBuilder = bundle.querySqlBuilder,
-                distinct = true, columns = listOf("string"),
-                whereSections = listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "double")),
-                groupBy = listOf("blob"), orderBy = listOf(OrderInfoForTest("int", true)),
+                tableName = table.name, querySqlBuilder = bundle.querySqlBuilder,
+                distinct = true, columns = listOf(table.string.qualifiedName),
+                whereSections = listOf(OneArgPredicate(
+                        OneArgPredicate.Type.EQ, table.double.qualifiedName
+                )),
+                groupBy = listOf(table.blob.qualifiedName),
+                orderBy = listOf(OrderInfoForTest(table.int.qualifiedName, true)),
                 limit = 5, offset = 8
         )
 
@@ -659,8 +625,8 @@ class QueryBuilderImplTest {
 
 
     companion object {
-        private fun Bundle.newBuilder(qualifyColumnNames: Boolean = false): QueryBuilderImpl {
-            return QueryBuilderImpl(querySqlBuilder, ARG_PLACEHOLDER, qualifyColumnNames)
+        private fun Bundle.newBuilder(): QueryBuilderImpl {
+            return QueryBuilderImpl(querySqlBuilder, ARG_PLACEHOLDER)
         }
     }
 }

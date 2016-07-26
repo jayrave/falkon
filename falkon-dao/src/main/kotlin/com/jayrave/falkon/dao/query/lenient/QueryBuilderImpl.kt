@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.query.lenient
 
 import com.jayrave.falkon.dao.lib.IterableBackedIterable
-import com.jayrave.falkon.dao.lib.getAppropriateName
+import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
@@ -18,8 +18,7 @@ import java.util.*
 import com.jayrave.falkon.dao.where.lenient.AdderOrEnder as WhereAdderOrEnder
 
 internal class QueryBuilderImpl(
-        private val querySqlBuilder: QuerySqlBuilder, private val argPlaceholder: String,
-        private val qualifyColumnNames: Boolean) :
+        private val querySqlBuilder: QuerySqlBuilder, private val argPlaceholder: String) :
         QueryBuilder,
         AdderOrEnderBeforeWhere {
 
@@ -72,8 +71,8 @@ internal class QueryBuilderImpl(
         }
 
         joinInfoList!!.add(JoinInfoImpl(
-                JoinInfo.Type.INNER_JOIN, column.getAppropriateName(qualifyColumnNames),
-                onColumn.table.name, onColumn.getAppropriateName(qualifyColumnNames)
+                JoinInfo.Type.INNER_JOIN, column.qualifiedName,
+                onColumn.table.name, onColumn.qualifiedName
         ))
 
         return this
@@ -81,7 +80,7 @@ internal class QueryBuilderImpl(
 
 
     override fun where(): WhereBuilderImpl<PredicateAdderOrEnder> {
-        whereBuilder = WhereBuilderImpl(qualifyColumnNames) { PredicateAdderOrEnderImpl(it) }
+        whereBuilder = WhereBuilderImpl(true) { PredicateAdderOrEnderImpl(it) }
         return whereBuilder!!
     }
 
@@ -122,7 +121,7 @@ internal class QueryBuilderImpl(
         }
 
         orderByInfoList!!.add(OrderInfoImpl(
-                column.getAppropriateName(qualifyColumnNames), ascending
+                column.qualifiedName, ascending
         ))
 
         return this
@@ -147,17 +146,13 @@ internal class QueryBuilderImpl(
         val tempSelectedColumns = selectedColumns
         val columns = when (tempSelectedColumns) {
             null -> null
-            else -> IterableBackedIterable(tempSelectedColumns) {
-                it.getAppropriateName(qualifyColumnNames)
-            }
+            else -> IterableBackedIterable(tempSelectedColumns) { it.qualifiedName }
         }
 
         val tempGroupByColumns = groupByColumns
         val groupBy = when (tempGroupByColumns) {
             null -> null
-            else -> IterableBackedIterable(tempGroupByColumns) {
-                it.getAppropriateName(qualifyColumnNames)
-            }
+            else -> IterableBackedIterable(tempGroupByColumns) { it.qualifiedName }
         }
 
         val sql = querySqlBuilder.build(

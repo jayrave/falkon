@@ -10,16 +10,13 @@ import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuilderImpl
 import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
-/**
- * By default, all column names are qualified
- */
 internal class QueryBuilderImpl<T : Any>(
         override val table: Table<T, *>, querySqlBuilder: QuerySqlBuilder,
         argPlaceholder: String) : QueryBuilder<T> {
 
     private val lenientQueryBuilderImpl: LenientQueryBuilderImpl
     init {
-        lenientQueryBuilderImpl = LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder, true)
+        lenientQueryBuilderImpl = LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder)
         lenientQueryBuilderImpl.fromTable(table)
     }
 

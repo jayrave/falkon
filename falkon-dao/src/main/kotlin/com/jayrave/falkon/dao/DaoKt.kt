@@ -11,5 +11,5 @@ fun lenientQueryBuilder(
         querySqlBuilder: QuerySqlBuilder, argPlaceholder: String):
         LenientQueryBuilder {
 
-    return LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder, true)
+    return LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder)
 }
