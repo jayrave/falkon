@@ -13,6 +13,8 @@ import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
+import com.jayrave.falkon.dao.query.lenient.QueryBuilder as LenientQueryBuilder
+import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuilderImpl
 
 open class DaoImpl<T : Any, ID : Any>(
         override val table: Table<T, ID>,
@@ -36,5 +38,13 @@ open class DaoImpl<T : Any, ID : Any>(
 
     override final fun queryBuilder(): QueryBuilder<T> = QueryBuilderImpl(
             table, querySqlBuilder, argPlaceholder
+    )
+
+    /**
+     * A convenience to [lenientQueryBuilder] with [querySqlBuilder] & [argPlaceholder]
+     * passed into this instance]
+     */
+    fun lenientQueryBuilder(): LenientQueryBuilder = lenientQueryBuilder(
+            querySqlBuilder, argPlaceholder
     )
 }
