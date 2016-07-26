@@ -65,7 +65,7 @@ fun <T : Any> com.jayrave.falkon.dao.delete.AdderOrEnder<T>.delete(): Int {
  */
 fun <T : Any, Z : com.jayrave.falkon.dao.query.AdderOrEnder<T, Z>>
         com.jayrave.falkon.dao.query.AdderOrEnder<T, Z>.select(
-        columns: List<Column<T, *>>): Z {
+        columns: Collection<Column<T, *>>): Z {
 
     return when (columns.isEmpty()) {
         true -> throw SQLException("Columns can't be empty")
@@ -74,8 +74,9 @@ fun <T : Any, Z : com.jayrave.falkon.dao.query.AdderOrEnder<T, Z>>
             when (columnsCount == 1) {
                 true -> this.select(columns.first())
                 else -> {
-                    val firstColumn = columns.first()
-                    val remainingColumns = Array(columnsCount - 1) { columns[it + 1] }
+                    val iterator = columns.iterator()
+                    val firstColumn = iterator.next()
+                    val remainingColumns = Array(columnsCount - 1) { iterator.next() }
                     this.select(firstColumn, *remainingColumns)
                 }
             }
@@ -90,7 +91,7 @@ fun <T : Any, Z : com.jayrave.falkon.dao.query.AdderOrEnder<T, Z>>
  */
 fun <Z : com.jayrave.falkon.dao.query.lenient.AdderOrEnder<Z>>
         com.jayrave.falkon.dao.query.lenient.AdderOrEnder<Z>.select(
-        columns: List<Column<*, *>>): Z {
+        columns: Collection<Column<*, *>>): Z {
 
     return when (columns.isEmpty()) {
         true -> throw SQLException("Columns can't be empty")
@@ -99,8 +100,9 @@ fun <Z : com.jayrave.falkon.dao.query.lenient.AdderOrEnder<Z>>
             when (columnsCount == 1) {
                 true -> this.select(columns.first())
                 else -> {
-                    val firstColumn = columns.first()
-                    val remainingColumns = Array(columnsCount - 1) { columns[it + 1] }
+                    val iterator = columns.iterator()
+                    val firstColumn = iterator.next()
+                    val remainingColumns = Array(columnsCount - 1) { iterator.next() }
                     this.select(firstColumn, *remainingColumns)
                 }
             }
