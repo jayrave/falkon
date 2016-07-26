@@ -12,7 +12,7 @@ import java.util.*
  * @see extractFirstModel
  */
 fun <T : Any> CompiledQuery.extractFirstModelAndClose(
-        forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)? = null): T? {
+        forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)): T? {
 
     return privateExtractAndClose {
         extractFirstModel(forTable, columnNameExtractor)
@@ -26,7 +26,7 @@ fun <T : Any> CompiledQuery.extractFirstModelAndClose(
  */
 fun <T : Any> CompiledQuery.extractAllModelsAndClose(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
-        columnNameExtractor: ((Column<T, *>) -> String)? = null): List<T> {
+        columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
     return privateExtractAndClose {
         extractAllModels(forTable, toList, columnNameExtractor)
@@ -41,7 +41,7 @@ fun <T : Any> CompiledQuery.extractAllModelsAndClose(
 fun <T : Any> CompiledQuery.extractModelsAndClose(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
-        columnNameExtractor: ((Column<T, *>) -> String)? = null): List<T> {
+        columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
     return privateExtractAndClose {
         extractModels(forTable, toList, maxNumberOfModelsToExtract, columnNameExtractor)
@@ -58,7 +58,7 @@ fun <T : Any> CompiledQuery.extractModelsAndClose(
  * @see extractFirstModelAndClose
  */
 fun <T : Any> CompiledQuery.extractFirstModel(
-        forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)? = null): T? {
+        forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)): T? {
 
     val models = extractModels(
             forTable = forTable, toList = LinkedList(),
@@ -80,7 +80,7 @@ fun <T : Any> CompiledQuery.extractFirstModel(
  */
 fun <T : Any> CompiledQuery.extractAllModels(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
-        columnNameExtractor: ((Column<T, *>) -> String)? = null): List<T> {
+        columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
     return extractModels(
             forTable = forTable, toList = toList,
@@ -109,14 +109,14 @@ fun <T : Any> CompiledQuery.extractAllModels(
 fun <T : Any> CompiledQuery.extractModels(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
-        columnNameExtractor: ((Column<T, *>) -> String)? = null): List<T> {
+        columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
     val source = execute()
     source.safeCloseAfterOp {
         val dataProducer = SourceBackedDataProducer(source)
         while (source.moveToNext() && toList.size < maxNumberOfModelsToExtract) {
             toList.add(forTable.createInstanceFrom(
-                    source, columnNameExtractor ?: { it.name },
+                    source, columnNameExtractor,
                     dataProducer
             ))
         }
