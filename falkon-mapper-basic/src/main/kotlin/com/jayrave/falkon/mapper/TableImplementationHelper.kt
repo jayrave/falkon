@@ -1,5 +1,6 @@
 package com.jayrave.falkon.mapper
 
+import com.jayrave.falkon.mapper.exceptions.MissingConverterException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
@@ -9,7 +10,74 @@ import kotlin.reflect.KProperty1
  */
 object TableImplementationHelper {
 
-    // ------------------------------ Null substitute properties -----------------------------------
+    // ------------------------------------- Name format -------------------------------------------
+
+    fun computeFormattedNameOf(
+            property: KProperty1<*, *>, configuration: TableConfiguration):
+            String = configuration.nameFormatter.format(property.name)
+
+    // ------------------------------------- Name format -------------------------------------------
+
+
+    // -------------------------------------- Converters -------------------------------------------
+
+    // For building converters for enum
+    private enum class DummyEnum
+
+
+    inline fun <reified C> getConverterForNullableType(
+            configuration: TableConfiguration): Converter<C> {
+
+        @Suppress("UNCHECKED_CAST")
+        val javaClass: Class<C> = (C::class as KClass<*>).java as Class<C>
+        return configuration.getConverterForNullableType(javaClass) ?:
+                buildConverterIfEnum(javaClass, true) ?:
+                throw buildMissingConverterException(javaClass, true)
+    }
+
+
+    inline fun <reified C : Any> getConverterForNonNullType(
+            configuration: TableConfiguration): Converter<C> {
+
+        val javaClass: Class<C> = C::class.java
+        return configuration.getConverterForNonNullType(javaClass) ?:
+                buildConverterIfEnum(javaClass, false) ?:
+                throw buildMissingConverterException(javaClass, false)
+    }
+
+
+    fun <C> buildConverterIfEnum(clazz: Class<C>, isNullable: Boolean): Converter<C>? {
+        // Can't cast C to Enum<C> due to recursive type, so cast to any enum
+        @Suppress("UNCHECKED_CAST", "CAST_NEVER_SUCCEEDS")
+        return when (clazz.isEnum) {
+            false -> null
+            else -> {
+                val nullableConverter = NullableEnumByNameConverter(clazz as Class<DummyEnum>)
+                when (isNullable) {
+                    true -> nullableConverter
+                    else -> NullableToNonNullConverter(nullableConverter)
+                } as Converter<C>
+            }
+        }
+    }
+
+
+    fun buildMissingConverterException(
+            clazz: Class<*>, isNullable: Boolean):
+            MissingConverterException {
+
+        val nullability = when (isNullable) {
+            true -> "nullable"
+            else -> "non-null"
+        }
+
+        return MissingConverterException("Converter not found for $nullability form of $clazz")
+    }
+
+    // -------------------------------------- Converters -------------------------------------------
+
+
+    // ----------------------------------- Null substitutes ----------------------------------------
 
     private val nullReturningNullSubstitute = object : NullSubstitute<Any?> {
         override fun value() = null
@@ -27,8 +95,6 @@ object TableImplementationHelper {
                 "Something is wrong!! Let the developer know"
         )
     }
-
-    // ------------------------------ Null substitute properties -----------------------------------
 
 
     /**
@@ -56,6 +122,10 @@ object TableImplementationHelper {
         } as NullSubstitute<C>
     }
 
+    // ----------------------------------- Null substitutes ----------------------------------------
+
+
+    // ---------------------------------- Property extractor ---------------------------------------
 
     /**
      * @return a [PropertyExtractor] that just does a get for the property on the instance.
@@ -63,21 +133,7 @@ object TableImplementationHelper {
      * extractor does the equivalent of `item.price`
      */
     fun <T : Any, C> buildDefaultExtractorFrom(property: KProperty1<T, C>):
-            PropertyExtractor<T, C> {
+            PropertyExtractor<T, C> = SimplePropertyExtractor(property)
 
-        return SimplePropertyExtractor(property)
-    }
-
-
-    /**
-     * This is used as a work around to get Class<> from a generic type that is upper
-     * bounded by Any?
-     *
-     * **CAUTION: Don't use this unless you perfectly know what this method does &
-     * what it is used for**
-     */
-    fun <C> getJavaClassFor(clazz: KClass<*>): Class<C> {
-        @Suppress("UNCHECKED_CAST")
-        return clazz.java as Class<C>
-    }
+    // ---------------------------------- Property extractor ---------------------------------------
 }
