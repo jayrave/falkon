@@ -144,6 +144,31 @@ class NullableBooleanConverter : Converter<Boolean?> {
 
 
 /**
+ * Stores enum by its name
+ */
+class NullableEnumByNameConverter<T : Enum<T>>(private val clazz: Class<T>) : Converter<T?> {
+
+    override val dbType: Type = Type.STRING
+
+    override fun from(dataProducer: DataProducer): T? {
+        return try {
+            val enumName = dataProducer.getString()
+            when (enumName == null) {
+                true -> null
+                else -> java.lang.Enum.valueOf(clazz, enumName)
+            }
+        } catch (e: IllegalArgumentException) {
+            throw ConversionException(e)
+        }
+    }
+
+    override fun to(value: T?, dataConsumer: DataConsumer) {
+        dataConsumer.put(value?.name)
+    }
+}
+
+
+/**
  * Use this to wrap converters that work with nullable types to work as converters that work
  * with non-null types. It is assumed that if the [DataProducer] produces a non-null value,
  * the passed in delegate also produces a non-null value. If it is not the case, this converter
