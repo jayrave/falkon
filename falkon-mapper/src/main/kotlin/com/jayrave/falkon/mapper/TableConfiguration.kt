@@ -24,10 +24,10 @@ interface TableConfiguration {
     /**
      * Implementations should return an appropriate converter or throw
      */
-    fun <R> getConverterForNullableType(clazz: Class<R>): Converter<R>
+    fun <R> getConverterForNullableType(clazz: Class<R>): Converter<R>?
 
     /**
      * Implementations should return an appropriate converter or throw
      */
-    fun <R : Any> getConverterForNonNullType(clazz: Class<R>): Converter<R>
+    fun <R : Any> getConverterForNonNullType(clazz: Class<R>): Converter<R>?
 }

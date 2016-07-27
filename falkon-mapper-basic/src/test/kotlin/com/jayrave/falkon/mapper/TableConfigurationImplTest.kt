@@ -1,7 +1,6 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.mapper.exceptions.MissingConverterException
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -11,15 +10,15 @@ class TableConfigurationImplTest {
 
     val configuration = TableConfigurationImpl(mock<Engine>(), mock(), mock())
 
-    @Test(expected = MissingConverterException::class)
-    fun testGetConverterForNullableTypeThrowsForUnregisteredType() {
-        configuration.getConverterForNullableType(UUID::class.java)
+    @Test
+    fun testGetConverterForNullableTypeReturnsNull() {
+        assertThat(configuration.getConverterForNullableType(UUID::class.java)).isNull()
     }
 
 
-    @Test(expected = MissingConverterException::class)
-    fun testGetConverterForNonNullTypeThrowsForUnregisteredType() {
-        configuration.getConverterForNonNullType(UUID::class.java)
+    @Test
+    fun testGetConverterForNonNullTypeReturnsNull() {
+        assertThat(configuration.getConverterForNonNullType(UUID::class.java)).isNull()
     }
 
 

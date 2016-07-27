@@ -2,7 +2,6 @@ package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.TypeTranslator
-import com.jayrave.falkon.mapper.exceptions.MissingConverterException
 import java.util.concurrent.ConcurrentHashMap
 
 class TableConfigurationImpl(
@@ -13,13 +12,13 @@ class TableConfigurationImpl(
     private val convertersForNonNullTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
     private val convertersForNullableTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
 
-    override fun <R> getConverterForNullableType(clazz: Class<R>): Converter<R> {
-        return getFrom(clazz, convertersForNullableTypes, true)
+    override fun <R> getConverterForNullableType(clazz: Class<R>): Converter<R>? {
+        return getFrom(clazz, convertersForNullableTypes)
     }
 
 
-    override fun <R : Any> getConverterForNonNullType(clazz: Class<R>): Converter<R> {
-        return getFrom(clazz, convertersForNonNullTypes, false)
+    override fun <R : Any> getConverterForNonNullType(clazz: Class<R>): Converter<R>? {
+        return getFrom(clazz, convertersForNonNullTypes)
     }
 
 
@@ -70,25 +69,11 @@ class TableConfigurationImpl(
 
 
         private fun <R> getFrom(
-                clazz: Class<*>, from: Map<Class<*>, Converter<*>>,
-                isNullableType: Boolean): Converter<R> {
-
-            val converter = from[clazz]
+                clazz: Class<*>, from: Map<Class<*>, Converter<*>>):
+                Converter<R>? {
 
             @Suppress("UNCHECKED_CAST")
-            return when {
-                converter != null -> converter as Converter<R>
-                else -> {
-                    val nullability = when (isNullableType) {
-                        true -> "nullable"
-                        else -> "non-null"
-                    }
-
-                    throw MissingConverterException(
-                            "Converter not found for $nullability form of $clazz"
-                    )
-                }
-            }
+            return from[clazz] as Converter<R>?
         }
     }
 }

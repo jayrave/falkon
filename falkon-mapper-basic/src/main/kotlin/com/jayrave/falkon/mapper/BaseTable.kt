@@ -3,7 +3,9 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
 import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullFromSqlSubstitute
 import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullToSqlSubstitute
-import com.jayrave.falkon.mapper.TableImplementationHelper.getJavaClassFor
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNonNullType
+import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNullableType
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KProperty1
 
@@ -21,8 +23,8 @@ abstract class BaseTable<T : Any, ID : Any>(
 
     inline fun <reified C> col(
             property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property),
-            converter: Converter<C> = getConverterForNullableType(),
+            name: String = computeFormattedNameOf(property, configuration),
+            converter: Converter<C> = getConverterForNullableType(configuration),
             nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(true),
             nullToSqlSubstitute: NullSubstitute<C> = getDefaultNullToSqlSubstitute(true),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
@@ -36,8 +38,8 @@ abstract class BaseTable<T : Any, ID : Any>(
 
     inline fun <reified C : Any> col(
             property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property),
-            converter: Converter<C> = getConverterForNonNullType(),
+            name: String = computeFormattedNameOf(property, configuration),
+            converter: Converter<C> = getConverterForNonNullType(configuration),
             nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(false),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             Column<T, C> {
@@ -64,20 +66,5 @@ abstract class BaseTable<T : Any, ID : Any>(
 
         allColumnImpls.offer(column)
         return column
-    }
-
-
-    fun <C> computeFormattedNameOf(property: KProperty1<T, C>): String {
-        return configuration.nameFormatter.format(property.name)
-    }
-
-
-    inline fun <reified C> getConverterForNullableType(): Converter<C> {
-        return configuration.getConverterForNullableType(getJavaClassFor(C::class))
-    }
-
-
-    inline fun <reified C : Any> getConverterForNonNullType(): Converter<C> {
-        return configuration.getConverterForNonNullType(C::class.java)
     }
 }

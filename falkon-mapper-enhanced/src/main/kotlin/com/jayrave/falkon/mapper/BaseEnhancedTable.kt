@@ -3,8 +3,10 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
 import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullFromSqlSubstitute
+import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
 import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullToSqlSubstitute
-import com.jayrave.falkon.mapper.TableImplementationHelper.getJavaClassFor
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNonNullType
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNullableType
 import com.jayrave.falkon.sqlBuilders.CreateTableSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.ForeignKeyConstraint
@@ -47,11 +49,11 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
 
     inline fun <reified C> col(
             property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property),
+            name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
-            converter: Converter<C> = getConverterForNullableType(),
+            converter: Converter<C> = getConverterForNullableType(configuration),
             nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(true),
             nullToSqlSubstitute: NullSubstitute<C> = getDefaultNullToSqlSubstitute(true),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
@@ -66,11 +68,11 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
 
     inline fun <reified C : Any> col(
             property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property),
+            name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
-            converter: Converter<C> = getConverterForNonNullType(),
+            converter: Converter<C> = getConverterForNonNullType(configuration),
             nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(false),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
@@ -84,13 +86,13 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
 
     inline fun <reified C, FT : Any, FC> foreignCol(
             property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property),
+            name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
             foreignTable: Table<FT, *>,
             foreignColumn: Column<FT, FC>,
-            converter: Converter<C> = getConverterForNullableType(),
+            converter: Converter<C> = getConverterForNullableType(configuration),
             nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(true),
             nullToSqlSubstitute: NullSubstitute<C> = getDefaultNullToSqlSubstitute(true),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
@@ -105,13 +107,13 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
 
     inline fun <reified C : Any, FT : Any, FC> foreignCol(
             property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property),
+            name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
             foreignTable: Table<FT, *>,
             foreignColumn: Column<FT, FC>,
-            converter: Converter<C> = getConverterForNonNullType(),
+            converter: Converter<C> = getConverterForNonNullType(configuration),
             nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(false),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
@@ -155,21 +157,6 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
         }
 
         return column
-    }
-
-
-    fun <C> computeFormattedNameOf(property: KProperty1<T, C>): String {
-        return configuration.nameFormatter.format(property.name)
-    }
-
-
-    inline fun <reified C> getConverterForNullableType(): Converter<C> {
-        return configuration.getConverterForNullableType(getJavaClassFor(C::class))
-    }
-
-
-    inline fun <reified C : Any> getConverterForNonNullType(): Converter<C> {
-        return configuration.getConverterForNonNullType(C::class.java)
     }
 
 
