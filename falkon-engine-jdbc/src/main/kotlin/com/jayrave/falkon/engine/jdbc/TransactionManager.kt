@@ -13,6 +13,12 @@ internal interface TransactionManager {
     fun <R> executeInTransaction(operation: () -> R): R?
 
     /**
+     * @return `true` if there is an active transaction in the current thread (only one
+     * transaction can be active per thread at a time)
+     */
+    fun isInTransaction(): Boolean
+
+    /**
      * Any [Connection] acquired via this method shouldn't be closed explicitly. When the
      * transaction gets over, connection will be closed automatically
      */

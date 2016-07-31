@@ -36,6 +36,14 @@ class TransactionManagerImplTest {
 
 
     @Test
+    fun testIsInTransaction() {
+        assertThat(manager.isInTransaction()).isFalse()
+        manager.executeInTransaction { assertThat(manager.isInTransaction()).isTrue() }
+        assertThat(manager.isInTransaction()).isFalse()
+    }
+
+
+    @Test
     fun testGetConnectionReturnsAValidConnectionWhenInTransaction() {
         manager.executeInTransaction {
             val connection = manager.getConnectionIfInTransaction()

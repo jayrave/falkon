@@ -51,6 +51,11 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
     }
 
 
+    override fun isInTransaction(): Boolean {
+        return getConnectionIfInTransaction() != null
+    }
+
+
     override fun getConnectionIfInTransaction(): Connection? {
         // Return the inner most connection
         return connectionListsForTransactions.get()?.peekLast()
