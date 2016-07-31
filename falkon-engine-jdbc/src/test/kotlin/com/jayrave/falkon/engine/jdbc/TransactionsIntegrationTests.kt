@@ -1,5 +1,6 @@
 package com.jayrave.falkon.engine.jdbc
 
+import com.jayrave.falkon.engine.test.TestIsInTransaction
 import com.jayrave.falkon.engine.test.TestTransactionCommitsIfSuccessful
 import com.jayrave.falkon.engine.test.TestTransactionRollsbackIfUnSuccessful
 import org.junit.Test
@@ -18,6 +19,12 @@ class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
         TestTransactionRollsbackIfUnSuccessful.performTestOn(
                 engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
+    }
+
+
+    @Test
+    fun testIsInTransaction() {
+        TestIsInTransaction.performTestOn(engine)
     }
 
 

@@ -14,6 +14,12 @@ interface Engine {
     fun <R> executeInTransaction(operation: () -> R): R
 
     /**
+     * @return `true` if there is an active transaction in the current thread (only one
+     * transaction can be active per thread at a time)
+     */
+    fun isInTransaction(): Boolean
+
+    /**
      * Compile raw SQL statement
      */
     fun compileSql(rawSql: String): CompiledStatement<Unit>

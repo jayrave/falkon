@@ -20,6 +20,11 @@ class JdbcEngine(dataSource: DataSource) : Engine {
     }
 
 
+    override fun isInTransaction(): Boolean {
+        return transactionManager.isInTransaction()
+    }
+
+
     override fun compileSql(rawSql: String): CompiledStatement<Unit> {
         return UnitReturningCompiledStatement(rawSql, connectionManager)
     }

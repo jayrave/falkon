@@ -9,15 +9,20 @@ class AndroidSqliteEngine(sqLiteOpenHelper: SQLiteOpenHelper) : Engine {
 
     override fun <R> executeInTransaction(operation: () -> R): R {
         val result: R
-        database.beginTransaction();
+        database.beginTransaction()
         try {
             result = operation.invoke()
-            database.setTransactionSuccessful();
+            database.setTransactionSuccessful()
         } finally {
-            database.endTransaction();
+            database.endTransaction()
         }
 
         return result
+    }
+
+
+    override fun isInTransaction(): Boolean {
+        return database.inTransaction()
     }
 
 

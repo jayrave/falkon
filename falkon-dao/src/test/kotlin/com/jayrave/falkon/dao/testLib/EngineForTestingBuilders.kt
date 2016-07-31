@@ -23,6 +23,11 @@ internal class EngineForTestingBuilders private constructor(
     }
 
 
+    override fun isInTransaction(): Boolean {
+        throw UnsupportedOperationException()
+    }
+
+
     override fun compileSql(rawSql: String): CompiledStatement<Unit> {
         throw UnsupportedOperationException()
     }
