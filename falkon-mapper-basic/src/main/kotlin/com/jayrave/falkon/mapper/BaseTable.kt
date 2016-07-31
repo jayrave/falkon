@@ -1,9 +1,6 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
-import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullFromSqlSubstitute
-import com.jayrave.falkon.mapper.TableImplementationHelper.getDefaultNullToSqlSubstitute
-import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNonNullType
 import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
 import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNullableType
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -25,45 +22,18 @@ abstract class BaseTable<T : Any, ID : Any>(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
             converter: Converter<C> = getConverterForNullableType(configuration),
-            nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(true),
-            nullToSqlSubstitute: NullSubstitute<C> = getDefaultNullToSqlSubstitute(true),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             Column<T, C> {
 
-        return addColumn(
-                name, converter, nullFromSqlSubstitute, nullToSqlSubstitute, propertyExtractor
-        )
-    }
-
-
-    inline fun <reified C : Any> col(
-            property: KProperty1<T, C>,
-            name: String = computeFormattedNameOf(property, configuration),
-            converter: Converter<C> = getConverterForNonNullType(configuration),
-            nullFromSqlSubstitute: NullSubstitute<C> = getDefaultNullFromSqlSubstitute(false),
-            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
-            Column<T, C> {
-
-        return addColumn(
-                name, converter, nullFromSqlSubstitute, getDefaultNullToSqlSubstitute(false),
-                propertyExtractor
-        )
+        return addColumn(name, converter, propertyExtractor)
     }
 
 
     fun <C> addColumn(
-            name: String,
-            converter: Converter<C>,
-            nullFromSqlSubstitute: NullSubstitute<C>,
-            nullToSqlSubstitute: NullSubstitute<C>,
-            propertyExtractor: PropertyExtractor<T, C>):
+            name: String, converter: Converter<C>, propertyExtractor: PropertyExtractor<T, C>):
             Column<T, C> {
 
-        val column = ColumnImpl(
-                this, name, propertyExtractor, converter,
-                nullFromSqlSubstitute, nullToSqlSubstitute
-        )
-
+        val column = ColumnImpl(this, name, propertyExtractor, converter)
         allColumnImpls.offer(column)
         return column
     }

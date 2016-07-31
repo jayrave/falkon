@@ -77,54 +77,6 @@ object TableImplementationHelper {
     // -------------------------------------- Converters -------------------------------------------
 
 
-    // ----------------------------------- Null substitutes ----------------------------------------
-
-    private val nullReturningNullSubstitute = object : NullSubstitute<Any?> {
-        override fun value() = null
-    }
-
-    private val throwingNullFromSqlSubstitute = object : NullSubstitute<Any> {
-        override fun value() = throw NullPointerException(
-                "Trying to assign return null for a non-null type property!!. Solution: " +
-                        "make db column non-null or provide a valid ${NullSubstitute::class}"
-        )
-    }
-
-    private val throwingNullToSqlSubstitute = object : NullSubstitute<Any> {
-        override fun value() = throw NullPointerException(
-                "Something is wrong!! Let the developer know"
-        )
-    }
-
-
-    /**
-     * @return a [NullSubstitute] that returns `null` if [isNullableProperty] is `true` &
-     * a [NullSubstitute] that throws a [NullPointerException] if [isNullableProperty] is `false`
-     */
-    fun <C> getDefaultNullFromSqlSubstitute(isNullableProperty: Boolean): NullSubstitute<C> {
-        @Suppress("UNCHECKED_CAST")
-        return when (isNullableProperty) {
-            true -> nullReturningNullSubstitute
-            false -> throwingNullFromSqlSubstitute
-        } as NullSubstitute<C>
-    }
-
-
-    /**
-     * @return a [NullSubstitute] that returns `null` if [isNullableProperty] is `true` &
-     * a [NullSubstitute] that throws a [NullPointerException] if [isNullableProperty] is `false`
-     */
-    fun <C> getDefaultNullToSqlSubstitute(isNullableProperty: Boolean): NullSubstitute<C> {
-        @Suppress("UNCHECKED_CAST")
-        return when (isNullableProperty) {
-            true -> nullReturningNullSubstitute
-            false -> throwingNullToSqlSubstitute
-        } as NullSubstitute<C>
-    }
-
-    // ----------------------------------- Null substitutes ----------------------------------------
-
-
     // ---------------------------------- Property extractor ---------------------------------------
 
     /**

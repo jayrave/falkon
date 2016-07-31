@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-// TODO - how to test converter, nullFromSqlSubstitute, nullToSqlSubstitute, #addColumn & other stuff in BaseTable ?
+// TODO - how to test converter, addColumn & other stuff in BaseTable ?
 class BaseTableTest {
 
     @Test

@@ -69,70 +69,14 @@ class ColumnImplTest {
         assertThat(column.computePropertyFrom(dataProducer)).isEqualTo(UUID.fromString(inputString))
     }
 
-    @Test
-    fun testNullToSqlSubstituteWithNonNullSubstitute() {
-        val inputId = UUID.randomUUID()
-        val nullSubstitute = buildNullSubstitute(inputId)
-        val column: Column<Any, UUID?> = buildColumnImplForTest(
-                nullableUuidConverter(), nullToSqlSubstitute = nullSubstitute
-        )
-
-        assertThat(column.computeStorageFormOf(null)).isEqualTo(inputId.toString())
-    }
-
-    @Test
-    fun testNullToSqlSubstituteWithNullSubstitute() {
-        val column: Column<Any, UUID?> = buildColumnImplForTest(
-                nullableUuidConverter(), nullToSqlSubstitute = buildNullSubstitute<UUID?>(null)
-        )
-
-        assertThat(column.computeStorageFormOf(null)).isEqualTo(TypedNull(Type.STRING))
-    }
-
-    @Test
-    fun testNullFromSqlSubstituteWithNonNullSubstitute() {
-        val inputId = UUID.randomUUID()
-        val nullSubstitute = buildNullSubstitute(inputId)
-        val column: Column<Any, UUID?> = buildColumnImplForTest(
-                nullableUuidConverter(), nullFromSqlSubstitute = nullSubstitute
-        )
-
-        val dataProducer = StaticDataProducer.createForString(null)
-        assertThat(column.computePropertyFrom(dataProducer)).isEqualTo(inputId)
-    }
-
-    @Test
-    fun testNullFromSqlSubstituteWithNullSubstitute() {
-        val column: Column<Any, UUID?> = buildColumnImplForTest(
-                nullableUuidConverter(), nullFromSqlSubstitute = buildNullSubstitute<UUID?>(null)
-        )
-
-        val dataProducer = StaticDataProducer.createForString(null)
-        assertThat(column.computePropertyFrom(dataProducer)).isNull()
-    }
-
 
     companion object {
 
         private fun nonNullUuidConverter() = NullableToNonNullConverter(nullableUuidConverter())
         private fun nullableUuidConverter() = NullableUuidConverter()
-        private fun <C> buildNullSubstitute(value: C) = object : NullSubstitute<C> {
-            override fun value() = value
-        }
 
-        private fun <C> throwingNullSubstitute() = object : NullSubstitute<C> {
-            override fun value() = throw RuntimeException()
-        }
-
-        private fun <C> buildColumnImplForTest(
-                converter: Converter<C>,
-                nullFromSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute(),
-                nullToSqlSubstitute: NullSubstitute<C> = throwingNullSubstitute()):
-                Column<Any, C> {
-
-            return ColumnImpl(
-                    mock(), "test", mock(), converter, nullFromSqlSubstitute, nullToSqlSubstitute
-            )
+        private fun <C> buildColumnImplForTest(converter: Converter<C>): Column<Any, C> {
+            return ColumnImpl(mock(), "test", mock(), converter)
         }
 
 
