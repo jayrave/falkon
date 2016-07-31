@@ -204,6 +204,14 @@ class NullableEnumByNameConverter<T : Enum<T>>(private val clazz: Class<T>) : Co
  */
 class NullableToNonNullConverter<T>(private val delegate: Converter<T?>) : Converter<T> {
     override val dbType: Type = delegate.dbType
-    override fun from(dataProducer: DataProducer): T  = delegate.from(dataProducer)!!
     override fun to(value: T, dataConsumer: DataConsumer) = delegate.to(value, dataConsumer)
+    override fun from(dataProducer: DataProducer): T {
+        val value = delegate.from(dataProducer)
+        return when (value != null) {
+            true -> value!!
+            else -> throw ConversionException(
+                    "Data produced for non-null converter should never be null!"
+            )
+        }
+    }
 }

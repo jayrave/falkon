@@ -1,6 +1,7 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.mapper.exceptions.ConversionException
 import com.jayrave.falkon.mapper.testLib.StaticDataProducer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -16,7 +17,7 @@ class NullableToNonNullConverterTest {
         assertThat(stringConverter.dbType).isEqualTo(Type.STRING)
     }
 
-    @Test(expected = KotlinNullPointerException::class)
+    @Test(expected = ConversionException::class)
     fun testFromWithNullValueThrows() {
         val dataProducer = StaticDataProducer.createForString(null)
         NullableToNonNullConverter(NullableStringConverter()).from(dataProducer)
