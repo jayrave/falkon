@@ -12,13 +12,13 @@ internal class SourceBackedDataProducer(val source: Source) : DataProducer {
 
     private var columnIndex: Int = INVALID_COLUMN_INDEX
 
-    override fun getBlob(): ByteArray?  = source.getBlob(getValidColumnIndex())
-    override fun getDouble(): Double?  = source.getDouble(getValidColumnIndex())
-    override fun getFloat(): Float?  = source.getFloat(getValidColumnIndex())
-    override fun getInt(): Int?  = source.getInt(getValidColumnIndex())
-    override fun getLong(): Long?  = source.getLong(getValidColumnIndex())
-    override fun getShort(): Short?  = source.getShort(getValidColumnIndex())
-    override fun getString(): String?  = source.getString(getValidColumnIndex())
+    override fun getBlob(): ByteArray  = source.getBlob(getValidColumnIndex())
+    override fun getDouble(): Double  = source.getDouble(getValidColumnIndex())
+    override fun getFloat(): Float  = source.getFloat(getValidColumnIndex())
+    override fun getInt(): Int  = source.getInt(getValidColumnIndex())
+    override fun getLong(): Long  = source.getLong(getValidColumnIndex())
+    override fun getShort(): Short  = source.getShort(getValidColumnIndex())
+    override fun getString(): String  = source.getString(getValidColumnIndex())
     override fun isNull(): Boolean  = source.isNull(getValidColumnIndex())
 
     fun setColumnIndex(columnIndex: Int) {
