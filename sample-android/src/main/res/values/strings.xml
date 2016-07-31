@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Falkon Sample</string>
+    <string name="perform_falkon_magic">Perform falkon magic</string>
 </resources>
