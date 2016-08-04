@@ -55,7 +55,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")),
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name)),
                 ARG_PLACEHOLDER
         )
 
@@ -86,7 +86,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")),
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name)),
                 ARG_PLACEHOLDER
         )
 
@@ -118,7 +118,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string")),
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)),
                 ARG_PLACEHOLDER
         )
 
@@ -171,21 +171,21 @@ class DeleteBuilderImplTest {
         val expectedSql = deleteSqlBuilder.build(
                 table.name,
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "long"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.long.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "float"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.float.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "double"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.double.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "string"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "blob"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int")
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name)
                 ), ARG_PLACEHOLDER
         )
 

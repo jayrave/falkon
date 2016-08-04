@@ -11,7 +11,7 @@ class DaoForQueriesIntegrationTests : BaseClassForIntegrationTests() {
     fun testFindByIdReturnsAppropriateModel() {
         val modelToBeQueried = buildModelForTest(1)
         insertModelUsingInsertBuilder(table, modelToBeQueried)
-        insertAdditionalRandomModels(table, count = 7)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
         val queriedModel = table.dao.findById(modelToBeQueried.id)
 
@@ -23,7 +23,7 @@ class DaoForQueriesIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testFindByIdReturnsNullOnIdOfNonExistingModel() {
-        insertAdditionalRandomModels(table, count = 8)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 8)
         assertThat(table.dao.findById(UUID.randomUUID())).isNull()
         assertThat(getNumberOfModelsInTableForTest(table)).isEqualTo(8)
     }

@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.where.lenient
 
+import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.assertWhereEquality
 import com.jayrave.falkon.dao.where.Where
@@ -29,7 +30,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.eq(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "int")), listOf(5)
+                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name)), listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -42,7 +43,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.notEq(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int")), listOf(5)
+                listOf(OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table.int.name)), listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -55,7 +56,8 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.gt(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "int")), listOf(5)
+                listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.int.name)),
+                listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -68,7 +70,8 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.ge(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "int")), listOf(5)
+                listOf(OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, table.int.name)),
+                listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -81,7 +84,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.lt(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "int")), listOf(5)
+                listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table.int.name)), listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -94,7 +97,8 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.le(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "int")), listOf(5)
+                listOf(OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, table.int.name)),
+                listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -106,7 +110,7 @@ class WhereBuilderImplTest {
         val table = TableForTest()
         val builder = newBuilder()
         val actualWhere = builder.between(table.int, 5, 8).build()
-        val expectedWhere = WhereImpl(listOf(BetweenPredicate("int")), listOf(5, 8))
+        val expectedWhere = WhereImpl(listOf(BetweenPredicate(table.int.name)), listOf(5, 8))
         assertWhereEquality(actualWhere, expectedWhere)
     }
 
@@ -117,7 +121,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.like(table.int, "5").build()
         val expectedWhere = WhereImpl(
-                listOf(OneArgPredicate(OneArgPredicate.Type.LIKE, "int")), listOf("5")
+                listOf(OneArgPredicate(OneArgPredicate.Type.LIKE, table.int.name)), listOf("5")
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -130,7 +134,8 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.isIn(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "int", 1)), listOf(5)
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.int.name, 1)),
+                listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -143,7 +148,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.isIn(table.int, 5, 6, 7, 8).build()
         val expectedWhere = WhereImpl(
-                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "int", 4)),
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.int.name, 4)),
                 listOf(5, 6, 7, 8)
         )
 
@@ -157,7 +162,8 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.isNotIn(table.int, 5).build()
         val expectedWhere = WhereImpl(
-                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "int", 1)), listOf(5)
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.int.name, 1)),
+                listOf(5)
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -170,7 +176,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.isNotIn(table.int, 5, 6, 7, 8).build()
         val expectedWhere = WhereImpl(
-                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "int", 4)),
+                listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.int.name, 4)),
                 listOf(5, 6, 7, 8)
         )
 
@@ -184,7 +190,7 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.isNull(table.int).build()
         val expectedWhere = WhereImpl(
-                listOf(NoArgPredicate(NoArgPredicate.Type.IS_NULL, "int")), emptyList()
+                listOf(NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.int.name)), emptyList()
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -197,7 +203,8 @@ class WhereBuilderImplTest {
         val builder = newBuilder()
         val actualWhere = builder.isNotNull(table.int).build()
         val expectedWhere = WhereImpl(
-                listOf(NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")), emptyList()
+                listOf(NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.int.name)),
+                emptyList()
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -211,9 +218,9 @@ class WhereBuilderImplTest {
         val actualWhere = builder.eq(table.int, 5).and().eq(table.string, "test").build()
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "string")
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)
                 ), listOf(5, "test")
         )
 
@@ -228,9 +235,9 @@ class WhereBuilderImplTest {
         val actualWhere = builder.eq(table.int, 5).or().eq(table.string, "test").build()
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "string")
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)
                 ), listOf(5, "test")
         )
 
@@ -266,8 +273,8 @@ class WhereBuilderImplTest {
                 listOf(CompoundConnector(
                         CompoundConnector.Type.AND,
                         listOf(
-                                OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
-                                OneArgPredicate(OneArgPredicate.Type.EQ, "string")
+                                OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
+                                OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)
                         )
                 )), listOf(5, "test")
         )
@@ -290,8 +297,8 @@ class WhereBuilderImplTest {
                 listOf(CompoundConnector(
                         CompoundConnector.Type.OR,
                         listOf(
-                                OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
-                                OneArgPredicate(OneArgPredicate.Type.EQ, "string")
+                                OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
+                                OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)
                         )
                 )), listOf(5, "test")
         )
@@ -326,18 +333,18 @@ class WhereBuilderImplTest {
                 listOf(CompoundConnector(
                         CompoundConnector.Type.AND,
                         listOf(
-                                OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
-                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "string"),
+                                OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
+                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.string.name),
                                 CompoundConnector(
                                         CompoundConnector.Type.AND,
                                         listOf(
-                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "short"),
-                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, table.short.name),
+                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.name),
                                                 CompoundConnector(
                                                         CompoundConnector.Type.OR,
                                                         listOf(
-                                                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "double"),
-                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable_int")
+                                                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, table.double.name),
+                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.nullableInt.name)
                                                         )
                                                 )
                                         )
@@ -345,8 +352,8 @@ class WhereBuilderImplTest {
                                 CompoundConnector(
                                         CompoundConnector.Type.OR,
                                         listOf(
-                                                OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "blob"),
-                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "long")
+                                                OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table.blob.name),
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table.long.name)
                                         )
                                 )
                         )
@@ -383,18 +390,18 @@ class WhereBuilderImplTest {
                 listOf(CompoundConnector(
                         CompoundConnector.Type.OR,
                         listOf(
-                                OneArgPredicate(OneArgPredicate.Type.EQ, "int"),
-                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "string"),
+                                OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
+                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.string.name),
                                 CompoundConnector(
                                         CompoundConnector.Type.OR,
                                         listOf(
-                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "short"),
-                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, table.short.name),
+                                                NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.name),
                                                 CompoundConnector(
                                                         CompoundConnector.Type.AND,
                                                         listOf(
-                                                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "double"),
-                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "nullable_int")
+                                                                OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, table.double.name),
+                                                                NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.nullableInt.name)
                                                         )
                                                 )
                                         )
@@ -402,8 +409,8 @@ class WhereBuilderImplTest {
                                 CompoundConnector(
                                         CompoundConnector.Type.AND,
                                         listOf(
-                                                OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "blob"),
-                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "long")
+                                                OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table.blob.name),
+                                                OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table.long.name)
                                         )
                                 )
                         )
@@ -438,35 +445,35 @@ class WhereBuilderImplTest {
 
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "short"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.name),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "int"),
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table.int.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "float"),
+                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, table.float.name),
                         SimpleConnector(SimpleConnector.Type.AND),
                         CompoundConnector(
                                 CompoundConnector.Type.OR,
                                 listOf(
-                                        BetweenPredicate("double"),
-                                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "string")
+                                        BetweenPredicate(table.double.name),
+                                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, table.string.name)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.OR),
                         CompoundConnector(
                                 CompoundConnector.Type.AND,
                                 listOf(
-                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "blob"),
-                                        OneArgPredicate(OneArgPredicate.Type.LIKE, "long")
+                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table.blob.name),
+                                        OneArgPredicate(OneArgPredicate.Type.LIKE, table.long.name)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
-                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "nullable_float", 3),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.nullableFloat.name, 3),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "nullable_double", 1),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.nullableDouble.name, 1),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "nullable_int"),
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.name),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "int")
+                        NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.int.name)
                 ),
                 listOf(
                         5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12",
@@ -480,7 +487,7 @@ class WhereBuilderImplTest {
 
     @Test
     fun testWhereWithAllSectionsWithQualifiedColumnName() {
-        val table = TableForTest("table_name")
+        val table = TableForTest()
         val builder = newBuilder(qualifyColumnNames = true)
         val actualWhere = builder
                 .eq(table.short, 5).or()
@@ -502,35 +509,35 @@ class WhereBuilderImplTest {
 
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "table_name.short"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "table_name.int"),
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table.int.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "table_name.nullable_int"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, "table_name.float"),
+                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN_OR_EQ, table.float.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
                         CompoundConnector(
                                 CompoundConnector.Type.OR,
                                 listOf(
-                                        BetweenPredicate("table_name.double"),
-                                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "table_name.string")
+                                        BetweenPredicate(table.double.qualifiedName),
+                                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, table.string.qualifiedName)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.OR),
                         CompoundConnector(
                                 CompoundConnector.Type.AND,
                                 listOf(
-                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "table_name.blob"),
-                                        OneArgPredicate(OneArgPredicate.Type.LIKE, "table_name.long")
+                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table.blob.qualifiedName),
+                                        OneArgPredicate(OneArgPredicate.Type.LIKE, table.long.qualifiedName)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
-                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, "table_name.nullable_float", 3),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.nullableFloat.qualifiedName, 3),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, "table_name.nullable_double", 1),
+                        MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.nullableDouble.qualifiedName, 1),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, "table_name.nullable_int"),
+                        NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, "table_name.int")
+                        NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.int.qualifiedName)
                 ),
                 listOf(
                         5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12",
@@ -562,22 +569,22 @@ class WhereBuilderImplTest {
 
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.EQ, "table_name_1.short"),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table1.short.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.OR),
-                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, "table_name_2.int"),
+                        OneArgPredicate(OneArgPredicate.Type.NOT_EQ, table2.int.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
                         CompoundConnector(
                                 CompoundConnector.Type.OR,
                                 listOf(
-                                        BetweenPredicate("table_name_3.double"),
-                                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, "table_name_1.string")
+                                        BetweenPredicate(table3.double.qualifiedName),
+                                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN_OR_EQ, table1.string.qualifiedName)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.OR),
                         CompoundConnector(
                                 CompoundConnector.Type.AND,
                                 listOf(
-                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, "table_name_2.blob"),
-                                        OneArgPredicate(OneArgPredicate.Type.LIKE, "table_name_3.long")
+                                        OneArgPredicate(OneArgPredicate.Type.LESS_THAN, table2.blob.qualifiedName),
+                                        OneArgPredicate(OneArgPredicate.Type.LIKE, table3.long.qualifiedName)
                                 )
                         )
                 ),
@@ -604,19 +611,19 @@ class WhereBuilderImplTest {
 
         val expectedWhere = WhereImpl(
                 listOf(
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_short"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableShort.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_int"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_long"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableLong.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_float"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableFloat.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_double"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableDouble.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_string"),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableString.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, "nullable_blob")
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.name)
                 ),
 
                 listOf(

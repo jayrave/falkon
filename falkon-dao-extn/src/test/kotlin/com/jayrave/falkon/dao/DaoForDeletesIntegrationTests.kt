@@ -9,7 +9,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
     fun testDeletionOfSingleModel() {
         val modelToBeDeleted = buildModelForTest(1)
         insertModelUsingInsertBuilder(table, modelToBeDeleted)
-        insertAdditionalRandomModels(table, count = 7)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
         val numberOfRowsDeleted = table.dao.delete(modelToBeDeleted)
 
@@ -24,7 +24,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         val modelToBeDeleted1 = buildModelForTest(1)
         val modelToBeDeleted2 = buildModelForTest(2)
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
-        insertAdditionalRandomModels(table, count = 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
         val deletedModel1 = buildModelForTest(66, modelToBeDeleted1.id)
         val deletedModel2 = buildModelForTest(99, modelToBeDeleted2.id)
@@ -41,7 +41,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         val modelToBeDeleted1 = buildModelForTest(1)
         val modelToBeDeleted2 = buildModelForTest(2)
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
-        insertAdditionalRandomModels(table, count = 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
         val deletedModel1 = buildModelForTest(55, modelToBeDeleted1.id)
         val deletedModel2 = buildModelForTest(77, modelToBeDeleted2.id)
@@ -57,7 +57,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
     fun testSingleModelDeleteById() {
         val modelToBeDeleted = buildModelForTest(1)
         insertModelUsingInsertBuilder(table, modelToBeDeleted)
-        insertAdditionalRandomModels(table, count = 7)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
         val numberOfRowsDeleted = table.dao.deleteById(modelToBeDeleted.id)
 
@@ -72,7 +72,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         val modelToBeDeleted1 = buildModelForTest(1)
         val modelToBeDeleted2 = buildModelForTest(2)
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
-        insertAdditionalRandomModels(table, count = 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
         val deletedModel1 = buildModelForTest(66, modelToBeDeleted1.id)
         val deletedModel2 = buildModelForTest(99, modelToBeDeleted2.id)
@@ -89,7 +89,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         val modelToBeDeleted1 = buildModelForTest(1)
         val modelToBeDeleted2 = buildModelForTest(2)
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
-        insertAdditionalRandomModels(table, count = 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
         val deletedModel1 = buildModelForTest(55, modelToBeDeleted1.id)
         val deletedModel2 = buildModelForTest(77, modelToBeDeleted2.id)
@@ -103,7 +103,7 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testDeletionHasNoEffectIfModelDoesNotExist() {
-        insertAdditionalRandomModels(table, count = 8)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 8)
         val nonExistingModel = buildModelForTest(1)
         val numberOfRowsDeleted = table.dao.delete(nonExistingModel)
 

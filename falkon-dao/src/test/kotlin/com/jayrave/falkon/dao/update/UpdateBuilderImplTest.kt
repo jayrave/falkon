@@ -62,7 +62,8 @@ class UpdateBuilderImplTest {
         // build expected update
         val expectedSql = updateSqlBuilder.build(
                 table.name, listOf(table.int.name),
-                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, "string")), ARG_PLACEHOLDER
+                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)),
+                ARG_PLACEHOLDER
         )
 
         val expectedUpdate = UpdateImpl(expectedSql, listOf(5, "test"))

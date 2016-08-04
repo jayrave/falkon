@@ -8,7 +8,7 @@ class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testInsertionOfSingleModel() {
-        insertAdditionalRandomModels(table, 7)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, 7)
         val modelForTest = buildModelForTest(5)
         table.dao.insert(modelForTest)
 
@@ -19,7 +19,7 @@ class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testInsertionOfVarargModels() {
-        insertAdditionalRandomModels(table, 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, 6)
         val modelForTest1 = buildModelForTest(5)
         val modelForTest2 = buildModelForTest(8)
         table.dao.insert(modelForTest1, modelForTest2)
@@ -31,7 +31,7 @@ class DaoForInsertsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testInsertionOfModelIterable() {
-        insertAdditionalRandomModels(table, 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, 6)
         val modelForTest1 = buildModelForTest(5)
         val modelForTest2 = buildModelForTest(8)
         table.dao.insert(listOf(modelForTest1, modelForTest2))

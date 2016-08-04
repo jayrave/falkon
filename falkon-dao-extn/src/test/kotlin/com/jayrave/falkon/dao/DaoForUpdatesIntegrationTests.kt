@@ -9,7 +9,7 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
     fun testUpdateOfSingleModel() {
         val modelToBeUpdated = buildModelForTest(1)
         insertModelUsingInsertBuilder(table, modelToBeUpdated)
-        insertAdditionalRandomModels(table, count = 7)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
         val updatedModel = buildModelForTest(88, modelToBeUpdated.id)
         val numberOfRowsUpdated = table.dao.update(updatedModel)
@@ -25,7 +25,7 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
         val modelToBeUpdated1 = buildModelForTest(1)
         val modelToBeUpdated2 = buildModelForTest(2)
         insertModelsUsingInsertBuilder(table, modelToBeUpdated1, modelToBeUpdated2)
-        insertAdditionalRandomModels(table, count = 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
         val updatedModel1 = buildModelForTest(66, modelToBeUpdated1.id)
         val updatedModel2 = buildModelForTest(99, modelToBeUpdated2.id)
@@ -42,7 +42,7 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
         val modelToBeUpdated1 = buildModelForTest(1)
         val modelToBeUpdated2 = buildModelForTest(2)
         insertModelsUsingInsertBuilder(table, modelToBeUpdated1, modelToBeUpdated2)
-        insertAdditionalRandomModels(table, count = 6)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
         val updatedModel1 = buildModelForTest(55, modelToBeUpdated1.id)
         val updatedModel2 = buildModelForTest(77, modelToBeUpdated2.id)
@@ -56,7 +56,7 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testUpdateHasNoEffectIfModelDoesNotExist() {
-        insertAdditionalRandomModels(table, count = 8)
+        insertAdditionalRandomModelsUsingInsertBuilder(table, count = 8)
         val nonExistingModel = buildModelForTest(1)
         val numberOfRowsUpdated = table.dao.update(nonExistingModel)
 

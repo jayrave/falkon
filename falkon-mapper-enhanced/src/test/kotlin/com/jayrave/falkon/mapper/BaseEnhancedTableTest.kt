@@ -12,16 +12,17 @@ class BaseEnhancedTableTest {
 
     @Test
     fun testCreateTableWithoutForeignColumn() {
-        class Test : BaseEnhancedTableForTest() {
+        class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            @Suppress("unused") val nullableInt = col(ModelForTest::nullableInt)
+            val nullableInt = col(ModelForTest::nullableInt)
         }
 
-        val actualCreateTableSql = Test().buildCreateTableSql()
-        val expectedCreateTableSql = "CREATE TABLE test (" +
-                "id DUMMY_TYPE, " +
-                "nullable_int DUMMY_TYPE, " +
-                "PRIMARY KEY (id))"
+        val table = TableForTest()
+        val actualCreateTableSql = table.buildCreateTableSql()
+        val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
+                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.nullableInt.name} DUMMY_TYPE, " +
+                "PRIMARY KEY (${table.idColumn.name}))"
 
         assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
     }
@@ -29,27 +30,28 @@ class BaseEnhancedTableTest {
 
     @Test
     fun testCreateTableWithForeignColumn() {
-        class ForeignTable : BaseEnhancedTableForTest("foreign_table") {
+        class ForeignTableForTest : BaseEnhancedTableForTest("foreign_table") {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(
                     ModelForTest::int, "foreign_table_pk_column"
             )
         }
 
-        val foreignTable = ForeignTable()
-        class Test : BaseEnhancedTableForTest() {
+        val foreignTable = ForeignTableForTest()
+        class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            @Suppress("unused") val int = foreignCol(
+            val int = foreignCol(
                     ModelForTest::int, foreignTable = foreignTable,
                     foreignColumn = foreignTable.idColumn
             )
         }
 
-        val actualCreateTableSql = Test().buildCreateTableSql()
-        val expectedCreateTableSql = "CREATE TABLE test (" +
-                "id DUMMY_TYPE, " +
-                "int DUMMY_TYPE, " +
-                "PRIMARY KEY (id), " +
-                "FOREIGN KEY (int) REFERENCES foreign_table(foreign_table_pk_column))"
+        val table = TableForTest()
+        val actualCreateTableSql = table.buildCreateTableSql()
+        val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
+                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.int.name} DUMMY_TYPE, " +
+                "PRIMARY KEY (${table.idColumn.name}), " +
+                "FOREIGN KEY (${table.int.name}) REFERENCES ${foreignTable.name}(${foreignTable.idColumn.name}))"
 
         assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
     }
@@ -57,16 +59,17 @@ class BaseEnhancedTableTest {
 
     @Test
     fun testCreateTableWithColumnHavingMaxSize() {
-        class Test : BaseEnhancedTableForTest() {
+        class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            @Suppress("unused") val nullableInt = col(ModelForTest::nullableInt, maxSize = 24)
+            val nullableInt = col(ModelForTest::nullableInt, maxSize = 24)
         }
 
-        val actualCreateTableSql = Test().buildCreateTableSql()
-        val expectedCreateTableSql = "CREATE TABLE test (" +
-                "id DUMMY_TYPE, " +
-                "nullable_int DUMMY_TYPE(24), " +
-                "PRIMARY KEY (id))"
+        val table = TableForTest()
+        val actualCreateTableSql = table.buildCreateTableSql()
+        val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
+                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.nullableInt.name} DUMMY_TYPE(24), " +
+                "PRIMARY KEY (${table.idColumn.name}))"
 
         assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
     }
@@ -74,16 +77,17 @@ class BaseEnhancedTableTest {
 
     @Test
     fun testCreateTableWithNonNullColumn() {
-        class Test : BaseEnhancedTableForTest() {
+        class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            @Suppress("unused") val string = col(ModelForTest::string, isNonNull = true)
+            val string = col(ModelForTest::string, isNonNull = true)
         }
 
-        val actualCreateTableSql = Test().buildCreateTableSql()
-        val expectedCreateTableSql = "CREATE TABLE test (" +
-                "id DUMMY_TYPE, " +
-                "string DUMMY_TYPE NOT NULL, " +
-                "PRIMARY KEY (id))"
+        val table = TableForTest()
+        val actualCreateTableSql = table.buildCreateTableSql()
+        val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
+                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.string.name} DUMMY_TYPE NOT NULL, " +
+                "PRIMARY KEY (${table.idColumn.name}))"
 
         assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
     }
@@ -91,9 +95,9 @@ class BaseEnhancedTableTest {
 
     @Test
     fun testCreateTableWithUniquenessConstraints() {
-        class Test : BaseEnhancedTableForTest() {
+        class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            @Suppress("unused") val int = col(ModelForTest::int, isUnique = true)
+            val int = col(ModelForTest::int, isUnique = true)
             val nullableInt = col(ModelForTest::nullableInt)
             val nullableString = col(ModelForTest::nullableString)
 
@@ -102,15 +106,16 @@ class BaseEnhancedTableTest {
             }
         }
 
-        val actualCreateTableSql = Test().buildCreateTableSql()
-        val expectedCreateTableSql = "CREATE TABLE test (" +
-                "id DUMMY_TYPE, " +
-                "int DUMMY_TYPE, " +
-                "nullable_int DUMMY_TYPE, " +
-                "nullable_string DUMMY_TYPE, " +
-                "PRIMARY KEY (id), " +
-                "UNIQUE (int), " +
-                "UNIQUE (nullable_int, nullable_string))"
+        val table = TableForTest()
+        val actualCreateTableSql = TableForTest().buildCreateTableSql()
+        val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
+                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.int.name} DUMMY_TYPE, " +
+                "${table.nullableInt.name} DUMMY_TYPE, " +
+                "${table.nullableString.name} DUMMY_TYPE, " +
+                "PRIMARY KEY (${table.idColumn.name}), " +
+                "UNIQUE (${table.int.name}), " +
+                "UNIQUE (${table.nullableInt.name}, ${table.nullableString.name}))"
 
         assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
     }
@@ -118,30 +123,30 @@ class BaseEnhancedTableTest {
 
     @Test
     fun testCreateTableWithLotsOfConditions() {
-        class ForeignTable1 : BaseEnhancedTableForTest("foreign_table_1") {
+        class ForeignTableForTest1 : BaseEnhancedTableForTest("foreign_table_1") {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(
-                    ModelForTest::int, "foreign_table_pk_column"
+                    ModelForTest::int, "foreign_table_1_pk_column"
             )
         }
 
-        class ForeignTable2 : BaseEnhancedTableForTest("foreign_table_2") {
+        class ForeignTableForTest2 : BaseEnhancedTableForTest("foreign_table_2") {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(
-                    ModelForTest::int, "foreign_table_pk_column"
+                    ModelForTest::int, "foreign_table_2_pk_column"
             )
         }
 
-        val foreignTable1 = ForeignTable1()
-        val foreignTable2 = ForeignTable2()
-        class Test : BaseEnhancedTableForTest() {
+        val foreignTable1 = ForeignTableForTest1()
+        val foreignTable2 = ForeignTableForTest2()
+        class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            @Suppress("unused") val int = foreignCol(
+            val int = foreignCol(
                     ModelForTest::int, foreignTable = foreignTable1,
                     foreignColumn = foreignTable1.idColumn
             )
 
             val string = col(ModelForTest::string, maxSize = 128, isNonNull = true, isUnique = true)
             val nullableInt = col(ModelForTest::nullableInt)
-            @Suppress("unused") val nullableString = foreignCol(
+            val nullableString = foreignCol(
                     ModelForTest::nullableString, foreignTable = foreignTable2,
                     foreignColumn = foreignTable2.idColumn, isNonNull = true
             )
@@ -152,19 +157,20 @@ class BaseEnhancedTableTest {
             }
         }
 
-        val actualCreateTableSql = Test().buildCreateTableSql()
-        val expectedCreateTableSql = "CREATE TABLE test (" +
-                "id DUMMY_TYPE, " +
-                "int DUMMY_TYPE, " +
-                "string DUMMY_TYPE(128) NOT NULL, " +
-                "nullable_int DUMMY_TYPE, " +
-                "nullable_string DUMMY_TYPE NOT NULL, " +
-                "PRIMARY KEY (id), " +
-                "UNIQUE (string), " +
-                "UNIQUE (string, nullable_int), " +
-                "UNIQUE (nullable_string, nullable_int), " +
-                "FOREIGN KEY (int) REFERENCES foreign_table_1(foreign_table_pk_column), " +
-                "FOREIGN KEY (nullable_string) REFERENCES foreign_table_2(foreign_table_pk_column))"
+        val table = TableForTest()
+        val actualCreateTableSql = table.buildCreateTableSql()
+        val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
+                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.int.name} DUMMY_TYPE, " +
+                "${table.string.name} DUMMY_TYPE(128) NOT NULL, " +
+                "${table.nullableInt.name} DUMMY_TYPE, " +
+                "${table.nullableString.name} DUMMY_TYPE NOT NULL, " +
+                "PRIMARY KEY (${table.idColumn.name}), " +
+                "UNIQUE (${table.string.name}), " +
+                "UNIQUE (${table.string.name}, ${table.nullableInt.name}), " +
+                "UNIQUE (${table.nullableString.name}, ${table.nullableInt.name}), " +
+                "FOREIGN KEY (${table.int.name}) REFERENCES ${foreignTable1.name}(${foreignTable1.idColumn.name}), " +
+                "FOREIGN KEY (${table.nullableString.name}) REFERENCES ${foreignTable2.name}(${foreignTable2.idColumn.name}))"
 
         assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
     }
