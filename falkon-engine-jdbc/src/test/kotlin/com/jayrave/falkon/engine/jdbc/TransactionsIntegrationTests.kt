@@ -10,29 +10,32 @@ class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun testTransactionCommitsIfSuccessful() {
-        TestTransactionCommitsIfSuccessful.performTestOn(engine)
+        TestTransactionCommitsIfSuccessful.performTestOn(engineCore)
     }
 
 
     @Test
     fun testTransactionRollsbackIfUnSuccessful() {
         TestTransactionRollsbackIfUnSuccessful.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
 
     @Test
     fun testIsInTransaction() {
-        TestIsInTransaction.performTestOn(engine)
+        TestIsInTransaction.performTestReturnsAppropriateFlag(engineCore)
     }
 
 
     @Test(expected = SQLException::class)
     fun testWorkingOnStatementCreatedInATransactionOutsideOfItThrows() {
-        val compiledStatement = engine.executeInTransaction {
-            engine.compileSql("CREATE TABLE test (column_name_1 INTEGER)").execute()
-            engine.compileInsert("INSERT INTO test (column_name_1) VALUES (1)")
+        val compiledStatement = engineCore.executeInTransaction {
+            val tableName = "test"
+            val columnName = "column_name_1"
+
+            engineCore.compileSql("CREATE TABLE $tableName ($columnName INTEGER)").execute()
+            engineCore.compileInsert("INSERT INTO $tableName ($columnName) VALUES (1)")
         }
 
         compiledStatement.execute()
@@ -41,10 +44,13 @@ class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test(expected = SQLException::class)
     fun testWorkingOnSourceCreatedInATransactionOutsideOfItThrows() {
-        val source = engine.executeInTransaction {
-            engine.compileSql("CREATE TABLE test (column_name_1 INTEGER)").execute()
-            engine.compileInsert("INSERT INTO test (column_name_1) VALUES (1)").execute()
-            engine.compileQuery("SELECT * FROM test").execute()
+        val source = engineCore.executeInTransaction {
+            val tableName = "test"
+            val columnName = "column_name_1"
+
+            engineCore.compileSql("CREATE TABLE $tableName ($columnName INTEGER)").execute()
+            engineCore.compileInsert("INSERT INTO $tableName ($columnName) VALUES (1)").execute()
+            engineCore.compileQuery("SELECT * FROM $tableName").execute()
         }
 
         source.moveToFirst()

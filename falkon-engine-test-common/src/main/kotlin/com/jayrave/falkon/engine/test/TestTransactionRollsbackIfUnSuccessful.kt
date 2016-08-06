@@ -1,21 +1,24 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
 class TestTransactionRollsbackIfUnSuccessful private constructor(
-        private val engine: Engine, private val nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, private val nativeSqlExecutor: NativeSqlExecutor,
         private val nativeQueryExecutor: NativeQueryExecutor) {
 
     fun performTest() {
+        val tableName = "test"
+        val columnName = "column_name_1"
+
         // Create table & insert stuff using data source
-        nativeSqlExecutor.execute("CREATE TABLE test (column_name_1 INTEGER)")
-        nativeSqlExecutor.execute("INSERT INTO test (column_name_1) VALUES (1)")
+        nativeSqlExecutor.execute("CREATE TABLE $tableName ($columnName INTEGER)")
+        nativeSqlExecutor.execute("INSERT INTO $tableName ($columnName) VALUES (1)")
 
         val wasExceptionThrown: Boolean
         try {
-            engine.executeInTransaction {
-                engine.compileUpdate("DELETE FROM test").execute()
+            engineCore.executeInTransaction {
+                engineCore.compileUpdate("DELETE FROM $tableName").execute()
                 throw RuntimeException()
             }
 
@@ -24,17 +27,17 @@ class TestTransactionRollsbackIfUnSuccessful private constructor(
         }
 
         assertThat(wasExceptionThrown).isTrue()
-        assertThat(nativeQueryExecutor.getCount("test")).isEqualTo(1)
+        assertThat(nativeQueryExecutor.getCount(tableName)).isEqualTo(1)
     }
 
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestTransactionRollsbackIfUnSuccessful(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

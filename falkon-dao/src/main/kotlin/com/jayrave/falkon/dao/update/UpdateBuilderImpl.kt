@@ -52,7 +52,7 @@ internal class UpdateBuilderImpl<T : Any>(
     private fun compile(): CompiledUpdate {
         val update = build()
         return table.configuration.engine
-                .compileUpdate(update.sql)
+                .compileUpdate(table.name, update.sql)
                 .closeIfOpThrows { bindAll(update.arguments) }
     }
 

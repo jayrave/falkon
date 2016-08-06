@@ -58,7 +58,9 @@ class UpdateBuilderUpdateExtnTest {
     private fun testUpdateReportsCorrectRowCount(updateOp: (TableForTest) -> Int) {
         val numberOfRowsAffected = 8745
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                updateProvider = { OneShotCompiledUpdateForTest(it, numberOfRowsAffected) }
+                updateProvider = { tableName, sql ->
+                    OneShotCompiledUpdateForTest(tableName, sql, numberOfRowsAffected)
+                }
         )
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))
@@ -68,7 +70,9 @@ class UpdateBuilderUpdateExtnTest {
 
     private fun testStatementGetsClosedEvenIfUpdateThrows(updateOp: (TableForTest) -> Int) {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                updateProvider = { OneShotCompiledUpdateForTest(it, shouldThrowOnExecution = true) }
+                updateProvider = { tableName, sql ->
+                    OneShotCompiledUpdateForTest(tableName, sql, shouldThrowOnExecution = true)
+                }
         )
 
         var exceptionWasThrown = false

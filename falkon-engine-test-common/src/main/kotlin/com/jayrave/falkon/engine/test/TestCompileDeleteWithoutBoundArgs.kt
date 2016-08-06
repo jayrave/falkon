@@ -1,25 +1,28 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileDeleteWithoutBoundArgs private constructor(
-        private val engine: Engine, private val nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, private val nativeSqlExecutor: NativeSqlExecutor,
         private val nativeQueryExecutor: NativeQueryExecutor) {
 
     fun performTest() {
+        val tableName = "test"
+        val columnName = "column_name_1"
+
         // Create table & insert stuff using native methods
-        nativeSqlExecutor.execute("CREATE TABLE test (column_name_1 INTEGER)")
-        nativeSqlExecutor.execute("INSERT INTO test (column_name_1) VALUES (1)")
+        nativeSqlExecutor.execute("CREATE TABLE $tableName ($columnName INTEGER)")
+        nativeSqlExecutor.execute("INSERT INTO $tableName ($columnName) VALUES (1)")
 
         // Store count before performing delete
-        val countBeforeDelete = nativeQueryExecutor.getCount("test")
+        val countBeforeDelete = nativeQueryExecutor.getCount(tableName)
 
         // Delete stuff using engine
-        engine.compileDelete("DELETE FROM test").execute()
+        engineCore.compileDelete("DELETE FROM $tableName").execute()
 
         // Get count after delete & perform assertions
-        val countAfterDelete = nativeQueryExecutor.getCount("test")
+        val countAfterDelete = nativeQueryExecutor.getCount(tableName)
         assertThat(countBeforeDelete).isGreaterThan(0)
         assertThat(countAfterDelete).isEqualTo(0)
     }
@@ -27,11 +30,11 @@ class TestCompileDeleteWithoutBoundArgs private constructor(
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestCompileDeleteWithoutBoundArgs(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

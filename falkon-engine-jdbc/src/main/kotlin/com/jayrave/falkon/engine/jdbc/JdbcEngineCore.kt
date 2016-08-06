@@ -3,7 +3,7 @@ package com.jayrave.falkon.engine.jdbc
 import com.jayrave.falkon.engine.*
 import javax.sql.DataSource
 
-class JdbcEngine(dataSource: DataSource) : Engine {
+class JdbcEngineCore(dataSource: DataSource) : EngineCore {
 
     private val transactionManager = TransactionManagerImpl(dataSource)
     private val connectionManager = ConnectionManagerImpl(dataSource, transactionManager)

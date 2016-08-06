@@ -8,7 +8,7 @@ class SqlWithoutBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileSqlWithoutBoundArgs() {
         TestCompileSqlWithoutBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -16,7 +16,7 @@ class SqlWithoutBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileInsertWithoutBoundArgs() {
         TestCompileInsertWithoutBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -24,7 +24,7 @@ class SqlWithoutBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileUpdateWithoutBoundArgs() {
         TestCompileUpdateWithoutBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -32,13 +32,13 @@ class SqlWithoutBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileDeleteWithoutBoundArgs() {
         TestCompileDeleteWithoutBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
 
     @Test
     fun testCompileQueryWithoutBoundArgs() {
-        TestCompileQueryWithoutBoundArgs.performTestOn(engine, sqlExecutorUsingDataSource)
+        TestCompileQueryWithoutBoundArgs.performTestOn(engineCore, sqlExecutorUsingDataSource)
     }
 }

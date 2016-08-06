@@ -1,13 +1,13 @@
 package com.jayrave.falkon.engine.jdbc
 
 import java.sql.Connection
+import java.sql.SQLException
 import java.util.*
 import javax.sql.DataSource
 
 /**
- * A class to manage database transactions (even nested transactions are supported).
- * The dynamics between internal & parent transaction is dependent on the passed in
- * [DataSource]
+ * A class to manage database transactions (nested transactions are not supported).
+ * Exception is thrown when trying to nest transactions
  */
 internal class TransactionManagerImpl(private val dataSource: DataSource) : TransactionManager {
 
@@ -18,6 +18,10 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
 
 
     override fun <R> executeInTransaction(operation: () -> R): R {
+        if (isInTransaction()) {
+            throw SQLException("Transactions can't be nested")
+        }
+
         val connectionList = getConnectionList()
 
         // Create new connection & add to list

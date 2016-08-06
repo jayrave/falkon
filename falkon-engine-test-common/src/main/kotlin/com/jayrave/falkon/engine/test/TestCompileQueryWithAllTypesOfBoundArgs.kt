@@ -1,10 +1,10 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
-        private val engine: Engine, nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
         nativeQueryExecutor: NativeQueryExecutor) :
         BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
                 nativeSqlExecutor, nativeQueryExecutor) {
@@ -13,7 +13,7 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
         createTableWithColumnsForAllTypesUsingNativeMethods()
 
         // Execute insert using engine since its easier
-        engine.compileInsert(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
+        engineCore.compileInsert(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
                 .bindShort(1, 5)
                 .bindInt(2, 6)
                 .bindLong(3, 7)
@@ -24,12 +24,15 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
                 .execute()
 
         // Execute query using engine
-        val source = engine.compileQuery(
-                "SELECT * FROM test WHERE " +
-                        "column_name_short = ? AND column_name_int = ? AND " +
-                        "column_name_long = ? AND column_name_float = ? AND " +
-                        "column_name_double = ? AND column_name_string = ? AND " +
-                        "column_name_blob = ?"
+        val source = engineCore.compileQuery(
+                "SELECT * FROM $TABLE_NAME WHERE " +
+                        "$SHORT_COLUMN_NAME = ? AND " +
+                        "$INT_COLUMN_NAME = ? AND " +
+                        "$LONG_COLUMN_NAME = ? AND " +
+                        "$FLOAT_COLUMN_NAME = ? AND " +
+                        "$DOUBLE_COLUMN_NAME = ? AND " +
+                        "$STRING_COLUMN_NAME = ? AND " +
+                        "$BLOB_COLUMN_NAME = ?"
         )
                 .bindShort(1, 5)
                 .bindInt(2, 6)
@@ -42,16 +45,15 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
 
         // Assert source's result set
         assertThat(source.moveToFirst()).isEqualTo(true)
-        assertThat(source.getShort(source.getColumnIndex("column_name_short"))).isEqualTo(5)
-        assertThat(source.getInt(source.getColumnIndex("column_name_int"))).isEqualTo(6)
-        assertThat(source.getLong(source.getColumnIndex("column_name_long"))).isEqualTo(7)
-        assertThat(source.getFloat(source.getColumnIndex("column_name_float"))).isEqualTo(8F)
-        assertThat(source.getDouble(source.getColumnIndex("column_name_double"))).isEqualTo(9.0)
-        assertThat(source.getString(source.getColumnIndex("column_name_string")))
-                .isEqualTo("test 10")
-
-        assertThat(source.getBlob(source.getColumnIndex("column_name_blob")))
-                .isEqualTo(byteArrayOf(11))
+        assertThat(source.getShort(source.getColumnIndex(SHORT_COLUMN_NAME))).isEqualTo(5)
+        assertThat(source.getInt(source.getColumnIndex(INT_COLUMN_NAME))).isEqualTo(6)
+        assertThat(source.getLong(source.getColumnIndex(LONG_COLUMN_NAME))).isEqualTo(7)
+        assertThat(source.getFloat(source.getColumnIndex(FLOAT_COLUMN_NAME))).isEqualTo(8F)
+        assertThat(source.getDouble(source.getColumnIndex(DOUBLE_COLUMN_NAME))).isEqualTo(9.0)
+        assertThat(source.getString(source.getColumnIndex(STRING_COLUMN_NAME))).isEqualTo("test 10")
+        assertThat(source.getBlob(
+                source.getColumnIndex(BLOB_COLUMN_NAME)
+        )).isEqualTo(byteArrayOf(11))
 
         assertThat(source.moveToNext()).isEqualTo(false)
     }
@@ -59,11 +61,11 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestCompileQueryWithAllTypesOfBoundArgs(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

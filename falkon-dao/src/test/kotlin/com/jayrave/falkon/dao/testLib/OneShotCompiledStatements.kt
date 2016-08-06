@@ -110,24 +110,28 @@ internal open class OneShotCompiledStatementForTest<R>(
 
 
 internal class OneShotCompiledInsertForTest(
-        sql: String, returnValue: Int = 1, shouldThrowOnExecution: Boolean = false) :
+        val tableName: String, sql: String, returnValue: Int = 1,
+        shouldThrowOnExecution: Boolean = false) :
         CompiledInsert,
         OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
 internal class OneShotCompiledUpdateForTest(
-        sql: String, returnValue: Int = 1, shouldThrowOnExecution: Boolean = false) :
+        val tableName: String, sql: String, returnValue: Int = 1,
+        shouldThrowOnExecution: Boolean = false) :
         CompiledUpdate,
         OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
 internal class OneShotCompiledDeleteForTest(
-        sql: String, returnValue: Int = 1, shouldThrowOnExecution: Boolean = false) :
+        val tableName: String, sql: String, returnValue: Int = 1,
+        shouldThrowOnExecution: Boolean = false) :
         CompiledDelete,
         OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
 internal class OneShotCompiledQueryForTest(
-        sql: String, returnValue: Source = mock(), shouldThrowOnExecution: Boolean = false) :
+        val tableNames: Iterable<String>, sql: String, returnValue: Source = mock(),
+        shouldThrowOnExecution: Boolean = false) :
         CompiledQuery,
         OneShotCompiledStatementForTest<Source>(sql, returnValue, shouldThrowOnExecution)

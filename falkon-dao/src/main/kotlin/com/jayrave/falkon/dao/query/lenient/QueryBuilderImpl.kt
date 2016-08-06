@@ -165,9 +165,18 @@ internal class QueryBuilderImpl(
 
 
     override fun compile(): CompiledQuery {
+        // Build query
         val query = build()
+
+        // Find all the tables this query is concerned with
+        //      - Add default table's name
+        //      - Add names of other tables involved in joins
+        val concernedTableNames = LinkedHashSet<String>()
+        concernedTableNames.add(table.name)
+        joinInfoList?.forEach { concernedTableNames.add(it.nameOfTableToJoin) }
+
         return table.configuration.engine
-                .compileQuery(query.sql)
+                .compileQuery(concernedTableNames, query.sql)
                 .closeIfOpThrows { bindAll(query.arguments) }
     }
 

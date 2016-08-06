@@ -35,6 +35,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).isEmpty()
     }
@@ -88,6 +89,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table.name, tableForJoin.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)

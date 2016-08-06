@@ -1,10 +1,10 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
-        private val engine: Engine, nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
         nativeQueryExecutor: NativeQueryExecutor) :
         BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
                 nativeSqlExecutor, nativeQueryExecutor) {
@@ -13,7 +13,7 @@ class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
         createTableWithColumnsForAllTypesUsingNativeMethods()
 
         // Execute insert using engine since its easier
-        engine.compileInsert(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
+        engineCore.compileInsert(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
                 .bindShort(1, 5)
                 .bindInt(2, 6)
                 .bindLong(3, 7)
@@ -24,16 +24,23 @@ class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
                 .execute()
 
         // Execute update using engine
-        val numberOfRowsAffected = engine.compileUpdate(
-                "UPDATE test SET " +
-                        "column_name_short = ?, column_name_int = ?, column_name_long = ?, " +
-                        "column_name_float = ?, column_name_double = ?, column_name_string = ?, " +
-                        "column_name_blob = ? " +
+        val numberOfRowsAffected = engineCore.compileUpdate(
+                "UPDATE $TABLE_NAME SET " +
+                        "$SHORT_COLUMN_NAME = ?, " +
+                        "$INT_COLUMN_NAME = ?, " +
+                        "$LONG_COLUMN_NAME = ?, " +
+                        "$FLOAT_COLUMN_NAME = ?, " +
+                        "$DOUBLE_COLUMN_NAME = ?, " +
+                        "$STRING_COLUMN_NAME = ?, " +
+                        "$BLOB_COLUMN_NAME = ? " +
                         "WHERE " +
-                        "column_name_short = ? AND column_name_int = ? AND " +
-                        "column_name_long = ? AND column_name_float = ? AND " +
-                        "column_name_double = ? AND column_name_string = ? AND " +
-                        "column_name_blob = ?"
+                        "$SHORT_COLUMN_NAME = ? AND " +
+                        "$INT_COLUMN_NAME = ? AND " +
+                        "$LONG_COLUMN_NAME = ? AND " +
+                        "$FLOAT_COLUMN_NAME = ? AND " +
+                        "$DOUBLE_COLUMN_NAME = ? AND " +
+                        "$STRING_COLUMN_NAME = ? AND " +
+                        "$BLOB_COLUMN_NAME = ?"
         )
                 .bindShort(1, 12)
                 .bindInt(2, 13)
@@ -58,11 +65,11 @@ class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestCompileUpdateWithAllTypesOfBoundArgs(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

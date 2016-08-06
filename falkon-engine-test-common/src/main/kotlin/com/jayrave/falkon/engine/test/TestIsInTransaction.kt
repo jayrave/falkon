@@ -1,40 +1,40 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
-class TestIsInTransaction private constructor(private val engine: Engine) {
+class TestIsInTransaction private constructor(private val engineCore: EngineCore) {
 
-    fun performTest() {
+    fun performTestReturnsAppropriateFlag() {
+        val tableName = "test"
+        val columnName = "column_name_1"
+
         // Outside transaction
-        assertThat(engine.isInTransaction()).isFalse()
+        assertThat(engineCore.isInTransaction()).isFalse()
 
-        engine.executeInTransaction {
-            assertThat(engine.isInTransaction()).isTrue()
-            engine.compileSql("CREATE TABLE test (column_name_1 INTEGER)").execute()
-            assertThat(engine.isInTransaction()).isTrue()
+        engineCore.executeInTransaction {
+            assertThat(engineCore.isInTransaction()).isTrue()
+            engineCore.compileSql("CREATE TABLE $tableName ($columnName INTEGER)").execute()
+            assertThat(engineCore.isInTransaction()).isTrue()
         }
 
         // Outside transaction
-        assertThat(engine.isInTransaction()).isFalse()
+        assertThat(engineCore.isInTransaction()).isFalse()
 
-        engine.executeInTransaction {
-            assertThat(engine.isInTransaction()).isTrue()
-            engine.compileInsert("INSERT INTO test (column_name_1) VALUES (1)").execute()
-            assertThat(engine.isInTransaction()).isTrue()
+        engineCore.executeInTransaction {
+            assertThat(engineCore.isInTransaction()).isTrue()
+            engineCore.compileInsert("INSERT INTO $tableName ($columnName) VALUES (1)").execute()
+            assertThat(engineCore.isInTransaction()).isTrue()
         }
 
         // Outside transaction
-        assertThat(engine.isInTransaction()).isFalse()
+        assertThat(engineCore.isInTransaction()).isFalse()
     }
 
 
-    // TODO - how to test #isInTransaction in parallel transactions
-
-
     companion object {
-        fun performTestOn(engine: Engine) {
-            TestIsInTransaction(engine).performTest()
+        fun performTestReturnsAppropriateFlag(engineCore: EngineCore) {
+            TestIsInTransaction(engineCore).performTestReturnsAppropriateFlag()
         }
     }
 }

@@ -5,8 +5,9 @@ import android.support.v7.app.AppCompatActivity
 import com.jayrave.falkon.dao.delete
 import com.jayrave.falkon.dao.insert
 import com.jayrave.falkon.dao.update
+import com.jayrave.falkon.engine.DefaultEngine
 import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteEngine
+import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteEngineCore
 import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteTypeTranslator
 import com.jayrave.falkon.mapper.CamelCaseToSnakeCaseFormatter
 import com.jayrave.falkon.mapper.TableConfiguration
@@ -138,7 +139,7 @@ class MainActivity : AppCompatActivity() {
     private fun queryRecords() {
 
         /**
-         * Falkon has some nifty ways to query for stuff in the database. Check out [UsersDao]
+         * Falkon has some nifty ways to query for stuff in the database. Check out `UsersDao`
          */
 
         usersTable.dao.findUser(UUID.randomUUID())
@@ -197,18 +198,20 @@ class MainActivity : AppCompatActivity() {
     private fun buildEngine(): Engine {
 
         /**
-         * `Engine` takes care of compiling the SQL provided into `CompiledStatements` which
-         * can then be executed (they also facilitate reuse). It is an interface that needs
-         * to be implemented to talk to your db of choice.
+         * [Engine] takes care of compiling the SQL provided into `CompiledStatements`
+         * which can then be executed (they also facilitate reuse). It is an interface
+         * that needs to be implemented to talk to your db of choice.
          *
-         * `AndroidSqliteEngine` comes from `falkon-engine-android-sqlite` & it can talk
-         * with the default SQLite that Android ships with. There are other engines too.
-         * There is `JdbcEngine` that can talk with DB through the JDBC API. Coding up
-         * your own `Engine` is pretty easy
+         * [DefaultEngine] is the default implementation & it is good enough for majority
+         * of the use cases. [DefaultEngine] needs an `EngineCore` to talk to the db.
+         * `AndroidSqliteEngineCore` comes from `falkon-engine-android-sqlite` & it can
+         * talk with the default SQLite that Android ships with. There are other engine
+         * cores too. There is `JdbcEngineCore` that can talk with DB through the JDBC
+         * API. Coding up your own `Engine` & `EngineCore` is pretty easy
          */
 
         val sampleSqliteOpenHelper = SampleSqliteOpenHelper(this)
-        return AndroidSqliteEngine(sampleSqliteOpenHelper)
+        return DefaultEngine(AndroidSqliteEngineCore(sampleSqliteOpenHelper))
     }
 
 

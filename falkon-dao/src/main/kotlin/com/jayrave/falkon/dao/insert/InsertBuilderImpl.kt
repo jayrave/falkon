@@ -47,7 +47,7 @@ internal class InsertBuilderImpl<T : Any>(
         override fun compile(): CompiledInsert {
             val insert = build()
             return table.configuration.engine
-                    .compileInsert(insert.sql)
+                    .compileInsert(table.name, insert.sql)
                     .closeIfOpThrows { bindAll(insert.arguments) }
         }
     }

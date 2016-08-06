@@ -6,41 +6,51 @@ package com.jayrave.falkon.engine
 interface Engine {
 
     /**
-     * All changes and queries when executed inside a transaction will be ACID (Atomic,
-     * Consistent, Isolated, and Durable). Behaviour of database resources passed passed
-     * outside of transaction is implementation dependent. Examples of such resources
-     * are [CompiledStatement], [Source] etc.
+     * All changes made to the database inside a transaction will be ACID (Atomic, Consistent,
+     * Isolated, and Durable). Behaviour of database resources passed passed outside of
+     * transaction is implementation dependent. Examples of such resources are
+     * [CompiledStatement], [Source] etc.
+     *
+     * Transactions can be nested. When transactions are nested, the following rules hold
+     *
+     *      - Only when the outermost transaction is committed, the changes will be persisted
+     *      - If any of the transactions fail, the database will be restored to the state that
+     *      was before the outermost transaction started
      */
     fun <R> executeInTransaction(operation: () -> R): R
 
     /**
-     * @return `true` if there is an active transaction in the current thread (only one
-     * transaction can be active per thread at a time)
+     * @return `true` if there is an active transaction in the current thread
      */
     fun isInTransaction(): Boolean
 
     /**
-     * Compile raw SQL statement
+     * @param tableNames names of tables this [rawSql] is concerned with
+     * @param rawSql raw SQL statement
      */
-    fun compileSql(rawSql: String): CompiledStatement<Unit>
+    fun compileSql(tableNames: Iterable<String>?, rawSql: String): CompiledStatement<Unit>
 
     /**
-     * [rawSql] raw INSERT statement
+     * @param tableName name of table this [rawSql] is concerned with
+     * @param rawSql raw INSERT statement
      */
-    fun compileInsert(rawSql: String): CompiledInsert
+    fun compileInsert(tableName: String, rawSql: String): CompiledInsert
 
     /**
-     * [rawSql] raw UPDATE statement
+     * @param tableName name of table this [rawSql] is concerned with
+     * @param rawSql raw UPDATE statement
      */
-    fun compileUpdate(rawSql: String): CompiledUpdate
+    fun compileUpdate(tableName: String, rawSql: String): CompiledUpdate
 
     /**
-     * [rawSql] raw DELETE statement
+     * @param tableName name of table this [rawSql] is concerned with
+     * @param rawSql raw DELETE statement
      */
-    fun compileDelete(rawSql: String): CompiledDelete
+    fun compileDelete(tableName: String, rawSql: String): CompiledDelete
 
     /**
-     * [rawSql] raw SELECT statement
+     * @param tableNames names of tables this [rawSql] is concerned with
+     * @param rawSql raw SELECT statement
      */
-    fun compileQuery(rawSql: String): CompiledQuery
+    fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery
 }

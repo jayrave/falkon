@@ -2,12 +2,18 @@ package com.jayrave.falkon.engine.android.sqlite
 
 import android.database.sqlite.SQLiteOpenHelper
 import com.jayrave.falkon.engine.*
+import com.jayrave.falkon.engine.CompiledQuery
+import java.sql.SQLException
 
-class AndroidSqliteEngine(sqLiteOpenHelper: SQLiteOpenHelper) : Engine {
+class AndroidSqliteEngineCore(sqLiteOpenHelper: SQLiteOpenHelper) : EngineCore {
 
     private val database by lazy { sqLiteOpenHelper.writableDatabase }
 
     override fun <R> executeInTransaction(operation: () -> R): R {
+        if (isInTransaction()) {
+            throw SQLException("Transactions can't be nested")
+        }
+
         val result: R
         database.beginTransaction()
         try {

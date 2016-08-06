@@ -1,16 +1,16 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 
 class TestCompileSqlWithAllTypesOfBoundArgs private constructor(
-        private val engine: Engine, nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
         nativeQueryExecutor: NativeQueryExecutor) :
         BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
                 nativeSqlExecutor, nativeQueryExecutor) {
 
     fun performTest() {
         createTableWithColumnsForAllTypesUsingNativeMethods()
-        engine.compileSql(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
+        engineCore.compileSql(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
                 .bindShort(1, 5)
                 .bindInt(2, 6)
                 .bindLong(3, 7)
@@ -26,11 +26,11 @@ class TestCompileSqlWithAllTypesOfBoundArgs private constructor(
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestCompileSqlWithAllTypesOfBoundArgs(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

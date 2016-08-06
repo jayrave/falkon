@@ -8,24 +8,28 @@ abstract class BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
 
     protected fun createTableWithColumnsForAllTypesUsingNativeMethods() {
         nativeSqlExecutor.execute(
-                "CREATE TABLE test (" +
-                        "column_name_short SMALLINT, " +
-                        "column_name_int INTEGER, " +
-                        "column_name_long BIGINT, " +
-                        "column_name_float REAL, " +
-                        "column_name_double DOUBLE, " +
-                        "column_name_string VARCHAR, " +
-                        "column_name_blob BLOB" +
+                "CREATE TABLE $TABLE_NAME (" +
+                        "$SHORT_COLUMN_NAME SMALLINT, " +
+                        "$INT_COLUMN_NAME INTEGER, " +
+                        "$LONG_COLUMN_NAME BIGINT, " +
+                        "$FLOAT_COLUMN_NAME REAL, " +
+                        "$DOUBLE_COLUMN_NAME DOUBLE, " +
+                        "$STRING_COLUMN_NAME VARCHAR, " +
+                        "$BLOB_COLUMN_NAME BLOB" +
                         ")"
         )
     }
 
 
     protected fun getSqlToInsertOneRowWithAllTypesWithPlaceholders(): String {
-        return "INSERT INTO test (" +
-                "column_name_short, column_name_int, column_name_long, " +
-                "column_name_float, column_name_double, column_name_string, " +
-                "column_name_blob) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        return "INSERT INTO $TABLE_NAME (" +
+                "$SHORT_COLUMN_NAME, " +
+                "$INT_COLUMN_NAME, " +
+                "$LONG_COLUMN_NAME, " +
+                "$FLOAT_COLUMN_NAME, " +
+                "$DOUBLE_COLUMN_NAME, " +
+                "$STRING_COLUMN_NAME, " +
+                "$BLOB_COLUMN_NAME) VALUES (?, ?, ?, ?, ?, ?, ?)"
     }
 
 
@@ -33,15 +37,28 @@ abstract class BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
             short: Short, int: Int, long: Long, float: Float, double: Double,
             string: String, blob: ByteArray) {
 
-        val source = nativeQueryExecutor.execute("SELECT * FROM test")
+        val source = nativeQueryExecutor.execute("SELECT * FROM $TABLE_NAME")
         assertThat(source.moveToFirst()).isTrue()
-        assertThat(source.getShort(source.getColumnIndex("column_name_short"))).isEqualTo(short)
-        assertThat(source.getInt(source.getColumnIndex("column_name_int"))).isEqualTo(int)
-        assertThat(source.getLong(source.getColumnIndex("column_name_long"))).isEqualTo(long)
-        assertThat(source.getFloat(source.getColumnIndex("column_name_float"))).isEqualTo(float)
-        assertThat(source.getDouble(source.getColumnIndex("column_name_double"))).isEqualTo(double)
-        assertThat(source.getString(source.getColumnIndex("column_name_string"))).isEqualTo(string)
-        assertThat(source.getBlob(source.getColumnIndex("column_name_blob"))).isEqualTo(blob)
+        assertThat(source.getShort(source.getColumnIndex(SHORT_COLUMN_NAME))).isEqualTo(short)
+        assertThat(source.getInt(source.getColumnIndex(INT_COLUMN_NAME))).isEqualTo(int)
+        assertThat(source.getLong(source.getColumnIndex(LONG_COLUMN_NAME))).isEqualTo(long)
+        assertThat(source.getFloat(source.getColumnIndex(FLOAT_COLUMN_NAME))).isEqualTo(float)
+        assertThat(source.getDouble(source.getColumnIndex(DOUBLE_COLUMN_NAME))).isEqualTo(double)
+        assertThat(source.getString(source.getColumnIndex(STRING_COLUMN_NAME))).isEqualTo(string)
+        assertThat(source.getBlob(source.getColumnIndex(BLOB_COLUMN_NAME))).isEqualTo(blob)
         assertThat(source.moveToNext()).isFalse()
+    }
+
+
+
+    companion object {
+        @JvmStatic protected val TABLE_NAME = "test"
+        @JvmStatic protected val SHORT_COLUMN_NAME = "column_name_short"
+        @JvmStatic protected val INT_COLUMN_NAME = "column_name_int"
+        @JvmStatic protected val LONG_COLUMN_NAME = "column_name_long"
+        @JvmStatic protected val FLOAT_COLUMN_NAME = "column_name_float"
+        @JvmStatic protected val DOUBLE_COLUMN_NAME = "column_name_double"
+        @JvmStatic protected val STRING_COLUMN_NAME = "column_name_string"
+        @JvmStatic protected val BLOB_COLUMN_NAME = "column_name_blob"
     }
 }

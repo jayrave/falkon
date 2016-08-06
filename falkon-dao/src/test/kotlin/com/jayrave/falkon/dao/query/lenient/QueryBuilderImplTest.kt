@@ -15,6 +15,7 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.NoArgPredicate
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.util.*
 
 class QueryBuilderImplTest {
 
@@ -108,6 +109,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
@@ -366,6 +368,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table1.name, table2.name, table3.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
         assertThat(statement.floatBoundAt(1)).isEqualTo(5F)
@@ -486,6 +489,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table.name, tableForJoin.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
         assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)
@@ -549,6 +553,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(8)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
@@ -587,6 +592,7 @@ class QueryBuilderImplTest {
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
         assertThat(statement.doubleBoundAt(1)).isEqualTo(5.0)
@@ -612,12 +618,16 @@ class QueryBuilderImplTest {
         )
 
         val expectedQuery = QueryImpl(expectedSql, emptyList())
+        val allConcernedTables = HashSet<String>()
+        allConcernedTables.add(bundle.table.name)
+        joinInfos?.forEach { allConcernedTables.add(it.nameOfTableToJoin) }
 
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
         assertThat(engine.compiledQueries).hasSize(1)
         val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(statement.tableNames).containsOnlyElementsOf(allConcernedTables)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).isEmpty()
     }

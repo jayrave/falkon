@@ -1,17 +1,17 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileInsertWithAllTypesOfBoundArgs private constructor(
-        private val engine: Engine, nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
         nativeQueryExecutor: NativeQueryExecutor) :
         BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
                 nativeSqlExecutor, nativeQueryExecutor) {
 
     fun performTest() {
         createTableWithColumnsForAllTypesUsingNativeMethods()
-        val numberOfRowsAffected = engine
+        val numberOfRowsAffected = engineCore
                 .compileInsert(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
                 .bindShort(1, 5)
                 .bindInt(2, 6)
@@ -29,11 +29,11 @@ class TestCompileInsertWithAllTypesOfBoundArgs private constructor(
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestCompileInsertWithAllTypesOfBoundArgs(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

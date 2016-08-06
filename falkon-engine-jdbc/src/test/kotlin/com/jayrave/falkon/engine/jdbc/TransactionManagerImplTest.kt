@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import java.sql.Connection
-import java.util.*
+import java.sql.SQLException
 import javax.sql.DataSource
 
 class TransactionManagerImplTest {
@@ -24,13 +24,9 @@ class TransactionManagerImplTest {
     @Test
     fun testConnectionWrapperForTransactionIsUsedToPreventOutsideMeddlingOfConnections() {
         manager.executeInTransaction {
-            val connection1 = manager.getConnectionIfInTransaction()!!
-            assertThat(connection1).isInstanceOf(ConnectionWrapperForTransaction::class.java)
-
-            manager.executeInTransaction {
-                val connection2 = manager.getConnectionIfInTransaction()!!
-                assertThat(connection2).isInstanceOf(ConnectionWrapperForTransaction::class.java)
-            }
+            assertThat(manager.getConnectionIfInTransaction()!!).isInstanceOf(
+                    ConnectionWrapperForTransaction::class.java
+            )
         }
     }
 
@@ -134,65 +130,16 @@ class TransactionManagerImplTest {
 
 
     @Test
-    fun testNestedTransactions() {
-        val doneConnections = ArrayList<Connection>()
-
+    fun testNestingTransactionsThrows() {
+        var exceptionCaught = false
         manager.executeInTransaction {
-            val connection1 = manager.getConnectionIfInTransaction()
-            assertThat(connection1).isNotNull()
-            assertThat(manager.belongsToTransaction(connection1!!)).isTrue()
-
-            manager.executeInTransaction {
-                val connection2 = manager.getConnectionIfInTransaction()
-                assertThat(connection2).isNotNull()
-                assertThat(manager.belongsToTransaction(connection2!!)).isTrue()
-                assertConnectionsFromTransactionManagerAreNotTheSame(connection2, connection1)
-
-                manager.executeInTransaction {
-                    val connection3 = manager.getConnectionIfInTransaction()
-                    assertThat(connection3).isNotNull()
-                    assertThat(manager.belongsToTransaction(connection3!!)).isTrue()
-                    assertConnectionsFromTransactionManagerAreNotTheSame(connection3, connection1)
-                    assertConnectionsFromTransactionManagerAreNotTheSame(connection3, connection2)
-
-                    doneConnections.add(connection3)
-                }
-
-                val connection2Again = manager.getConnectionIfInTransaction()
-                assertThat(connection2Again).isSameAs(connection2)
-                assertThat(manager.belongsToTransaction(connection2Again!!)).isTrue()
-                assertConnectionsAreNotInTransaction(doneConnections)
-
-                doneConnections.add(connection2)
+            try {
+                manager.executeInTransaction {}
+            } catch (e: SQLException) {
+                exceptionCaught = true
             }
-
-            val connection1Again = manager.getConnectionIfInTransaction()
-            assertThat(connection1Again).isSameAs(connection1)
-            assertThat(manager.belongsToTransaction(connection1Again!!)).isTrue()
-            assertConnectionsAreNotInTransaction(doneConnections)
-
-            doneConnections.add(connection1)
         }
 
-        assertConnectionsAreNotInTransaction(doneConnections)
-    }
-
-
-    /**
-     * Asserts that connections are not the same and also the delegates that each connection
-     * uses is a different one too
-     */
-    private fun assertConnectionsFromTransactionManagerAreNotTheSame(
-            connection1: Connection, connection2: Connection) {
-
-        assertThat(connection1).isNotSameAs(connection2)
-        assertThat((connection1 as ConnectionWrapperForTransaction).delegate).isNotSameAs(
-                (connection2 as ConnectionWrapperForTransaction).delegate
-        )
-    }
-
-
-    private fun assertConnectionsAreNotInTransaction(connections: List<Connection>) {
-        connections.forEach { assertThat(manager.belongsToTransaction(it)).isFalse() }
+        assertThat(exceptionCaught).isTrue()
     }
 }

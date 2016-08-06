@@ -3,11 +3,8 @@ package com.jayrave.falkon.dao
 import com.jayrave.falkon.dao.testLib.ModelForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
-import com.jayrave.falkon.engine.CompiledQuery
-import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.engine.bind
-import com.jayrave.falkon.engine.jdbc.JdbcEngine
+import com.jayrave.falkon.engine.*
+import com.jayrave.falkon.engine.jdbc.JdbcEngineCore
 import org.assertj.core.api.Assertions.assertThat
 import org.h2.jdbcx.JdbcConnectionPool
 import org.junit.After
@@ -30,7 +27,7 @@ abstract class BaseClassForIntegrationTests {
         // http://www.h2database.com/html/features.html#in_memory_databases
         // Give the database a name to enabled multiple connections to the same database
         dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=0", "user", "pw")
-        engine = JdbcEngine(dataSource)
+        engine = DefaultEngine(JdbcEngineCore(dataSource))
         table = TableForTest(defaultTableConfiguration(engine))
 
         engine.createTableForTest(table)
@@ -53,6 +50,7 @@ abstract class BaseClassForIntegrationTests {
 
         private fun Engine.createTableForTest(table: TableForTest) {
             this.compileSql(
+                    listOf(table.name),
                     "CREATE TABLE ${table.name} (" +
                             "${table.id.name} VARCHAR PRIMARY KEY, " +
                             "${table.short.name} SMALLINT NOT NULL, " +
@@ -82,8 +80,10 @@ abstract class BaseClassForIntegrationTests {
             return table
                     .configuration
                     .engine
-                    .compileQuery("SELECT * FROM ${table.name} WHERE ${table.idColumn.name} = ?")
-                    .bind(1, storageFormOfId)
+                    .compileQuery(
+                            listOf(table.name),
+                            "SELECT * FROM ${table.name} WHERE ${table.idColumn.name} = ?"
+                    ).bind(1, storageFormOfId)
         }
 
 
@@ -107,7 +107,7 @@ abstract class BaseClassForIntegrationTests {
             val compiledQuery = table
                     .configuration
                     .engine
-                    .compileQuery("SELECT COUNT(*) as count from ${table.name}")
+                    .compileQuery(listOf(table.name), "SELECT COUNT(*) as count from ${table.name}")
 
             val source = compiledQuery.execute()
             assertThat(source.moveToNext()).isTrue()

@@ -29,30 +29,32 @@ internal class EngineForTestingDaoExtn private constructor(
     }
 
 
-    override fun compileSql(rawSql: String): CompiledStatement<Unit> {
+    override fun compileSql(tableNames: Iterable<String>?, rawSql: String):
+            CompiledStatement<Unit> {
+
         throw UnsupportedOperationException()
     }
 
 
-    override fun compileInsert(rawSql: String): CompiledInsert {
+    override fun compileInsert(tableName: String, rawSql: String): CompiledInsert {
         compiledInserts.add(insertProvider.invoke())
         return compiledInserts.last()
     }
 
 
-    override fun compileUpdate(rawSql: String): CompiledUpdate {
+    override fun compileUpdate(tableName: String, rawSql: String): CompiledUpdate {
         compiledUpdates.add(updateProvider.invoke())
         return compiledUpdates.last()
     }
 
 
-    override fun compileDelete(rawSql: String): CompiledDelete {
+    override fun compileDelete(tableName: String, rawSql: String): CompiledDelete {
         compiledDeletes.add(deleteProvider.invoke())
         return compiledDeletes.last()
     }
 
 
-    override fun compileQuery(rawSql: String): CompiledQuery {
+    override fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery {
         compiledQueries.add(queryProvider.invoke())
         return compiledQueries.last()
     }

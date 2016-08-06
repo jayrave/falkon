@@ -32,7 +32,9 @@ class InsertBuilderInsertExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfInsertThrows() {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                insertProvider = { OneShotCompiledInsertForTest(it, shouldThrowOnExecution = true) }
+                insertProvider = { tableName, sql ->
+                    OneShotCompiledInsertForTest(tableName, sql, shouldThrowOnExecution = true)
+                }
         )
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))
@@ -62,7 +64,9 @@ class InsertBuilderInsertExtnTest {
             numberOfRowsInserted: Int, expectedFlag: Boolean) {
 
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                insertProvider = { OneShotCompiledInsertForTest(it, numberOfRowsInserted) }
+                insertProvider = { tableName, sql ->
+                    OneShotCompiledInsertForTest(tableName, sql, numberOfRowsInserted)
+                }
         )
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))

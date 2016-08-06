@@ -3,7 +3,11 @@ package com.jayrave.falkon.engine.jdbc
 import java.sql.Connection
 
 /**
- * All implementations must also support nested transactions
+ * Implementations must hold up these rules
+ *
+ *      - Only one transaction can be active per thread at a time
+ *      - Transactions mustn't be shared across threads
+ *      - Should throw on trying to nest transactions
  */
 internal interface TransactionManager {
 
@@ -13,8 +17,7 @@ internal interface TransactionManager {
     fun <R> executeInTransaction(operation: () -> R): R?
 
     /**
-     * @return `true` if there is an active transaction in the current thread (only one
-     * transaction can be active per thread at a time)
+     * @return `true` if there is an active transaction in the current thread
      */
     fun isInTransaction(): Boolean
 

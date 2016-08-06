@@ -56,7 +56,9 @@ class DeleteBuilderDeleteExtnTest {
     private fun testDeleteReportsCorrectRowCount(deleteOp: (TableForTest) -> Int) {
         val numberOfRowsAffected = 8745
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                deleteProvider = { OneShotCompiledDeleteForTest(it, numberOfRowsAffected) }
+                deleteProvider = { tableName, sql ->
+                    OneShotCompiledDeleteForTest(tableName, sql, numberOfRowsAffected)
+                }
         )
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))
@@ -66,7 +68,9 @@ class DeleteBuilderDeleteExtnTest {
 
     private fun testStatementGetsClosedEvenIfDeleteThrows(deleteOp: (TableForTest) -> Int) {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
-                deleteProvider = { OneShotCompiledDeleteForTest(it, shouldThrowOnExecution = true) }
+                deleteProvider = { tableName, sql ->
+                    OneShotCompiledDeleteForTest(tableName, sql, shouldThrowOnExecution = true)
+                }
         )
 
         var exceptionWasThrown = false

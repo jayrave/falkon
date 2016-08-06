@@ -33,7 +33,7 @@ internal class DeleteBuilderImpl<T : Any>(
     override fun compile(): CompiledDelete {
         val delete = build()
         return table.configuration.engine
-                .compileDelete(delete.sql)
+                .compileDelete(table.name, delete.sql)
                 .closeIfOpThrows { bindAll(delete.arguments) }
     }
 

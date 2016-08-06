@@ -1,35 +1,40 @@
 package com.jayrave.falkon.engine.test
 
-import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileUpdateWithoutBoundArgs private constructor(
-        private val engine: Engine, private val nativeSqlExecutor: NativeSqlExecutor,
+        private val engineCore: EngineCore, private val nativeSqlExecutor: NativeSqlExecutor,
         private val nativeQueryExecutor: NativeQueryExecutor) {
 
     fun performTest() {
+        val tableName = "test"
+        val columnName = "column_name_1"
+
         // Create table & insert stuff using native methods
-        nativeSqlExecutor.execute("CREATE TABLE test (column_name_1 INTEGER)")
-        nativeSqlExecutor.execute("INSERT INTO test (column_name_1) VALUES (1)")
+        nativeSqlExecutor.execute("CREATE TABLE $tableName ($columnName INTEGER)")
+        nativeSqlExecutor.execute("INSERT INTO $tableName ($columnName) VALUES (1)")
 
         // Update stuff using engine
-        engine.compileUpdate("UPDATE test SET column_name_1 = 5 WHERE column_name_1 = 1").execute()
+        engineCore.compileUpdate(
+                "UPDATE $tableName SET $columnName = 5 WHERE $columnName = 1"
+        ).execute()
 
         // Query using native methods & perform assertions
-        val source = nativeQueryExecutor.execute("SELECT * FROM test")
+        val source = nativeQueryExecutor.execute("SELECT * FROM $tableName")
         assertThat(source.moveToFirst()).isTrue()
-        assertThat(source.getInt(source.getColumnIndex("column_name_1"))).isEqualTo(5)
+        assertThat(source.getInt(source.getColumnIndex(columnName))).isEqualTo(5)
         assertThat(source.moveToNext()).isFalse()
     }
 
 
     companion object {
         fun performTestOn(
-                engine: Engine, usingNativeSqlExecutor: NativeSqlExecutor,
+                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
                 usingNativeQueryExecutor: NativeQueryExecutor) {
 
             TestCompileUpdateWithoutBoundArgs(
-                    engine, usingNativeSqlExecutor, usingNativeQueryExecutor
+                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
             ).performTest()
         }
     }

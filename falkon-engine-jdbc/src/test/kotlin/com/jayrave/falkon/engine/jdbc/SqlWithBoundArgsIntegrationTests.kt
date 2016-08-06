@@ -8,7 +8,7 @@ class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileSqlWithAllTypesOfBoundArgs() {
         TestCompileSqlWithAllTypesOfBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -16,7 +16,7 @@ class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileInsertWithAllTypesOfBoundArgs() {
         TestCompileInsertWithAllTypesOfBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -24,7 +24,7 @@ class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileUpdateWithAllTypesOfBoundArgs() {
         TestCompileUpdateWithAllTypesOfBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -32,7 +32,7 @@ class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileDeleteWithAllTypesOfBoundArgs() {
         TestCompileDeleteWithAllTypesOfBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 
@@ -40,7 +40,7 @@ class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testCompileQueryWithAllTypesOfBoundArgs() {
         TestCompileQueryWithAllTypesOfBoundArgs.performTestOn(
-                engine, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
+                engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
         )
     }
 }
