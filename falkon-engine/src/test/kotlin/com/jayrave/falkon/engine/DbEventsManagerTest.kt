@@ -1,8 +1,8 @@
 package com.jayrave.falkon.engine
 
-import org.assertj.core.api.Assertions.*
+import com.jayrave.falkon.engine.testLib.DbEventListenerForTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
 
 class DbEventsManagerTest {
 
@@ -138,21 +138,5 @@ class DbEventsManagerTest {
         assertThat(eventListener1.multiEventsList).isEmpty()
         assertThat(eventListener2.singleEvents).isEmpty()
         assertThat(eventListener2.multiEventsList).isEmpty()
-    }
-
-
-
-    private class DbEventListenerForTest : DbEventListener {
-
-        val singleEvents = ArrayList<DbEvent>()
-        val multiEventsList = ArrayList<Iterable<DbEvent>>()
-
-        override fun onEvent(dbEvent: DbEvent) {
-            singleEvents.add(dbEvent)
-        }
-
-        override fun onEvents(dbEvents: Iterable<DbEvent>) {
-            multiEventsList.add(dbEvents)
-        }
     }
 }
