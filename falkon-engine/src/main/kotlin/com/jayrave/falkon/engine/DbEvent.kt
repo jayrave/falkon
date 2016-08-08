@@ -1,6 +1,6 @@
 package com.jayrave.falkon.engine
 
-data class DbEvent private constructor(val type: Type, val tableNames: Iterable<String>) {
+data class DbEvent private constructor(val type: Type, val tableName: String) {
 
     enum class Type {
         INSERT,
@@ -10,9 +10,9 @@ data class DbEvent private constructor(val type: Type, val tableNames: Iterable<
 
 
     companion object {
-        fun forInsert(tableName: String) = DbEvent(Type.INSERT, listOf(tableName))
-        fun forUpdate(tableName: String) = DbEvent(Type.UPDATE, listOf(tableName))
-        fun forDelete(tableName: String) = DbEvent(Type.DELETE, listOf(tableName))
+        fun forInsert(tableName: String) = DbEvent(Type.INSERT, tableName)
+        fun forUpdate(tableName: String) = DbEvent(Type.UPDATE, tableName)
+        fun forDelete(tableName: String) = DbEvent(Type.DELETE, tableName)
     }
 }
 
