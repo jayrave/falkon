@@ -1,5 +1,6 @@
 package com.jayrave.falkon.engine
 
+import com.jayrave.falkon.engine.testLib.DbEventListenerForTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -160,13 +161,151 @@ class DefaultEngineTest {
     }
 
 
+    @Test
+    fun testEventFiredOutsideTransactionIsDelivered() {
+        val eventListener = DbEventListenerForTest()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting())
+        defaultEngine.registerDbEventListener(eventListener)
+
+        // Assert no event is delivered on just registering
+        assertThat(eventListener.singleEvents).isEmpty()
+
+        // Execute insert
+        val tableName = "example table"
+        defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+
+        // Assert event is delivered
+        assertThat(eventListener.singleEvents).containsOnly(DbEvent.forInsert(tableName))
+        assertThat(eventListener.multiEventsList).isEmpty()
+    }
+
+
+    @Test
+    fun testEventsFiredInsideTransactionAreDeliveredOnCommit() {
+        val eventListener = DbEventListenerForTest()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting())
+        defaultEngine.registerDbEventListener(eventListener)
+
+        // Assert no event is delivered on just registering
+        assertThat(eventListener.multiEventsList).isEmpty()
+
+        // Execute insert, update & delete inside transaction
+        val tableName = "example table"
+        defaultEngine.executeInTransaction {
+            defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+            defaultEngine.compileUpdate(tableName, DUMMY_SQL).execute()
+            defaultEngine.compileDelete(tableName, DUMMY_SQL).execute()
+
+            // Assert events are not delivered yet
+            assertThat(eventListener.multiEventsList).isEmpty()
+        }
+
+        // Assert events are delivered
+        assertThat(eventListener.singleEvents).isEmpty()
+        assertThat(eventListener.multiEventsList).hasSize(1)
+        assertThat(eventListener.multiEventsList.first()).containsOnly(
+                DbEvent.forInsert(tableName),
+                DbEvent.forUpdate(tableName),
+                DbEvent.forDelete(tableName)
+        )
+    }
+
+
+    @Test
+    fun testEventsFiredInsideTransactionAreDiscardedOnRollback() {
+        val eventListener = DbEventListenerForTest()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting())
+        defaultEngine.registerDbEventListener(eventListener)
+
+        // Assert no event is delivered on just registering
+        assertThat(eventListener.multiEventsList).isEmpty()
+
+        // Execute insert, update & delete inside transaction
+        var exceptionWasCaught = false
+        try {
+            val tableName = "example table 1"
+            defaultEngine.executeInTransaction {
+                defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+                defaultEngine.compileUpdate(tableName, DUMMY_SQL).execute()
+                defaultEngine.compileDelete(tableName, DUMMY_SQL).execute()
+
+                throw Exception("just for testing")
+            }
+        } catch (e: Exception) {
+            exceptionWasCaught = true
+        }
+
+        // Assert exception was thrown & events weren't delivered
+        assertThat(exceptionWasCaught).isTrue()
+        assertThat(eventListener.singleEvents).isEmpty()
+        assertThat(eventListener.multiEventsList).isEmpty()
+
+        // Execute insert
+        val tableName = "example table 2"
+        defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+
+        // Assert only appropriate event is delivered
+        assertThat(eventListener.singleEvents).containsOnly(DbEvent.forInsert(tableName))
+        assertThat(eventListener.multiEventsList).isEmpty()
+    }
+
+
+    @Test
+    fun testEventsFiredOutsideTransactionsAreNotDeliveredToUnregisteredListeners() {
+        val eventListener = DbEventListenerForTest()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting())
+        defaultEngine.registerDbEventListener(eventListener)
+        defaultEngine.unregisterDbEventListener(eventListener)
+
+        // Execute insert
+        val tableName = "example table"
+        defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+
+        // Assert no events are delivered to unregistered listener
+        assertThat(eventListener.singleEvents).isEmpty()
+        assertThat(eventListener.multiEventsList).isEmpty()
+    }
+
+
+    @Test
+    fun testEventsFiredInsideTransactionsAreNotDeliveredToUnregisteredListeners() {
+        val eventListener1 = DbEventListenerForTest()
+        val eventListener2 = DbEventListenerForTest()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting())
+        defaultEngine.registerDbEventListener(eventListener1)
+        defaultEngine.registerDbEventListener(eventListener2)
+
+        // Unregister the first event listener
+        defaultEngine.unregisterDbEventListener(eventListener1)
+
+        // Execute insert
+        defaultEngine.executeInTransaction {
+            val tableName = "example table"
+            defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+
+            // Unregister the second event listener too
+            defaultEngine.unregisterDbEventListener(eventListener2)
+        }
+
+        // Assert no events are delivered to unregistered listeners
+        assertThat(eventListener1.singleEvents).isEmpty()
+        assertThat(eventListener1.multiEventsList).isEmpty()
+        assertThat(eventListener2.singleEvents).isEmpty()
+        assertThat(eventListener2.multiEventsList).isEmpty()
+    }
+
+
 
     companion object {
         private const val DUMMY_SQL = "dummy_sql"
         private const val DUMMY_TABLE_NAME = "dummy_table_name"
 
         private fun buildEngineCoreForTesting():EngineCoreForTestingEngine {
-            return EngineCoreForTestingEngine.createWithCompiledStatementsForTest()
+            return EngineCoreForTestingEngine.createWithCompiledStatementsForTest(
+                    insertProvider = { sql -> CompiledInsertForTest(sql, 1) },
+                    updateProvider = { sql -> CompiledUpdateForTest(sql, 1) },
+                    deleteProvider = { sql -> CompiledDeleteForTest(sql, 1) }
+            )
         }
     }
 }

@@ -2,6 +2,9 @@ package com.jayrave.falkon.engine
 
 class DefaultEngine(private val engineCore: EngineCore) : Engine {
 
+    private val dbEventsManager = DbEventsManager() { isInTransaction() }
+    private val onExecuteWithEffects = { dbEvent: DbEvent -> dbEventsManager.onEvent(dbEvent) }
+
     override fun <R> executeInTransaction(operation: () -> R): R {
         // If a transaction is already running, just execute this operation. This will make sure
         // that there is only one transaction at a time in a thread but provides the illusion that
@@ -12,9 +15,20 @@ class DefaultEngine(private val engineCore: EngineCore) : Engine {
         //      was before the outermost transaction started
         //
 
-        return when (isInTransaction()) {
-            true -> operation.invoke()
-            else -> engineCore.executeInTransaction(operation)
+        try {
+            val result = when (isInTransaction()) {
+                true -> operation.invoke()
+                else -> engineCore.executeInTransaction(operation)
+            }
+
+            // Let manager know that the transaction was successful
+            dbEventsManager.onTransactionCommittedSuccessfully()
+            return result
+
+        } catch (e: Exception) {
+            // Let manager know that the transaction was rolled back
+            dbEventsManager.onTransactionRolledBack()
+            throw e
         }
     }
 
@@ -33,21 +47,37 @@ class DefaultEngine(private val engineCore: EngineCore) : Engine {
 
 
     override fun compileInsert(tableName: String, rawSql: String): CompiledInsert {
-        return engineCore.compileInsert(rawSql)
+        return EventReportingCompiledInsert(
+                tableName, engineCore.compileInsert(rawSql), onExecuteWithEffects
+        )
     }
 
 
     override fun compileUpdate(tableName: String, rawSql: String): CompiledUpdate {
-        return engineCore.compileUpdate(rawSql)
+        return EventReportingCompiledUpdate(
+                tableName, engineCore.compileUpdate(rawSql), onExecuteWithEffects
+        )
     }
 
 
     override fun compileDelete(tableName: String, rawSql: String): CompiledDelete {
-        return engineCore.compileDelete(rawSql)
+        return EventReportingCompiledDelete(
+                tableName, engineCore.compileDelete(rawSql), onExecuteWithEffects
+        )
     }
 
 
     override fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery {
         return engineCore.compileQuery(rawSql)
+    }
+
+
+    override fun registerDbEventListener(dbEventListener: DbEventListener) {
+        dbEventsManager.registerDbEventListener(dbEventListener)
+    }
+
+
+    override fun unregisterDbEventListener(dbEventListener: DbEventListener) {
+        dbEventsManager.unregisterDbEventListener(dbEventListener)
     }
 }

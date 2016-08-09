@@ -60,6 +60,16 @@ internal class EngineForTestingDaoExtn private constructor(
     }
 
 
+    override fun registerDbEventListener(dbEventListener: DbEventListener) {
+        throw UnsupportedOperationException()
+    }
+
+
+    override fun unregisterDbEventListener(dbEventListener: DbEventListener) {
+        throw UnsupportedOperationException()
+    }
+
+
     companion object {
         fun createWithMockStatements(
         insertProvider: () -> CompiledInsert = { mock<CompiledInsert>() },

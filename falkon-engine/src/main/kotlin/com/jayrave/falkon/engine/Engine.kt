@@ -53,4 +53,14 @@ interface Engine {
      * @param rawSql raw SELECT statement
      */
     fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery
+
+    /**
+     * If the listener is already, this is a no-op. This can be called from any thread
+     */
+    fun registerDbEventListener(dbEventListener: DbEventListener)
+
+    /**
+     * If the listener isn't already, this is a no-op. This can be called from any thread
+     */
+    fun unregisterDbEventListener(dbEventListener: DbEventListener)
 }
