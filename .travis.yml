@@ -1,10 +1,13 @@
 language: android
-jdk: oraclejdk7
+jdk: oraclejdk8
 
 android:
   components:
-    - android-24
+    - tools
+    - tools # https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943
+    - platform-tools
     - build-tools-24.0.0
+    - android-24
 
 script: ./gradlew clean check
 
