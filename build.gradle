@@ -16,10 +16,10 @@ buildscript {
     ]
 
     ext.androidConstants = [
-            buildToolsVersion: '23.0.2',
-            compileSdk       : 23,
+            buildToolsVersion: '24.0.0',
+            compileSdk       : 24,
             minSdk           : 14,
-            targetSdk        : 23
+            targetSdk        : 24
     ]
 
     def privateVersionNumber = 0.1
