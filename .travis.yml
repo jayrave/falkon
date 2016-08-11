@@ -1,0 +1,17 @@
+language: android
+jdk: oraclejdk7
+
+android:
+  components:
+    - android-23 # update to android-24 once travis supports it
+    - build-tools-23.0.3 # update to build-tools-24.0.0 once travis supports it
+
+script: ./gradlew clean check
+
+sudo: false
+
+before_cache: rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
