@@ -1,7 +1,6 @@
 package com.jayrave.falkon.dao.update
 
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledUpdateForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.dao.update.testLib.UpdateSqlBuilderForTesting
@@ -35,8 +34,8 @@ class UpdateBuilderImplTest {
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
-        assertThat(engine.compiledUpdates).hasSize(1)
-        val statement: OneShotCompiledUpdateForTest = engine.compiledUpdates.first()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -71,8 +70,8 @@ class UpdateBuilderImplTest {
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
-        assertThat(engine.compiledUpdates).hasSize(1)
-        val statement: OneShotCompiledUpdateForTest = engine.compiledUpdates.first()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
@@ -105,8 +104,8 @@ class UpdateBuilderImplTest {
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
-        assertThat(engine.compiledUpdates).hasSize(1)
-        val statement: OneShotCompiledUpdateForTest = engine.compiledUpdates.first()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
@@ -141,8 +140,8 @@ class UpdateBuilderImplTest {
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
-        assertThat(engine.compiledUpdates).hasSize(1)
-        val statement: OneShotCompiledUpdateForTest = engine.compiledUpdates.first()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -158,7 +157,7 @@ class UpdateBuilderImplTest {
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER).set(table.int, 5)
-        assertThat(engine.compiledUpdates).isEmpty()
+        assertThat(engine.compiledStatementsForUpdate).isEmpty()
     }
 
 
@@ -200,8 +199,8 @@ class UpdateBuilderImplTest {
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
-        assertThat(engine.compiledUpdates).hasSize(1)
-        val statement: OneShotCompiledUpdateForTest = engine.compiledUpdates.first()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(8)

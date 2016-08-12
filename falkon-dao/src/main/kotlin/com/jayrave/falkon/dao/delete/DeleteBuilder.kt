@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.delete
 
 import com.jayrave.falkon.dao.where.WhereBuilder
-import com.jayrave.falkon.engine.CompiledDelete
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Table
 
 interface DeleteBuilder<T : Any> {
@@ -20,9 +20,9 @@ interface DeleteBuilder<T : Any> {
     fun build(): Delete
 
     /**
-     * @return [CompiledDelete] for this [DeleteBuilder]
+     * @return [CompiledStatement] for this [DeleteBuilder]
      */
-    fun compile(): CompiledDelete
+    fun compile(): CompiledStatement<Int>
 }
 
 
@@ -31,5 +31,5 @@ interface DeleteBuilder<T : Any> {
  */
 interface AdderOrEnder<T : Any> : com.jayrave.falkon.dao.where.AdderOrEnder<T, AdderOrEnder<T>> {
     fun build(): Delete
-    fun compile(): CompiledDelete
+    fun compile(): CompiledStatement<Int>
 }

@@ -2,7 +2,6 @@ package com.jayrave.falkon.dao.delete
 
 import com.jayrave.falkon.dao.delete.testLib.DeleteSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledDeleteForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Type
@@ -33,8 +32,8 @@ class DeleteBuilderImplTest {
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
-        assertThat(engine.compiledDeletes).hasSize(1)
-        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        val statement = engine.compiledStatementsForDelete.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).isEmpty()
@@ -64,8 +63,8 @@ class DeleteBuilderImplTest {
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
-        assertThat(engine.compiledDeletes).hasSize(1)
-        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        val statement = engine.compiledStatementsForDelete.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -96,8 +95,8 @@ class DeleteBuilderImplTest {
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
-        assertThat(engine.compiledDeletes).hasSize(1)
-        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        val statement = engine.compiledStatementsForDelete.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -129,8 +128,8 @@ class DeleteBuilderImplTest {
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
-        assertThat(engine.compiledDeletes).hasSize(1)
-        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        val statement = engine.compiledStatementsForDelete.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -146,7 +145,7 @@ class DeleteBuilderImplTest {
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
         DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER).where().eq(table.int, 5)
-        assertThat(engine.compiledDeletes).isEmpty()
+        assertThat(engine.compiledStatementsForDelete).isEmpty()
     }
 
 
@@ -200,8 +199,8 @@ class DeleteBuilderImplTest {
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
-        assertThat(engine.compiledDeletes).hasSize(1)
-        val statement: OneShotCompiledDeleteForTest = engine.compiledDeletes.first()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        val statement = engine.compiledStatementsForDelete.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(8)

@@ -3,7 +3,8 @@ package com.jayrave.falkon.dao.query
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
-import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.engine.CompiledStatement
+import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
@@ -98,7 +99,7 @@ internal class QueryBuilderImpl<T : Any>(
 
 
     override fun build(): Query = lenientQueryBuilderImpl.build()
-    override fun compile(): CompiledQuery = lenientQueryBuilderImpl.compile()
+    override fun compile(): CompiledStatement<Source> = lenientQueryBuilderImpl.compile()
 
 
     private inner class PredicateAdderOrEnderImpl(
@@ -153,6 +154,6 @@ internal class QueryBuilderImpl<T : Any>(
         }
 
         override fun build(): Query = this@QueryBuilderImpl.build()
-        override fun compile(): CompiledQuery = this@QueryBuilderImpl.compile()
+        override fun compile(): CompiledStatement<Source> = this@QueryBuilderImpl.compile()
     }
 }

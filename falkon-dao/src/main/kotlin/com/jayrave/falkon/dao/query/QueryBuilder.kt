@@ -1,7 +1,8 @@
 package com.jayrave.falkon.dao.query
 
 import com.jayrave.falkon.dao.where.WhereBuilder
-import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.engine.CompiledStatement
+import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 
@@ -78,9 +79,9 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun build(): Query
 
     /**
-     * @return [CompiledQuery] for this [QueryBuilder]
+     * @return [CompiledStatement] for this [QueryBuilder]
      */
-    fun compile(): CompiledQuery
+    fun compile(): CompiledStatement<Source>
 }
 
 

@@ -37,21 +37,25 @@ interface EngineCore {
 
     /**
      * @param rawSql raw INSERT statement
+     * @return number of rows inserted [0, [Int.MAX_VALUE]]
      */
-    fun compileInsert(rawSql: String): CompiledInsert
+    fun compileInsert(rawSql: String): CompiledStatement<Int>
 
     /**
      * @param rawSql raw UPDATE statement
+     * @return number of rows updated [0, [Int.MAX_VALUE]]
      */
-    fun compileUpdate(rawSql: String): CompiledUpdate
+    fun compileUpdate(rawSql: String): CompiledStatement<Int>
 
     /**
      * @param rawSql raw DELETE statement
+     * @return number of rows deleted [0, [Int.MAX_VALUE]]
      */
-    fun compileDelete(rawSql: String): CompiledDelete
+    fun compileDelete(rawSql: String): CompiledStatement<Int>
 
     /**
      * @param rawSql raw SELECT statement
+     * @return source that contains the data produced by the query
      */
-    fun compileQuery(rawSql: String): CompiledQuery
+    fun compileQuery(rawSql: String): CompiledStatement<Source>
 }

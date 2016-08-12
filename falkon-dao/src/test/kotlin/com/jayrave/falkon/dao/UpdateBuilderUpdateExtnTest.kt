@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledUpdateForTest
+import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForUpdateForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.dao.update.UpdateBuilderImpl
@@ -59,7 +59,7 @@ class UpdateBuilderUpdateExtnTest {
         val numberOfRowsAffected = 8745
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 updateProvider = { tableName, sql ->
-                    OneShotCompiledUpdateForTest(tableName, sql, numberOfRowsAffected)
+                    OneShotCompiledStatementForUpdateForTest(tableName, sql, numberOfRowsAffected)
                 }
         )
 
@@ -71,7 +71,9 @@ class UpdateBuilderUpdateExtnTest {
     private fun testStatementGetsClosedEvenIfUpdateThrows(updateOp: (TableForTest) -> Int) {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 updateProvider = { tableName, sql ->
-                    OneShotCompiledUpdateForTest(tableName, sql, shouldThrowOnExecution = true)
+                    OneShotCompiledStatementForUpdateForTest(
+                            tableName, sql, shouldThrowOnExecution = true
+                    )
                 }
         )
 
@@ -86,7 +88,7 @@ class UpdateBuilderUpdateExtnTest {
             !exceptionWasThrown -> failBecauseExceptionWasNotThrown(Exception::class.java)
             else -> {
                 // Assert that the statement was not successfully executed but closed
-                val statement = engine.compiledUpdates.first()
+                val statement = engine.compiledStatementsForUpdate.first()
                 assertThat(statement.wasExecutionAttempted).isTrue()
                 assertThat(statement.isExecuted).isFalse()
                 assertThat(statement.isClosed).isTrue()

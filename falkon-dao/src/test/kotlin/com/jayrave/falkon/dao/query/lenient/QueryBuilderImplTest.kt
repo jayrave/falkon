@@ -3,7 +3,6 @@ package com.jayrave.falkon.dao.query.lenient
 import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.query.testLib.*
-import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
@@ -107,8 +106,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -366,8 +365,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table1.name, table2.name, table3.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
@@ -487,8 +486,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name, tableForJoin.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
@@ -551,8 +550,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(8)
@@ -590,8 +589,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -625,8 +624,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnlyElementsOf(allConcernedTables)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).isEmpty()

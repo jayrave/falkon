@@ -72,7 +72,10 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
-        private fun compileQueryFor(table: TableForTest, model: ModelForTest): CompiledQuery {
+        private fun compileQueryFor(
+                table: TableForTest, model: ModelForTest):
+                CompiledStatement<Source> {
+
             val storageFormOfId = table.idColumn.computeStorageFormOf(
                     table.idColumn.extractPropertyFrom(model)
             ) as String
@@ -104,44 +107,44 @@ abstract class BaseClassForIntegrationTests {
 
 
         internal fun getNumberOfModelsInTableForTest(table: TableForTest): Int {
-            val compiledQuery = table
+            val compiledStatementForQuery = table
                     .configuration
                     .engine
                     .compileQuery(listOf(table.name), "SELECT COUNT(*) as count from ${table.name}")
 
-            val source = compiledQuery.execute()
+            val source = compiledStatementForQuery.execute()
             assertThat(source.moveToNext()).isTrue()
             val count = source.getInt(source.getColumnIndex("count"))
 
             source.close()
-            compiledQuery.close()
+            compiledStatementForQuery.close()
             return count
         }
 
 
         internal fun assertPresenceOf(table: TableForTest, vararg models: ModelForTest) {
             models.forEach {
-                val compiledQuery = compileQueryFor(table, it)
-                val source = compiledQuery.execute()
+                val compiledStatementForQuery = compileQueryFor(table, it)
+                val source = compiledStatementForQuery.execute()
 
                 assertThat(source.moveToNext()).isTrue()
                 assertCurrentRowCorrespondsTo(source, it, table)
                 assertThat(source.moveToNext()).isFalse()
 
                 source.close()
-                compiledQuery.close()
+                compiledStatementForQuery.close()
             }
         }
 
 
         internal fun assertAbsenceOf(table: TableForTest, vararg models: ModelForTest) {
             models.forEach {
-                val compiledQuery = compileQueryFor(table, it)
-                val source = compiledQuery.execute()
+                val compiledStatementForQuery = compileQueryFor(table, it)
+                val source = compiledStatementForQuery.execute()
                 assertThat(source.moveToNext()).isFalse()
 
                 source.close()
-                compiledQuery.close()
+                compiledStatementForQuery.close()
             }
         }
 

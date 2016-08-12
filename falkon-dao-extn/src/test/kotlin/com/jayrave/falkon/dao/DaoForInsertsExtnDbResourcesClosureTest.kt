@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.testLib.*
-import com.jayrave.falkon.engine.CompiledInsert
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Engine
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -13,54 +13,62 @@ import org.junit.Test
 class DaoForInsertsExtnDbResourcesClosureTest {
 
     @Test
-    fun testInsertOfSingleModelClosesCompiledInsertOnSuccessfulExecution() {
-        testCompiledInsertIsClosedOnSuccessfulExecution { it.dao.insert(ModelForTest()) }
+    fun testInsertOfSingleModelClosesCompiledStatementForInsertOnSuccessfulExecution() {
+        testCompiledStatementForInsertIsClosedOnSuccessfulExecution {
+            it.dao.insert(ModelForTest())
+        }
     }
 
     @Test
-    fun testInsertOfSingleModelClosesCompiledInsertEvenOnException() {
-        testCompiledInsertIsClosedEventOnException { it.dao.insert(ModelForTest()) }
+    fun testInsertOfSingleModelClosesCompiledStatementForInsertEvenOnException() {
+        testCompiledStatementForInsertIsClosedEventOnException { it.dao.insert(ModelForTest()) }
     }
 
     @Test
-    fun testInsertOfVarargModelsClosesCompiledInsertOnSuccessfulExecution() {
-        testCompiledInsertIsClosedOnSuccessfulExecution {
+    fun testInsertOfVarargModelsClosesCompiledStatementForInsertOnSuccessfulExecution() {
+        testCompiledStatementForInsertIsClosedOnSuccessfulExecution {
             it.dao.insert(ModelForTest(), ModelForTest())
         }
     }
 
     @Test
-    fun testInsertOfVarargModelsClosesCompiledInsertEvenOnException() {
-        testCompiledInsertIsClosedEventOnException {
+    fun testInsertOfVarargModelsClosesCompiledStatementForInsertEvenOnException() {
+        testCompiledStatementForInsertIsClosedEventOnException {
             it.dao.insert(ModelForTest(), ModelForTest())
         }
     }
 
     @Test
-    fun testInsertOfModelIterableClosesCompiledInsertOnSuccessfulExecution() {
-        testCompiledInsertIsClosedOnSuccessfulExecution { it.dao.insert(listOf(ModelForTest())) }
+    fun testInsertOfModelIterableClosesCompiledStatementForInsertOnSuccessfulExecution() {
+        testCompiledStatementForInsertIsClosedOnSuccessfulExecution {
+            it.dao.insert(listOf(ModelForTest()))
+        }
     }
 
     @Test
-    fun testInsertOfModelIterableClosesCompiledInsertEvenOnException() {
-        testCompiledInsertIsClosedEventOnException { it.dao.insert(listOf(ModelForTest())) }
+    fun testInsertOfModelIterableClosesCompiledStatementForInsertEvenOnException() {
+        testCompiledStatementForInsertIsClosedEventOnException {
+            it.dao.insert(listOf(ModelForTest()))
+        }
     }
 
-    private fun testCompiledInsertIsClosedOnSuccessfulExecution(
+    private fun testCompiledStatementForInsertIsClosedOnSuccessfulExecution(
             operation: (TableForTest) -> Any?) {
 
-        val engine = buildEngineForTestingDaoExtn(buildSuccessfullyExecutingCompiledInsert())
+        val engine = buildEngineForTestingDaoExtn(
+                buildSuccessfullyExecutingCompiledStatementForInsert())
         operation.invoke(buildTableForTest(engine))
 
-        assertThat(engine.compiledInserts).hasSize(1)
-        verify(engine.compiledInserts.first()).close()
+        assertThat(engine.compiledStatementsForInsert).hasSize(1)
+        verify(engine.compiledStatementsForInsert.first()).close()
     }
 
-    private fun testCompiledInsertIsClosedEventOnException(
+    private fun testCompiledStatementForInsertIsClosedEventOnException(
             operation: (TableForTest) -> Any?) {
 
         var exceptionCaught = false
-        val engine = buildEngineForTestingDaoExtn(buildCompiledInsertThatThrowsOnExecuting())
+        val engine = buildEngineForTestingDaoExtn(
+                buildCompiledStatementForInsertThatThrowsOnExecuting())
 
         try {
             operation.invoke(buildTableForTest(engine))
@@ -74,30 +82,36 @@ class DaoForInsertsExtnDbResourcesClosureTest {
 
         // Verify exception was thrown and compiled insert was closed
         assertThat(exceptionCaught).isTrue()
-        assertThat(engine.compiledInserts).hasSize(1)
-        verify(engine.compiledInserts.first()).close()
+        assertThat(engine.compiledStatementsForInsert).hasSize(1)
+        verify(engine.compiledStatementsForInsert.first()).close()
     }
 
 
     companion object {
 
-        private fun buildSuccessfullyExecutingCompiledInsert(): CompiledInsert {
-            return mock()
+        private fun buildSuccessfullyExecutingCompiledStatementForInsert(): CompiledStatement<Int> {
+            val compiledStatementForInsertMock = mock<CompiledStatement<Int>>()
+            whenever(compiledStatementForInsertMock.execute()).thenReturn(0)
+            return compiledStatementForInsertMock
         }
 
 
-        private fun buildCompiledInsertThatThrowsOnExecuting(): CompiledInsert {
-            val compiledInsertMock = mock<CompiledInsert>()
-            whenever(compiledInsertMock.execute()).thenThrow(ExceptionForTesting::class.java)
-            return compiledInsertMock
+        private fun buildCompiledStatementForInsertThatThrowsOnExecuting(): CompiledStatement<Int> {
+            val compiledStatementForInsertMock = mock<CompiledStatement<Int>>()
+            whenever(compiledStatementForInsertMock.execute()).thenThrow(
+                    ExceptionForTesting::class.java
+            )
+
+            return compiledStatementForInsertMock
         }
 
 
-        private fun buildEngineForTestingDaoExtn(compiledInsert: CompiledInsert):
+        private fun buildEngineForTestingDaoExtn(
+                compiledStatementForInsert: CompiledStatement<Int>):
                 EngineForTestingDaoExtn {
 
             return EngineForTestingDaoExtn.createWithMockStatements(
-                    insertProvider = { compiledInsert }
+                    insertProvider = { compiledStatementForInsert }
             )
         }
 

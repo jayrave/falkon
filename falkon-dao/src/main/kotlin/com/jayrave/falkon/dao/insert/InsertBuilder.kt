@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao.insert
 
-import com.jayrave.falkon.engine.CompiledInsert
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 
@@ -30,7 +30,7 @@ interface AdderOrEnder<T : Any> {
     fun build(): Insert
 
     /**
-     * @return [CompiledInsert] for this [InsertBuilder]
+     * @return [CompiledStatement] for this [InsertBuilder]
      */
-    fun compile(): CompiledInsert
+    fun compile(): CompiledStatement<Int>
 }

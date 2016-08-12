@@ -6,7 +6,8 @@ import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.lenient.WhereBuilderImpl
-import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.engine.CompiledStatement
+import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Column
@@ -164,7 +165,7 @@ internal class QueryBuilderImpl(
     }
 
 
-    override fun compile(): CompiledQuery {
+    override fun compile(): CompiledStatement<Source> {
         // Build query
         val query = build()
 
@@ -247,7 +248,7 @@ internal class QueryBuilderImpl(
         }
 
 
-        override fun compile(): CompiledQuery {
+        override fun compile(): CompiledStatement<Source> {
             return this@QueryBuilderImpl.compile()
         }
     }

@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.update
 
 import com.jayrave.falkon.dao.where.WhereBuilder
-import com.jayrave.falkon.engine.CompiledUpdate
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 
@@ -37,9 +37,9 @@ interface AdderOrEnder<T : Any> {
     fun build(): Update
 
     /**
-     * @return [CompiledUpdate] for this [UpdateBuilder]
+     * @return [CompiledStatement] for this [UpdateBuilder]
      */
-    fun compile(): CompiledUpdate
+    fun compile(): CompiledStatement<Int>
 }
 
 
@@ -50,5 +50,5 @@ interface PredicateAdderOrEnder<T : Any> :
         com.jayrave.falkon.dao.where.AdderOrEnder<T, PredicateAdderOrEnder<T>> {
 
     fun build(): Update
-    fun compile(): CompiledUpdate
+    fun compile(): CompiledStatement<Int>
 }

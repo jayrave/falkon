@@ -29,21 +29,17 @@ internal class CompiledSqlForTest(sql: String) :
         CompiledStatementForTest<Unit>(sql, Unit)
 
 
-internal class CompiledInsertForTest(sql: String, returnValue: Int) :
-        CompiledInsert,
+internal class CompiledStatementForInsertForTest(sql: String, returnValue: Int) :
         CompiledStatementForTest<Int>(sql, returnValue)
 
 
-internal class CompiledUpdateForTest(sql: String, returnValue: Int) :
-        CompiledUpdate,
+internal class CompiledStatementForUpdateForTest(sql: String, returnValue: Int) :
         CompiledStatementForTest<Int>(sql, returnValue)
 
 
-internal class CompiledDeleteForTest(sql: String, returnValue: Int) :
-        CompiledDelete,
+internal class CompiledStatementForDeleteForTest(sql: String, returnValue: Int) :
         CompiledStatementForTest<Int>(sql, returnValue)
 
 
-internal class CompiledQueryForTest(sql: String, returnValue: Source) :
-        CompiledQuery,
+internal class CompiledStatementForQueryForTest(sql: String, returnValue: Source) :
         CompiledStatementForTest<Source>(sql, returnValue)

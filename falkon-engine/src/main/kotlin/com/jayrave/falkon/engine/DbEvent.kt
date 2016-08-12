@@ -10,9 +10,10 @@ data class DbEvent private constructor(val type: Type, val tableName: String) {
 
 
     companion object {
-        fun forInsert(tableName: String) = DbEvent(Type.INSERT, tableName)
-        fun forUpdate(tableName: String) = DbEvent(Type.UPDATE, tableName)
-        fun forDelete(tableName: String) = DbEvent(Type.DELETE, tableName)
+        fun create(type: Type, tableName: String) = DbEvent(type, tableName)
+        fun forInsert(tableName: String) = create(Type.INSERT, tableName)
+        fun forUpdate(tableName: String) = create(Type.UPDATE, tableName)
+        fun forDelete(tableName: String) = create(Type.DELETE, tableName)
     }
 }
 

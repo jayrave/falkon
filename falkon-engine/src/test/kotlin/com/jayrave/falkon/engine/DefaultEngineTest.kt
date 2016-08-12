@@ -295,6 +295,31 @@ class DefaultEngineTest {
     }
 
 
+    @Test
+    fun testAllKindsOfDbEventsAreDelivered() {
+        val eventListener = DbEventListenerForTest()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting())
+        defaultEngine.registerDbEventListener(eventListener)
+
+        // Assert no event is delivered on just registering
+        assertThat(eventListener.singleEvents).isEmpty()
+
+        // Execute insert, update & delete
+        val tableName = "example table"
+        defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
+        defaultEngine.compileUpdate(tableName, DUMMY_SQL).execute()
+        defaultEngine.compileDelete(tableName, DUMMY_SQL).execute()
+
+        // Assert event is delivered
+        assertThat(eventListener.multiEventsList).isEmpty()
+        assertThat(eventListener.singleEvents).containsExactly(
+                DbEvent.forInsert(tableName),
+                DbEvent.forUpdate(tableName),
+                DbEvent.forDelete(tableName)
+        )
+    }
+
+
 
     companion object {
         private const val DUMMY_SQL = "dummy_sql"
@@ -302,9 +327,9 @@ class DefaultEngineTest {
 
         private fun buildEngineCoreForTesting():EngineCoreForTestingEngine {
             return EngineCoreForTestingEngine.createWithCompiledStatementsForTest(
-                    insertProvider = { sql -> CompiledInsertForTest(sql, 1) },
-                    updateProvider = { sql -> CompiledUpdateForTest(sql, 1) },
-                    deleteProvider = { sql -> CompiledDeleteForTest(sql, 1) }
+                    insertProvider = { sql -> CompiledStatementForInsertForTest(sql, 1) },
+                    updateProvider = { sql -> CompiledStatementForUpdateForTest(sql, 1) },
+                    deleteProvider = { sql -> CompiledStatementForDeleteForTest(sql, 1) }
             )
         }
     }

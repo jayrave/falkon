@@ -3,7 +3,7 @@ package com.jayrave.falkon.dao
 import com.jayrave.falkon.dao.delete.DeleteBuilderImpl
 import com.jayrave.falkon.dao.delete.testLib.DeleteSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledDeleteForTest
+import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForDeleteForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import org.assertj.core.api.Assertions.assertThat
@@ -57,7 +57,7 @@ class DeleteBuilderDeleteExtnTest {
         val numberOfRowsAffected = 8745
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 deleteProvider = { tableName, sql ->
-                    OneShotCompiledDeleteForTest(tableName, sql, numberOfRowsAffected)
+                    OneShotCompiledStatementForDeleteForTest(tableName, sql, numberOfRowsAffected)
                 }
         )
 
@@ -69,7 +69,9 @@ class DeleteBuilderDeleteExtnTest {
     private fun testStatementGetsClosedEvenIfDeleteThrows(deleteOp: (TableForTest) -> Int) {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 deleteProvider = { tableName, sql ->
-                    OneShotCompiledDeleteForTest(tableName, sql, shouldThrowOnExecution = true)
+                    OneShotCompiledStatementForDeleteForTest(
+                            tableName, sql, shouldThrowOnExecution = true
+                    )
                 }
         )
 
@@ -84,7 +86,7 @@ class DeleteBuilderDeleteExtnTest {
             !exceptionWasThrown -> failBecauseExceptionWasNotThrown(Exception::class.java)
             else -> {
                 // Assert that the statement was not successfully executed but closed
-                val statement = engine.compiledDeletes.first()
+                val statement = engine.compiledStatementsForDelete.first()
                 assertThat(statement.wasExecutionAttempted).isTrue()
                 assertThat(statement.isExecuted).isFalse()
                 assertThat(statement.isClosed).isTrue()

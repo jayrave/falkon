@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.testLib.*
-import com.jayrave.falkon.engine.CompiledUpdate
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Engine
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -13,54 +13,65 @@ import org.junit.Test
 class DaoForUpdatesExtnDbResourcesClosureTest {
 
     @Test
-    fun testUpdateOfSingleModelClosesCompiledUpdateOnSuccessfulExecution() {
-        testCompiledUpdateIsClosedOnSuccessfulExecution { it.dao.update(ModelForTest()) }
+    fun testUpdateOfSingleModelClosesCompiledStatementForUpdateOnSuccessfulExecution() {
+        testCompiledStatementForUpdateIsClosedOnSuccessfulExecution {
+            it.dao.update(ModelForTest())
+        }
     }
 
     @Test
-    fun testUpdateOfSingleModelClosesCompiledUpdateEvenOnException() {
-        testCompiledUpdateIsClosedEventOnException { it.dao.update(ModelForTest()) }
+    fun testUpdateOfSingleModelClosesCompiledStatementForUpdateEvenOnException() {
+        testCompiledStatementForUpdateIsClosedEventOnException { it.dao.update(ModelForTest()) }
     }
 
     @Test
-    fun testUpdateOfVarargModelsClosesCompiledUpdateOnSuccessfulExecution() {
-        testCompiledUpdateIsClosedOnSuccessfulExecution {
+    fun testUpdateOfVarargModelsClosesCompiledStatementForUpdateOnSuccessfulExecution() {
+        testCompiledStatementForUpdateIsClosedOnSuccessfulExecution {
             it.dao.update(ModelForTest(), ModelForTest())
         }
     }
 
     @Test
-    fun testUpdateOfVarargModelsClosesCompiledUpdateEvenOnException() {
-        testCompiledUpdateIsClosedEventOnException {
+    fun testUpdateOfVarargModelsClosesCompiledStatementForUpdateEvenOnException() {
+        testCompiledStatementForUpdateIsClosedEventOnException {
             it.dao.update(ModelForTest(), ModelForTest())
         }
     }
 
     @Test
-    fun testUpdateOfModelIterableClosesCompiledUpdateOnSuccessfulExecution() {
-        testCompiledUpdateIsClosedOnSuccessfulExecution { it.dao.update(listOf(ModelForTest())) }
+    fun testUpdateOfModelIterableClosesCompiledStatementForUpdateOnSuccessfulExecution() {
+        testCompiledStatementForUpdateIsClosedOnSuccessfulExecution {
+            it.dao.update(listOf(ModelForTest()))
+        }
     }
 
     @Test
-    fun testUpdateOfModelIterableClosesCompiledUpdateEvenOnException() {
-        testCompiledUpdateIsClosedEventOnException { it.dao.update(listOf(ModelForTest())) }
+    fun testUpdateOfModelIterableClosesCompiledStatementForUpdateEvenOnException() {
+        testCompiledStatementForUpdateIsClosedEventOnException {
+            it.dao.update(listOf(ModelForTest()))
+        }
     }
 
-    private fun testCompiledUpdateIsClosedOnSuccessfulExecution(
+    private fun testCompiledStatementForUpdateIsClosedOnSuccessfulExecution(
             operation: (TableForTest) -> Any?) {
 
-        val engine = buildEngineForTestingDaoExtn(buildSuccessfullyExecutingCompiledUpdate())
+        val engine = buildEngineForTestingDaoExtn(
+                buildSuccessfullyExecutingCompiledStatementForUpdate()
+        )
+
         operation.invoke(buildTableForTest(engine))
 
-        assertThat(engine.compiledUpdates).hasSize(1)
-        verify(engine.compiledUpdates.first()).close()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        verify(engine.compiledStatementsForUpdate.first()).close()
     }
 
-    private fun testCompiledUpdateIsClosedEventOnException(
+    private fun testCompiledStatementForUpdateIsClosedEventOnException(
             operation: (TableForTest) -> Any?) {
 
         var exceptionCaught = false
-        val engine = buildEngineForTestingDaoExtn(buildCompiledUpdateThatThrowsOnExecuting())
+        val engine = buildEngineForTestingDaoExtn(
+                buildCompiledStatementForUpdateThatThrowsOnExecuting()
+        )
 
         try {
             operation.invoke(buildTableForTest(engine))
@@ -74,30 +85,36 @@ class DaoForUpdatesExtnDbResourcesClosureTest {
 
         // Verify exception was thrown and compiled update was closed
         assertThat(exceptionCaught).isTrue()
-        assertThat(engine.compiledUpdates).hasSize(1)
-        verify(engine.compiledUpdates.first()).close()
+        assertThat(engine.compiledStatementsForUpdate).hasSize(1)
+        verify(engine.compiledStatementsForUpdate.first()).close()
     }
 
 
     companion object {
 
-        private fun buildSuccessfullyExecutingCompiledUpdate(): CompiledUpdate {
-            return mock()
+        private fun buildSuccessfullyExecutingCompiledStatementForUpdate(): CompiledStatement<Int> {
+            val CompiledStatementForUpdateMock = mock<CompiledStatement<Int>>()
+            whenever(CompiledStatementForUpdateMock.execute()).thenReturn(0)
+            return CompiledStatementForUpdateMock
         }
 
 
-        private fun buildCompiledUpdateThatThrowsOnExecuting(): CompiledUpdate {
-            val compiledUpdateMock = mock<CompiledUpdate>()
-            whenever(compiledUpdateMock.execute()).thenThrow(ExceptionForTesting::class.java)
-            return compiledUpdateMock
+        private fun buildCompiledStatementForUpdateThatThrowsOnExecuting(): CompiledStatement<Int> {
+            val CompiledStatementForUpdateMock = mock<CompiledStatement<Int>>()
+            whenever(CompiledStatementForUpdateMock.execute()).thenThrow(
+                    ExceptionForTesting::class.java
+            )
+
+            return CompiledStatementForUpdateMock
         }
 
 
-        private fun buildEngineForTestingDaoExtn(compiledUpdate: CompiledUpdate):
+        private fun buildEngineForTestingDaoExtn(
+                CompiledStatementForUpdate: CompiledStatement<Int>):
                 EngineForTestingDaoExtn {
 
             return EngineForTestingDaoExtn.createWithMockStatements(
-                    updateProvider = { compiledUpdate }
+                    updateProvider = { CompiledStatementForUpdate }
             )
         }
 

@@ -1,6 +1,6 @@
 package com.jayrave.falkon.mapper.lib
 
-import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
@@ -8,10 +8,10 @@ import com.jayrave.falkon.mapper.Value
 import java.util.*
 
 /**
- * Same as [extractFirstModel] but also closes [CompiledQuery]
+ * Same as [extractFirstModel] but also closes [CompiledStatement]
  * @see extractFirstModel
  */
-fun <T : Any> CompiledQuery.extractFirstModelAndClose(
+fun <T : Any> CompiledStatement<Source>.extractFirstModelAndClose(
         forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)): T? {
 
     return privateExtractAndClose {
@@ -21,10 +21,10 @@ fun <T : Any> CompiledQuery.extractFirstModelAndClose(
 
 
 /**
- * Same as [extractAllModels] but also closes [CompiledQuery]
+ * Same as [extractAllModels] but also closes [CompiledStatement]
  * @see extractAllModels
  */
-fun <T : Any> CompiledQuery.extractAllModelsAndClose(
+fun <T : Any> CompiledStatement<Source>.extractAllModelsAndClose(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
@@ -35,10 +35,10 @@ fun <T : Any> CompiledQuery.extractAllModelsAndClose(
 
 
 /**
- * Same as [extractModels] but also closes [CompiledQuery]
+ * Same as [extractModels] but also closes [CompiledStatement]
  * @see extractModels
  */
-fun <T : Any> CompiledQuery.extractModelsAndClose(
+fun <T : Any> CompiledStatement<Source>.extractModelsAndClose(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
@@ -52,12 +52,12 @@ fun <T : Any> CompiledQuery.extractModelsAndClose(
 /**
  * Same as [extractModels] except that only the first model is extracted
  *
- * *NOTE:* [CompiledQuery] isn't closed after execution. If that is preferred, checkout
+ * *NOTE:* [CompiledStatement] isn't closed after execution. If that is preferred, checkout
  * [extractFirstModelAndClose]
  *
  * @see extractFirstModelAndClose
  */
-fun <T : Any> CompiledQuery.extractFirstModel(
+fun <T : Any> CompiledStatement<Source>.extractFirstModel(
         forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)): T? {
 
     val models = extractModels(
@@ -73,12 +73,12 @@ fun <T : Any> CompiledQuery.extractFirstModel(
 /**
  * Same as [extractModels] except that all models are extracted
  *
- * *NOTE:* [CompiledQuery] isn't closed after execution. If that is preferred, checkout
+ * *NOTE:* [CompiledStatement] isn't closed after execution. If that is preferred, checkout
  * [extractAllModelsAndClose]
  *
  * @see extractAllModelsAndClose
  */
-fun <T : Any> CompiledQuery.extractAllModels(
+fun <T : Any> CompiledStatement<Source>.extractAllModels(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
@@ -90,23 +90,22 @@ fun <T : Any> CompiledQuery.extractAllModels(
 
 
 /**
- * Execute the [CompiledQuery] & extract an instance of [T] out of each row that is
+ * Execute the [CompiledStatement] & extract an instance of [T] out of each row that is
  * returned. This is done through [Table.create]
  *
- * *NOTE:* [CompiledQuery] isn't closed after execution. If that is preferred, checkout
+ * *NOTE:* [CompiledStatement] isn't closed after execution. If that is preferred, checkout
  * [extractModelsAndClose]
  *
  * @param [forTable] which manages the [T] & whose [Table.create] function is called
  * @param [toList] to which the created instances must be added. By default an [ArrayList] is used
  * @param [maxNumberOfModelsToExtract] at the most only these number of models will be extracted
  * @param [columnNameExtractor] used to extract the name that should be used to find the
- * appropriate column in [Source] that will created by executing this [CompiledQuery]. By
- * default an extractor that straight up uses the [Column.name] is used
+ * appropriate column in [Source] that will created by executing this [CompiledStatement]
  *
  * @return is the same as [toList]
  * @see extractModelsAndClose
  */
-fun <T : Any> CompiledQuery.extractModels(
+fun <T : Any> CompiledStatement<Source>.extractModels(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
@@ -127,9 +126,9 @@ fun <T : Any> CompiledQuery.extractModels(
 
 
 /**
- * Performs the given operation & closes [CompiledQuery]
+ * Performs the given operation & closes [CompiledStatement]
  */
-private inline fun <R> CompiledQuery.privateExtractAndClose(operation: () -> R): R {
+private inline fun <R> CompiledStatement<Source>.privateExtractAndClose(operation: () -> R): R {
     return safeCloseAfterOp {
         operation.invoke()
     }

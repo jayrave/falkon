@@ -15,7 +15,7 @@ import java.util.*
  * *CAUTION: * This class is not thread-safe
  */
 internal class CompiledQuery(override val sql: String, private val database: SQLiteDatabase) :
-        com.jayrave.falkon.engine.CompiledQuery {
+        CompiledStatement<Source> {
 
     private var isClosed = false
     private var bindArgs: MutableMap<Int, Any?> = newArgsMap()

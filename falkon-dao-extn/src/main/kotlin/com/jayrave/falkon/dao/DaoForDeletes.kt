@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.engine.CompiledDelete
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bind
 
 /**
@@ -58,33 +58,33 @@ private fun <T: Any, ID : Any, ITEM> Dao<T, ID>.deleteByIdImpl(
         items: Iterable<ITEM>, idExtractor: (ITEM) -> ID): Int {
     
     var numberOfRowsDeleted = 0
-    var compiledDelete: CompiledDelete? = null
+    var compiledStatementForDelete: CompiledStatement<Int>? = null
 
     table.configuration.engine.executeInTransaction {
         try {
             items.forEach {
-                compiledDelete = when (compiledDelete) {
+                compiledStatementForDelete = when (compiledStatementForDelete) {
 
-                    // First item. Build CompiledDelete
+                    // First item. Build CompiledStatement for delete
                     null -> deleteBuilder()
                             .where()
                             .eq(table.idColumn, idExtractor.invoke(it))
                             .compile()
 
-                    // Not the first item. Just clear bindings for CompiledDelete & rebind id
+                    // Not the first item. Just clear bindings for CompiledStatement & rebind id
                     else -> {
-                        compiledDelete!!.clearBindings()
-                        compiledDelete!!.bind(1, idExtractor.invoke(it))
+                        compiledStatementForDelete!!.clearBindings()
+                        compiledStatementForDelete!!.bind(1, idExtractor.invoke(it))
                     }
                 }
 
-                numberOfRowsDeleted += compiledDelete!!.execute()
+                numberOfRowsDeleted += compiledStatementForDelete!!.execute()
             }
 
         } finally {
-            // No matter what happens, CompiledDelete must be closed
+            // No matter what happens, CompiledStatement must be closed
             // to prevent resource leakage
-            compiledDelete?.close()
+            compiledStatementForDelete?.close()
         }
     }
 

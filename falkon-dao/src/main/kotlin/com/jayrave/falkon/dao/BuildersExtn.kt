@@ -56,8 +56,9 @@ fun <T : Any> com.jayrave.falkon.dao.delete.AdderOrEnder<T>.delete(): Int {
 
 // ------------------------------------------- Query -----------------------------------------------
 
-// A #query convenience function is not included here as it doesn't make sense to. Source that is
-// returned from a CompiledQuery could end up not working if the CompiledQuery itself is closed
+// A #query convenience function is not included here as it doesn't make sense to.
+// Source that is returned from a CompiledStatement<Source> could end up not working
+// if the CompiledStatement<Source> itself is closed
 
 /**
  * A convenience function to select a list of columns

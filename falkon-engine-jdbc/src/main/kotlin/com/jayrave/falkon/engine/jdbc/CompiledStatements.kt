@@ -27,10 +27,7 @@ internal class UnitReturningCompiledStatement(sql: String, connectionManager: Co
  * For compiling & executing INSERT, UPDATE & DELETE statements
  */
 internal class IUD_CompiledStatement(sql: String, connectionManager: ConnectionManager) :
-        BaseCompiledStatement<Int>(sql, connectionManager),
-        com.jayrave.falkon.engine.CompiledInsert,
-        com.jayrave.falkon.engine.CompiledUpdate,
-        com.jayrave.falkon.engine.CompiledDelete {
+        BaseCompiledStatement<Int>(sql, connectionManager) {
 
     override fun execute(): Int {
         return preparedStatement.executeUpdate()
@@ -47,8 +44,7 @@ internal class IUD_CompiledStatement(sql: String, connectionManager: ConnectionM
  * For compiling & executing SELECT statements
  */
 internal class CompiledQuery(sql: String, connectionManager: ConnectionManager) :
-        BaseCompiledStatement<Source>(sql, connectionManager),
-        com.jayrave.falkon.engine.CompiledQuery {
+        BaseCompiledStatement<Source>(sql, connectionManager) {
 
     override fun execute(): Source {
         return ResultSetBackedSource(preparedStatement.executeQuery())

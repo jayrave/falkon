@@ -48,7 +48,7 @@ class UsersDao(
      *
      * Placeholders are used by default for all arguments to prevent SQL injection.
      * [extractAllModelsAndClose] is an extension function that allows safe extraction of
-     * models out of a [CompiledQuery]. For more such options check out the file that
+     * models out of a `CompiledStatement<Source>`. For more such options check out the file that
      * contains [extractAllModelsAndClose]
      */
     fun findAllUsersSeenAfter(thresholdDate: Date): List<User> {

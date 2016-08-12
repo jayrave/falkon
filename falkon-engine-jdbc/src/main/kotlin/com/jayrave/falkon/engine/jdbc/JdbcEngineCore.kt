@@ -30,22 +30,22 @@ class JdbcEngineCore(dataSource: DataSource) : EngineCore {
     }
 
 
-    override fun compileInsert(rawSql: String): CompiledInsert {
+    override fun compileInsert(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, connectionManager)
     }
 
 
-    override fun compileUpdate(rawSql: String): CompiledUpdate {
+    override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, connectionManager)
     }
 
 
-    override fun compileDelete(rawSql: String): CompiledDelete {
+    override fun compileDelete(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, connectionManager)
     }
 
 
-    override fun compileQuery(rawSql: String): com.jayrave.falkon.engine.CompiledQuery {
+    override fun compileQuery(rawSql: String): CompiledStatement<Source> {
         return CompiledQuery(rawSql, connectionManager)
     }
 }

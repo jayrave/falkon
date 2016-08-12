@@ -46,28 +46,34 @@ class DefaultEngine(private val engineCore: EngineCore) : Engine {
     }
 
 
-    override fun compileInsert(tableName: String, rawSql: String): CompiledInsert {
-        return EventReportingCompiledInsert(
-                tableName, engineCore.compileInsert(rawSql), onExecuteWithEffects
+    override fun compileInsert(tableName: String, rawSql: String): CompiledStatement<Int> {
+        return EventReportingCompiledStatement(
+                tableName, DbEvent.Type.INSERT, engineCore.compileInsert(rawSql),
+                onExecuteWithEffects
         )
     }
 
 
-    override fun compileUpdate(tableName: String, rawSql: String): CompiledUpdate {
-        return EventReportingCompiledUpdate(
-                tableName, engineCore.compileUpdate(rawSql), onExecuteWithEffects
+    override fun compileUpdate(tableName: String, rawSql: String): CompiledStatement<Int> {
+        return EventReportingCompiledStatement(
+                tableName, DbEvent.Type.UPDATE, engineCore.compileUpdate(rawSql),
+                onExecuteWithEffects
         )
     }
 
 
-    override fun compileDelete(tableName: String, rawSql: String): CompiledDelete {
-        return EventReportingCompiledDelete(
-                tableName, engineCore.compileDelete(rawSql), onExecuteWithEffects
+    override fun compileDelete(tableName: String, rawSql: String): CompiledStatement<Int> {
+        return EventReportingCompiledStatement(
+                tableName, DbEvent.Type.DELETE, engineCore.compileDelete(rawSql),
+                onExecuteWithEffects
         )
     }
 
 
-    override fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery {
+    override fun compileQuery(
+            tableNames: Iterable<String>, rawSql: String):
+            CompiledStatement<Source> {
+
         return engineCore.compileQuery(rawSql)
     }
 

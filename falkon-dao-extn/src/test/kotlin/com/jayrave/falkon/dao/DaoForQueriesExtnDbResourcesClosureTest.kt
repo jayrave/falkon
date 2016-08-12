@@ -4,7 +4,7 @@ import com.jayrave.falkon.dao.testLib.EngineForTestingDaoExtn
 import com.jayrave.falkon.dao.testLib.ExceptionForTesting
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
-import com.jayrave.falkon.engine.CompiledQuery
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Source
 import com.nhaarman.mockito_kotlin.mock
@@ -18,64 +18,64 @@ import java.util.*
 class DaoForQueriesExtnDbResourcesClosureTest {
 
     @Test
-    fun testFindByIdClosesSourceAndCompiledQueryOnSuccessfulExecution() {
-        testSourceAndCompiledQueryIsClosedOnSuccessfulExecution {
+    fun testFindByIdClosesSourceAndCompiledStatementForQueryOnSuccessfulExecution() {
+        testSourceAndCompiledStatementForQueryIsClosedOnSuccessfulExecution {
             it.dao.findById(UUID.randomUUID())
         }
     }
 
     @Test
-    fun testFindByIdClosesSourceAndCompiledQueryEvenOnSourceException() {
-        testSourceAndCompiledQueryAreClosedEventOnSourceException {
+    fun testFindByIdClosesSourceAndCompiledStatementForQueryEvenOnSourceException() {
+        testSourceAndCompiledStatementForQueryAreClosedEventOnSourceException {
             it.dao.findById(UUID.randomUUID())
         }
     }
 
     @Test
-    fun testFindByIdClosesCompiledQueryEvenOnCompiledQueryException() {
-        testCompiledQueryIsClosedEventOnCompiledQueryException {
+    fun testFindByIdClosesCompiledStatementForQueryEvenOnCompiledStatementException() {
+        testCompiledStatementForQueryIsClosedEventOnCompiledStatementException {
             it.dao.findById(UUID.randomUUID())
         }
     }
 
     @Test
-    fun testFindAllClosesSourceAndCompiledQueryOnSuccessfulExecution() {
-        testSourceAndCompiledQueryIsClosedOnSuccessfulExecution { it.dao.findAll() }
+    fun testFindAllClosesSourceAndCompiledStatementForQueryOnSuccessfulExecution() {
+        testSourceAndCompiledStatementForQueryIsClosedOnSuccessfulExecution { it.dao.findAll() }
     }
 
     @Test
-    fun testFindAllClosesSourceAndCompiledQueryEvenOnSourceException() {
-        testSourceAndCompiledQueryAreClosedEventOnSourceException { it.dao.findAll() }
+    fun testFindAllClosesSourceAndCompiledStatementForQueryEvenOnSourceException() {
+        testSourceAndCompiledStatementForQueryAreClosedEventOnSourceException { it.dao.findAll() }
     }
 
     @Test
-    fun testFindAllClosesCompiledQueryEvenOnCompiledQueryException() {
-        testCompiledQueryIsClosedEventOnCompiledQueryException { it.dao.findAll() }
+    fun testFindAllClosesCompiledStatementForQueryEvenOnCompiledStatementException() {
+        testCompiledStatementForQueryIsClosedEventOnCompiledStatementException { it.dao.findAll() }
     }
 
-    private fun testSourceAndCompiledQueryIsClosedOnSuccessfulExecution(
+    private fun testSourceAndCompiledStatementForQueryIsClosedOnSuccessfulExecution(
             operation: (TableForTest) -> Any?) {
 
         val sourceForTest = SourceForTest.buildEmptySource()
         val engine = buildEngineForTestingDaoExtn(
-                buildSuccessfullyExecutingCompiledQuery(sourceForTest)
+                buildSuccessfullyExecutingCompiledStatementForQuery(sourceForTest)
         )
 
         operation.invoke(buildTableForTest(engine))
 
         // Verify source & compiled query closure
         assertThat(sourceForTest.isClosed()).isTrue()
-        assertThat(engine.compiledQueries).hasSize(1)
-        verify(engine.compiledQueries.first()).close()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        verify(engine.compiledStatementsForQuery.first()).close()
     }
 
-    private fun testSourceAndCompiledQueryAreClosedEventOnSourceException(
+    private fun testSourceAndCompiledStatementForQueryAreClosedEventOnSourceException(
             operation: (TableForTest) -> Any?) {
 
         var exceptionCaught = false
         val sourceForTest = SourceForTest.buildSourceThatThrowsExceptionOnTryingToMove()
         val engine = buildEngineForTestingDaoExtn(
-                buildSuccessfullyExecutingCompiledQuery(sourceForTest)
+                buildSuccessfullyExecutingCompiledStatementForQuery(sourceForTest)
         )
 
         try {
@@ -91,15 +91,17 @@ class DaoForQueriesExtnDbResourcesClosureTest {
         // Verify exception was thrown and source & compiled query were closed
         assertThat(exceptionCaught).isTrue()
         assertThat(sourceForTest.isClosed()).isTrue()
-        assertThat(engine.compiledQueries).hasSize(1)
-        verify(engine.compiledQueries.first()).close()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        verify(engine.compiledStatementsForQuery.first()).close()
     }
 
-    private fun testCompiledQueryIsClosedEventOnCompiledQueryException(
+    private fun testCompiledStatementForQueryIsClosedEventOnCompiledStatementException(
             operation: (TableForTest) -> Any?) {
 
         var exceptionCaught = false
-        val engine = buildEngineForTestingDaoExtn(buildCompiledQueryThatThrowsOnExecuting())
+        val engine = buildEngineForTestingDaoExtn(
+                buildCompiledStatementForQueryThatThrowsOnExecuting()
+        )
 
         try {
             operation.invoke(buildTableForTest(engine))
@@ -113,8 +115,8 @@ class DaoForQueriesExtnDbResourcesClosureTest {
 
         // Verify exception was thrown and compiled query was closed
         assertThat(exceptionCaught).isTrue()
-        assertThat(engine.compiledQueries).hasSize(1)
-        verify(engine.compiledQueries.first()).close()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        verify(engine.compiledStatementsForQuery.first()).close()
     }
 
 
@@ -161,25 +163,33 @@ class DaoForQueriesExtnDbResourcesClosureTest {
 
     companion object {
 
-        private fun buildSuccessfullyExecutingCompiledQuery(source: Source): CompiledQuery {
-            val compiledQueryMock = mock<CompiledQuery>()
-            whenever(compiledQueryMock.execute()).thenAnswer { source }
-            return compiledQueryMock
+        private fun buildSuccessfullyExecutingCompiledStatementForQuery(source: Source):
+                CompiledStatement<Source> {
+
+            val CompiledStatementForQueryMock = mock<CompiledStatement<Source>>()
+            whenever(CompiledStatementForQueryMock.execute()).thenAnswer { source }
+            return CompiledStatementForQueryMock
         }
 
 
-        private fun buildCompiledQueryThatThrowsOnExecuting(): CompiledQuery {
-            val compiledQueryMock = mock<CompiledQuery>()
-            whenever(compiledQueryMock.execute()).thenThrow(ExceptionForTesting::class.java)
-            return compiledQueryMock
+        private fun buildCompiledStatementForQueryThatThrowsOnExecuting():
+                CompiledStatement<Source> {
+
+            val CompiledStatementForQueryMock = mock<CompiledStatement<Source>>()
+            whenever(CompiledStatementForQueryMock.execute()).thenThrow(
+                    ExceptionForTesting::class.java
+            )
+
+            return CompiledStatementForQueryMock
         }
 
 
-        private fun buildEngineForTestingDaoExtn(compiledQuery: CompiledQuery):
+        private fun buildEngineForTestingDaoExtn(
+                CompiledStatementForQuery: CompiledStatement<Source>):
                 EngineForTestingDaoExtn {
 
             return EngineForTestingDaoExtn.createWithMockStatements(
-                    queryProvider = { compiledQuery }
+                    queryProvider = { CompiledStatementForQuery }
             )
         }
 

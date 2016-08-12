@@ -9,15 +9,15 @@ import java.util.*
  * mock statements (they are stored before returned so as to help verify interactions with it)
  */
 internal class EngineForTestingDaoExtn private constructor(
-        private val insertProvider: () -> CompiledInsert,
-        private val updateProvider: () -> CompiledUpdate,
-        private val deleteProvider: () -> CompiledDelete,
-        private val queryProvider: () -> CompiledQuery) : Engine {
+        private val insertProvider: () -> CompiledStatement<Int>,
+        private val updateProvider: () -> CompiledStatement<Int>,
+        private val deleteProvider: () -> CompiledStatement<Int>,
+        private val queryProvider: () -> CompiledStatement<Source>) : Engine {
 
-    val compiledInserts = ArrayList<CompiledInsert>()
-    val compiledUpdates = ArrayList<CompiledUpdate>()
-    val compiledDeletes = ArrayList<CompiledDelete>()
-    val compiledQueries = ArrayList<CompiledQuery>()
+    val compiledStatementsForInsert = ArrayList<CompiledStatement<Int>>()
+    val compiledStatementsForUpdate = ArrayList<CompiledStatement<Int>>()
+    val compiledStatementsForDelete = ArrayList<CompiledStatement<Int>>()
+    val compiledStatementsForQuery = ArrayList<CompiledStatement<Source>>()
 
     override fun <R> executeInTransaction(operation: () -> R): R {
         return operation.invoke()
@@ -36,27 +36,29 @@ internal class EngineForTestingDaoExtn private constructor(
     }
 
 
-    override fun compileInsert(tableName: String, rawSql: String): CompiledInsert {
-        compiledInserts.add(insertProvider.invoke())
-        return compiledInserts.last()
+    override fun compileInsert(tableName: String, rawSql: String): CompiledStatement<Int> {
+        compiledStatementsForInsert.add(insertProvider.invoke())
+        return compiledStatementsForInsert.last()
     }
 
 
-    override fun compileUpdate(tableName: String, rawSql: String): CompiledUpdate {
-        compiledUpdates.add(updateProvider.invoke())
-        return compiledUpdates.last()
+    override fun compileUpdate(tableName: String, rawSql: String): CompiledStatement<Int> {
+        compiledStatementsForUpdate.add(updateProvider.invoke())
+        return compiledStatementsForUpdate.last()
     }
 
 
-    override fun compileDelete(tableName: String, rawSql: String): CompiledDelete {
-        compiledDeletes.add(deleteProvider.invoke())
-        return compiledDeletes.last()
+    override fun compileDelete(tableName: String, rawSql: String): CompiledStatement<Int> {
+        compiledStatementsForDelete.add(deleteProvider.invoke())
+        return compiledStatementsForDelete.last()
     }
 
 
-    override fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery {
-        compiledQueries.add(queryProvider.invoke())
-        return compiledQueries.last()
+    override fun compileQuery(tableNames: Iterable<String>, rawSql: String):
+            CompiledStatement<Source> {
+
+        compiledStatementsForQuery.add(queryProvider.invoke())
+        return compiledStatementsForQuery.last()
     }
 
 
@@ -72,10 +74,12 @@ internal class EngineForTestingDaoExtn private constructor(
 
     companion object {
         fun createWithMockStatements(
-        insertProvider: () -> CompiledInsert = { mock<CompiledInsert>() },
-        updateProvider: () -> CompiledUpdate = { mock<CompiledUpdate>() },
-        deleteProvider: () -> CompiledDelete = { mock<CompiledDelete>() },
-        queryProvider: () -> CompiledQuery = { mock<CompiledQuery>() }): EngineForTestingDaoExtn {
+                insertProvider: () -> CompiledStatement<Int> = { mock<CompiledStatement<Int>>() },
+                updateProvider: () -> CompiledStatement<Int> = { mock<CompiledStatement<Int>>() },
+                deleteProvider: () -> CompiledStatement<Int> = { mock<CompiledStatement<Int>>() },
+                queryProvider: () -> CompiledStatement<Source> =
+                { mock<CompiledStatement<Source>>() }):
+                EngineForTestingDaoExtn {
 
             return EngineForTestingDaoExtn(
                     insertProvider, updateProvider, deleteProvider, queryProvider

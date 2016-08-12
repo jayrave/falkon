@@ -2,7 +2,6 @@ package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.dao.insert.testLib.InsertSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledInsertForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Type
@@ -34,8 +33,8 @@ class InsertBuilderImplTest {
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
-        assertThat(engine.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(engine.compiledStatementsForInsert).hasSize(1)
+        val statement = engine.compiledStatementsForInsert.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -67,8 +66,8 @@ class InsertBuilderImplTest {
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
-        assertThat(engine.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(engine.compiledStatementsForInsert).hasSize(1)
+        val statement = engine.compiledStatementsForInsert.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(2)
@@ -103,8 +102,8 @@ class InsertBuilderImplTest {
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
-        assertThat(engine.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(engine.compiledStatementsForInsert).hasSize(1)
+        val statement = engine.compiledStatementsForInsert.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)
@@ -120,7 +119,7 @@ class InsertBuilderImplTest {
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         InsertBuilderImpl(table, insertSqlBuilder, ARG_PLACEHOLDER).set(table.int, 5)
-        assertThat(engine.compiledInserts).isEmpty()
+        assertThat(engine.compiledStatementsForInsert).isEmpty()
     }
 
 
@@ -162,8 +161,8 @@ class InsertBuilderImplTest {
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
-        assertThat(engine.compiledInserts).hasSize(1)
-        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        assertThat(engine.compiledStatementsForInsert).hasSize(1)
+        val statement = engine.compiledStatementsForInsert.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(8)

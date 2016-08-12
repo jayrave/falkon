@@ -7,7 +7,7 @@ import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
-import com.jayrave.falkon.engine.CompiledUpdate
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Column
@@ -49,7 +49,7 @@ internal class UpdateBuilderImpl<T : Any>(
         return UpdateImpl(sql, arguments)
     }
 
-    private fun compile(): CompiledUpdate {
+    private fun compile(): CompiledStatement<Int> {
         val update = build()
         return table.configuration.engine
                 .compileUpdate(table.name, update.sql)
@@ -76,7 +76,7 @@ internal class UpdateBuilderImpl<T : Any>(
             return this@UpdateBuilderImpl.build()
         }
 
-        override fun compile(): CompiledUpdate {
+        override fun compile(): CompiledStatement<Int> {
             return this@UpdateBuilderImpl.compile()
         }
     }
@@ -98,7 +98,7 @@ internal class UpdateBuilderImpl<T : Any>(
             return this@UpdateBuilderImpl.build()
         }
 
-        override fun compile(): CompiledUpdate {
+        override fun compile(): CompiledStatement<Int> {
             return this@UpdateBuilderImpl.compile()
         }
     }

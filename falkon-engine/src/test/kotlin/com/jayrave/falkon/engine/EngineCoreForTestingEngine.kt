@@ -4,10 +4,10 @@ import com.nhaarman.mockito_kotlin.mock
 
 internal class EngineCoreForTestingEngine private constructor(
         private val sqlProvider: (String) -> CompiledSqlForTest,
-        private val insertProvider: (String) -> CompiledInsertForTest,
-        private val updateProvider: (String) -> CompiledUpdateForTest,
-        private val deleteProvider: (String) -> CompiledDeleteForTest,
-        private val queryProvider: (String) -> CompiledQueryForTest) :
+        private val insertProvider: (String) -> CompiledStatementForInsertForTest,
+        private val updateProvider: (String) -> CompiledStatementForUpdateForTest,
+        private val deleteProvider: (String) -> CompiledStatementForDeleteForTest,
+        private val queryProvider: (String) -> CompiledStatementForQueryForTest) :
         EngineCore {
 
     private var isInTransaction: Boolean = false
@@ -46,19 +46,19 @@ internal class EngineCoreForTestingEngine private constructor(
         return sqlProvider.invoke(rawSql)
     }
 
-    override fun compileInsert(rawSql: String): CompiledInsert {
+    override fun compileInsert(rawSql: String): CompiledStatement<Int> {
         return insertProvider.invoke(rawSql)
     }
 
-    override fun compileUpdate(rawSql: String): CompiledUpdate {
+    override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return updateProvider.invoke(rawSql)
     }
 
-    override fun compileDelete(rawSql: String): CompiledDelete {
+    override fun compileDelete(rawSql: String): CompiledStatement<Int> {
         return deleteProvider.invoke(rawSql)
     }
 
-    override fun compileQuery(rawSql: String): CompiledQuery {
+    override fun compileQuery(rawSql: String): CompiledStatement<Source> {
         return queryProvider.invoke(rawSql)
     }
 
@@ -67,17 +67,17 @@ internal class EngineCoreForTestingEngine private constructor(
         fun createWithCompiledStatementsForTest(
                 sqlProvider: (String) -> CompiledSqlForTest = { sql -> CompiledSqlForTest(sql) },
 
-                insertProvider: (String) -> CompiledInsertForTest =
-                { sql -> CompiledInsertForTest(sql, 0) },
+                insertProvider: (String) -> CompiledStatementForInsertForTest =
+                { sql -> CompiledStatementForInsertForTest(sql, 0) },
 
-                updateProvider: (String) -> CompiledUpdateForTest =
-                { sql -> CompiledUpdateForTest(sql, 0) },
+                updateProvider: (String) -> CompiledStatementForUpdateForTest =
+                { sql -> CompiledStatementForUpdateForTest(sql, 0) },
 
-                deleteProvider: (String) -> CompiledDeleteForTest =
-                { sql -> CompiledDeleteForTest(sql, 0) },
+                deleteProvider: (String) -> CompiledStatementForDeleteForTest =
+                { sql -> CompiledStatementForDeleteForTest(sql, 0) },
 
-                queryProvider: (String) -> CompiledQueryForTest =
-                { sql -> CompiledQueryForTest(sql, mock()) }):
+                queryProvider: (String) -> CompiledStatementForQueryForTest =
+                { sql -> CompiledStatementForQueryForTest(sql, mock()) }):
 
                 EngineCoreForTestingEngine {
 

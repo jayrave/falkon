@@ -2,7 +2,6 @@ package com.jayrave.falkon.dao.query
 
 import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.testLib.*
-import com.jayrave.falkon.dao.testLib.OneShotCompiledQueryForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
@@ -33,8 +32,8 @@ class QueryBuilderImplTest {
 
         // Verify
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).isEmpty()
@@ -87,8 +86,8 @@ class QueryBuilderImplTest {
         // Verify
         val engine = bundle.engine
         assertQueryEquality(actualQuery, expectedQuery)
-        assertThat(engine.compiledQueries).hasSize(1)
-        val statement: OneShotCompiledQueryForTest = engine.compiledQueries.first()
+        assertThat(engine.compiledStatementsForQuery).hasSize(1)
+        val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name, tableForJoin.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(1)

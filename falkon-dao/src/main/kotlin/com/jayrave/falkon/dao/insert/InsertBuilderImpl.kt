@@ -2,7 +2,7 @@ package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
-import com.jayrave.falkon.engine.CompiledInsert
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.mapper.Column
@@ -44,7 +44,7 @@ internal class InsertBuilderImpl<T : Any>(
             return InsertImpl(sql, LinkedHashMapBackedIterable.forValues(map))
         }
 
-        override fun compile(): CompiledInsert {
+        override fun compile(): CompiledStatement<Int> {
             val insert = build()
             return table.configuration.engine
                     .compileInsert(table.name, insert.sql)

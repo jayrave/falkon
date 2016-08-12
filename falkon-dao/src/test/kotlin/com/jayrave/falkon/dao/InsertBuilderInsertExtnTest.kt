@@ -3,7 +3,7 @@ package com.jayrave.falkon.dao
 import com.jayrave.falkon.dao.insert.InsertBuilderImpl
 import com.jayrave.falkon.dao.insert.testLib.InsertSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledInsertForTest
+import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForInsertForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import org.assertj.core.api.Assertions.assertThat
@@ -33,7 +33,9 @@ class InsertBuilderInsertExtnTest {
     fun testStatementGetsClosedEvenIfInsertThrows() {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 insertProvider = { tableName, sql ->
-                    OneShotCompiledInsertForTest(tableName, sql, shouldThrowOnExecution = true)
+                    OneShotCompiledStatementForInsertForTest(
+                            tableName, sql, shouldThrowOnExecution = true
+                    )
                 }
         )
 
@@ -51,7 +53,7 @@ class InsertBuilderInsertExtnTest {
             !exceptionWasThrown -> failBecauseExceptionWasNotThrown(Exception::class.java)
             else -> {
                 // Assert that the statement was not successfully executed but closed
-                val statement = engine.compiledInserts.first()
+                val statement = engine.compiledStatementsForInsert.first()
                 assertThat(statement.wasExecutionAttempted).isTrue()
                 assertThat(statement.isExecuted).isFalse()
                 assertThat(statement.isClosed).isTrue()
@@ -65,7 +67,7 @@ class InsertBuilderInsertExtnTest {
 
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 insertProvider = { tableName, sql ->
-                    OneShotCompiledInsertForTest(tableName, sql, numberOfRowsInserted)
+                    OneShotCompiledStatementForInsertForTest(tableName, sql, numberOfRowsInserted)
                 }
         )
 
@@ -74,7 +76,7 @@ class InsertBuilderInsertExtnTest {
         assertThat(builder.set(table.int, 5).insert()).isEqualTo(expectedFlag)
 
         // Assert that the statement was executed and closed
-        val statement: OneShotCompiledInsertForTest = engine.compiledInserts.first()
+        val statement = engine.compiledStatementsForInsert.first()
         assertThat(statement.isExecuted).isTrue()
         assertThat(statement.isClosed).isTrue()
     }

@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.android.sqlite
 
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteStatement
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Type
 
@@ -8,7 +9,7 @@ internal abstract class BaseCompiledStatement<T>(
         override val sql: String, database: SQLiteDatabase) :
         CompiledStatement<T> {
 
-    protected val sqliteStatement = database.compileStatement(sql)
+    protected val sqliteStatement: SQLiteStatement = database.compileStatement(sql)
 
     override fun bindShort(index: Int, value: Short): CompiledStatement<T> {
         sqliteStatement.bindLong(index, value.toLong())

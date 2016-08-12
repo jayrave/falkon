@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.testLib.*
-import com.jayrave.falkon.engine.CompiledDelete
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Engine
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -14,92 +14,107 @@ import java.util.*
 class DaoForDeletesExtnDbResourcesClosureTest {
 
     @Test
-    fun testDeletionOfSingleModelClosesCompiledDeleteOnSuccessfulExecution() {
-        testCompiledDeleteIsClosedOnSuccessfulExecution { it.dao.delete(ModelForTest()) }
+    fun testDeletionOfSingleModelClosesCompiledStatementForDeleteOnSuccessfulExecution() {
+        testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
+            it.dao.delete(ModelForTest())
+        }
     }
 
     @Test
-    fun testDeletionOfSingleModelClosesCompiledDeleteEvenOnException() {
-        testCompiledDeleteIsClosedEventOnException { it.dao.delete(ModelForTest()) }
+    fun testDeletionOfSingleModelClosesCompiledStatementForDeleteEvenOnException() {
+        testCompiledStatementForDeleteIsClosedEventOnException { it.dao.delete(ModelForTest()) }
     }
 
     @Test
-    fun testDeletionOfVarargModelsClosesCompiledDeleteOnSuccessfulExecution() {
-        testCompiledDeleteIsClosedOnSuccessfulExecution {
+    fun testDeletionOfVarargModelsClosesCompiledStatementForDeleteOnSuccessfulExecution() {
+        testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
             it.dao.delete(ModelForTest(), ModelForTest())
         }
     }
 
     @Test
-    fun testDeletionOfVarargModelsClosesCompiledDeleteEvenOnException() {
-        testCompiledDeleteIsClosedEventOnException {
+    fun testDeletionOfVarargModelsClosesCompiledStatementForDeleteEvenOnException() {
+        testCompiledStatementForDeleteIsClosedEventOnException {
             it.dao.delete(ModelForTest(), ModelForTest())
         }
     }
 
     @Test
-    fun testDeletionOfModelIterableClosesCompiledDeleteOnSuccessfulExecution() {
-        testCompiledDeleteIsClosedOnSuccessfulExecution { it.dao.delete(listOf(ModelForTest())) }
+    fun testDeletionOfModelIterableClosesCompiledStatementForDeleteOnSuccessfulExecution() {
+        testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
+            it.dao.delete(listOf(ModelForTest()))
+        }
     }
 
     @Test
-    fun testDeletionOfModelIterableClosesCompiledDeleteEvenOnException() {
-        testCompiledDeleteIsClosedEventOnException { it.dao.delete(listOf(ModelForTest())) }
+    fun testDeletionOfModelIterableClosesCompiledStatementForDeleteEvenOnException() {
+        testCompiledStatementForDeleteIsClosedEventOnException {
+            it.dao.delete(listOf(ModelForTest()))
+        }
     }
 
     @Test
-    fun testDeletionByIdOfSingleModelClosesCompiledDeleteOnSuccessfulExecution() {
-        testCompiledDeleteIsClosedOnSuccessfulExecution { it.dao.deleteById(UUID.randomUUID()) }
+    fun testDeletionByIdOfSingleModelClosesCompiledStatementForDeleteOnSuccessfulExecution() {
+        testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
+            it.dao.deleteById(UUID.randomUUID())
+        }
     }
 
     @Test
-    fun testDeletionByIdOfSingleModelClosesCompiledDeleteEvenOnException() {
-        testCompiledDeleteIsClosedEventOnException { it.dao.deleteById(UUID.randomUUID()) }
+    fun testDeletionByIdOfSingleModelClosesCompiledStatementForDeleteEvenOnException() {
+        testCompiledStatementForDeleteIsClosedEventOnException {
+            it.dao.deleteById(UUID.randomUUID())
+        }
     }
 
     @Test
-    fun testDeletionByIdOfVarargModelsClosesCompiledDeleteOnSuccessfulExecution() {
-        testCompiledDeleteIsClosedOnSuccessfulExecution {
+    fun testDeletionByIdOfVarargModelsClosesCompiledStatementForDeleteOnSuccessfulExecution() {
+        testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
             it.dao.deleteById(UUID.randomUUID(), UUID.randomUUID())
         }
     }
 
     @Test
-    fun testDeletionByIdOfVarargModelsClosesCompiledDeleteEvenOnException() {
-        testCompiledDeleteIsClosedEventOnException {
+    fun testDeletionByIdOfVarargModelsClosesCompiledStatementForDeleteEvenOnException() {
+        testCompiledStatementForDeleteIsClosedEventOnException {
             it.dao.deleteById(UUID.randomUUID(), UUID.randomUUID())
         }
     }
 
     @Test
-    fun testDeletionByIdOfModelIterableClosesCompiledDeleteOnSuccessfulExecution() {
-        testCompiledDeleteIsClosedOnSuccessfulExecution {
+    fun testDeletionByIdOfModelIterableClosesCompiledStatementForDeleteOnSuccessfulExecution() {
+        testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
             it.dao.deleteById(listOf(UUID.randomUUID()))
         }
     }
 
     @Test
-    fun testDeletionByIdOfModelIterableClosesCompiledDeleteEvenOnException() {
-        testCompiledDeleteIsClosedEventOnException {
+    fun testDeletionByIdOfModelIterableClosesCompiledStatementForDeleteEvenOnException() {
+        testCompiledStatementForDeleteIsClosedEventOnException {
             it.dao.deleteById(listOf(UUID.randomUUID()))
         }
     }
 
-    private fun testCompiledDeleteIsClosedOnSuccessfulExecution(
+    private fun testCompiledStatementForDeleteIsClosedOnSuccessfulExecution(
             operation: (TableForTest) -> Any?) {
 
-        val engine = buildEngineForTestingDaoExtn(buildSuccessfullyExecutingCompiledDelete())
+        val engine = buildEngineForTestingDaoExtn(
+                buildSuccessfullyExecutingCompiledStatementForDelete()
+        )
+
         operation.invoke(buildTableForTest(engine))
 
-        assertThat(engine.compiledDeletes).hasSize(1)
-        verify(engine.compiledDeletes.first()).close()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        verify(engine.compiledStatementsForDelete.first()).close()
     }
 
-    private fun testCompiledDeleteIsClosedEventOnException(
+    private fun testCompiledStatementForDeleteIsClosedEventOnException(
             operation: (TableForTest) -> Any?) {
 
         var exceptionCaught = false
-        val engine = buildEngineForTestingDaoExtn(buildCompiledDeleteThatThrowsOnExecuting())
+        val engine = buildEngineForTestingDaoExtn(
+                buildCompiledStatementForDeleteThatThrowsOnExecuting()
+        )
 
         try {
             operation.invoke(buildTableForTest(engine))
@@ -113,30 +128,36 @@ class DaoForDeletesExtnDbResourcesClosureTest {
 
         // Verify exception was thrown and compiled delete was closed
         assertThat(exceptionCaught).isTrue()
-        assertThat(engine.compiledDeletes).hasSize(1)
-        verify(engine.compiledDeletes.first()).close()
+        assertThat(engine.compiledStatementsForDelete).hasSize(1)
+        verify(engine.compiledStatementsForDelete.first()).close()
     }
 
 
     companion object {
 
-        private fun buildSuccessfullyExecutingCompiledDelete(): CompiledDelete {
-            return mock()
+        private fun buildSuccessfullyExecutingCompiledStatementForDelete(): CompiledStatement<Int> {
+            val CompiledStatementForDeleteMock = mock<CompiledStatement<Int>>()
+            whenever(CompiledStatementForDeleteMock.execute()).thenReturn(0)
+            return CompiledStatementForDeleteMock
         }
 
 
-        private fun buildCompiledDeleteThatThrowsOnExecuting(): CompiledDelete {
-            val compiledDeleteMock = mock<CompiledDelete>()
-            whenever(compiledDeleteMock.execute()).thenThrow(ExceptionForTesting::class.java)
-            return compiledDeleteMock
+        private fun buildCompiledStatementForDeleteThatThrowsOnExecuting(): CompiledStatement<Int> {
+            val CompiledStatementForDeleteMock = mock<CompiledStatement<Int>>()
+            whenever(CompiledStatementForDeleteMock.execute()).thenThrow(
+                    ExceptionForTesting::class.java
+            )
+
+            return CompiledStatementForDeleteMock
         }
 
 
-        private fun buildEngineForTestingDaoExtn(compiledDelete: CompiledDelete):
+        private fun buildEngineForTestingDaoExtn(
+                CompiledStatementForDelete: CompiledStatement<Int>):
                 EngineForTestingDaoExtn {
 
             return EngineForTestingDaoExtn.createWithMockStatements(
-                    deleteProvider = { compiledDelete }
+                    deleteProvider = { CompiledStatementForDelete }
             )
         }
 

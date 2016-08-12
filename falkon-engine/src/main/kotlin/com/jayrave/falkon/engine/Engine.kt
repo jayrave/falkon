@@ -33,26 +33,34 @@ interface Engine {
     /**
      * @param tableName name of table this [rawSql] is concerned with
      * @param rawSql raw INSERT statement
+     *
+     * @return number of rows inserted [0, [Int.MAX_VALUE]]
      */
-    fun compileInsert(tableName: String, rawSql: String): CompiledInsert
+    fun compileInsert(tableName: String, rawSql: String): CompiledStatement<Int>
 
     /**
      * @param tableName name of table this [rawSql] is concerned with
      * @param rawSql raw UPDATE statement
+     *
+     * @return number of rows updated [0, [Int.MAX_VALUE]]
      */
-    fun compileUpdate(tableName: String, rawSql: String): CompiledUpdate
+    fun compileUpdate(tableName: String, rawSql: String): CompiledStatement<Int>
 
     /**
      * @param tableName name of table this [rawSql] is concerned with
      * @param rawSql raw DELETE statement
+     *
+     * @return number of rows deleted [0, [Int.MAX_VALUE]]
      */
-    fun compileDelete(tableName: String, rawSql: String): CompiledDelete
+    fun compileDelete(tableName: String, rawSql: String): CompiledStatement<Int>
 
     /**
      * @param tableNames names of tables this [rawSql] is concerned with
      * @param rawSql raw SELECT statement
+     *
+     * @return source that contains the data produced by the query
      */
-    fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledQuery
+    fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledStatement<Source>
 
     /**
      * If the listener is already, this is a no-op. This can be called from any thread

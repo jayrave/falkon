@@ -2,7 +2,7 @@ package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.insert.AdderOrEnder
 import com.jayrave.falkon.dao.insert.InsertBuilder
-import com.jayrave.falkon.engine.CompiledInsert
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Column
 
 fun <T: Any, ID : Any> Dao<T, ID>.insert(t: T) {
@@ -20,43 +20,43 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
     throwIfOrderedColumnsIsEmpty(orderedColumns)
 
     table.configuration.engine.executeInTransaction {
-        var compiledInsert: CompiledInsert? = null
+        var compiledStatementForInsert: CompiledStatement<Int>? = null
         try {
             for (item in ts) {
-                compiledInsert = when (compiledInsert) {
+                compiledStatementForInsert = when (compiledStatementForInsert) {
 
-                    // First item. Build CompiledInsert
-                    null -> buildCompiledInsert(item, orderedColumns, insertBuilder())
+                    // First item. Build CompiledStatement for insert
+                    null -> buildCompiledStatementForInsert(item, orderedColumns, insertBuilder())
 
                     // Not the first item. Clear bindings & rebind all columns
                     else -> {
-                        compiledInsert.clearBindings()
-                        bindAllColumns(item, orderedColumns, compiledInsert)
-                        compiledInsert
+                        compiledStatementForInsert.clearBindings()
+                        bindAllColumns(item, orderedColumns, compiledStatementForInsert)
+                        compiledStatementForInsert
                     }
                 }
 
-                compiledInsert.execute()
+                compiledStatementForInsert.execute()
             }
         } finally {
-            // No matter what happens, CompiledInsert must be closed
+            // No matter what happens, CompiledStatement must be closed
             // to prevent resource leakage
-            compiledInsert?.close()
+            compiledStatementForInsert?.close()
         }
     }
 }
 
 
 /**
- * @param item Item to build [CompiledInsert] for
+ * @param item Item to build [CompiledStatement] for
  * @param orderedColumns the list of ordered, non empty columns
  *
- * @return [CompiledInsert] corresponding to the passed in [item]
+ * @return [CompiledStatement] corresponding to the passed in [item]
  * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
  */
-private fun <T: Any> buildCompiledInsert(
+private fun <T: Any> buildCompiledStatementForInsert(
         item: T, orderedColumns: OrderedColumns<T>, insertBuilder: InsertBuilder<T>):
-        CompiledInsert {
+        CompiledStatement<Int> {
 
     throwIfOrderedColumnsIsEmpty(orderedColumns)
 
@@ -76,17 +76,18 @@ private fun <T: Any> buildCompiledInsert(
 
 
 /**
- * @param item Item to build [CompiledInsert] for
+ * @param item Item to build [CompiledStatement] for
  * @param orderedColumns the list of ordered, non empty columns
- * @param compiledInsert the compiled statement to bind the columns to
+ * @param compiledStatementForInsert the compiled statement to bind the columns to
  *
  * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
  */
 private fun <T: Any> bindAllColumns(
-        item: T, orderedColumns: OrderedColumns<T>, compiledInsert: CompiledInsert) {
+        item: T, orderedColumns: OrderedColumns<T>,
+        compiledStatementForInsert: CompiledStatement<Int>) {
 
     throwIfOrderedColumnsIsEmpty(orderedColumns)
-    compiledInsert.bindOrderedColumns(orderedColumns, item)
+    compiledStatementForInsert.bindOrderedColumns(orderedColumns, item)
 }
 
 

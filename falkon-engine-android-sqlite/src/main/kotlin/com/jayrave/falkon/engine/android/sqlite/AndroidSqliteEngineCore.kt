@@ -2,7 +2,6 @@ package com.jayrave.falkon.engine.android.sqlite
 
 import android.database.sqlite.SQLiteOpenHelper
 import com.jayrave.falkon.engine.*
-import com.jayrave.falkon.engine.CompiledQuery
 import java.sql.SQLException
 
 class AndroidSqliteEngineCore(sqLiteOpenHelper: SQLiteOpenHelper) : EngineCore {
@@ -37,17 +36,17 @@ class AndroidSqliteEngineCore(sqLiteOpenHelper: SQLiteOpenHelper) : EngineCore {
     }
 
 
-    override fun compileInsert(rawSql: String): CompiledInsert {
+    override fun compileInsert(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, database)
     }
 
 
-    override fun compileUpdate(rawSql: String): CompiledUpdate {
+    override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, database)
     }
 
 
-    override fun compileDelete(rawSql: String): CompiledDelete {
+    override fun compileDelete(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, database)
     }
 
@@ -58,7 +57,7 @@ class AndroidSqliteEngineCore(sqLiteOpenHelper: SQLiteOpenHelper) : EngineCore {
      *
      * @see CompiledQuery
      */
-    override fun compileQuery(rawSql: String): com.jayrave.falkon.engine.CompiledQuery {
+    override fun compileQuery(rawSql: String): CompiledStatement<Source> {
         return CompiledQuery(rawSql, database)
     }
 }

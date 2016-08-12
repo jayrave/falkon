@@ -2,7 +2,7 @@ package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.update.AdderOrEnder
 import com.jayrave.falkon.dao.update.UpdateBuilder
-import com.jayrave.falkon.engine.CompiledUpdate
+import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bind
 import com.jayrave.falkon.mapper.Column
 
@@ -31,34 +31,37 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
 
     if (orderedNonIdColumns.isNotEmpty()) {
         table.configuration.engine.executeInTransaction {
-            var compiledUpdate: CompiledUpdate? = null
+            var compiledStatementForUpdate: CompiledStatement<Int>? = null
             try {
                 for (item in ts) {
-                    compiledUpdate = when (compiledUpdate) {
+                    compiledStatementForUpdate = when (compiledStatementForUpdate) {
 
-                        // First item. Build CompiledUpdate
-                        null -> buildCompiledUpdate(
+                        // First item. Build CompiledStatement for update
+                        null -> buildCompiledStatementForUpdate(
                                 item, table.idColumn, orderedNonIdColumns, updateBuilder()
                         )
 
                         // Not the first item. Clear bindings, rebind required columns & set id
                         else -> {
-                            compiledUpdate.clearBindings()
-                            bindAllNonIdColumns(item, orderedNonIdColumns, compiledUpdate)
-                            compiledUpdate.bind(
+                            compiledStatementForUpdate.clearBindings()
+                            bindAllNonIdColumns(
+                                    item, orderedNonIdColumns, compiledStatementForUpdate
+                            )
+
+                            compiledStatementForUpdate.bind(
                                     orderedNonIdColumns.size + 1, table.extractIdFrom(item)
                             )
 
-                            compiledUpdate
+                            compiledStatementForUpdate
                         }
                     }
 
-                    numberOfRowsUpdated += compiledUpdate.execute()
+                    numberOfRowsUpdated += compiledStatementForUpdate.execute()
                 }
             } finally {
-                // No matter what happens, CompiledUpdate must be closed
+                // No matter what happens, CompiledStatement must be closed
                 // to prevent resource leakage
-                compiledUpdate?.close()
+                compiledStatementForUpdate?.close()
             }
         }
     }
@@ -68,15 +71,15 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
 
 
 /**
- * @param item Item to build [CompiledUpdate] for
+ * @param item Item to build [CompiledStatement] for
  * @param orderedNonIdColumns the list of ordered, non-id, non empty columns
  *
- * @return [CompiledUpdate] corresponding to the passed in [item]
+ * @return [CompiledStatement] corresponding to the passed in [item]
  * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
  */
-private fun <T: Any, ID: Any> buildCompiledUpdate(
+private fun <T: Any, ID: Any> buildCompiledStatementForUpdate(
         item: T, idColumn: Column<T, ID>, orderedNonIdColumns: OrderedColumns<T>,
-        updateBuilder: UpdateBuilder<T>): CompiledUpdate {
+        updateBuilder: UpdateBuilder<T>): CompiledStatement<Int> {
 
     throwIfOrderedNonIdColumnsIsEmpty(orderedNonIdColumns)
 
@@ -99,17 +102,18 @@ private fun <T: Any, ID: Any> buildCompiledUpdate(
 
 
 /**
- * @param item Item to build [CompiledUpdate] for
+ * @param item Item to build [CompiledStatement] for
  * @param orderedNonIdColumns the list of ordered, non-id, non empty columns
- * @param compiledUpdate the compiled statement to bind the columns to
+ * @param compiledStatementForUpdate the compiled statement to bind the columns to
  *
  * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
  */
 private fun <T: Any> bindAllNonIdColumns(
-        item: T, orderedNonIdColumns: OrderedColumns<T>, compiledUpdate: CompiledUpdate) {
+        item: T, orderedNonIdColumns: OrderedColumns<T>,
+        compiledStatementForUpdate: CompiledStatement<Int>) {
 
     throwIfOrderedNonIdColumnsIsEmpty(orderedNonIdColumns)
-    compiledUpdate.bindOrderedColumns(orderedNonIdColumns, item)
+    compiledStatementForUpdate.bindOrderedColumns(orderedNonIdColumns, item)
 }
 
 
