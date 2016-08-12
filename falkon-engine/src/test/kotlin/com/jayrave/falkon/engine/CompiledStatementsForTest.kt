@@ -1,45 +1,50 @@
 package com.jayrave.falkon.engine
 
-/**
- * [CompiledStatement]s that throw on trying to bind, clear or close
- */
 internal open class CompiledStatementForTest<R>(
-        override val sql: String, private val returnValue: R) :
+        override val sql: String, private val returnValue: R,
+        private val shouldThrowOnExecution: Boolean) :
         CompiledStatement<R> {
 
-    override fun execute(): R = returnValue
-    override fun bindShort(index: Int, value: Short) = throw buildException()
-    override fun bindInt(index: Int, value: Int) = throw buildException()
-    override fun bindLong(index: Int, value: Long) = throw buildException()
-    override fun bindFloat(index: Int, value: Float) = throw buildException()
-    override fun bindDouble(index: Int, value: Double) = throw buildException()
-    override fun bindString(index: Int, value: String) = throw buildException()
-    override fun bindBlob(index: Int, value: ByteArray) = throw buildException()
-    override fun bindNull(index: Int, type: Type) = throw buildException()
-    override fun close() = throw buildException()
-    override fun clearBindings() = throw buildException()
-
-    private fun buildException(): Exception {
-        return UnsupportedOperationException("No can do")
+    override fun execute(): R {
+        return when (shouldThrowOnExecution) {
+            true -> throw RuntimeException()
+            else -> returnValue
+        }
     }
+
+    override fun bindShort(index: Int, value: Short) = this
+    override fun bindInt(index: Int, value: Int) = this
+    override fun bindLong(index: Int, value: Long) = this
+    override fun bindFloat(index: Int, value: Float) = this
+    override fun bindDouble(index: Int, value: Double) = this
+    override fun bindString(index: Int, value: String) = this
+    override fun bindBlob(index: Int, value: ByteArray) = this
+    override fun bindNull(index: Int, type: Type) = this
+    override fun close() {}
+    override fun clearBindings() = this
 }
 
 
-internal class CompiledSqlForTest(sql: String) :
-        CompiledStatementForTest<Unit>(sql, Unit)
+internal class CompiledStatementForSqlForTest(
+        sql: String, shouldThrowOnExecution: Boolean = false) :
+        CompiledStatementForTest<Unit>(sql, Unit, shouldThrowOnExecution)
 
 
-internal class CompiledStatementForInsertForTest(sql: String, returnValue: Int) :
-        CompiledStatementForTest<Int>(sql, returnValue)
+internal class CompiledStatementForInsertForTest(
+        sql: String, returnValue: Int, shouldThrowOnExecution: Boolean = false) :
+        CompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
-internal class CompiledStatementForUpdateForTest(sql: String, returnValue: Int) :
-        CompiledStatementForTest<Int>(sql, returnValue)
+internal class CompiledStatementForUpdateForTest(
+        sql: String, returnValue: Int, shouldThrowOnExecution: Boolean = false) :
+        CompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
-internal class CompiledStatementForDeleteForTest(sql: String, returnValue: Int) :
-        CompiledStatementForTest<Int>(sql, returnValue)
+internal class CompiledStatementForDeleteForTest(
+        sql: String, returnValue: Int, shouldThrowOnExecution: Boolean = false) :
+        CompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 
 
-internal class CompiledStatementForQueryForTest(sql: String, returnValue: Source) :
-        CompiledStatementForTest<Source>(sql, returnValue)
+internal class CompiledStatementForQueryForTest(
+        sql: String, returnValue: Source, shouldThrowOnExecution: Boolean = false) :
+        CompiledStatementForTest<Source>(sql, returnValue, shouldThrowOnExecution)

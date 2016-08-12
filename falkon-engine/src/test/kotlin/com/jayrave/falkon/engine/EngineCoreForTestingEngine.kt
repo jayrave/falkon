@@ -3,11 +3,11 @@ package com.jayrave.falkon.engine
 import com.nhaarman.mockito_kotlin.mock
 
 internal class EngineCoreForTestingEngine private constructor(
-        private val sqlProvider: (String) -> CompiledSqlForTest,
-        private val insertProvider: (String) -> CompiledStatementForInsertForTest,
-        private val updateProvider: (String) -> CompiledStatementForUpdateForTest,
-        private val deleteProvider: (String) -> CompiledStatementForDeleteForTest,
-        private val queryProvider: (String) -> CompiledStatementForQueryForTest) :
+        private val sqlProvider: (String) -> CompiledStatement<Unit>,
+        private val insertProvider: (String) -> CompiledStatement<Int>,
+        private val updateProvider: (String) -> CompiledStatement<Int>,
+        private val deleteProvider: (String) -> CompiledStatement<Int>,
+        private val queryProvider: (String) -> CompiledStatement<Source>) :
         EngineCore {
 
     private var isInTransaction: Boolean = false
@@ -65,18 +65,19 @@ internal class EngineCoreForTestingEngine private constructor(
 
     companion object {
         fun createWithCompiledStatementsForTest(
-                sqlProvider: (String) -> CompiledSqlForTest = { sql -> CompiledSqlForTest(sql) },
+                sqlProvider: (String) -> CompiledStatement<Unit> =
+                { sql -> CompiledStatementForSqlForTest(sql) },
 
-                insertProvider: (String) -> CompiledStatementForInsertForTest =
+                insertProvider: (String) -> CompiledStatement<Int> =
                 { sql -> CompiledStatementForInsertForTest(sql, 0) },
 
-                updateProvider: (String) -> CompiledStatementForUpdateForTest =
+                updateProvider: (String) -> CompiledStatement<Int> =
                 { sql -> CompiledStatementForUpdateForTest(sql, 0) },
 
-                deleteProvider: (String) -> CompiledStatementForDeleteForTest =
+                deleteProvider: (String) -> CompiledStatement<Int> =
                 { sql -> CompiledStatementForDeleteForTest(sql, 0) },
 
-                queryProvider: (String) -> CompiledStatementForQueryForTest =
+                queryProvider: (String) -> CompiledStatement<Source> =
                 { sql -> CompiledStatementForQueryForTest(sql, mock()) }):
 
                 EngineCoreForTestingEngine {
