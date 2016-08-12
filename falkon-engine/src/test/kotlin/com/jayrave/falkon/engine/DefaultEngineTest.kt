@@ -1,6 +1,8 @@
 package com.jayrave.falkon.engine
 
 import com.jayrave.falkon.engine.testLib.DbEventListenerForTest
+import com.jayrave.falkon.engine.testLib.StoringLogger
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -320,6 +322,131 @@ class DefaultEngineTest {
     }
 
 
+    @Test
+    fun testLoggerIsInformedOnSuccessfulExecutions() {
+        val storingLogger = StoringLogger()
+        val defaultEngine = DefaultEngine(buildEngineCoreForTesting(), storingLogger)
+
+        val sqlForCompileSql = "SQL for compile sql"
+        defaultEngine.compileSql(null, sqlForCompileSql).execute()
+        storingLogger.assertStoredLogInfo(true, sqlForCompileSql)
+
+        val dummyTableName = "dummy table"
+        val firstArgIndex = 1
+
+        val sqlForCompileInsert = "SQL for compile insert"
+        val argForCompileInsert = "insert"
+        defaultEngine
+                .compileInsert(dummyTableName, sqlForCompileInsert)
+                .bindString(firstArgIndex, argForCompileInsert)
+                .execute()
+        storingLogger.assertStoredLogInfo(true, sqlForCompileInsert, argForCompileInsert)
+
+        val sqlForCompileUpdate = "SQL for compile update"
+        val argForCompileUpdate = "update"
+        defaultEngine
+                .compileUpdate(dummyTableName, sqlForCompileUpdate)
+                .bindString(firstArgIndex, argForCompileUpdate)
+                .execute()
+        storingLogger.assertStoredLogInfo(true, sqlForCompileUpdate, argForCompileUpdate)
+
+        val sqlForCompileDelete = "SQL for compile delete"
+        val argForCompileDelete = "delete"
+        defaultEngine
+                .compileDelete(dummyTableName, sqlForCompileDelete)
+                .bindString(firstArgIndex, argForCompileDelete)
+                .execute()
+        storingLogger.assertStoredLogInfo(true, sqlForCompileDelete, argForCompileDelete)
+
+        val sqlForCompileQuery = "SQL for compile query"
+        val argForCompileQuery = "query"
+        defaultEngine
+                .compileQuery(listOf(dummyTableName), sqlForCompileQuery)
+                .bindString(firstArgIndex, argForCompileQuery)
+                .execute()
+        storingLogger.assertStoredLogInfo(true, sqlForCompileQuery, argForCompileQuery)
+    }
+
+
+    @Test
+    fun testLoggerIsInformedOnExecutionFailure() {
+        // All compiled statements from this engine core would throw on execution
+        val engineCoreForTesting = EngineCoreForTestingEngine.createWithCompiledStatementsForTest(
+                sqlProvider = { sql -> CompiledStatementForSqlForTest(sql, true) },
+                insertProvider = { sql -> CompiledStatementForInsertForTest(sql, 1, true) },
+                updateProvider = { sql -> CompiledStatementForUpdateForTest(sql, 1, true) },
+                deleteProvider = { sql -> CompiledStatementForDeleteForTest(sql, 1, true) },
+                queryProvider = { sql -> CompiledStatementForQueryForTest(sql, mock(), true) }
+        )
+
+        val storingLogger = StoringLogger()
+        val defaultEngine = DefaultEngine(engineCoreForTesting, storingLogger)
+
+        val dummyTableName = "dummy table"
+        val firstArgIndex = 1
+        var numberOfExceptionsCaught = 0
+
+        val sqlForCompileSql = "SQL for compile sql"
+        try {
+            defaultEngine.compileSql(null, sqlForCompileSql).execute()
+        } catch (e: Exception) {
+            storingLogger.assertStoredLogInfo(false, sqlForCompileSql)
+            numberOfExceptionsCaught++
+        }
+
+        val sqlForCompileInsert = "SQL for compile insert"
+        val argForCompileInsert = "insert"
+        try {
+            defaultEngine
+                    .compileInsert(dummyTableName, sqlForCompileInsert)
+                    .bindString(firstArgIndex, argForCompileInsert)
+                    .execute()
+
+        } catch (e: Exception) {
+            storingLogger.assertStoredLogInfo(false, sqlForCompileInsert, argForCompileInsert)
+            numberOfExceptionsCaught++
+        }
+
+        val sqlForCompileUpdate = "SQL for compile update"
+        val argForCompileUpdate = "update"
+        try {
+            defaultEngine
+                    .compileUpdate(dummyTableName, sqlForCompileUpdate)
+                    .bindString(firstArgIndex, argForCompileUpdate)
+                    .execute()
+        } catch (e: Exception) {
+            storingLogger.assertStoredLogInfo(false, sqlForCompileUpdate, argForCompileUpdate)
+            numberOfExceptionsCaught++
+        }
+
+        val sqlForCompileDelete = "SQL for compile delete"
+        val argForCompileDelete = "delete"
+        try {
+            defaultEngine
+                    .compileDelete(dummyTableName, sqlForCompileDelete)
+                    .bindString(firstArgIndex, argForCompileDelete)
+                    .execute()
+        } catch (e: Exception) {
+            storingLogger.assertStoredLogInfo(false, sqlForCompileDelete, argForCompileDelete)
+            numberOfExceptionsCaught++
+        }
+
+        val sqlForCompileQuery = "SQL for compile query"
+        val argForCompileQuery = "query"
+        try {
+            defaultEngine
+                    .compileQuery(listOf(dummyTableName), sqlForCompileQuery)
+                    .bindString(firstArgIndex, argForCompileQuery)
+                    .execute()
+        } catch (e: Exception) {
+            storingLogger.assertStoredLogInfo(false, sqlForCompileQuery, argForCompileQuery)
+            numberOfExceptionsCaught++
+        }
+
+        assertThat(numberOfExceptionsCaught).isEqualTo(5)
+    }
+
+
 
     companion object {
         private const val DUMMY_SQL = "dummy_sql"
@@ -331,6 +458,18 @@ class DefaultEngineTest {
                     updateProvider = { sql -> CompiledStatementForUpdateForTest(sql, 1) },
                     deleteProvider = { sql -> CompiledStatementForDeleteForTest(sql, 1) }
             )
+        }
+
+        private fun StoringLogger.assertStoredLogInfo(
+                success: Boolean, sql: String, vararg args: Any?) {
+
+            val logInfo = when (success) {
+                true -> onSuccessfulExecution
+                else -> onExecutionFailed
+            }
+
+            assertThat(logInfo?.sql).isEqualTo(sql)
+            assertThat(logInfo?.arguments).containsExactly(*args)
         }
     }
 }

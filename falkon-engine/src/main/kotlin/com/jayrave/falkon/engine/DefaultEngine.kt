@@ -1,6 +1,13 @@
 package com.jayrave.falkon.engine
 
-class DefaultEngine(private val engineCore: EngineCore) : Engine {
+/**
+ * @param engineCore that does the actual compilation of the SQL statements
+ * @param logger to pass the SQL & bound arguments on executing a [CompiledStatement].
+ * **DO NOT USE [Logger] in PRODUCTION**
+ */
+class DefaultEngine(
+        private val engineCore: EngineCore, private val logger: Logger? = null) :
+        Engine {
 
     private val dbEventsManager = DbEventsManager() { isInTransaction() }
     private val onExecuteWithEffects = { dbEvent: DbEvent -> dbEventsManager.onEvent(dbEvent) }
@@ -42,31 +49,38 @@ class DefaultEngine(private val engineCore: EngineCore) : Engine {
             tableNames: Iterable<String>?, rawSql: String):
             CompiledStatement<Unit> {
 
-        return engineCore.compileSql(rawSql)
+        val compiledStatement = engineCore.compileSql(rawSql)
+        return wrapForLoggingIfRequired(compiledStatement)
     }
 
 
     override fun compileInsert(tableName: String, rawSql: String): CompiledStatement<Int> {
-        return EventReportingCompiledStatement(
+        val compiledStatement = EventReportingCompiledStatement(
                 tableName, DbEvent.Type.INSERT, engineCore.compileInsert(rawSql),
                 onExecuteWithEffects
         )
+
+        return wrapForLoggingIfRequired(compiledStatement)
     }
 
 
     override fun compileUpdate(tableName: String, rawSql: String): CompiledStatement<Int> {
-        return EventReportingCompiledStatement(
+        val compiledStatement = EventReportingCompiledStatement(
                 tableName, DbEvent.Type.UPDATE, engineCore.compileUpdate(rawSql),
                 onExecuteWithEffects
         )
+
+        return wrapForLoggingIfRequired(compiledStatement)
     }
 
 
     override fun compileDelete(tableName: String, rawSql: String): CompiledStatement<Int> {
-        return EventReportingCompiledStatement(
+        val compiledStatement = EventReportingCompiledStatement(
                 tableName, DbEvent.Type.DELETE, engineCore.compileDelete(rawSql),
                 onExecuteWithEffects
         )
+
+        return wrapForLoggingIfRequired(compiledStatement)
     }
 
 
@@ -74,7 +88,8 @@ class DefaultEngine(private val engineCore: EngineCore) : Engine {
             tableNames: Iterable<String>, rawSql: String):
             CompiledStatement<Source> {
 
-        return engineCore.compileQuery(rawSql)
+        val compiledStatement = engineCore.compileQuery(rawSql)
+        return wrapForLoggingIfRequired(compiledStatement)
     }
 
 
@@ -85,5 +100,15 @@ class DefaultEngine(private val engineCore: EngineCore) : Engine {
 
     override fun unregisterDbEventListener(dbEventListener: DbEventListener) {
         dbEventsManager.unregisterDbEventListener(dbEventListener)
+    }
+
+
+    private fun <R> wrapForLoggingIfRequired(compiledStatement: CompiledStatement<R>):
+            CompiledStatement<R> {
+
+        return when (logger) {
+            null -> compiledStatement
+            else -> return LoggingCompiledStatement(compiledStatement, logger)
+        }
     }
 }
