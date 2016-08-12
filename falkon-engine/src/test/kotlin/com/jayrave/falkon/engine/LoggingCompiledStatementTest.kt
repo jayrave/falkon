@@ -1,5 +1,6 @@
 package com.jayrave.falkon.engine
 
+import com.jayrave.falkon.engine.testLib.StoringLogger
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import org.assertj.core.api.Assertions.*
@@ -145,21 +146,36 @@ class LoggingCompiledStatementTest {
     }
 
 
-    private class StoringLogger : Logger {
+    @Test
+    fun testExecutingMultipleTimes() {
+        val sql = "this is a SQL for test"
+        val argForFirstExecution = "test arg 1"
+        val argForSecondExecution = "test arg 2"
 
-        var onSuccessfulExecution: LogInfo? = null
-        var onExecutionFailed: LogInfo? = null
+        val storingLogger = StoringLogger()
+        val loggingCompiledStatement = LoggingCompiledStatement(
+                buildSuccessfullyExecutingCompiledStatement(sql), storingLogger
+        )
 
-        override fun onSuccessfullyExecuted(sql: String, arguments: Iterable<Any?>) {
-            onSuccessfulExecution = LogInfo(sql, arguments)
-        }
+        // bind & execute
+        loggingCompiledStatement.bindString(1, argForFirstExecution).execute()
 
-        override fun onExecutionFailed(sql: String, arguments: Iterable<Any?>) {
-            onExecutionFailed = LogInfo(sql, arguments)
-        }
+        // assert info passed to logger
+        assertThat(storingLogger.onExecutionFailed).isNull()
+        assertThat(storingLogger.onSuccessfulExecution?.sql).isEqualTo(sql)
+        assertThat(storingLogger.onSuccessfulExecution?.arguments).containsOnly(
+                argForFirstExecution
+        )
 
+        // bind & execute again
+        loggingCompiledStatement.bindString(1, argForSecondExecution).execute()
 
-        data class LogInfo(val sql: String, val arguments: Iterable<Any?>)
+        // assert info passed to logger
+        assertThat(storingLogger.onExecutionFailed).isNull()
+        assertThat(storingLogger.onSuccessfulExecution?.sql).isEqualTo(sql)
+        assertThat(storingLogger.onSuccessfulExecution?.arguments).containsOnly(
+                argForSecondExecution
+        )
     }
 
 
