@@ -1,5 +1,7 @@
 package com.jayrave.falkon.engine
 
+import java.io.Closeable
+
 /**
  * A SQL statement that has been compiled by the [Engine] which could be used multiple times
  * with different arguments. The two main advantages of using a compiled statement
@@ -7,7 +9,7 @@ package com.jayrave.falkon.engine
  *      - Performance. Could be compiled once and used multiple times
  *      - Prevent SQL injection as parameters are bound and not inline
  */
-interface CompiledStatement<R> : AutoCloseable {
+interface CompiledStatement<R> : Closeable {
 
     /**
      * The SQL string this [CompiledStatement] represents

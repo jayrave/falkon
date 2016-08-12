@@ -5,24 +5,25 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
+import java.io.Closeable
 
-class AutoCloseableExtnKtTest {
+class CloseableExtnKtTest {
 
     @Test
     fun testAutoCloseableClosesOnSuccessfulExecution() {
-        val autoCloseableMock = mock<AutoCloseable>()
-        autoCloseableMock.safeCloseAfterOp {  }
-        verify(autoCloseableMock).close()
-        verifyNoMoreInteractions(autoCloseableMock)
+        val closeableMock = mock<Closeable>()
+        closeableMock.safeCloseAfterOp {  }
+        verify(closeableMock).close()
+        verifyNoMoreInteractions(closeableMock)
     }
 
 
     @Test
     fun testAutoCloseableClosesEvenIfExceptionIsThrown() {
-        val autoCloseableMock = mock<AutoCloseable>()
+        val closeableMock = mock<Closeable>()
         var exceptionWasThrown = false
         try {
-            autoCloseableMock.safeCloseAfterOp { throw RuntimeException() }
+            closeableMock.safeCloseAfterOp { throw RuntimeException() }
         } catch (e: RuntimeException) {
             exceptionWasThrown = true
         }
@@ -31,7 +32,7 @@ class AutoCloseableExtnKtTest {
             fail("exception must have been thrown")
         }
 
-        verify(autoCloseableMock).close()
-        verifyNoMoreInteractions(autoCloseableMock)
+        verify(closeableMock).close()
+        verifyNoMoreInteractions(closeableMock)
     }
 }

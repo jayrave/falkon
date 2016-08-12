@@ -1,11 +1,13 @@
 package com.jayrave.falkon.engine
 
+import java.io.Closeable
+
 /**
  * This interface provides random read-write access to the result set returned by a database query.
  * [Source] implementations are not required to be synchronized so code using a Source from
  * multiple threads should perform its own synchronization
  */
-interface Source : AutoCloseable {
+interface Source : Closeable {
 
     /**
      * Returns the current position the source is at in the row set. The value is 1-based.
