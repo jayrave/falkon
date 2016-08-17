@@ -64,11 +64,9 @@ class BaseTableTest {
 
         // By default com.jayrave.falkon.mapper.SimplePropertyExtractor is used
         val model = ModelForTest(int = 5, nullableInt = null, nullableString = "hurray")
-        assertThat(tableForTest.col1.propertyExtractor.extract(model)).isEqualTo(model.int)
-        assertThat(tableForTest.col2.propertyExtractor.extract(model)).isEqualTo(model.nullableInt)
-        assertThat(tableForTest.col3.propertyExtractor.extract(model)).isEqualTo(
-                model.nullableString
-        )
+        assertThat(tableForTest.col1.extractPropertyFrom(model)).isEqualTo(model.int)
+        assertThat(tableForTest.col2.extractPropertyFrom(model)).isEqualTo(model.nullableInt)
+        assertThat(tableForTest.col3.extractPropertyFrom(model)).isEqualTo(model.nullableString)
     }
 
 

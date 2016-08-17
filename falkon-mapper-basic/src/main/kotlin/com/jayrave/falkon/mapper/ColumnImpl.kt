@@ -7,10 +7,14 @@ import com.jayrave.falkon.engine.Type
  */
 class ColumnImpl<T : Any, C>(
         override val table: Table<T, *>, override val name: String,
-        override val propertyExtractor: PropertyExtractor<T, C>,
+        private val propertyExtractor: PropertyExtractor<T, C>,
         private val converter: Converter<C>) : Column<T, C> {
 
     override val dbType: Type = converter.dbType
+
+    override fun extractPropertyFrom(t: T): C {
+        return propertyExtractor.extractFrom(t)
+    }
 
     override fun computeStorageFormOf(property: C): Any? {
         val valueHoldingDataConsumer = threadLocalValueHoldingDataConsumer.get()

@@ -92,7 +92,7 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
 
     companion object {
         private val currentDatePropExtractor = object : PropertyExtractor<User, Date> {
-            override fun extract(t: User): Date = Date()
+            override fun extractFrom(t: User): Date = Date()
         }
 
 

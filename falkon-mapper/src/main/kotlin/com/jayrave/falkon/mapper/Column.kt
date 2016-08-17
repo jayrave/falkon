@@ -27,7 +27,7 @@ interface Column<T : Any, C> {
     /**
      * To extract the property from the containing object
      */
-    val propertyExtractor: PropertyExtractor<T, C>
+    fun extractPropertyFrom(t: T): C
 
     /**
      * From property to the form it would get stored in the database

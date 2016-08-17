@@ -18,7 +18,7 @@ class EnhancedColumnImpl<T : Any, C>(
     override val table: Table<T, *> get() = delegate.table
     override val name: String get() = delegate.name
     override val dbType: Type get() = delegate.dbType
-    override val propertyExtractor: PropertyExtractor<T, C> get() = delegate.propertyExtractor
+    override fun extractPropertyFrom(t: T): C = delegate.extractPropertyFrom(t)
     override fun computeStorageFormOf(property: C): Any? = delegate.computeStorageFormOf(property)
     override fun putStorageFormIn(property: C, dataConsumer: DataConsumer) {
         delegate.putStorageFormIn(property, dataConsumer)

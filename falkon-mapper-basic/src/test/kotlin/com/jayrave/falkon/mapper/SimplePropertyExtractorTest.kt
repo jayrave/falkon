@@ -14,13 +14,16 @@ class SimplePropertyExtractorTest {
 
         val modelForTest = ModelForTest(1, 1, "test non-null string", "test nullable string")
 
-        assertThat(nonNullIntExtractor.extract(modelForTest)).isSameAs(modelForTest.nonNullInt)
-        assertThat(nullableIntExtractor.extract(modelForTest)).isSameAs(modelForTest.nullableInt)
-        assertThat(nonNullStringExtractor.extract(modelForTest)).isSameAs(
+        assertThat(nonNullIntExtractor.extractFrom(modelForTest)).isSameAs(modelForTest.nonNullInt)
+        assertThat(nullableIntExtractor.extractFrom(modelForTest)).isSameAs(
+                modelForTest.nullableInt
+        )
+
+        assertThat(nonNullStringExtractor.extractFrom(modelForTest)).isSameAs(
                 modelForTest.nonNullString
         )
 
-        assertThat(nullableStringExtractor.extract(modelForTest)).isSameAs(
+        assertThat(nullableStringExtractor.extractFrom(modelForTest)).isSameAs(
                 modelForTest.nullableString
         )
     }
@@ -33,8 +36,8 @@ class SimplePropertyExtractorTest {
 
         val modelForTest = ModelForTest(1, null, "test", null)
 
-        assertThat(nullableIntExtractor.extract(modelForTest)).isNull()
-        assertThat(nullableStringExtractor.extract(modelForTest)).isNull()
+        assertThat(nullableIntExtractor.extractFrom(modelForTest)).isNull()
+        assertThat(nullableStringExtractor.extractFrom(modelForTest)).isNull()
     }
 
 
