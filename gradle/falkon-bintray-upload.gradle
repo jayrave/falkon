@@ -32,27 +32,30 @@ artifacts {
 }
 
 bintray {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    File propertiesFile = project.rootProject.file('local.properties')
 
-    user = properties.getProperty('bintray.user')
-    key = properties.getProperty('bintray.apikey')
+    if (propertiesFile.exists()) {
+        Properties properties = new Properties()
+        properties.load(propertiesFile.newDataInputStream())
 
-    publish = false
+        user = properties.getProperty('bintray.user')
+        key = properties.getProperty('bintray.apikey')
+        publish = true
+        configurations = ['archives']
 
-    configurations = ['archives']
-    pkg {
-        repo = 'android'
-        name = bintrayUploadInfo.name
-        desc = bintrayUploadInfo.description
-        websiteUrl = FALKON_SITE_URL
-        vcsUrl = FALKON_GIT_URL
-        issueTrackerUrl = FALKON_ISSUES_URL
-        licenses = [ FALKON_LICENSE_SHORT_NAME ]
-        publicDownloadNumbers = true
-        version {
-            name = FALKON_VERSION
-            released = new Date()
+        pkg {
+            repo = 'android'
+            name = bintrayUploadInfo.name
+            desc = bintrayUploadInfo.description
+            websiteUrl = FALKON_SITE_URL
+            vcsUrl = FALKON_GIT_URL
+            issueTrackerUrl = FALKON_ISSUES_URL
+            licenses = [FALKON_LICENSE_SHORT_NAME]
+            publicDownloadNumbers = true
+            version {
+                name = FALKON_VERSION
+                released = new Date()
+            }
         }
     }
 }
