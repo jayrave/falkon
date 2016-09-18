@@ -24,13 +24,6 @@ buildscript {
             targetSdk        : 24
     ]
 
-    def privateVersionNumber = 0.1
-    ext.artifactsInfo = [
-            group        : 'com.jayrave.falkon',
-            versionNumber: privateVersionNumber,
-            versionString: privateVersionNumber.toPlainString()
-    ]
-
     ext.librariesVersions = [
             assertJ         : '1.7.1',
             h2              : '1.4.192',
@@ -84,7 +77,11 @@ ext.libraries = [
 ]
 
 
-allprojects {
+subprojects {
+
+    group = FALKON_GROUP
+    version = FALKON_VERSION
+
     repositories {
         jcenter()
     }
@@ -93,4 +90,15 @@ allprojects {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
+}
+
+// Task to upload all appropriately configured modules in a single stroke
+task bintrayUploadAllProjects
+subprojects {
+    afterEvaluate {
+        def bintrayUploadTask = project.tasks.findByPath("bintrayUpload")
+        if (bintrayUploadTask != null) {
+            bintrayUploadAllProjects.dependsOn(bintrayUploadTask)
+        }
+    }
 }
