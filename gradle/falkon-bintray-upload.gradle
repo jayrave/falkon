@@ -1,0 +1,58 @@
+/**
+ * Uploads the artifact & source to bintray.
+ *
+ *      'local.properties' file must have the following properties defined
+ *          - bintray.user
+ *          - bintray.apikey
+ *
+ *      Project must carry the following properties (example values are given)
+ *          - bintrayUploadInfo.name ==> 'falkon-core'
+ *          - bintrayUploadInfo.description ==> 'Provides the core'
+ */
+
+apply plugin: 'com.jfrog.bintray'
+
+if (project.hasProperty('android')) {
+    // Android libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+} else {
+    // Java libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+bintray {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    user = properties.getProperty('bintray.user')
+    key = properties.getProperty('bintray.apikey')
+
+    publish = false
+
+    configurations = ['archives']
+    pkg {
+        repo = 'android'
+        name = bintrayUploadInfo.name
+        desc = bintrayUploadInfo.description
+        websiteUrl = FALKON_SITE_URL
+        vcsUrl = FALKON_GIT_URL
+        issueTrackerUrl = FALKON_ISSUES_URL
+        licenses = [ FALKON_LICENSE_SHORT_NAME ]
+        publicDownloadNumbers = true
+        version {
+            name = FALKON_VERSION
+            released = new Date()
+        }
+    }
+}
