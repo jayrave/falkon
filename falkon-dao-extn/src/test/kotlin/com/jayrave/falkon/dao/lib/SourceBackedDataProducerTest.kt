@@ -1,6 +1,6 @@
-package com.jayrave.falkon.mapper.lib
+package com.jayrave.falkon.dao.lib
 
-import com.jayrave.falkon.mapper.testLib.SingleRowSource
+import com.jayrave.falkon.dao.testLib.SingleRowSource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

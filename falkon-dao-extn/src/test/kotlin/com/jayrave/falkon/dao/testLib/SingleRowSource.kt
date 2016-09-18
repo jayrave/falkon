@@ -1,4 +1,4 @@
-package com.jayrave.falkon.mapper.testLib
+package com.jayrave.falkon.dao.testLib
 
 import com.jayrave.falkon.engine.Source
 import java.util.*

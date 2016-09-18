@@ -1,8 +1,7 @@
-package com.jayrave.falkon.mapper.lib
+package com.jayrave.falkon.dao.lib
 
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.DataProducer
-import com.jayrave.falkon.mapper.exceptions.DataProducerException
 
 /**
  * A [DataProducer] that gets the required value from the underlying [Source]. Update the
@@ -28,7 +27,7 @@ internal class SourceBackedDataProducer(val source: Source) : DataProducer {
     private fun getValidColumnIndex(): Int {
         return when {
             columnIndex != INVALID_COLUMN_INDEX -> columnIndex
-            else -> throw DataProducerException("Calling #get without setting a column index")
+            else -> throw RuntimeException("Calling #get without setting a column index")
         }
     }
 

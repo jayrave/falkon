@@ -7,11 +7,12 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compile falkonModules.mapperBasic
+    compile falkonModules.mapper
     compile falkonModules.sqlBuilder
 
     compile libraries.kotlinStdlib
 
+    testCompile falkonModules.mapperBasic
     testCompile libraries.assertJ
     testCompile libraries.jUnit
     testCompile libraries.mockito

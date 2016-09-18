@@ -1,4 +1,4 @@
-package com.jayrave.falkon.mapper.lib
+package com.jayrave.falkon.dao.lib
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify

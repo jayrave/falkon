@@ -1,4 +1,4 @@
-package com.jayrave.falkon.mapper.lib
+package com.jayrave.falkon.dao.lib
 
 import java.io.Closeable
 

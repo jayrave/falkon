@@ -3,9 +3,9 @@ package com.jayrave.falkon.sample_android.daos
 import com.jayrave.falkon.dao.DaoImpl
 import com.jayrave.falkon.dao.findAll
 import com.jayrave.falkon.dao.findById
+import com.jayrave.falkon.dao.lib.extractAllModelsAndClose
 import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.select
-import com.jayrave.falkon.mapper.lib.extractAllModelsAndClose
 import com.jayrave.falkon.sample_android.ARG_PLACEHOLDER
 import com.jayrave.falkon.sample_android.Group
 import com.jayrave.falkon.sample_android.User
