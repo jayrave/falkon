@@ -32,17 +32,22 @@ dependencies {
 
     // Provides EnhancedTable interface & base implementations. By default, enhanced tables
     // also have `DAO`s associated with them
+    compile falkonModules.mapper
+    compile falkonModules.mapperBasic
     compile falkonModules.mapperEnhanced
 
     // Simple SQL builders
+    compile falkonModules.sqlBuilder
     compile falkonModules.sqlBuilderSimple
 
     // Engine implementation using the default SQLite in Android
+    compile falkonModules.engine
     compile falkonModules.engineAndroidSqlite
 
     // To get extension functionality on the DAO. This adds fancy functions to DAO, which
     // would allow inserting, updated & deleting models without using builders. Also simple
     // query methods like #findById & #findAll are provided too
+    compile falkonModules.dao
     compile falkonModules.daoExtn
 
     // ------------------------------------- Falkon modules ----------------------------------------

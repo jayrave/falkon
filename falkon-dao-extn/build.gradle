@@ -8,10 +8,16 @@ targetCompatibility = javaVersions.target
 
 dependencies {
     compileOnly falkonModules.dao
+    compileOnly falkonModules.engine
+    compileOnly falkonModules.mapper
     compile libraries.kotlinStdlib
 
+    testCompile falkonModules.dao
+    testCompile falkonModules.engine
     testCompile falkonModules.engineJdbc
+    testCompile falkonModules.mapper
     testCompile falkonModules.mapperBasic
+    testCompile falkonModules.sqlBuilder
     testCompile falkonModules.sqlBuilderSimple
     testCompile libraries.assertJ
     testCompile libraries.h2

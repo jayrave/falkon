@@ -10,6 +10,7 @@ dependencies {
     compileOnly falkonModules.sqlBuilder
     compile libraries.kotlinStdlib
 
+    testCompile falkonModules.sqlBuilder
     testCompile libraries.assertJ
     testCompile libraries.jUnit
 }
