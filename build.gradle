@@ -7,6 +7,8 @@ buildscript {
 
     def pluginsVersions = [
             android: '2.1.2',
+            androidMavenGradle: '1.5',
+            gradleBintray: '1.7',
             kotlin : baseVersions.kotlin
     ]
 
@@ -47,6 +49,8 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:${pluginsVersions.android}"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:${pluginsVersions.androidMavenGradle}"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${pluginsVersions.gradleBintray}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${pluginsVersions.kotlin}"
     }
 }
