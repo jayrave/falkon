@@ -1,8 +1,5 @@
 apply plugin: 'kotlin'
 
-group = artifactsInfo.group
-version = artifactsInfo.versionString
-
 sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
@@ -14,3 +11,21 @@ dependencies {
     testCompile libraries.mockito
     testCompile libraries.mockitoKotlin
 }
+
+ext {
+    mavenInstallInfo = [
+            artifactId: 'falkon-engine',
+            name: 'FalkonEngine',
+            description: 'Provides the `Engine` interface for falkon',
+            packagingType: 'jar'
+    ]
+
+    bintrayUploadInfo = [
+            'name': mavenInstallInfo.artifactId,
+            'description': mavenInstallInfo.description
+    ]
+}
+
+// Scripts should be applied after defining the required properties
+apply from: '../gradle/falkon-maven-install.gradle'
+apply from: '../gradle/falkon-bintray-upload.gradle'
