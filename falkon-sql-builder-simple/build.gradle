@@ -7,8 +7,8 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
+    compileOnly falkonModules.sqlBuilder
     compile libraries.kotlinStdlib
-    compile falkonModules.sqlBuilder
 
     testCompile libraries.assertJ
     testCompile libraries.jUnit
