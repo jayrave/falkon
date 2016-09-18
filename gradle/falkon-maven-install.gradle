@@ -1,0 +1,51 @@
+/**
+ * Installs the artifact to local maven installation directory. The following properties
+ * must be defined on the project before using this gradle file (example values are given)
+ *
+ *      - mavenInstallInfo.artifactId ==> 'falkon-core'
+ *      - mavenInstallInfo.name ==> 'FalkonCore'
+ *      - mavenInstallInfo.description ==> 'Provides the core'
+ *      - mavenInstallInfo.packagingType ==> 'aar' or 'jar'
+ */
+
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = FALKON_GROUP
+version = FALKON_VERSION
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                groupId FALKON_GROUP
+                url FALKON_SITE_URL
+
+                artifactId mavenInstallInfo.artifactId
+                name mavenInstallInfo.name
+                description mavenInstallInfo.description
+                packaging mavenInstallInfo.packagingType
+
+                licenses {
+                    license {
+                        name FALKON_LICENSE_NAME
+                        url FALKON_LICENSE_URL
+                    }
+                }
+
+                developers {
+                    developer {
+                        id FALKON_DEVELOPER_ID
+                        name FALKON_DEVELOPER_NAME
+                        email FALKON_DEVELOPER_EMAIL
+                    }
+                }
+
+                scm {
+                    connection FALKON_GIT_URL
+                    developerConnection FALKON_GIT_URL
+                    url FALKON_SITE_URL
+                }
+            }
+        }
+    }
+}
