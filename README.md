@@ -14,37 +14,37 @@ Clean & simple Object-Mapping (OM) to talk with the database for Android & Kotli
 ##Overview
 Falkon has been designed to be very modular. You can plug these modules together to make object mapping as featureful or as simple as possible.
 
-*Core modules:* Engine, Mapper & SqlBuilder
-*Non-core modules:* DAO
+- *Core modules:* Engine, Mapper & SqlBuilder
+- *Non-core modules:* DAO
 
 ###Engine
 Engine modules provide the functionality to talk with database engines. There are 3 such modules
 
- - `falkon-engine` => provides the interfaces
+ - `falkon-engine` => provides the interfaces (engine, compiled statement, logger etc.)
  - `falkon-engine-android-sqlite` => engine implementation to talk with Android's SQLite
  - `falkon-engine-jdbc` => engine implementation to talk with databases via JDBC
 
 ###Mapper
 Mapper modules provide a way to map Kotlin objects to database columns. There are 3 such modules
 
-- `falkon-mapper` => provides the interfaces
-- `falkon-mapper-basic` => provides basic mapping functionality
+- `falkon-mapper` => provides the interfaces (table, column, converter etc.)
+- `falkon-mapper-basic` => provides basic mapper implementation
 - `falkon-mapper-enhanced` => provides enhanced mapping functionality (basic + DAO)
 
 ###SqlBuilder
 SqlBuilder modules provide a way to build raw SQL to send to the database. There are 2 such modules
 
-- `falkon-sql-builder` => provides the interfaces
-- `falkon-sql-builder-simple` => provides basic implementation to build raw SQL
+- `falkon-sql-builder` => provides the interfaces (sql builder for insert, update, delete, query & create table statements)
+- `falkon-sql-builder-simple` => provides implementation to build raw SQL
 
 ###DAO
 DAO modules provide type-safe API to insert, update, delete & query. There are 2 such modules
 
 - `falkon-dao` => provides insert, update, delete & query builder interfaces & implementation
-- `falkon-dao-extn` => provides extension to `falkon-dao` like `insert(model)`, `update(model)`,  `delete(model)`, `deleteById(id)`, `queryById(id)` etc.
+- `falkon-dao-extn` => provides extension to dao like inserting, updating, deleting models & deleting, querying by id etc.
 
 ##Gradle dependencies
-All artifacts like in Bintray's `jcenter`
+All artifacts live in Bintray's `jcenter`
 
     compile com.jayrave.falkon:falkon-dao
     compile com.jayrave.falkon:falkon-dao-extn
@@ -63,8 +63,6 @@ For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engin
 
     compile com.jayrave.falkon:falkon-engine
     compile com.jayrave.falkon:falkon-engine-android-sqlite
-
-All the dependencies of all the modules are put down in the following table
 
 | Modules                      | Dependencies                                                                      |
 |------------------------------|-----------------------------------------------------------------------------------|
