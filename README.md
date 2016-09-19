@@ -1,1 +1,80 @@
-This is gonna be YUGE
+**NOTE: This library is still in its alpha!**
+
+#Falkon
+Clean & simple Object-Mapping (OM) to talk with the database for Android & Kotlin
+
+##Design Principles
+ - Domain models are untouched
+ - No implicit joins
+ - No active record pattern
+ - Minimal reflection (can be completely eschewed if desired)
+ - Generated SQL should be as clean as handwritten SQL
+ - Should be able to talk with different database engines/abstractions
+
+##Overview
+Falkon has been designed to be very modular. You can plug these modules together to make object mapping as featureful or as simple as possible.
+
+*Core modules:* Engine, Mapper & SqlBuilder
+*Non-core modules:* DAO
+
+###Engine
+Engine modules provide the functionality to talk with database engines. There are 3 such modules
+
+ - `falkon-engine` => provides the interfaces
+ - `falkon-engine-android-sqlite` => engine implementation to talk with Android's SQLite
+ - `falkon-engine-jdbc` => engine implementation to talk with databases via JDBC
+
+###Mapper
+Mapper modules provide a way to map Kotlin objects to database columns. There are 3 such modules
+
+- `falkon-mapper` => provides the interfaces
+- `falkon-mapper-basic` => provides basic mapping functionality
+- `falkon-mapper-enhanced` => provides enhanced mapping functionality (basic + DAO)
+
+###SqlBuilder
+SqlBuilder modules provide a way to build raw SQL to send to the database. There are 2 such modules
+
+- `falkon-sql-builder` => provides the interfaces
+- `falkon-sql-builder-simple` => provides basic implementation to build raw SQL
+
+###DAO
+DAO modules provide type-safe API to insert, update, delete & query. There are 2 such modules
+
+- `falkon-dao` => provides insert, update, delete & query builder interfaces & implementation
+- `falkon-dao-extn` => provides extension to `falkon-dao` like `insert(model)`, `update(model)`,  `delete(model)`, `deleteById(id)`, `queryById(id)` etc.
+
+##Gradle dependencies
+All artifacts like in Bintray's `jcenter`
+
+    compile com.jayrave.falkon:falkon-dao
+    compile com.jayrave.falkon:falkon-dao-extn
+    compile com.jayrave.falkon:falkon-engine
+    compile com.jayrave.falkon:falkon-engine-android-sqlite
+    compile com.jayrave.falkon:falkon-engine-jdbc
+    compile com.jayrave.falkon:falkon-mapper
+    compile com.jayrave.falkon:falkon-mapper-basic
+    compile com.jayrave.falkon:falkon-mapper-enhanced
+    compile com.jayrave.falkon:falkon-sql-builder
+    compile com.jayrave.falkon:falkon-sql-builder-simple
+
+**To use any module, its dependencies must also be included. These dependencies are NOT automatically included!**
+
+For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engine` is also required which means that the following 2 compile statements must be included
+
+    compile com.jayrave.falkon:falkon-engine
+    compile com.jayrave.falkon:falkon-engine-android-sqlite
+
+All the dependencies of all the modules are put down in the following table
+
+| Modules                      | Dependencies                                                                      |
+|------------------------------|-----------------------------------------------------------------------------------|
+| falkon-engine                | -                                                                                 |
+| falkon-engine-android-sqlite | falkon-engine                                                                     |
+| falkon-engine-jdbc           | falkon-engine                                                                     |
+| falkon-mapper                | falkon-engine                                                                     |
+| falkon-mapper-basic          | falkon-engine, falkon-mapper                                                      |
+| falkon-mapper-enhanced       | falkon-engine, falkon-mapper, falkon-sql-builder, falkon-mapper-basic, falkon-dao |
+| falkon-sql-builder           | -                                                                                 |
+| falkon-sql-builder-simple    | falkon-sql-builder                                                                |
+| falkon-dao                   | falkon-engine, falkon-mapper, falkon-sql-builder                                  |
+| falkon-dao-extn              | falkon-engine, falkon-mapper, falkon-sql-builder, falkon-dao                      |
