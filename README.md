@@ -46,23 +46,23 @@ DAO modules provide type-safe API to insert, update, delete & query. There are 2
 ##Gradle dependencies
 All artifacts live in Bintray's `jcenter`
 
-    compile com.jayrave.falkon:falkon-dao
-    compile com.jayrave.falkon:falkon-dao-extn
-    compile com.jayrave.falkon:falkon-engine
-    compile com.jayrave.falkon:falkon-engine-android-sqlite
-    compile com.jayrave.falkon:falkon-engine-jdbc
-    compile com.jayrave.falkon:falkon-mapper
-    compile com.jayrave.falkon:falkon-mapper-basic
-    compile com.jayrave.falkon:falkon-mapper-enhanced
-    compile com.jayrave.falkon:falkon-sql-builder
-    compile com.jayrave.falkon:falkon-sql-builder-simple
+    compile 'com.jayrave.falkon:falkon-dao:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-dao-extn:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-engine:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-engine-android-sqlite:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-engine-jdbc:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-mapper:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-mapper-basic:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-mapper-enhanced:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-sql-builder:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-sql-builder-simple:0.1-alpha'
 
 **To use any module, its dependencies must also be included. These dependencies are NOT automatically included!**
 
 For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engine` is also required which means that the following 2 compile statements must be included
 
-    compile com.jayrave.falkon:falkon-engine
-    compile com.jayrave.falkon:falkon-engine-android-sqlite
+    compile "com.jayrave.falkon:falkon-engine:$version"
+    compile "com.jayrave.falkon:falkon-engine-android-sqlite:$version"
 
 | Modules                      | Dependencies                                                                      |
 |------------------------------|-----------------------------------------------------------------------------------|
