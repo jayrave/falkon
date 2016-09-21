@@ -1,6 +1,6 @@
 **NOTE: This library is still in its alpha!**
 
-#Falkon
+#Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon)
 Clean & simple Object-Mapping (OM) to talk with the database for Android & Kotlin
 
 ##Design Principles
