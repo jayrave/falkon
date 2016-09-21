@@ -2,6 +2,7 @@ package com.jayrave.falkon.sqlBuilders
 
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
+import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 /**
@@ -12,8 +13,8 @@ interface QuerySqlBuilder {
     /**
      * @param [tableName] the table to query from
      * @param [distinct] `true` if you want each row to be unique, `false` otherwise
-     * @param [columns] A list of which columns to return, applied in iteration order.
-     * Passing null will return all columns
+     * @param [columns] A list of which columns (with potential aliases) to return, applied in
+     * iteration order. Passing null will return all columns (akin to using `*` projection)
      * @param [joinInfos] A list of join information, applied in iterator order used to build
      * the optional SQL JOIN clause. Passing null denotes no JOIN in the build SQL
      * @param [whereSections] A list of sections, applied in iteration order used to build
@@ -31,7 +32,7 @@ interface QuerySqlBuilder {
     fun build(
             tableName: String,
             distinct: Boolean,
-            columns: Iterable<String>?,
+            columns: Iterable<SelectColumnInfo>?,
             joinInfos: Iterable<JoinInfo>?,
             whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?,

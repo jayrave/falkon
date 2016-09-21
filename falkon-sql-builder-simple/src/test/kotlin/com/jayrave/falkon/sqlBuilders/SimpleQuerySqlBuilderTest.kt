@@ -2,6 +2,7 @@ package com.jayrave.falkon.sqlBuilders
 
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
+import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
@@ -29,20 +30,65 @@ class SimpleQuerySqlBuilderTest {
 
 
     @Test
-    fun testWithSingleSelectedColumn() {
-        val actualSql = callBuildQuerySqlFromParts(columns = listOf("column_name"))
+    fun testWithSingleSelectedColumnWithoutAlias() {
+        val actualSql = callBuildQuerySqlFromParts(
+                columns = listOf(SelectColumnInfoForTest("column_name", null))
+        )
+
         val expectedSql = "SELECT column_name FROM $tableName"
         assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
     @Test
-    fun testWithMultipleSelectedColumns() {
+    fun testWithSingleSelectedColumnWithAlias() {
         val actualSql = callBuildQuerySqlFromParts(
-                columns = listOf("column_name_1", "column_name_2")
+                columns = listOf(SelectColumnInfoForTest("column_name", "aliased_column_name"))
         )
 
+        val expectedSql = "SELECT column_name AS aliased_column_name FROM $tableName"
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun testWithMultipleSelectedColumnsWithoutAliases() {
+        val actualSql = callBuildQuerySqlFromParts(columns = listOf(
+                SelectColumnInfoForTest("column_name_1", null),
+                SelectColumnInfoForTest("column_name_2", null)
+        ))
+
         val expectedSql = "SELECT column_name_1, column_name_2 FROM $tableName"
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun testWithMultipleSelectedColumnsWithAliases() {
+        val actualSql = callBuildQuerySqlFromParts(columns = listOf(
+                SelectColumnInfoForTest("column_name_1", "aliased_column_name_1"),
+                SelectColumnInfoForTest("column_name_2", "aliased_column_name_2")
+        ))
+
+        val expectedSql = "SELECT " +
+                "column_name_1 AS aliased_column_name_1, " +
+                "column_name_2 AS aliased_column_name_2 FROM $tableName"
+
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun testWithMultipleSelectedColumnsWithAndWithoutAliases() {
+        val actualSql = callBuildQuerySqlFromParts(columns = listOf(
+                SelectColumnInfoForTest("column_name_1", null),
+                SelectColumnInfoForTest("column_name_2", "aliased_column_name_2")
+        ))
+
+        val expectedSql = "SELECT " +
+                "column_name_1, column_name_2 AS aliased_column_name_2 " +
+                "FROM $tableName"
+
         assertThat(actualSql).isEqualTo(expectedSql)
     }
 
@@ -172,9 +218,13 @@ class SimpleQuerySqlBuilderTest {
 
 
     @Test
-    fun testWithEverything() {
+    fun testWithEverythingWithoutAliases() {
         val actualSql = callBuildQuerySqlFromParts(
-                distinct = true, columns = listOf("column_name_1", "column_name_2"),
+                distinct = true,
+                columns = listOf(
+                        SelectColumnInfoForTest("column_name_1", null),
+                        SelectColumnInfoForTest("column_name_2", null)
+                ),
                 joinInfos = listOf(JoinInfoForTest(
                         JoinInfo.Type.INNER_JOIN, "$tableName.column_name_1",
                         "table_2", "table_2.column_name_1"
@@ -202,13 +252,16 @@ class SimpleQuerySqlBuilderTest {
 
 
     @Test
-    fun testWithEverythingWithAliases() {
+    fun testWithEverythingWithAndWithoutAliases() {
         val actualSql = callBuildQuerySqlFromParts(
-                tableName = "$tableName AS t1",
-                distinct = true, columns = listOf("column_name_1 AS t1c1", "column_name_2 AS t1c2"),
+                tableName = "$tableName",
+                distinct = true,
+                columns = listOf(
+                        SelectColumnInfoForTest("column_name_1", null),
+                        SelectColumnInfoForTest("column_name_2", "cn2")
+                ),
                 joinInfos = listOf(JoinInfoForTest(
-                        JoinInfo.Type.INNER_JOIN, "t1c1",
-                        "table_2 AS t2", "t2.column_name_1"
+                        JoinInfo.Type.INNER_JOIN, "column_name_1", "table_2", "column_name_2"
                 )),
                 whereSections = listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_3"),
@@ -221,9 +274,9 @@ class SimpleQuerySqlBuilderTest {
         )
 
         @Suppress("ConvertToStringTemplate")
-        val expectedSql = "SELECT DISTINCT column_name_1 AS t1c1, column_name_2 AS t1c2 " +
-                "FROM $tableName AS t1 " +
-                "INNER JOIN table_2 AS t2 ON t1c1 = t2.column_name_1 " +
+        val expectedSql = "SELECT DISTINCT column_name_1, column_name_2 AS cn2 " +
+                "FROM $tableName " +
+                "INNER JOIN table_2 ON column_name_1 = column_name_2 " +
                 "WHERE column_name_3 = ? AND column_name_4 = ? " +
                 "GROUP BY column_name_5 " +
                 "ORDER BY column_name_6 DESC " +
@@ -235,7 +288,7 @@ class SimpleQuerySqlBuilderTest {
 
     private fun callBuildQuerySqlFromParts(
             tableName: String = this.tableName, distinct: Boolean = false,
-            columns: Iterable<String>? = null, joinInfos: Iterable<JoinInfo>? = null,
+            columns: Iterable<SelectColumnInfo>? = null, joinInfos: Iterable<JoinInfo>? = null,
             whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
             orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
             String {
@@ -246,6 +299,11 @@ class SimpleQuerySqlBuilderTest {
                 orderBy = orderBy, limit = limit, offset = offset, argPlaceholder = "?"
         )
     }
+
+
+    private class SelectColumnInfoForTest(
+            override val columnName: String,
+            override val alias: String?) : SelectColumnInfo
 
 
     private class JoinInfoForTest(

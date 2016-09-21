@@ -2,7 +2,7 @@ package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.lib.extractAllModelsAndClose
 import com.jayrave.falkon.dao.lib.extractFirstModelAndClose
-import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.lib.uniqueNameInDb
 
 /**
  * @return [T] that has the passed in [ID] as its primary key
@@ -13,7 +13,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.findById(id: ID): T? {
             .eq(table.idColumn, id)
             .limit(1) // to be defensive
             .compile()
-            .extractFirstModelAndClose(table) { it.qualifiedName }
+            .extractFirstModelAndClose(table) { it.uniqueNameInDb }
 }
 
 
@@ -23,5 +23,5 @@ fun <T: Any, ID : Any> Dao<T, ID>.findById(id: ID): T? {
 fun <T: Any, ID : Any> Dao<T, ID>.findAll(): List<T> {
     return queryBuilder()
             .compile()
-            .extractAllModelsAndClose(table) { it.qualifiedName }
+            .extractAllModelsAndClose(table) { it.uniqueNameInDb }
 }

@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.where.lenient
 
 import com.jayrave.falkon.dao.lib.IterablesBackedIterable
-import com.jayrave.falkon.dao.lib.getAppropriateName
+import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereImpl
 import com.jayrave.falkon.engine.TypedNull
@@ -460,6 +460,14 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
         private fun throwIfSectionsIfEmpty(sections: List<ArgAwareWhereSection>, error: String) {
             if (sections.isEmpty()) {
                 throw SQLSyntaxErrorException(error)
+            }
+        }
+
+
+        private fun Column<*, *>.getAppropriateName(qualifyColumnName: Boolean): String {
+            return when (qualifyColumnName) {
+                true -> qualifiedName
+                else -> name
             }
         }
     }

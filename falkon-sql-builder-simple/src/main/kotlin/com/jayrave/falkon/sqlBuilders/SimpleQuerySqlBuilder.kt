@@ -2,12 +2,13 @@ package com.jayrave.falkon.sqlBuilders
 
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
+import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 class SimpleQuerySqlBuilder : QuerySqlBuilder {
 
     override fun build(
-            tableName: String, distinct: Boolean, columns: Iterable<String>?,
+            tableName: String, distinct: Boolean, columns: Iterable<SelectColumnInfo>?,
             joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
             offset: Long?, argPlaceholder: String): String {
@@ -42,9 +43,16 @@ class SimpleQuerySqlBuilder : QuerySqlBuilder {
     }
 
 
-    private fun StringBuilder.addColumnsToBeSelected(columns: Iterable<String>?) {
+    private fun StringBuilder.addColumnsToBeSelected(columns: Iterable<SelectColumnInfo>?) {
         append(' ') // Add separator
-        val columnSelection = columns.joinToStringIfHasItems { it }
+        val columnSelection = columns.joinToStringIfHasItems {
+            val alias = it.alias
+            when (alias) {
+                null -> it.columnName
+                else -> "${it.columnName} AS $alias"
+            }
+        }
+
         when (isValidPart(columnSelection)) {
             true -> append(columnSelection) // Add comma separated column names
             else -> append("*") // No columns were exclusively requested. Get back all

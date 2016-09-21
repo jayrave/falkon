@@ -1,16 +1,32 @@
 package com.jayrave.falkon.dao.query.testLib
 
+import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.lib.uniqueNameInDb
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
+import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import org.assertj.core.api.Assertions
 
-const val ARG_PLACEHOLDER = "?"
+internal const val ARG_PLACEHOLDER = "?"
+
+internal fun Column<*, *>.buildSelectColumnInfoForTest(): SelectColumnInfo {
+    return SelectColumnInfoForTest(qualifiedName, uniqueNameInDb)
+}
+
+
+internal fun buildColumnInfoList(vararg tables: Table<*, *>): Iterable<SelectColumnInfo> {
+    return tables
+            .flatMap { it.allColumns }
+            .map { it.buildSelectColumnInfoForTest() }
+}
 
 
 internal fun assertQueryEquality(actualQuery: Query, expectedQuery: Query) {
@@ -21,7 +37,7 @@ internal fun assertQueryEquality(actualQuery: Query, expectedQuery: Query) {
 
 internal fun buildQuerySql(
         tableName: String, querySqlBuilder: QuerySqlBuilder, distinct: Boolean = false,
-        columns: Iterable<String>? = null, joinInfos: Iterable<JoinInfo>? = null,
+        columns: Iterable<SelectColumnInfo>, joinInfos: Iterable<JoinInfo>? = null,
         whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
         orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
         String {
@@ -33,6 +49,12 @@ internal fun buildQuerySql(
             argPlaceholder = ARG_PLACEHOLDER
     )
 }
+
+
+
+internal data class SelectColumnInfoForTest(
+        override val columnName: String, override val alias: String?) :
+        SelectColumnInfo
 
 
 

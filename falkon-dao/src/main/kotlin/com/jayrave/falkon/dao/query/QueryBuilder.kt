@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.query
 
+import com.jayrave.falkon.dao.lib.uniqueNameInDb
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
@@ -7,7 +8,8 @@ import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 
 /**
- * All column names will be qualified in the built SELECT SQL statement
+ * All the columns have unique names in the result set (the result of running this query
+ * against the database). [uniqueNameInDb] should be used for this purpose
  */
 interface QueryBuilder<T : Any> : AdderOrEnder<T, QueryBuilder<T>> {
 

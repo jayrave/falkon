@@ -1,7 +1,9 @@
 package com.jayrave.falkon.dao.query.lenient
 
 import com.jayrave.falkon.dao.lib.IterableBackedIterable
+import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.lib.uniqueNameInDb
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
@@ -15,6 +17,7 @@ import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
 import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
+import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import java.util.*
 import com.jayrave.falkon.dao.where.lenient.AdderOrEnder as WhereAdderOrEnder
 
@@ -73,7 +76,7 @@ internal class QueryBuilderImpl(
 
         joinInfoList!!.add(JoinInfoImpl(
                 JoinInfo.Type.INNER_JOIN, column.qualifiedName,
-                onColumn.table.name, onColumn.qualifiedName
+                onColumn.qualifiedName, onColumn.table
         ))
 
         return this
@@ -121,10 +124,7 @@ internal class QueryBuilderImpl(
             orderByInfoList = LinkedList()
         }
 
-        orderByInfoList!!.add(OrderInfoImpl(
-                column.qualifiedName, ascending
-        ))
-
+        orderByInfoList!!.add(OrderInfoImpl(column.qualifiedName, ascending))
         return this
     }
 
@@ -143,22 +143,10 @@ internal class QueryBuilderImpl(
 
     override fun build(): Query {
         val where = whereBuilder?.build()
-
-        val tempSelectedColumns = selectedColumns
-        val columns = when (tempSelectedColumns) {
-            null -> null
-            else -> IterableBackedIterable(tempSelectedColumns) { it.qualifiedName }
-        }
-
-        val tempGroupByColumns = groupByColumns
-        val groupBy = when (tempGroupByColumns) {
-            null -> null
-            else -> IterableBackedIterable(tempGroupByColumns) { it.qualifiedName }
-        }
-
         val sql = querySqlBuilder.build(
-                table.name, distinct, columns, joinInfoList, where?.whereSections, groupBy,
-                orderByInfoList, limitCount, offsetCount, argPlaceholder
+                table.name, distinct, buildSelectColumnInfoList(), joinInfoList,
+                where?.whereSections, buildGroupByList(), orderByInfoList, limitCount,
+                offsetCount, argPlaceholder
         )
 
         return QueryImpl(sql, where?.arguments ?: emptyList())
@@ -179,6 +167,24 @@ internal class QueryBuilderImpl(
         return table.configuration.engine
                 .compileQuery(concernedTableNames, query.sql)
                 .closeIfOpThrows { bindAll(query.arguments) }
+    }
+
+
+    private fun buildSelectColumnInfoList(): Iterable<SelectColumnInfo> {
+        val tempSelectedColumns =
+                selectedColumns ?:
+                getUniqueTablesInQuery(table, joinInfoList).buildColumnList()
+
+        return tempSelectedColumns.buildColumnInfoList()
+    }
+
+
+    private fun buildGroupByList(): Iterable<String>? {
+        val tempGroupByColumns = groupByColumns
+        return when (tempGroupByColumns) {
+            null -> null
+            else -> IterableBackedIterable(tempGroupByColumns) { it.qualifiedName }
+        }
     }
 
 
@@ -258,14 +264,45 @@ internal class QueryBuilderImpl(
     private data class JoinInfoImpl(
             override val type: JoinInfo.Type,
             override val qualifiedLocalColumnName: String,
-            override val nameOfTableToJoin: String,
-            override val qualifiedColumnNameFromTableToJoin: String
-    ) : JoinInfo
+            override val qualifiedColumnNameFromTableToJoin: String,
+            val tableToJoin: Table<*, *>) : JoinInfo {
+
+        override val nameOfTableToJoin: String get() = tableToJoin.name
+    }
 
 
 
     private data class OrderInfoImpl(
             override val columnName: String,
-            override val ascending: Boolean
-    ) : OrderInfo
+            override val ascending: Boolean) : OrderInfo
+
+
+
+    companion object {
+
+        private fun getUniqueTablesInQuery(
+                primaryTable: Table<*, *>, joinInfoList: Iterable<JoinInfoImpl>?):
+                Iterable<Table<*, *>> {
+
+            val set = LinkedHashSet<Table<*, *>>()
+            set.add(primaryTable)
+            joinInfoList?.forEach { set.add(it.tableToJoin) }
+            return set
+        }
+
+
+        private fun Iterable<Table<*, *>>.buildColumnList(): Iterable<Column<*, *>> {
+            return IterablesBackedIterable(map { it.allColumns })
+        }
+
+
+        private fun Iterable<Column<*, *>>.buildColumnInfoList(): Iterable<SelectColumnInfo> {
+            return IterableBackedIterable(this) {
+                object : SelectColumnInfo {
+                    override val columnName: String get() = it.qualifiedName
+                    override val alias: String? get() = it.uniqueNameInDb
+                }
+            }
+        }
+    }
 }

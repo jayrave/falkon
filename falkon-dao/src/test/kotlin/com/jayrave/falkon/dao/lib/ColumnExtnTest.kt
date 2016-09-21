@@ -1,7 +1,7 @@
 package com.jayrave.falkon.dao.lib
 
 import com.jayrave.falkon.dao.testLib.TableForTest
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ColumnExtnTest {
@@ -14,15 +14,8 @@ class ColumnExtnTest {
 
 
     @Test
-    fun testGetAppropriateNameWithQualifiedName() {
+    fun testUniqueNameInDbProperty() {
         val table = TableForTest("table_for_test")
-        assertThat(table.long.getAppropriateName(true)).isEqualTo("table_for_test.long")
-    }
-
-
-    @Test
-    fun testGetAppropriateNameWithoutQualifiedName() {
-        val table = TableForTest("table_for_test")
-        assertThat(table.long.getAppropriateName(false)).isEqualTo("long")
+        assertThat(table.long.uniqueNameInDb).isEqualTo("table_for_test_long")
     }
 }

@@ -1,9 +1,10 @@
 package com.jayrave.falkon.dao.where
 
-import com.jayrave.falkon.dao.lib.getAppropriateName
+import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.testLib.ModelForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.assertWhereEquality
+import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.CompoundConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.*
@@ -122,5 +123,16 @@ class WhereBuilderImplTest {
 
         override fun and() = delegate.and()
         override fun or() = delegate.or()
+    }
+
+
+
+    companion object {
+        private fun Column<*, *>.getAppropriateName(qualifyColumnName: Boolean): String {
+            return when (qualifyColumnName) {
+                true -> qualifiedName
+                else -> name
+            }
+        }
     }
 }
