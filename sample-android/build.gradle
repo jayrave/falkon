@@ -28,30 +28,36 @@ android {
 
 dependencies {
 
-    // ------------------------------------- Falkon modules ----------------------------------------
-
-    // Engine implementation using the default SQLite in Android
-    compile 'com.jayrave.falkon:falkon-engine:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-engine-android-sqlite:0.1-alpha'
-
-    // Provides EnhancedTable interface & base implementations. By default, enhanced tables
-    // also have `DAO`s associated with them
-    compile 'com.jayrave.falkon:falkon-mapper:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-mapper-basic:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-mapper-enhanced:0.1-alpha'
-
-    // Simple SQL builders
-    compile 'com.jayrave.falkon:falkon-sql-builder:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-sql-builder-simple:0.1-alpha'
-
-    // To get extension functionality on the DAO. This adds fancy functions to DAO, which
-    // would allow inserting, updated & deleting models without using builders. Also simple
-    // query methods like #findById & #findAll are provided too
-    compile 'com.jayrave.falkon:falkon-dao:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-dao-extn:0.1-alpha'
-
-    // ------------------------------------- Falkon modules ----------------------------------------
+    String falkonVersion = '0.2-alpha'
+    compile "com.jayrave.falkon:falkon-android:$falkonVersion"
 
     compile libraries.kotlinStdlib
     compile libraries.supportAppCompat
+
+    // ----------------------------------------- Advanced ------------------------------------------
+
+//    // If `falkon-android` is too heavy, since it is designed to be modular, you can pick
+//    // and choose the modules you want.
+//
+//    // Engine implementation using the default SQLite in Android
+//    compile "com.jayrave.falkon:falkon-engine:$falkonVersion"
+//    compile "com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion"
+//
+//    // Provides EnhancedTable interface & base implementations. By default, enhanced tables
+//    // also have `DAO`s associated with them
+//    compile "com.jayrave.falkon:falkon-mapper:$falkonVersion"
+//    compile "com.jayrave.falkon:falkon-mapper-basic:$falkonVersion"
+//    compile "com.jayrave.falkon:falkon-mapper-enhanced:$falkonVersion"
+//
+//    // Simple SQL builders
+//    compile "com.jayrave.falkon:falkon-sql-builder:$falkonVersion"
+//    compile "com.jayrave.falkon:falkon-sql-builder-simple:$falkonVersion"
+//
+//    // To get extension functionality on the DAO. This adds fancy functions to DAO, which
+//    // would allow inserting, updated & deleting models without using builders. Also simple
+//    // query methods like #findById & #findAll are provided too
+//    compile "com.jayrave.falkon:falkon-dao:$falkonVersion"
+//    compile "com.jayrave.falkon:falkon-dao-extn:$falkonVersion"
+
+    // ----------------------------------------- Advanced ------------------------------------------
 }
