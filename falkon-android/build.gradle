@@ -1,0 +1,59 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion androidConstants.compileSdk
+    buildToolsVersion androidConstants.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion androidConstants.minSdk
+        targetSdkVersion androidConstants.targetSdk
+    }
+
+    compileOptions {
+        sourceCompatibility javaVersions.source
+        targetCompatibility javaVersions.target
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+}
+
+dependencies {
+    // Provides engine interface & implementation
+    compile falkonModules.engine
+    compile falkonModules.engineAndroidSqlite
+
+    // Provides mapper interface & implementation (basic & enhanced)
+    compile falkonModules.mapper
+    compile falkonModules.mapperBasic
+    compile falkonModules.mapperEnhanced
+
+    // Provides SQL builder interface & implementation
+    compile falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilderSimple
+
+    // Provides DAO & its extension
+    compile falkonModules.dao
+    compile falkonModules.daoExtn
+}
+
+ext {
+    mavenInstallInfo = [
+            artifactId: 'falkon-android',
+            name: 'FalkonAndroid',
+            description: 'Object-Mapping for Android\'s SQLite',
+            packagingType: 'aar'
+    ]
+
+    bintrayUploadInfo = [
+            'name': mavenInstallInfo.artifactId,
+            'description': mavenInstallInfo.description
+    ]
+}
+
+// Scripts should be applied after defining the required properties
+apply from: '../gradle/falkon-maven-install.gradle'
+apply from: '../gradle/falkon-bintray-upload.gradle'
