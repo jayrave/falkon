@@ -1,17 +1,186 @@
 **NOTE: This library is still in its alpha!**
 
 #Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon)
-Clean & simple Object-Mapping (OM) to talk with the database for Android & Kotlin
+Clean & simple API to talk with the database (for Android & Kotlin)
 
 ##Design Principles
- - Domain models are untouched
- - No implicit joins
- - No active record pattern
- - Minimal reflection (can be completely eschewed if desired)
- - Generated SQL should be as clean as handwritten SQL
- - Should be able to talk with different database engines/abstractions
+ - Should let domain models untouched
+ - Should keep reflection to a minimum<sup>1</sup>
+ - Should generate SQL that is as clean as handwritten SQL
+ - Should be able to talk with different database engines
+ - Should be modular to let the users pick & choose the functionalities they want
+ - Should let users write raw SQL if they desire
+ - Shouldn't do implicit joins
 
-##Overview
+<sup>1</sup> Reflection can be completely removed if need be
+
+##What can it do?
+- Talk with different databases. Out of the box support is available for Android's SQLite & JDBC
+- An easy way to express how domain models are mapped to tables
+- A type-safe way to insert into, update, delete from & query the tables
+
+**NOTE:** Falkon isn't a traditional ORM (object relational mapping). Although it does a great job at OM (object mapping), relationships aren't taken care of i.e., foreign fields are not automatically converted into foreign objects. This makes sure that not a lot of unneeded data is loaded from the db (in case of a lengthy chain of foreign fields) and forces the user to think about writing queries that just loads what they want (hopefully)
+
+##Dependency
+The following is true for an Android gradle project. For more configurations, check out the advanced section
+```
+// This is usually in the top-level build.gradle file
+allprojects {
+    repositories {
+        jcenter() // Since all Falkon artifacts live in Bintray's jCenter
+    }
+}
+
+// Include this in the module you wish to use Falkon in
+dependencies {
+    compile "com.jayrave.falkon:falkon-android:$falkonVersion"
+}
+```
+
+##Simple tutorial
+Let's look at the model that we will be saving to / retrieving from the database
+
+```
+// There is no need for the model to be a data class or to just contain read-only fields!
+// These are just good recommendations (immutability for the win)
+data class User(
+        val id: UUID,
+        val name: String,
+        val age: Int?,
+        val address: String?,
+        val lastSeenAt: Date
+)
+```
+
+###TableConfiguration
+Every table needs a configuration. This carries information like
+- The database engine this table will talk with
+- Converters to convert between Kotlin & SQL types
+
+####Engine
+There is a default implementation => `DefaultEngine`. This guy needs a core to talk with the actual database. To talk with Android's SQLite use `AndroidSqliteEngineCore`
+
+```
+val engine = DefaultEngine(AndroidSqliteEngineCore(new YourSqliteOpenHelper()))
+```
+
+There is a default implementation of `TableConfiguration` => `TableConfigurationImpl`. To build it, in addition to an engine, some more stuff are required.
+
+```
+val tableConfiguration = TableConfigurationImpl(
+        engine = engine, // The engine we just built
+        typeTranslator = AndroidSqliteTypeTranslator(), // How Kotlin types are stored in this particular db
+        nameFormatter = CamelCaseToSnakeCaseFormatter() // How to derive table column name from object field name
+)
+
+// Converters must be registered to inform how to handle data conversion between
+// Kotlin & database types. Converters are provided for all default types - Byte,
+// Boolean, Char, Short, Int, Float, Long, Double & even for Enum types.
+tableConfiguration.registerDefaultConverters()
+
+// You can register your custom converters too
+// tableConfiguration.registerForNullableType()
+```
+
+###Table
+Tables inform Falkon about how a model maps to a table. `BaseEnhancedTable` provides
+a lot of defaults & is a good class to extend for you table mappings
+
+```
+class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
+        BaseEnhancedTable<User, UUID, UsersDao>(
+                "users", configuration, sqlBuilders.createTableSqlBuilder) {
+
+    val id = col(name = "id", User::id)
+    val name = col(User::name, maxSize = 255) // If a name isn't given, it will be derived from the field name
+    val age = col(User::age, isNonNull = false) // isNonNull adds NOT NULL to the column definition
+    val address = col(User::address, isUnique = true) // isNonNull adds UNIQUE to the column definition
+    val lastSeenAt = col(User::lastSeenAt, converter = dateConverter) // Custom converters can be specified
+
+    override val idColumn: EnhancedColumn<User, UUID> get() = id // This points to the primary key
+    override val dao: UsersDao = UsersDao(this, sqlBuilders) // DAO associated with this table
+    override fun create(value: Value<User>): User {
+        return User(value of id, value of name, value of age, value of address, value of lastSeenAt)
+    }
+}
+```
+
+###DAO
+All the builders (for insert, update, delete & query) in the following section are context aware (suggests appropriate methods at appropriate time when used as a fluent-interface) & are type-safe
+
+####Insert
+```
+// Models can be directly inserted
+usersTable.dao.insert(createRandomUser())
+usersTable.dao.insert(listOf(createRandomUser(), createRandomUser(), createRandomUser()))
+
+// An InsertBuilder is provided for greater flexibility
+usersTable.dao.insertBuilder()
+    .set(usersTable.id, UUID.randomUUID())
+    .set(usersTable.age, 42)
+    .insert()
+```
+
+####Update
+```
+// Models can be directly updated
+usersTable.dao.update(editedUser)
+usersTable.dao.update(listOf(editedUser1, editedUser2))
+
+// An UpdateBuilder is provided for greater flexibility
+usersTable.dao.updateBuilder()
+        .set(usersTable.lastSeenAt, Date())
+        .where()
+        .eq(usersTable.id, newUsers.first().id)
+        .update()
+```
+
+####Delete
+```
+// Models can be directly deleted
+usersTable.dao.delete(user)
+usersTable.dao.delete(listOf(user1, user2))
+
+// Models can be deleted by IDs too
+usersTable.dao.deleteById(user.id)
+usersTable.dao.deleteById(listOf(user1.id, user2.id))
+
+// A DeleteBuilder is provided for greater flexibility
+usersTable.dao.deleteBuilder()
+        .where()
+        .eq(usersTable.id, newUsers.first().id)
+        .delete()
+```
+
+####Query
+```
+// There are several convenience methods
+usersTable.dao.findById(user.id)
+usersTable.dao.findAll()
+
+// A QueryBuilder is provided for greater flexibility
+usersTable.dao.queryBuilder()
+        .where()
+        .gt(usersTable.lastSeenAt, thresholdDate)
+        .compile()
+        .extractAllModelsAndClose(usersTable) { it.qualifiedName }
+```
+
+##Going deeper
+There are a lot more features to discover
+- Logger (to log all SQL, along with the arguments)
+- DbEventListener (get notified on insert, update & delete events)
+- Transactions (nested transactions are supported too)
+- Compiled statements (for performance & re-use)
+- Type-safe JOIN capable query builder
+- etc.
+
+To learn more check out
+- [Sample project](https://github.com/jayrave/falkon/tree/master/sample-android)
+- Unit tests
+- Dive into source code (it is open-source :))
+
+##Advanced: pick & choose the modules
 Falkon has been designed to be very modular. You can plug these modules together to make object mapping as featureful or as simple as possible.
 
 - *Core modules:* Engine, Mapper & SqlBuilder
