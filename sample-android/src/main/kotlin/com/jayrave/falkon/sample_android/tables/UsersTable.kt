@@ -40,7 +40,7 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     val address = col(User::address)
 
     /**
-     * isNonNull adds UNIQUE to the column definition in the built CREATE TABLE statement.
+     * isUnique adds UNIQUE to the column definition in the built CREATE TABLE statement.
      * If multiple columns should be involved in the UNIQUE constraint, take a look at
      * [BaseEnhancedTable.addUniquenessConstraint]
      */

@@ -79,7 +79,8 @@ val tableConfiguration = TableConfigurationImpl(
 tableConfiguration.registerDefaultConverters()
 
 // You can register your custom converters too
-// tableConfiguration.registerForNullableType()
+// tableConfiguration.registerForNonNullType(Date::class.java, YourCustomDateConverter())
+// tableConfiguration.registerForNullableType(UUID::class.java, YourCustomUuidConverter(), true)
 ```
 
 ###Table
@@ -94,7 +95,7 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     val id = col(name = "id", User::id)
     val name = col(User::name, maxSize = 255) // If a name isn't given, it will be derived from the field name
     val age = col(User::age, isNonNull = false) // isNonNull adds NOT NULL to the column definition
-    val address = col(User::address, isUnique = true) // isNonNull adds UNIQUE to the column definition
+    val address = col(User::address, isUnique = true) // isUnique adds UNIQUE to the column definition
     val lastSeenAt = col(User::lastSeenAt, converter = dateConverter) // Custom converters can be specified
 
     override val idColumn: EnhancedColumn<User, UUID> get() = id // This points to the primary key
