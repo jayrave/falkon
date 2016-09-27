@@ -1,9 +1,12 @@
 package com.jayrave.falkon.engine
 
 /**
+ * A default implementation of [Engine] that takes care of nesting transactions & also
+ * informing [DbEventListener] about [DbEvent]s
+ *
  * @param engineCore that does the actual compilation of the SQL statements
  * @param logger to pass the SQL & bound arguments on executing a [CompiledStatement].
- * **DO NOT USE [Logger] in PRODUCTION**
+ * **PLEASE DO NOT USE [Logger] in PRODUCTION**
  */
 class DefaultEngine(
         private val engineCore: EngineCore, private val logger: Logger? = null) :

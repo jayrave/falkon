@@ -13,7 +13,7 @@ interface Logger {
 
     /**
      * Called when the execution of the passed in SQL statement for the arguments
-     * was a failure (an exception as thrown)
+     * was a failure (an exception was thrown)
      */
     fun onExecutionFailed(sql: String, arguments: Iterable<Any?>)
 }

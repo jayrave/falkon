@@ -3,7 +3,7 @@ package com.jayrave.falkon.engine
 import java.io.Closeable
 
 /**
- * This interface provides random read-write access to the result set returned by a database query.
+ * This interface provides random read access to the result set returned by a database query.
  * [Source] implementations are not required to be synchronized so code using a Source from
  * multiple threads should perform its own synchronization
  */
@@ -19,12 +19,11 @@ interface Source : Closeable {
      */
     val position: Int
 
-
     /**
      * Move the source by a relative amount, forward or backward, from the
      * current position. Positive offsets move forwards, negative offsets move
      * backwards. If the value is too large, the position is moved after the last row,
-     * if if the value is too small it is moved before the first row
+     * if the value is too small it is moved before the first row
      *
      * [offset] the offset to be applied from the current position (1-based)
      * @return whether the requested move fully succeeded
@@ -33,7 +32,7 @@ interface Source : Closeable {
 
     /**
      * Move the source to an absolute position. The valid range of values is [1, [count]].
-     * If the value is too large, the position is moved after the last row, if if the value
+     * If the value is too large, the position is moved after the last row, if the value
      * is too small it is moved before the first row
      *
      * [position] the 1-based position to move to

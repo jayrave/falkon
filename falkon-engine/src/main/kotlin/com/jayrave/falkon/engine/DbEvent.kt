@@ -1,5 +1,9 @@
 package com.jayrave.falkon.engine
 
+/**
+ * Carries the type of event that took place (insert, update or delete) &
+ * the table it took place in
+ */
 data class DbEvent private constructor(val type: Type, val tableName: String) {
 
     enum class Type {
@@ -18,6 +22,9 @@ data class DbEvent private constructor(val type: Type, val tableName: String) {
 }
 
 
+/**
+ * Interface definition for callbacks to be invoked when a [DbEvent] takes place
+ */
 interface DbEventListener {
     fun onEvent(dbEvent: DbEvent)
     fun onEvents(dbEvents: Iterable<DbEvent>)
