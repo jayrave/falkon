@@ -39,10 +39,7 @@ class BaseEnhancedTableTest {
         val foreignTable = ForeignTableForTest()
         class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            val int = foreignCol(
-                    ModelForTest::int, foreignTable = foreignTable,
-                    foreignColumn = foreignTable.idColumn
-            )
+            val int = foreignCol(ModelForTest::int, foreignColumn = foreignTable.idColumn)
         }
 
         val table = TableForTest()
@@ -139,16 +136,12 @@ class BaseEnhancedTableTest {
         val foreignTable2 = ForeignTableForTest2()
         class TableForTest : BaseEnhancedTableForTest() {
             override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
-            val int = foreignCol(
-                    ModelForTest::int, foreignTable = foreignTable1,
-                    foreignColumn = foreignTable1.idColumn
-            )
-
+            val int = foreignCol(ModelForTest::int, foreignColumn = foreignTable1.idColumn)
             val string = col(ModelForTest::string, maxSize = 128, isNonNull = true, isUnique = true)
             val nullableInt = col(ModelForTest::nullableInt)
             val nullableString = foreignCol(
-                    ModelForTest::nullableString, foreignTable = foreignTable2,
-                    foreignColumn = foreignTable2.idColumn, isNonNull = true
+                    ModelForTest::nullableString, foreignColumn = foreignTable2.idColumn,
+                    isNonNull = true
             )
 
             init {

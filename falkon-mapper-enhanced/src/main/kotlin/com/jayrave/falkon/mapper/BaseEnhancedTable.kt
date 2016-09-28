@@ -44,6 +44,20 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
     }
 
 
+    /**
+     * Any [Column] created by calling this method will be automatically added to [allColumns]
+     *
+     * @param property the kotlin property this column corresponds to
+     * @param name of this column. If it isn't provided, [configuration.nameFormatter]
+     * formatted name of [property] is used
+     * @param maxSize of this column. If it is `null`, column size isn't bounded
+     * @param isNonNull whether this column accepts `null` values; `false` by default
+     * @param isUnique whether this column expects all values to be unique; `false` by default
+     * @param converter to convert [C] from/to appropriate SQL type. If it isn't
+     * provided, whatever [configuration] returns for [property]'s type is used
+     * @param propertyExtractor to extract the property from an instance of [T]. If it isn't
+     * provided, [property.get] is used
+     */
     inline fun <reified C> col(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
@@ -55,37 +69,61 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             EnhancedColumn<T, C> {
 
         return addColumn<C, Any, Any?>(
-                name, maxSize, isNonNull, isUnique, null, null,
+                name, maxSize, isNonNull, isUnique, null,
                 converter, propertyExtractor
         )
     }
 
 
+    /**
+     * Any [Column] created by calling this method will be automatically added to [allColumns]
+     *
+     * @param property the kotlin property this column corresponds to
+     * @param name of this column. If it isn't provided, [configuration.nameFormatter]
+     * formatted name of [property] is used
+     * @param maxSize of this column. If it is `null`, column size isn't bounded
+     * @param isNonNull whether this column accepts `null` values; `false` by default
+     * @param isUnique whether this column expects all values to be unique; `false` by default
+     * @param foreignColumn column from a foreign table this column corresponds to
+     * @param converter to convert [C] from/to appropriate SQL type. If it isn't
+     * provided, whatever [configuration] returns for [property]'s type is used
+     * @param propertyExtractor to extract the property from an instance of [T]. If it isn't
+     * provided, [property.get] is used
+     */
     inline fun <reified C, FT : Any, FC> foreignCol(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
-            foreignTable: Table<FT, *>,
             foreignColumn: Column<FT, FC>,
             converter: Converter<C> = getConverterForNullableType(configuration),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
 
         return addColumn(
-                name, maxSize, isNonNull, isUnique, foreignTable,
+                name, maxSize, isNonNull, isUnique,
                 foreignColumn, converter, propertyExtractor
         )
     }
 
 
+    /**
+     * Any [Column] created by calling this method will be automatically added to [allColumns]
+     *
+     * @param name of this column
+     * @param maxSize of this column. If it is `null`, column size isn't bounded
+     * @param isNonNull whether this column accepts `null` values; `false` by default
+     * @param isUnique whether this column expects all values to be unique; `false` by default
+     * @param foreignColumn column from a foreign table this column corresponds to
+     * @param converter to convert [C] from/to appropriate SQL type
+     * @param propertyExtractor to extract the property from an instance of [T]
+     */
     fun <C, FT : Any, FC> addColumn(
             name: String,
             maxSize: Int?,
             isNonNull: Boolean,
             isUnique: Boolean,
-            foreignTable: Table<FT, *>?,
             foreignColumn: Column<FT, FC>?,
             converter: Converter<C>,
             propertyExtractor: PropertyExtractor<T, C>):
@@ -96,15 +134,14 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
                 configuration.typeTranslator
         )
 
-        // Add extra stuff only if this column is new
         if (allColumnImpls.offer(column)) {
             if (isUnique) {
                 uniquenessConstraints.add(listOf(column.name))
             }
 
-            if (foreignTable != null && foreignColumn != null) {
+            if (foreignColumn != null) {
                 foreignKeyConstraints.add(ForeignKeyConstraintImpl(
-                        name, foreignTable.name, foreignColumn.name
+                        name, foreignColumn.table.name, foreignColumn.name
                 ))
             }
         }
