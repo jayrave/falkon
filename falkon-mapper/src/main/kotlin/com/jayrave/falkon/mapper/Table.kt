@@ -1,5 +1,8 @@
 package com.jayrave.falkon.mapper
 
+/**
+ * Maps Kotlin types to & from SQL tables
+ */
 interface Table<T : Any, ID : Any> {
 
     /**

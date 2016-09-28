@@ -2,6 +2,9 @@ package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Type
 
+/**
+ * Acts as a bridge between Kotlin & SQL types
+ */
 interface Converter<T> {
 
     /**
