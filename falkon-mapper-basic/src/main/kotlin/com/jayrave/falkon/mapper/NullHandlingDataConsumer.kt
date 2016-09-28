@@ -6,7 +6,7 @@ import com.jayrave.falkon.engine.Type
  * A [DataConsumer] that redirects `put` calls to `putNull` if the passed in value is `null`.
  * Otherwise, the call is just forwarded to the method that handles the corresponding non-null type
  */
-abstract class NullHandlingDataConsumer : DataConsumer {
+internal abstract class NullHandlingDataConsumer : DataConsumer {
 
     override final fun put(short: Short?) {
         when (short) {
