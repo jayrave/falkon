@@ -1,7 +1,6 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Type
-import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.mapper.testLib.StaticDataProducer
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
