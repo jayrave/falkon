@@ -3,7 +3,7 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
 import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
-import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNullableType
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForType
 import com.jayrave.falkon.sqlBuilders.CreateTableSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.ForeignKeyConstraint
@@ -64,7 +64,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
-            converter: Converter<C> = getConverterForNullableType(configuration),
+            converter: Converter<C> = getConverterForType(property, configuration),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
 
@@ -97,7 +97,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
             foreignColumn: Column<FT, FC>,
-            converter: Converter<C> = getConverterForNullableType(configuration),
+            converter: Converter<C> = getConverterForType(property, configuration),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
 

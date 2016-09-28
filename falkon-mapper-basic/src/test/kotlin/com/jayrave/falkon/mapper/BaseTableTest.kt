@@ -1,11 +1,14 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.mapper.exceptions.MissingConverterException
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.util.*
 
-// TODO - how to test converter, addColumn & other stuff in BaseTable ?
+// TODO - how to test addColumn ?
 class BaseTableTest {
 
     @Test
@@ -70,14 +73,74 @@ class BaseTableTest {
     }
 
 
+    @Test
+    fun testConverterAcquisitionForNullableType() {
+        val expectedUuid = UUID.randomUUID()
+        val configuration = TableConfigurationImpl(mock(), mock())
+        configuration.registerForNullableType(
+                UUID::class.java, CustomUuidConverter(expectedUuid), false
+        )
+
+        val tableForTest = object : TableForTest(configuration) {
+            val col1 = col(ModelForTest::nullableUuid)
+        }
+
+        // Assert & make sure that the converter we passed in is being used
+        assertThat(tableForTest.col1.computePropertyFrom(mock())).isEqualTo(expectedUuid)
+    }
+
+
+    @Test
+    fun testConverterAcquisitionForNonNullType() {
+        val expectedUuid = UUID.randomUUID()
+        val configuration = TableConfigurationImpl(mock(), mock())
+        configuration.registerForNonNullType(
+                UUID::class.java, NullableToNonNullConverter(CustomUuidConverter(expectedUuid))
+        )
+
+        val tableForTest = object : TableForTest(configuration) {
+            val col1 = col(ModelForTest::uuid)
+        }
+
+        // Assert & make sure that the converter we passed in is being used
+        assertThat(tableForTest.col1.computePropertyFrom(mock())).isEqualTo(expectedUuid)
+    }
+
+
+    @Test(expected = MissingConverterException::class)
+    fun testConverterAcquisitionForUnregisteredNullableTypeThrows() {
+        val configuration = TableConfigurationImpl(mock(), mock())
+        configuration.registerForNonNullType(
+                String::class.java, NullableToNonNullConverter(NullableStringConverter())
+        )
+
+        object : TableForTest(configuration) {
+            init { col(ModelForTest::nullableString) }
+        }
+    }
+
+
+    @Test(expected = MissingConverterException::class)
+    fun testConverterAcquisitionForUnregisteredNonNullTypeThrows() {
+        val configuration = TableConfigurationImpl(mock(), mock())
+        configuration.registerForNullableType(String::class.java, NullableStringConverter(), false)
+
+        object : TableForTest(configuration) {
+            init { col(ModelForTest::string) }
+        }
+    }
+
 
 
     private class ModelForTest(
-        val int: Int = 0,
-        val blob: ByteArray = byteArrayOf(1),
-        val nullableInt: Int? = 0,
-        val nullableString: String? = "test",
-        val thisIsACrazyNameForAColumn: Boolean = true
+            val int: Int = 0,
+            val string: String = "test non-null string",
+            val blob: ByteArray = byteArrayOf(1),
+            val nullableInt: Int? = 0,
+            val nullableString: String? = "test nullable string",
+            val thisIsACrazyNameForAColumn: Boolean = true,
+            val uuid: UUID = UUID.randomUUID(),
+            val nullableUuid: UUID? = UUID.randomUUID()
     )
 
 
@@ -97,6 +160,18 @@ class BaseTableTest {
                 val configuration = TableConfigurationImpl(engine, mock())
                 configuration.registerDefaultConverters()
                 return configuration
+            }
+        }
+    }
+
+
+
+    companion object {
+        private class CustomUuidConverter(private val defaultValue: UUID) : Converter<UUID?> {
+            override val dbType: Type = Type.STRING
+            override fun from(dataProducer: DataProducer): UUID? = defaultValue
+            override fun to(value: UUID?, dataConsumer: DataConsumer) {
+                throw UnsupportedOperationException("not implemented")
             }
         }
     }

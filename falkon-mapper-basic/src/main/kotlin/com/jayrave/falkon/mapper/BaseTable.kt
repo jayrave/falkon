@@ -2,7 +2,7 @@ package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
 import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
-import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForNullableType
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForType
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KProperty1
 
@@ -32,7 +32,7 @@ abstract class BaseTable<T : Any, ID : Any>(
     inline fun <reified C> col(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
-            converter: Converter<C> = getConverterForNullableType(configuration),
+            converter: Converter<C> = getConverterForType(property, configuration),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             Column<T, C> {
 
