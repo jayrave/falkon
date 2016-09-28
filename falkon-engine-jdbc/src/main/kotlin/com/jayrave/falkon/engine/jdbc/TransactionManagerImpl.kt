@@ -2,7 +2,6 @@ package com.jayrave.falkon.engine.jdbc
 
 import java.sql.Connection
 import java.sql.SQLException
-import java.util.*
 import javax.sql.DataSource
 
 /**
@@ -13,31 +12,25 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
 
     // Use ConnectionWrapperForTransaction to prevent unauthorized modification of connections
     // belonging to transactions
-    private val connectionListsForTransactions =
-            ThreadLocal<LinkedList<ConnectionWrapperForTransaction>?>()
-
+    private val connectionsForTransactions = ThreadLocal<ConnectionWrapperForTransaction?>()
 
     override fun <R> executeInTransaction(operation: () -> R): R {
         if (isInTransaction()) {
             throw SQLException("Transactions can't be nested")
         }
 
-        val connectionList = getConnectionList()
-
-        // Create new connection & add to list
-        val connection = ConnectionWrapperForTransaction(dataSource.connection)
-        connectionList.addLast(connection)
-
-        // Create result reference
-        val result: R
+        // Start a new connection for this transaction
+        connectionsForTransactions.set(ConnectionWrapperForTransaction(dataSource.connection))
+        val connection = connectionsForTransactions.get()!!
 
         // Switch off auto commit => this is a transaction
         connection.delegate.autoCommit = false
 
         try {
             // Execute the desired operation & commit connection if successful
-            result = operation.invoke()
+            val result = operation.invoke()
             connection.delegate.commit()
+            return result
 
         } catch (e: Exception) {
             // An exception got thrown!! Rollback transaction & rethrow exception
@@ -45,13 +38,13 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
             throw e
 
         } finally {
+            // Transaction has come to an end. Remove the stored connection
+            connectionsForTransactions.remove()
+
             // Reset auto commit flag, close connection & remove it from the list
             connection.delegate.autoCommit = true
             connection.delegate.close()
-            connectionList.remove(connection)
         }
-
-        return result
     }
 
 
@@ -61,24 +54,11 @@ internal class TransactionManagerImpl(private val dataSource: DataSource) : Tran
 
 
     override fun getConnectionIfInTransaction(): Connection? {
-        // Return the inner most connection
-        return connectionListsForTransactions.get()?.peekLast()
+        return connectionsForTransactions.get()
     }
 
 
     override fun belongsToTransaction(connection: Connection): Boolean {
-        return connectionListsForTransactions.get()?.contains(connection) ?: false
-    }
-
-
-    private fun getConnectionList(): LinkedList<ConnectionWrapperForTransaction> {
-        // Create & set a list if one isn't present already
-        var connectionList = connectionListsForTransactions.get()
-        if (connectionList == null) {
-            connectionListsForTransactions.set(LinkedList())
-            connectionList = connectionListsForTransactions.get()!!
-        }
-
-        return connectionList
+        return connectionsForTransactions.get() == connection
     }
 }
