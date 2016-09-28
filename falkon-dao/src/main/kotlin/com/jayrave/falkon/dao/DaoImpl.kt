@@ -16,6 +16,13 @@ import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
 import com.jayrave.falkon.dao.query.lenient.QueryBuilder as LenientQueryBuilder
 import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuilderImpl
 
+/**
+ * @param [argPlaceholder] to use as placeholders to prevent SQL injection
+ * @param [insertSqlBuilder] to build SQL `INSERT INTO...` statements from components
+ * @param [updateSqlBuilder] to build SQL `UPDATE...` statements from components
+ * @param [deleteSqlBuilder] to build SQL `DELETE FROM...` statements from components
+ * @param [querySqlBuilder] to build SQL `SELECT FROM...` statements from components
+ */
 open class DaoImpl<T : Any, ID : Any>(
         override val table: Table<T, ID>,
         private var argPlaceholder: String,
@@ -41,8 +48,7 @@ open class DaoImpl<T : Any, ID : Any>(
     )
 
     /**
-     * A convenience to [lenientQueryBuilder] with [querySqlBuilder] & [argPlaceholder]
-     * passed into this instance]
+     * Use this when [QueryBuilder] is too restrictive
      */
     fun lenientQueryBuilder(): LenientQueryBuilder = lenientQueryBuilder(
             querySqlBuilder, argPlaceholder
