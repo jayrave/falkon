@@ -59,7 +59,7 @@ internal class ListBackedList<T, R>(
     }
 
 
-    private class ListIteratorBackedListIterator<T, R>(
+    private class ListIteratorBackedListIterator<T, out R>(
             private val listIterator: ListIterator<T>,
             private val transformer: (T) -> R) : ListIterator<R> {
 

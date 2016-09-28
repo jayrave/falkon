@@ -3,7 +3,9 @@ package com.jayrave.falkon.dao.lib
 /**
  * To expose multiple iterables as a single continuous iterable
  */
-internal class IterablesBackedIterable<T>(private val iterables: List<Iterable<T>>) : Iterable<T> {
+internal class IterablesBackedIterable<out T>(
+        private val iterables: List<Iterable<T>>) :
+        Iterable<T> {
 
     override fun iterator(): Iterator<T> = IterablesBackedIterator()
 

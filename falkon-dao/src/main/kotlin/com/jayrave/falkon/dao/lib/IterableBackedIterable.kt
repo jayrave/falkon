@@ -3,7 +3,7 @@ package com.jayrave.falkon.dao.lib
 /**
  * To expose items from an iterable in a different form
  */
-internal class IterableBackedIterable<T, R>(
+internal class IterableBackedIterable<T, out R>(
         private val iterable: Iterable<T>,
         private val transformer: (T) -> R) : Iterable<R> {
 
