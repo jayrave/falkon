@@ -4,10 +4,7 @@ import com.jayrave.falkon.mapper.exceptions.MissingConverterException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
-/**
- * This is mostly used by abstract base implementations of [Table] like [BaseTable].
- * Concrete implementations are better off not using this
- */
+@Suppress("unused")
 object TableImplementationHelper {
 
     // ------------------------------------- Name format -------------------------------------------
@@ -23,6 +20,23 @@ object TableImplementationHelper {
 
     // For building converters for enum
     private enum class DummyEnum
+
+
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified C> getConverterForType(
+            property: KProperty1<*, C>, configuration: TableConfiguration):
+            Converter<C> {
+
+        val javaClass: Class<C> = (C::class as KClass<*>).java as Class<C>
+        val converter = when (property.returnType.isMarkedNullable) {
+            true -> configuration.getConverterForNullableType(javaClass)
+            else -> configuration.getConverterForNonNullType(javaClass as Class<Any>)
+        } as Converter<C>?
+
+        return converter ?:
+                buildConverterIfEnum(javaClass, true) ?:
+                throw buildMissingConverterException(javaClass, true)
+    }
 
 
     inline fun <reified C> getConverterForNullableType(
