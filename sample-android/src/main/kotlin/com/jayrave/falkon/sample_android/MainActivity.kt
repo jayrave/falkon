@@ -66,7 +66,14 @@ class MainActivity : AppCompatActivity() {
         /**
          * Also an InsertBuilder is provided for greater flexibility
          */
-        usersTable.dao.insertBuilder()
+        usersTable.dao
+                .insertBuilder()
+                .set(usersTable.id, UUID.randomUUID())
+                .set(usersTable.firstName, "example_first_name")
+                .set(usersTable.lastName, "example_last_name")
+                .set(usersTable.emailId, "example-user@example.com")
+                .set(usersTable.lastSeenAt, Date())
+                .insert()
     }
 
 
