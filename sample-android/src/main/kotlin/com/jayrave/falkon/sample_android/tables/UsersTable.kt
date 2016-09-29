@@ -1,11 +1,9 @@
 package com.jayrave.falkon.sample_android.tables
 
-import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.mapper.*
 import com.jayrave.falkon.sample_android.SqlBuilders
-import com.jayrave.falkon.sample_android.models.User
 import com.jayrave.falkon.sample_android.daos.UsersDao
-import java.text.SimpleDateFormat
+import com.jayrave.falkon.sample_android.models.User
 import java.util.*
 
 /**
@@ -37,7 +35,6 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     val emailId = col(User::emailId, isNonNull = false)
 
     val age = col(User::age)
-    val address = col(User::address)
 
     /**
      * isUnique adds UNIQUE to the column definition in the built CREATE TABLE statement.
@@ -45,12 +42,6 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
      * [BaseEnhancedTable.addUniquenessConstraint]
      */
     val photoUrl = col(User::photoUrl, isUnique = true)
-
-    /**
-     * If special handling is required for just one field, a custom converted can be
-     * directly assigned to this column
-     */
-    val createdAt = col(User::createdAt, converter = StringDateConverter())
 
     /**
      * By default `#col` knows how to extract the property from a passed in instance.
@@ -84,8 +75,7 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
          */
         return User(
                 value of id, value of firstName, value of lastName, value of emailId,
-                value of age, value of address, value of photoUrl,
-                value of createdAt, value of lastSeenAt
+                value of age, value of photoUrl, value of lastSeenAt
         )
     }
 
@@ -93,24 +83,6 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     companion object {
         private val currentDatePropExtractor = object : PropertyExtractor<User, Date> {
             override fun extractFrom(t: User): Date = Date()
-        }
-
-
-        /**
-         * To stringify [Date] & save, restore from the database
-         */
-        private class StringDateConverter : Converter<Date> {
-
-            override val dbType: Type = Type.STRING
-            private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-
-            override fun from(dataProducer: DataProducer): Date {
-                return dateFormat.parse(dataProducer.getString())
-            }
-
-            override fun to(value: Date, dataConsumer: DataConsumer) {
-                dataConsumer.put(dateFormat.format(value))
-            }
         }
     }
 }

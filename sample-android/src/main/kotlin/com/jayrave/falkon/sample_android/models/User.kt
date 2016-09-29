@@ -16,8 +16,6 @@ data class User(
         val lastName: String,
         val emailId: String,
         val age: Int?,
-        val address: String?,
         val photoUrl: String?,
-        val createdAt: Date,
         val lastSeenAt: Date
 )

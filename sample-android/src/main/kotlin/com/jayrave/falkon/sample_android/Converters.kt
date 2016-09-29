@@ -4,11 +4,15 @@ import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.mapper.Converter
 import com.jayrave.falkon.mapper.DataConsumer
 import com.jayrave.falkon.mapper.DataProducer
+import com.jayrave.falkon.mapper.NullableToNonNullConverter
 import java.util.*
 
 /**
  * It is really easy to write custom converters. Data can be sent to [DataConsumer] &
- * acquired back from [DataProducer] in a type-safe manner
+ * acquired back from [DataProducer] in a type-safe manner.
+ *
+ * Converters of nullable types can be easily converted into converters that handle
+ * the type's non-null form by wrapping them in [NullableToNonNullConverter]
  */
 
 class NullableUuidConverter : Converter<UUID?> {

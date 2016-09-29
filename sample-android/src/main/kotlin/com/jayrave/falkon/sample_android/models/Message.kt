@@ -13,10 +13,8 @@ import java.util.*
 data class Message(
         val id: UUID,
         val content: String,
-        val createdAt: String,
-        val sentAt: String,
-        val receivedAt: String,
+        val sentAt: Date,
+        val receivedAt: Date,
         val fromUserId: UUID,
-        val toUserId: UUID,
-        val groupId: UUID?
+        val toUserId: UUID
 )

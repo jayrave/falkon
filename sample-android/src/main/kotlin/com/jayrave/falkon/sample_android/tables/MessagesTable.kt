@@ -2,31 +2,38 @@ package com.jayrave.falkon.sample_android.tables
 
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.dao.DaoImpl
-import com.jayrave.falkon.mapper.BaseEnhancedTable
-import com.jayrave.falkon.mapper.EnhancedColumn
-import com.jayrave.falkon.mapper.TableConfiguration
-import com.jayrave.falkon.mapper.Value
+import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.mapper.*
 import com.jayrave.falkon.sample_android.ARG_PLACEHOLDER
 import com.jayrave.falkon.sample_android.models.Message
 import com.jayrave.falkon.sample_android.SqlBuilders
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * For a table implementation that shows off the capabilities of `Falkon`, check out [UsersTable].
- * This implementation is pretty bare bones
+ * [Table]s inform Falkon about how a model maps to a table. [BaseEnhancedTable] provides
+ * a lot of defaults & is a good class to extend for you table mappings
  */
-class MessagesTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
+class MessagesTable(
+        configuration: TableConfiguration, sqlBuilders: SqlBuilders, usersTable: UsersTable) :
         BaseEnhancedTable<Message, UUID, Dao<Message, UUID>>(
                 "messages", configuration, sqlBuilders.createTableSqlBuilder) {
 
     val id = col(Message::id)
     val content = col(Message::content)
-    val createdAt = col(Message::createdAt)
     val sentAt = col(Message::sentAt)
-    val receivedAt = col(Message::receivedAt)
-    val fromUserId = col(Message::fromUserId)
-    val toUserId = col(Message::toUserId)
-    val groupId = col(Message::groupId)
+
+    /**
+     * If special handling is required for just one field, a custom converter can be
+     * directly assigned to this column
+     */
+    val receivedAt = col(Message::receivedAt, converter = StringDateConverter())
+
+    /**
+     * Foreign references can be established using [foreignCol]
+     */
+    val fromUserId = foreignCol(Message::fromUserId, foreignColumn = usersTable.id)
+    val toUserId = foreignCol(Message::toUserId, foreignColumn = usersTable.id)
 
     override val idColumn: EnhancedColumn<Message, UUID> = id
     override val dao: Dao<Message, UUID> = DaoImpl(
@@ -38,8 +45,29 @@ class MessagesTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders)
 
     override fun create(value: Value<Message>): Message {
         return Message(
-                value of id, value of content, value of createdAt, value of sentAt,
-                value of receivedAt, value of fromUserId, value of toUserId, value of groupId
+                value of id, value of content, value of sentAt, value of receivedAt,
+                value of fromUserId, value of toUserId
         )
+    }
+
+
+    companion object {
+
+        /**
+         * To stringify [Date] & save, restore from the database
+         */
+        private class StringDateConverter : Converter<Date> {
+
+            override val dbType: Type = Type.STRING
+            private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+            override fun from(dataProducer: DataProducer): Date {
+                return dateFormat.parse(dataProducer.getString())
+            }
+
+            override fun to(value: Date, dataConsumer: DataConsumer) {
+                dataConsumer.put(dateFormat.format(value))
+            }
+        }
     }
 }

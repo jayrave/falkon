@@ -13,10 +13,7 @@ import com.jayrave.falkon.mapper.CamelCaseToSnakeCaseFormatter
 import com.jayrave.falkon.mapper.TableConfiguration
 import com.jayrave.falkon.mapper.TableConfigurationImpl
 import com.jayrave.falkon.mapper.registerDefaultConverters
-import com.jayrave.falkon.sample_android.models.Group
 import com.jayrave.falkon.sample_android.models.User
-import com.jayrave.falkon.sample_android.tables.GroupMembersTable
-import com.jayrave.falkon.sample_android.tables.GroupsTable
 import com.jayrave.falkon.sample_android.tables.MessagesTable
 import com.jayrave.falkon.sample_android.tables.UsersTable
 import com.jayrave.falkon.sqlBuilders.*
@@ -26,8 +23,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var usersTable: UsersTable
     private lateinit var messagesTable: MessagesTable
-    private lateinit var groupsTable: GroupsTable
-    private lateinit var groupMembersTable: GroupMembersTable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,9 +47,7 @@ class MainActivity : AppCompatActivity() {
         val sqlBuilders = buildSqlBuilders()
 
         usersTable = UsersTable(tableConfiguration, sqlBuilders)
-        messagesTable = MessagesTable(tableConfiguration, sqlBuilders)
-        groupsTable = GroupsTable(tableConfiguration, sqlBuilders)
-        groupMembersTable = GroupMembersTable(tableConfiguration, sqlBuilders)
+        messagesTable = MessagesTable(tableConfiguration, sqlBuilders, usersTable)
     }
 
 
@@ -89,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         usersTable.dao.update(newUsers.first().copy(firstName = "modified first name"))
         usersTable.dao.update(listOf(
-                newUsers[1].copy(address = "new address"),
+                newUsers[1].copy(firstName = "Joey"),
                 newUsers[2].copy(lastSeenAt = Date(0)),
                 createRandomUser() // This user wouldn't have any effect as he doesn't exist in the table
         ))
@@ -147,8 +140,8 @@ class MainActivity : AppCompatActivity() {
         usersTable.dao.findUser(UUID.randomUUID())
         usersTable.dao.findAllUsers()
         usersTable.dao.findAllUsersSeenAfter(Date())
-        usersTable.dao.findAllUsersBelongingToGroup(createRandomGroup(), groupMembersTable)
-        usersTable.dao.findAllUsersWhoBelongToAtLeastOneGroup(groupMembersTable)
+        usersTable.dao.findAllUsersWhoHaveSentAtLeastOneMessage(messagesTable)
+        usersTable.dao.findAllUsersWhoReceivedAtLeastOneMessageInTheLastWeek(messagesTable)
     }
 
 
@@ -226,13 +219,8 @@ class MainActivity : AppCompatActivity() {
             return User(
                     UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID().toString(),
                     UUID.randomUUID().toString(), random.nextInt(75), UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(), Date(), Date()
+                    Date()
             )
-        }
-
-
-        fun createRandomGroup(): Group {
-            return Group(UUID.randomUUID(), UUID.randomUUID().toString(), null)
         }
     }
 }
