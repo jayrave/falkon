@@ -2,7 +2,6 @@ package com.jayrave.falkon.sample_android
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.jayrave.falkon.dao.delete
 import com.jayrave.falkon.dao.insert
 import com.jayrave.falkon.dao.update
@@ -30,7 +29,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById(R.id.perform_falkon_magic).setOnClickListener {
+            logInfo("Performing falkon magic...")
             performFalkonMagic()
+            logInfo("Tada..... the magic trick has come to an end")
         }
     }
 
@@ -221,11 +222,11 @@ class MainActivity : AppCompatActivity() {
         val sampleSqliteOpenHelper = SampleSqliteOpenHelper(this)
         val logger = object : Logger {
             override fun onExecutionFailed(sql: String, arguments: Iterable<Any?>) {
-                Log.e("falkon", "sql: $sql; args: ${arguments.joinToString()}")
+                logError("sql: $sql; args: ${arguments.joinToString()}")
             }
 
             override fun onSuccessfullyExecuted(sql: String, arguments: Iterable<Any?>) {
-                Log.i("falkon", "sql: $sql; args: ${arguments.joinToString()}")
+                logDebug("sql: $sql; args: ${arguments.joinToString()}")
             }
         }
 
@@ -250,7 +251,7 @@ class MainActivity : AppCompatActivity() {
                 "Jennette", "Quist", "Kilmer", "Drummond", "Campana", "Blakeney"
         )
 
-        fun createRandomUser(): User {
+        private fun createRandomUser(): User {
             val firstName = firstNames.randomElement
             val lastName = lastNames.randomElement
             val email = "$firstName.$lastName@example.com"

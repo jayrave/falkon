@@ -25,6 +25,9 @@ class SampleSqliteOpenHelper(context: Context) :
             db.execSQL("CREATE TABLE users (id TEXT, first_name TEXT(255), last_name TEXT(255), email_id TEXT, age INTEGER, photo_url TEXT, last_seen_at INTEGER, PRIMARY KEY (id), UNIQUE (photo_url));")
             db.execSQL("CREATE TABLE messages (id TEXT, content TEXT, sent_at INTEGER, received_at TEXT, from_user_id TEXT, to_user_id TEXT, PRIMARY KEY (id), FOREIGN KEY (from_user_id) REFERENCES users(id), FOREIGN KEY (to_user_id) REFERENCES users(id));")
             db.setTransactionSuccessful()
+
+            logInfo("users & messages table created")
+
         } finally {
             db.endTransaction()
         }
