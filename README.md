@@ -246,3 +246,8 @@ For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engin
 | falkon-sql-builder-simple    | falkon-sql-builder                                                                |
 | falkon-dao                   | falkon-engine, falkon-mapper, falkon-sql-builder                                  |
 | falkon-dao-extn              | falkon-engine, falkon-mapper, falkon-sql-builder, falkon-dao                      |
+
+
+##Credits
+- [Andrew O'Malley](https://github.com/andrewoma) - creator of [kwery](https://github.com/andrewoma/kwery) which gave me the idea & some core concepts
+- [Gray](https://github.com/j256) - creator of [ORMLite](https://github.com/j256/ormlite-core) which inducted me into the world of ORMs & has been my choice of work-horse for the past few years
