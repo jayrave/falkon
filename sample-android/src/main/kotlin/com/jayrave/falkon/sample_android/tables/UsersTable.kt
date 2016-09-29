@@ -5,10 +5,13 @@ import com.jayrave.falkon.sample_android.SqlBuilders
 import com.jayrave.falkon.sample_android.daos.UsersDao
 import com.jayrave.falkon.sample_android.models.User
 import java.util.*
+import kotlin.reflect.KProperty1
 
 /**
  * [Table]s inform Falkon about how a model maps to a table. [BaseEnhancedTable] provides
- * a lot of defaults & is a good class to extend for you table mappings
+ * a lot of defaults & is a good class to extend for you table mappings.
+ *
+ * This class explains some of the features. For more, check out [MessagesTable]
  */
 class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
         BaseEnhancedTable<User, UUID, UsersDao>(
@@ -23,10 +26,15 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     val id = col(User::id)
 
     /**
+     * Column's name can be explicitly assigned. If not, [configuration.nameFormatter] is
+     * used to convert the model's property name into the column name
+     */
+    val firstName = col(User::firstName, name = "first_name")
+
+    /**
      * You can set max-size which will be used in CREATE TABLE statement that this table
      * builds (but SQLite doesn't honor that!! this would come useful in some other db)
      */
-    val firstName = col(User::firstName, maxSize = 255)
     val lastName = col(User::lastName, maxSize = 255)
 
     /**
@@ -45,7 +53,7 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
 
     /**
      * By default `#col` knows how to extract the property from a passed in instance.
-     * It is a simple KProperty#get call, but instead of that you may wanna do something
+     * It is a simple [KProperty1.get] call, but instead of that you may wanna do something
      * custom. For example, you may wanna pass back the current system time instead of
      * what `User::lastSeenAt` holds. For this case, just use a custom property extractor
      */

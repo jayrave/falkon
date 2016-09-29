@@ -13,6 +13,8 @@ import java.util.*
 /**
  * [Table]s inform Falkon about how a model maps to a table. [BaseEnhancedTable] provides
  * a lot of defaults & is a good class to extend for you table mappings
+ *
+ * This class explains some of the features. For more, check out [UsersTable]
  */
 class MessagesTable(
         configuration: TableConfiguration, sqlBuilders: SqlBuilders, usersTable: UsersTable) :
