@@ -214,12 +214,28 @@ class MainActivity : AppCompatActivity() {
     companion object {
 
         private val random = Random()
+        private val <T> List<T>.randomElement: T
+            get() = get(random.nextInt(size))
+
+        private val firstNames = listOf(
+                "Walker", "Elisha", "Gregory", "Benny", "Mitch", "Andreas",
+                "Leana", "Beatris", "Marylyn", "Nicolasa", "Adelle", "Rosalind"
+        )
+
+        private val lastNames = listOf(
+                "Tomas", "Kilkenny", "Rosemond", "Pyles", "Wyche", "Vancleave",
+                "Jennette", "Quist", "Kilmer", "Drummond", "Campana", "Blakeney"
+        )
 
         fun createRandomUser(): User {
+            val firstName = firstNames.randomElement
+            val lastName = lastNames.randomElement
+            val email = "$firstName.$lastName@example.com"
+            val photoUrl = "https://www.example.com/$firstName.$lastName/${UUID.randomUUID()}"
+
             return User(
-                    UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(), random.nextInt(75), UUID.randomUUID().toString(),
-                    Date()
+                    UUID.randomUUID(), firstName, lastName, email,
+                    random.nextInt(75), photoUrl, Date()
             )
         }
     }
