@@ -3,7 +3,7 @@ package com.jayrave.falkon.sample_android.tables
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.mapper.*
 import com.jayrave.falkon.sample_android.SqlBuilders
-import com.jayrave.falkon.sample_android.User
+import com.jayrave.falkon.sample_android.models.User
 import com.jayrave.falkon.sample_android.daos.UsersDao
 import java.text.SimpleDateFormat
 import java.util.*

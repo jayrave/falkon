@@ -7,7 +7,7 @@ import com.jayrave.falkon.mapper.EnhancedColumn
 import com.jayrave.falkon.mapper.TableConfiguration
 import com.jayrave.falkon.mapper.Value
 import com.jayrave.falkon.sample_android.ARG_PLACEHOLDER
-import com.jayrave.falkon.sample_android.Group
+import com.jayrave.falkon.sample_android.models.Group
 import com.jayrave.falkon.sample_android.SqlBuilders
 import java.util.*
 

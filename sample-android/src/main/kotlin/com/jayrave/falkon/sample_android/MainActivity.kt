@@ -13,6 +13,8 @@ import com.jayrave.falkon.mapper.CamelCaseToSnakeCaseFormatter
 import com.jayrave.falkon.mapper.TableConfiguration
 import com.jayrave.falkon.mapper.TableConfigurationImpl
 import com.jayrave.falkon.mapper.registerDefaultConverters
+import com.jayrave.falkon.sample_android.models.Group
+import com.jayrave.falkon.sample_android.models.User
 import com.jayrave.falkon.sample_android.tables.GroupMembersTable
 import com.jayrave.falkon.sample_android.tables.GroupsTable
 import com.jayrave.falkon.sample_android.tables.MessagesTable
