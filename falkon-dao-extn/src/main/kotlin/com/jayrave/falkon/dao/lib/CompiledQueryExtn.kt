@@ -113,11 +113,9 @@ fun <T : Any> CompiledStatement<Source>.extractModels(
     val source = execute()
     source.safeCloseAfterOp {
         val dataProducer = SourceBackedDataProducer(source)
+        val columnIndexExtractor = buildColumnIndexExtractor(source, columnNameExtractor)
         while (source.moveToNext() && toList.size < maxNumberOfModelsToExtract) {
-            toList.add(forTable.createInstanceFrom(
-                    source, columnNameExtractor,
-                    dataProducer
-            ))
+            toList.add(forTable.createInstanceFrom(dataProducer, columnIndexExtractor))
         }
 
         return toList
@@ -142,17 +140,38 @@ private fun <T> buildNewMutableList() = ArrayList<T>()
 
 
 /**
+ * Builds a column index extractor that looks up the index once & then caches it
+ * for later use
+ */
+private fun <T : Any> buildColumnIndexExtractor(
+        source: Source, columnNameExtractor: (Column<T, *>) -> String):
+        (Column<T, *>) -> Int {
+
+    val columnPositionMap = HashMap<Column<T, *>, Int?>()
+    return { column: Column<T, *> ->
+        var index = columnPositionMap[column] // Check if the index is in cache
+        if (index == null) {
+            val columnName = columnNameExtractor.invoke(column)
+            columnPositionMap[column] = source.getColumnIndex(columnName) // Put in cache
+            index = columnPositionMap[column]
+        }
+
+        index!!
+    }
+}
+
+
+/**
  * Used to build a instance of [T]
  */
 private fun <T : Any> Table<T, *>.createInstanceFrom(
-        source: Source, columnNameExtractor: ((Column<T, *>) -> String),
-        dataProducer: SourceBackedDataProducer = SourceBackedDataProducer(source)): T {
+        dataProducer: SourceBackedDataProducer,
+        columnIndexExtractor: ((Column<T, *>) -> Int)): T {
 
     return create(object : Value<T> {
         override fun <C> of(column: Column<T, C>): C {
             // Update data producer to point to the current column
-            val columnName = columnNameExtractor.invoke(column)
-            dataProducer.setColumnIndex(source.getColumnIndex(columnName))
+            dataProducer.setColumnIndex(columnIndexExtractor.invoke(column))
             return column.computePropertyFrom(dataProducer)
         }
     })
