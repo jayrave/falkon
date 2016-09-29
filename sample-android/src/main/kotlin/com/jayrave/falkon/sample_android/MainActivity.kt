@@ -2,11 +2,13 @@ package com.jayrave.falkon.sample_android
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.jayrave.falkon.dao.delete
 import com.jayrave.falkon.dao.insert
 import com.jayrave.falkon.dao.update
 import com.jayrave.falkon.engine.DefaultEngine
 import com.jayrave.falkon.engine.Engine
+import com.jayrave.falkon.engine.Logger
 import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteEngineCore
 import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteTypeTranslator
 import com.jayrave.falkon.mapper.CamelCaseToSnakeCaseFormatter
@@ -193,20 +195,34 @@ class MainActivity : AppCompatActivity() {
     private fun buildEngine(): Engine {
 
         /**
-         * [Engine] takes care of compiling the SQL provided into `CompiledStatements`
+         * [Engine] takes care of compiling the SQL provided into `CompiledStatement`s
          * which can then be executed (they also facilitate reuse). It is an interface
          * that needs to be implemented to talk to your db of choice.
          *
          * [DefaultEngine] is the default implementation & it is good enough for majority
          * of the use cases. [DefaultEngine] needs an `EngineCore` to talk to the db.
-         * `AndroidSqliteEngineCore` comes from `falkon-engine-android-sqlite` & it can
-         * talk with the default SQLite that Android ships with. There are other engine
-         * cores too. There is `JdbcEngineCore` that can talk with DB through the JDBC
-         * API. Coding up your own `Engine` & `EngineCore` is pretty easy
+         * `AndroidSqliteEngineCore` comes from `falkon-engine-android-sqlite` module &
+         * it can talk with the default SQLite that Android ships with. There are other
+         * engine cores too. There is `JdbcEngineCore` that can talk with DB through
+         * the JDBC API. Coding up your own `Engine` & `EngineCore` is pretty easy
+         *
+         * Also, if you want to log the SQL generated & executed by Falkon, just send
+         * an instance of a [Logger] to [DefaultEngine] (don't do this in production)
          */
 
+
         val sampleSqliteOpenHelper = SampleSqliteOpenHelper(this)
-        return DefaultEngine(AndroidSqliteEngineCore(sampleSqliteOpenHelper))
+        val logger = object : Logger {
+            override fun onExecutionFailed(sql: String, arguments: Iterable<Any?>) {
+                Log.e("falkon", "sql: $sql; args: ${arguments.joinToString()}")
+            }
+
+            override fun onSuccessfullyExecuted(sql: String, arguments: Iterable<Any?>) {
+                Log.i("falkon", "sql: $sql; args: ${arguments.joinToString()}")
+            }
+        }
+
+        return DefaultEngine(AndroidSqliteEngineCore(sampleSqliteOpenHelper), logger)
     }
 
 
