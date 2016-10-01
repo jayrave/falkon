@@ -222,11 +222,19 @@ class MainActivity : AppCompatActivity() {
         val sampleSqliteOpenHelper = SampleSqliteOpenHelper(this)
         val logger = object : Logger {
             override fun onExecutionFailed(sql: String, arguments: Iterable<Any?>) {
-                logError("sql: $sql; args: ${arguments.joinToString()}")
+                logError(buildLogMessage(sql, arguments))
             }
 
             override fun onSuccessfullyExecuted(sql: String, arguments: Iterable<Any?>) {
-                logDebug("sql: $sql; args: ${arguments.joinToString()}")
+                logDebug(buildLogMessage(sql, arguments))
+            }
+
+            private fun buildLogMessage(sql: String, arguments: Iterable<Any?>): String {
+                val args = arguments.joinToString()
+                return when {
+                    args.isBlank() -> "sql: $sql"
+                    else -> "sql: $sql; arguments: $args"
+                }
             }
         }
 
