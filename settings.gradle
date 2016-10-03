@@ -8,6 +8,7 @@ include ':falkon-engine-test-common'
 include ':falkon-mapper'
 include ':falkon-mapper-basic'
 include ':falkon-mapper-enhanced'
+include ':falkon-rxjava-1'
 include ':falkon-sql-builder'
 include ':falkon-sql-builder-simple'
 

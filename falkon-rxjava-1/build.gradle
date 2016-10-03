@@ -1,0 +1,10 @@
+apply plugin: 'kotlin'
+
+sourceCompatibility = javaVersions.source
+targetCompatibility = javaVersions.target
+
+dependencies {
+    compileOnly falkonModules.engine
+    compile libraries.kotlinStdlib
+    compile libraries.rxJava1
+}

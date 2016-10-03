@@ -33,6 +33,7 @@ buildscript {
             mockito         : '2.0.53-beta',
             mockitoKotlin   : '0.4.1',
             robolectric     : '3.0',
+            rxJava1         : '1.2.0',
             supportAppCompat: baseVersions.supportLibrary,
     ]
 
@@ -78,6 +79,7 @@ ext.libraries = [
         mockito         : "org.mockito:mockito-core:${librariesVersions.mockito}",
         mockitoKotlin   : "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
         robolectric     : "org.robolectric:robolectric:${librariesVersions.robolectric}",
+        rxJava1         : "io.reactivex:rxjava:${librariesVersions.rxJava1}",
         supportAppCompat: "com.android.support:appcompat-v7:${librariesVersions.supportAppCompat}",
 ]
 
