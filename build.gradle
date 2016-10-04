@@ -53,7 +53,6 @@ ext.falkonModules = [
         dao                : project(':falkon-dao'),
         daoExtn            : project(':falkon-dao-extn'),
         engine             : project(':falkon-engine'),
-        engineAndroidSqlite: project(':falkon-engine-android-sqlite'),
         engineJdbc         : project(':falkon-engine-jdbc'),
         engineTestCommon   : project(':falkon-engine-test-common'),
         mapper             : project(':falkon-mapper'),
@@ -62,6 +61,12 @@ ext.falkonModules = [
         sqlBuilder         : project(':falkon-sql-builder'),
         sqlBuilderSimple   : project(':falkon-sql-builder-simple')
 ]
+
+// Android projects could have been excluded. Check before adding them to `falkonModules` map
+Project engineForAndroidSqliteProject = findProject(':falkon-engine-android-sqlite')
+if (engineForAndroidSqliteProject != null) {
+    ext.falkonModules['engineAndroidSqlite'] = engineForAndroidSqliteProject
+}
 
 
 ext.libraries = [

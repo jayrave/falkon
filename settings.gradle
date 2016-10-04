@@ -1,10 +1,8 @@
 rootProject.name = 'falkon'
 
-include ':falkon-android'
 include ':falkon-dao'
 include ':falkon-dao-extn'
 include ':falkon-engine'
-include ':falkon-engine-android-sqlite'
 include ':falkon-engine-jdbc'
 include ':falkon-engine-test-common'
 include ':falkon-mapper'
@@ -12,4 +10,20 @@ include ':falkon-mapper-basic'
 include ':falkon-mapper-enhanced'
 include ':falkon-sql-builder'
 include ':falkon-sql-builder-simple'
-include ':sample-android'
+
+// By default, all modules are included in the build. To build Falkon without Android SDK,
+// include `falkon.excludeAndroidModulesFromBuild = true` in `local.properties` file
+Boolean includeAndroidModules = true
+File propertiesFile = new File(getRootDir(), "local.properties")
+if (propertiesFile.exists()) {
+    Properties properties = new Properties()
+    properties.load(propertiesFile.newDataInputStream())
+    String excludeAndroidModules = properties.getProperty('falkon.excludeAndroidModulesFromBuild')
+    includeAndroidModules = excludeAndroidModules != 'true'
+}
+
+if (includeAndroidModules) {
+    include ':falkon-android'
+    include ':falkon-engine-android-sqlite'
+    include ':sample-android'
+}
