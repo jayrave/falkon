@@ -248,6 +248,13 @@ For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engin
 | falkon-dao-extn              | falkon-engine, falkon-mapper, falkon-sql-builder, falkon-dao                      |
 
 
+##Building Falkon
+Just clone the repository & run `./gradlew build` from project root. It requires the following
+- Java 6
+- Android SDK 24 (not required, if Android modules need not participate in the build)
+
+**Note:** To exclude Android modules from the build, add `falkon.excludeAndroidModulesFromBuild = true` to *local.properties* file in project root
+
 ##Credits
 - [Andrew O'Malley](https://github.com/andrewoma) - creator of [kwery](https://github.com/andrewoma/kwery) which gave me the idea & some core concepts
 - [Gray](https://github.com/j256) - creator of [ORMLite](https://github.com/j256/ormlite-core) which inducted me into the world of ORMs & has been my choice of work-horse for the past few years
