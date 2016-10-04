@@ -7,4 +7,10 @@ dependencies {
     compileOnly falkonModules.engine
     compile libraries.kotlinStdlib
     compile libraries.rxJava1
+
+    testCompile falkonModules.engine
+    testCompile falkonModules.engineJdbc
+    testCompile libraries.assertJ
+    testCompile libraries.h2
+    testCompile libraries.jUnit
 }
