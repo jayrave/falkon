@@ -15,7 +15,7 @@ class CreateDbEventObservableTest {
     private val engineForTest = EngineForTest()
 
     @Test
-    fun testInsertDbEventsAreDelivered() {
+    fun testInsertDbEventIsDelivered() {
         val insertEventToBeFired = DbEvent.forInsert("test")
         val caughtEvents = fireSingleEventAndCatchResult(insertEventToBeFired)
         assertThat(caughtEvents).hasSize(1)
@@ -24,7 +24,7 @@ class CreateDbEventObservableTest {
 
 
     @Test
-    fun testUpdateDbEventsAreDelivered() {
+    fun testUpdateDbEventIsDelivered() {
         val updateEventToBeFired = DbEvent.forUpdate("test")
         val caughtEvents = fireSingleEventAndCatchResult(updateEventToBeFired)
         assertThat(caughtEvents).hasSize(1)
@@ -33,7 +33,7 @@ class CreateDbEventObservableTest {
 
 
     @Test
-    fun testDeleteDbEventsAreDelivered() {
+    fun testDeleteDbEventIsDelivered() {
         val deleteEventToBeFired = DbEvent.forDelete("test")
         val caughtEvents = fireSingleEventAndCatchResult(deleteEventToBeFired)
         assertThat(caughtEvents).hasSize(1)
@@ -42,7 +42,37 @@ class CreateDbEventObservableTest {
 
 
     @Test
-    fun testAllEventsAreDeliveredWhenMultipleEventsAreFired() {
+    fun testAllEventsAreDeliveredWhenMultipleEventsAreFiredIndividually() {
+        val eventsToBeFired = listOf(
+                DbEvent.forInsert("test_1"),
+                DbEvent.forUpdate("test_2"),
+                DbEvent.forDelete("test_3")
+        )
+
+        val countDownLatch = CountDownLatch(eventsToBeFired.count())
+        val caughtEvents = ArrayList<DbEvent>()
+        engineForTest.createDefaultDbEventObservable().subscribe {
+            caughtEvents.addAll(it)
+            countDownLatch.countDown()
+        }
+
+        // Fire events
+        eventsToBeFired.forEach { event ->
+            engineForTest.dbEventListeners.forEach { eventListener ->
+                eventListener.onEvent(event)
+            }
+        }
+
+        // Wait for events to be caught
+        countDownLatch.awaitWithDefaultTimeout()
+
+        // Assert caught events
+        assertThat(caughtEvents).hasSameElementsAs(eventsToBeFired)
+    }
+
+
+    @Test
+    fun testAllEventsAreDeliveredWhenMultipleEventsAreFiredTogether() {
         val eventsToBeFired = listOf(
                 DbEvent.forInsert("test_1"),
                 DbEvent.forUpdate("test_2"),
@@ -57,7 +87,7 @@ class CreateDbEventObservableTest {
         }
 
         engineForTest.dbEventListeners.forEach { it.onEvents(eventsToBeFired) } // Fire events
-        countDownLatch.awaitWithDefaultTimeout() // Wait for event to be caught
+        countDownLatch.awaitWithDefaultTimeout() // Wait for events to be caught
 
         // Assert caught events
         assertThat(caughtEvents).hasSameElementsAs(eventsToBeFired)
