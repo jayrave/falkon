@@ -66,6 +66,30 @@ class CreateCompiledQueryObservableTest {
     }
 
 
+    @Test
+    fun testCompiledQueryIsNotDeliveredForUnrelatedEvents() {
+        // Setup subscription. Use immediate scheduler to not wait around
+        engineForTest.createCompiledQueryObservable(
+                listOf(tableNameForDefaultQuery), rawSqlForDefaultQuery,
+                null, Schedulers.immediate()
+        ).subscribe { it.close() }
+
+        // Make sure compiled query was delivered on subscription
+        assertThat(engineForTest.compiledQueriesFor).hasSize(1)
+
+        // Fire unrelated events
+        engineForTest.fireEvent(DbEvent.forInsert(tableNameNotInDefaultQuery))
+        engineForTest.fireEvents(listOf(
+                DbEvent.forUpdate(tableNameNotInDefaultQuery),
+                DbEvent.forDelete(tableNameNotInDefaultQuery)
+        ))
+
+        // Make sure compiled query wasn't delivered for unrelated subscription
+        assertThat(engineForTest.compiledQueriesFor).hasSize(1)
+        assertThat(engineForTest.compiledQueriesFor.first()).isEqualTo(defaultQueryInfo)
+    }
+
+
     /**
      * Both [event] & [events] should deal with the tables [compiledQueryObservable]
      * is related with
