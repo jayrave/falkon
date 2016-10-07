@@ -1,6 +1,5 @@
 apply plugin: 'kotlin'
 
-
 sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
