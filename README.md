@@ -261,6 +261,7 @@ For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engin
 | falkon-sql-builder-simple    | falkon-sql-builder                                                                |
 | falkon-dao                   | falkon-engine, falkon-mapper, falkon-sql-builder                                  |
 | falkon-dao-extn              | falkon-engine, falkon-mapper, falkon-sql-builder, falkon-dao                      |
+| falkon-rxjava-1              | falkon-engine                                                                     |
 
 
 ##Building Falkon
