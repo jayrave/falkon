@@ -2,14 +2,14 @@ package com.jayrave.falkon.sample_android
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.TextView
 import com.jayrave.falkon.dao.delete
 import com.jayrave.falkon.dao.insert
 import com.jayrave.falkon.dao.update
-import com.jayrave.falkon.engine.DefaultEngine
-import com.jayrave.falkon.engine.Engine
-import com.jayrave.falkon.engine.Logger
+import com.jayrave.falkon.engine.*
 import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteEngineCore
 import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteTypeTranslator
+import com.jayrave.falkon.engine.rxjava1.createCompiledQueryObservable
 import com.jayrave.falkon.mapper.CamelCaseToSnakeCaseFormatter
 import com.jayrave.falkon.mapper.TableConfiguration
 import com.jayrave.falkon.mapper.TableConfigurationImpl
@@ -18,30 +18,52 @@ import com.jayrave.falkon.sample_android.models.User
 import com.jayrave.falkon.sample_android.tables.MessagesTable
 import com.jayrave.falkon.sample_android.tables.UsersTable
 import com.jayrave.falkon.sqlBuilders.*
+import rx.schedulers.Schedulers
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var usersTable: UsersTable
     private lateinit var messagesTable: MessagesTable
+    private lateinit var logView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Extract log view
+        logView = findViewById(R.id.log_view) as TextView
+
+        // Setup falkon stuff to run on button click
         findViewById(R.id.perform_falkon_magic).setOnClickListener {
-            logInfo("Performing falkon magic...")
+            uiLog("Get ready to be blown away")
             performFalkonMagic()
-            logInfo("Tada..... the magic trick has come to an end")
+            uiLog("That's all folks")
         }
     }
 
 
     private fun performFalkonMagic() {
+        /**
+         * Most of the inserts, updates, deletes & queries are done on the main thread.
+         * This is just for the sake of demonstrating the capabilities of this library.
+         * Please don't do this in production code
+         */
+
         createTableObjects()
+        uiLog("Table objects created")
+
         insertRecords()
+        uiLog("Done demonstrating inserting records")
+
         updateRecords()
+        uiLog("Done demonstrating updating records")
+
         deleteRecords()
+        uiLog("Done demonstrating deleting records")
+
         queryRecords()
+        uiLog("Done demonstrating querying objects")
     }
 
 
@@ -152,6 +174,19 @@ class MainActivity : AppCompatActivity() {
         usersTable.dao.findAllUsersSeenAfter(Date())
         usersTable.dao.findAllUsersWhoHaveSentAtLeastOneMessage(messagesTable)
         usersTable.dao.findAllUsersWhoReceivedAtLeastOneMessageInTheLastWeek(messagesTable)
+
+        /**
+         * You can also setup an observable pipeline to run queries every time there
+         * is a change to a particular table(s)
+         */
+        val query = usersTable.dao.queryBuilder().build()
+        val observable = usersTable.configuration.engine.createCompiledQueryObservable(
+                listOf(usersTable.name), query.sql, query.arguments, Schedulers.newThread()
+        )
+
+        observable.subscribe({ compiledQuery ->
+            logInfo("This will be run whenever there is a change to ${usersTable.name} table")
+        })
     }
 
 
@@ -239,6 +274,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         return DefaultEngine(AndroidSqliteEngineCore(sampleSqliteOpenHelper), logger)
+    }
+
+
+    private fun uiLog(message: String) {
+        logView.append("\n$message")
     }
 
 
