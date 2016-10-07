@@ -59,6 +59,7 @@ ext.falkonModules = [
         mapper             : project(':falkon-mapper'),
         mapperBasic        : project(':falkon-mapper-basic'),
         mapperEnhanced     : project(':falkon-mapper-enhanced'),
+        rxJava1            : project(':falkon-rxjava-1'),
         sqlBuilder         : project(':falkon-sql-builder'),
         sqlBuilderSimple   : project(':falkon-sql-builder-simple')
 ]

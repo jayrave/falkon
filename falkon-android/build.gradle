@@ -38,6 +38,9 @@ dependencies {
     // Provides DAO & its extension
     compile falkonModules.dao
     compile falkonModules.daoExtn
+
+    // Provides reactivity
+    compile falkonModules.rxJava1
 }
 
 ext {
