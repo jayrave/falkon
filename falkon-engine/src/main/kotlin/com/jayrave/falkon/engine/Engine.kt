@@ -63,12 +63,16 @@ interface Engine {
     fun compileQuery(tableNames: Iterable<String>, rawSql: String): CompiledStatement<Source>
 
     /**
-     * If the listener is already, this is a no-op. This can be called from any thread
+     * If the listener is already registered, this is a no-op. This can be called from
+     * any thread. Fired [DbEvent]s will be delivered to [DbEventListener]s on the same
+     * thread they get fired in. Events fired inside a transaction will be buffered
+     * & delivered together if the transaction completes successfully
      */
     fun registerDbEventListener(dbEventListener: DbEventListener)
 
     /**
-     * If the listener isn't already, this is a no-op. This can be called from any thread
+     * If the listener isn't already unregistered, this is a no-op. This can be
+     * called from any thread
      */
     fun unregisterDbEventListener(dbEventListener: DbEventListener)
 }

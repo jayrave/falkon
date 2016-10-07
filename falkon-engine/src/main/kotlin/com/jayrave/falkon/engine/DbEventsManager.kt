@@ -25,14 +25,18 @@ class DbEventsManager(private val isInTransactionInformer: () -> Boolean) {
     }
 
     /**
-     * If the listener is already, this is a no-op. Can be called from any thread
+     * If the listener is already registered, this is a no-op. This can be called from
+     * any thread. Fired [DbEvent]s will be delivered to [DbEventListener]s on the same
+     * thread they get fired in. Events fired inside a transaction will be buffered
+     * & delivered together if the transaction completes successfully
      */
     fun registerDbEventListener(dbEventListener: DbEventListener) {
         dbEventListeners.add(dbEventListener)
     }
 
     /**
-     * If the listener isn't already, this is a no-op. Can be called from any thread
+     * If the listener isn't already unregistered, this is a no-op. This can be called
+     * from any thread
      */
     fun unregisterDbEventListener(dbEventListener: DbEventListener) {
         dbEventListeners.remove(dbEventListener)
