@@ -18,6 +18,7 @@ Clean & simple API to talk with the database (for Android & Kotlin)
 - Talk with different databases. Out of the box support is available for Android's SQLite & JDBC
 - An easy way to express how domain models are mapped to tables
 - A type-safe way to insert into, update, delete from & query the tables
+- Introduce reactive stream semantics to SQL operations
 
 **NOTE:** Falkon isn't a traditional ORM (object relational mapping). Although it does a great job at OM (object mapping), relationships aren't taken care of i.e., foreign fields are not automatically converted into foreign objects. This makes sure that not a lot of unneeded data is loaded from the db (in case of a lengthy chain of foreign fields) and forces the user to think about writing queries that just loads what they want (hopefully)
 
@@ -165,6 +166,16 @@ usersTable.dao.queryBuilder()
         .gt(usersTable.lastSeenAt, thresholdDate)
         .compile()
         .extractAllModelsAndClose(usersTable) { it.qualifiedName }
+
+// An observable stream can also be setup to run queries whenever there is a change in required tables
+val query = usersTable.dao.queryBuilder().build()
+val observable = usersTable.configuration.engine.createCompiledQueryObservable(
+        listOf(usersTable.name), query.sql, query.arguments, Schedulers.newThread()
+)
+
+observable.subscribe({ compiledQuery ->
+    logInfo("This will be run whenever there is a change to ${usersTable.name} table")
+})
 ```
 
 ##Going deeper
@@ -185,7 +196,7 @@ To learn more check out
 Falkon has been designed to be very modular. You can plug these modules together to make object mapping as featureful or as simple as possible.
 
 - *Core modules:* Engine, Mapper & SqlBuilder
-- *Non-core modules:* DAO
+- *Non-core modules:* DAO, Rx
 
 ###Engine
 Engine modules provide the functionality to talk with database engines. There are 3 such modules
@@ -213,26 +224,32 @@ DAO modules provide type-safe API to insert, update, delete & query. There are 2
 - `falkon-dao` => provides insert, update, delete & query builder interfaces & implementation
 - `falkon-dao-extn` => provides extension to dao like inserting, updating, deleting models & deleting, querying by id etc.
 
+###Rx
+Rx modules introduce reactive stream semantics to SQL operations
+
+- `falkon-rxjava-1` => provides extensions to engines to setup observable streams
+
 ##Gradle dependencies
 All artifacts live in Bintray's `jcenter`
 
-    compile 'com.jayrave.falkon:falkon-dao:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-dao-extn:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-engine:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-engine-android-sqlite:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-engine-jdbc:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-mapper:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-mapper-basic:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-mapper-enhanced:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-sql-builder:0.1-alpha'
-    compile 'com.jayrave.falkon:falkon-sql-builder-simple:0.1-alpha'
+    compile 'com.jayrave.falkon:falkon-dao:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-dao-extn:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-engine:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-engine-jdbc:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-mapper:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-mapper-basic:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-mapper-enhanced:$falkonVersion'
+    compile "com.jayrave.falkon:falkon-rxjava-1:$falkonVersion"
+    compile 'com.jayrave.falkon:falkon-sql-builder:$falkonVersion'
+    compile 'com.jayrave.falkon:falkon-sql-builder-simple:$falkonVersion'
 
 **To use any module, its dependencies must also be included. These dependencies are NOT automatically included!**
 
 For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engine` is also required which means that the following 2 compile statements must be included
 
-    compile "com.jayrave.falkon:falkon-engine:$version"
-    compile "com.jayrave.falkon:falkon-engine-android-sqlite:$version"
+    compile "com.jayrave.falkon:falkon-engine:$falkonVersion"
+    compile "com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion"
 
 | Modules                      | Dependencies                                                                      |
 |------------------------------|-----------------------------------------------------------------------------------|
