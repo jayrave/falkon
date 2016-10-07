@@ -1,3 +1,7 @@
+#Version 0.4-alpha (2016-10-07)
+- add & publish `falkon-rxjava-1`
+- `falkon-android` now also brings `falkon-rxjava-1` as a transitive dependency
+
 #Version 0.3-alpha (2016-09-29)
 - add & publish `falkon-android` module to make getting started with Falkon easy
 - improve read performance by optimizing column index computation
