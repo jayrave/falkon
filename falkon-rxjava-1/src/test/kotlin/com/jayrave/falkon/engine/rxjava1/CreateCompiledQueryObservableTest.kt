@@ -5,7 +5,10 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import rx.Observable
+import rx.internal.util.RxRingBuffer
+import rx.observers.TestSubscriber
 import rx.schedulers.Schedulers
+import rx.schedulers.TestScheduler
 import java.util.*
 import java.util.concurrent.CountDownLatch
 
@@ -87,6 +90,27 @@ class CreateCompiledQueryObservableTest {
         // Make sure compiled query wasn't delivered for unrelated subscription
         assertThat(engineForTest.compiledQueriesFor).hasSize(1)
         assertThat(engineForTest.compiledQueriesFor.first()).isEqualTo(defaultQueryInfo)
+    }
+
+
+    @Test
+    fun testBackpressureSupportedWhenSchedulerSlow() {
+        val testScheduler = TestScheduler()
+        val testSubscriber = TestSubscriber<CompiledStatement<Source>>()
+
+        engineForTest.createCompiledQueryObservable(
+                listOf(tableNameForDefaultQuery), rawSqlForDefaultQuery, null, testScheduler
+        ).subscribe(testSubscriber)
+
+        // Fire more events than the scheduler queue can handle
+        (1..RxRingBuffer.SIZE * 2).forEach {
+            engineForTest.fireEvent(DbEvent.forInsert(tableNameForDefaultQuery))
+        }
+
+        testScheduler.triggerActions()
+
+        // Assert we got all the events from the queue plus the one buffered from backpressure
+        assertThat(testSubscriber.onNextEvents).hasSize(RxRingBuffer.SIZE + 1)
     }
 
 

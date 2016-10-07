@@ -36,6 +36,7 @@ fun Engine.createCompiledQueryObservable(
         createDbEventObservable()
                 .filter(predicate) // Only allow events for tables this query is concerned with
                 .startWith(emptyList<DbEvent>()) // To execute the query on subscription
+                .onBackpressureLatest() // All we need is just one event for trigger
                 .observeOn(scheduler) // To deliver on the requested scheduler
                 .map { compileQuery(tableNames, rawSql).bindAll(arguments) }
     }
