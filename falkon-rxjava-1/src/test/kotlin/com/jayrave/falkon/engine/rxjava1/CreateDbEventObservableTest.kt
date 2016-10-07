@@ -5,8 +5,6 @@ import com.jayrave.falkon.engine.DbEventListener
 import com.jayrave.falkon.engine.Engine
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rx.Observable
-import rx.schedulers.Schedulers
 import java.util.*
 import java.util.concurrent.CountDownLatch
 
@@ -51,7 +49,7 @@ class CreateDbEventObservableTest {
 
         val countDownLatch = CountDownLatch(eventsToBeFired.count())
         val caughtEvents = ArrayList<DbEvent>()
-        engineForTest.createDefaultDbEventObservable().subscribe {
+        engineForTest.createDbEventObservable().subscribe {
             caughtEvents.addAll(it)
             countDownLatch.countDown()
         }
@@ -81,7 +79,7 @@ class CreateDbEventObservableTest {
 
         val countDownLatch = CountDownLatch(1)
         val caughtEvents = ArrayList<DbEvent>()
-        engineForTest.createDefaultDbEventObservable().subscribe {
+        engineForTest.createDbEventObservable().subscribe {
             caughtEvents.addAll(it)
             countDownLatch.countDown()
         }
@@ -97,7 +95,7 @@ class CreateDbEventObservableTest {
     @Test
     fun testDbEventListenerIsUnregisteredOnUnsubscription() {
         assertThat(engineForTest.dbEventListeners).isEmpty()
-        val subscription = engineForTest.createDefaultDbEventObservable().subscribe()
+        val subscription = engineForTest.createDbEventObservable().subscribe()
         assertThat(engineForTest.dbEventListeners).hasSize(1)
         subscription.unsubscribe()
         assertThat(engineForTest.dbEventListeners).isEmpty()
@@ -107,7 +105,7 @@ class CreateDbEventObservableTest {
     private fun fireSingleEventAndCatchResult(eventToBeFired: DbEvent): List<DbEvent> {
         val countDownLatch = CountDownLatch(1)
         val caughtEvents = ArrayList<DbEvent>()
-        engineForTest.createDefaultDbEventObservable().subscribe {
+        engineForTest.createDbEventObservable().subscribe {
             caughtEvents.addAll(it)
             countDownLatch.countDown()
         }
@@ -138,14 +136,6 @@ class CreateDbEventObservableTest {
 
         override fun unregisterDbEventListener(dbEventListener: DbEventListener) {
             dbEventListeners.remove(dbEventListener)
-        }
-    }
-
-
-
-    companion object {
-        private fun Engine.createDefaultDbEventObservable(): Observable<Iterable<DbEvent>> {
-            return createDbEventObservable(Schedulers.newThread())
         }
     }
 }

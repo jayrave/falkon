@@ -33,29 +33,32 @@ fun Engine.createCompiledQueryObservable(
             it.any { tableNames.contains(it.tableName) }
         }
 
-        createDbEventObservable(scheduler)
+        createDbEventObservable()
                 .filter(predicate) // Only allow events for tables this query is concerned with
                 .startWith(emptyList<DbEvent>()) // To execute the query on subscription
+                .observeOn(scheduler) // To deliver on the requested scheduler
                 .map { compileQuery(tableNames, rawSql).bindAll(arguments) }
     }
 }
 
 
 /**
- * An [Observable] that notifies the subscribers about [DbEvent]s
+ * An [Observable] that notifies the subscribers about [DbEvent]s. The threading mechanisms
+ * are the same as [Engine.registerDbEventListener]
  *
- * *NOTE:* *Unsubscribe* when done, to clean up
+ * *NOTE:*
+ *      - *Unsubscribe* when done, to clean up
+ *      - Since event generators are hot sources, this observable doesn't honor reactive
+ *      pull backpressure requests!
  *
- * @param scheduler to deliver the events on
  * @return observable of db events
  *
  * @see [Engine.registerDbEventListener]
  */
-fun Engine.createDbEventObservable(scheduler: Scheduler): Observable<Iterable<DbEvent>> {
+fun Engine.createDbEventObservable(): Observable<Iterable<DbEvent>> {
     val onSubscribe = DbEventForwardingOnSubscribe(this)
     return Observable
             .create(onSubscribe)
-            .observeOn(scheduler)
             .doOnUnsubscribe {
                 onSubscribe.unregisterDbEventListener() // Needn't listen for events anymore
             }
