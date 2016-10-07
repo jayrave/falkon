@@ -1,6 +1,6 @@
 **NOTE: This library is still in its alpha!**
 
-#Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon)
+#Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon) [ ![Download](https://api.bintray.com/packages/jayrave/android/falkon-android/images/download.svg) ](https://bintray.com/jayrave/android/falkon-android/_latestVersion)
 Clean & simple API to talk with the database (for Android & Kotlin)
 
 ##Design Principles
