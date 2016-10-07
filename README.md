@@ -5,14 +5,12 @@ Clean & simple API to talk with the database (for Android & Kotlin)
 
 ##Design Principles
  - Should let domain models untouched
- - Should keep reflection to a minimum<sup>1</sup>
+ - Should keep reflection to a minimum
  - Should generate SQL that is as clean as handwritten SQL
  - Should be able to talk with different database engines
  - Should be modular to let the users pick & choose the functionalities they want
  - Should let users write raw SQL if they desire
  - Shouldn't do implicit joins
-
-<sup>1</sup> Reflection can be completely removed if need be
 
 ##What can it do?
 - Talk with different databases. Out of the box support is available for Android's SQLite & JDBC
