@@ -31,7 +31,7 @@ class QueryBuilderImplTest {
                 tableName = table.name, querySqlBuilder = querySqlBuilder,
                 columns = buildColumnInfoList(table)
         )
-        val expectedQuery = QueryImpl(expectedSql, emptyList())
+        val expectedQuery = QueryImpl(listOf(table.name), expectedSql, emptyList())
 
         // Verify
         assertQueryEquality(actualQuery, expectedQuery)
@@ -84,7 +84,9 @@ class QueryBuilderImplTest {
                 limit = 5, offset = 8
         )
 
-        val expectedQuery = QueryImpl(expectedSql, listOf(5.0))
+        val expectedQuery = QueryImpl(
+                listOf(table.name, tableForJoin.name), expectedSql, listOf(5.0)
+        )
 
         // Verify
         val engine = bundle.engine

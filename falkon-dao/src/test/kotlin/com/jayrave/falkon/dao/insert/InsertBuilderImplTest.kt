@@ -29,7 +29,7 @@ class InsertBuilderImplTest {
                 table.name, listOf(table.int.name), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = InsertImpl(expectedSql, listOf(5))
+        val expectedInsert = InsertImpl(table.name, expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
@@ -62,7 +62,7 @@ class InsertBuilderImplTest {
                 table.name, listOf(table.int.name, table.string.name), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = InsertImpl(expectedSql, listOf(5, "test"))
+        val expectedInsert = InsertImpl(table.name, expectedSql, listOf(5, "test"))
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
@@ -98,7 +98,7 @@ class InsertBuilderImplTest {
                 table.name, listOf(table.int.name), ARG_PLACEHOLDER
         )
 
-        val expectedInsert = InsertImpl(expectedSql, listOf(6))
+        val expectedInsert = InsertImpl(table.name, expectedSql, listOf(6))
 
         // Verify
         assertEquality(actualInsert, expectedInsert)
@@ -155,7 +155,7 @@ class InsertBuilderImplTest {
         )
 
         val expectedInsert = InsertImpl(
-                expectedSql,
+                table.name, expectedSql,
                 listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
         )
 
@@ -197,6 +197,7 @@ class InsertBuilderImplTest {
         private const val ARG_PLACEHOLDER = "?"
 
         private fun assertEquality(actualInsert: Insert, expectedInsert: Insert) {
+            assertThat(actualInsert.tableName).isEqualTo(expectedInsert.tableName)
             assertThat(actualInsert.sql).isEqualTo(expectedInsert.sql)
             assertThat(actualInsert.arguments).containsExactlyElementsOf(expectedInsert.arguments)
         }

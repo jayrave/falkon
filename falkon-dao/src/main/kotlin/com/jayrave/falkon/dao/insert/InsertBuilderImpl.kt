@@ -41,7 +41,7 @@ internal class InsertBuilderImpl<T : Any>(
                     table.name, LinkedHashMapBackedIterable.forKeys(map), argPlaceholder
             )
 
-            return InsertImpl(sql, LinkedHashMapBackedIterable.forValues(map))
+            return InsertImpl(table.name, sql, LinkedHashMapBackedIterable.forValues(map))
         }
 
         override fun compile(): CompiledStatement<Int> {

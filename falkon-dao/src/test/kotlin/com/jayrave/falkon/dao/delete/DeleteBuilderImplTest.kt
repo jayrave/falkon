@@ -28,7 +28,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(table.name, null, ARG_PLACEHOLDER)
-        val expectedDelete = DeleteImpl(expectedSql, emptyList())
+        val expectedDelete = DeleteImpl(table.name, expectedSql, emptyList())
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -59,7 +59,7 @@ class DeleteBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedDelete = DeleteImpl(expectedSql, listOf(5))
+        val expectedDelete = DeleteImpl(table.name, expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -91,7 +91,7 @@ class DeleteBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedDelete = DeleteImpl(expectedSql, listOf(5))
+        val expectedDelete = DeleteImpl(table.name, expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -124,7 +124,7 @@ class DeleteBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedDelete = DeleteImpl(expectedSql, listOf("test"))
+        val expectedDelete = DeleteImpl(table.name, expectedSql, listOf("test"))
 
         // Verify
         assertEquality(actualDelete, expectedDelete)
@@ -193,8 +193,8 @@ class DeleteBuilderImplTest {
         )
 
         val expectedDelete = DeleteImpl(
-                expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
-                byteArrayOf(11), TypedNull(Type.INT))
+                table.name, expectedSql,
+                listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
         )
 
         // Verify
@@ -235,6 +235,7 @@ class DeleteBuilderImplTest {
         private const val ARG_PLACEHOLDER = "?"
 
         private fun assertEquality(actualDelete: Delete, expectedDelete: Delete) {
+            assertThat(actualDelete.tableName).isEqualTo(expectedDelete.tableName)
             assertThat(actualDelete.sql).isEqualTo(expectedDelete.sql)
             assertThat(actualDelete.arguments).containsExactlyElementsOf(expectedDelete.arguments)
         }

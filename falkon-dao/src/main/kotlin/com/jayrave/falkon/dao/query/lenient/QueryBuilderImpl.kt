@@ -142,6 +142,10 @@ internal class QueryBuilderImpl(
 
 
     override fun build(): Query {
+        val tableNames = HashSet<String>()
+        tableNames.add(table.name)
+        joinInfoList?.forEach { tableNames.add(it.tableToJoin.name) }
+
         val where = whereBuilder?.build()
         val sql = querySqlBuilder.build(
                 table.name, distinct, buildSelectColumnInfoList(), joinInfoList,
@@ -149,7 +153,7 @@ internal class QueryBuilderImpl(
                 offsetCount, argPlaceholder
         )
 
-        return QueryImpl(sql, where?.arguments ?: emptyList())
+        return QueryImpl(tableNames, sql, where?.arguments ?: emptyList())
     }
 
 

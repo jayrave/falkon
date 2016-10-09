@@ -30,7 +30,7 @@ class UpdateBuilderImplTest {
                 table.name, listOf(table.int.name), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = UpdateImpl(expectedSql, listOf(5))
+        val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(5))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -66,7 +66,7 @@ class UpdateBuilderImplTest {
                 ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = UpdateImpl(expectedSql, listOf(5, "test"))
+        val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(5, "test"))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -100,7 +100,7 @@ class UpdateBuilderImplTest {
                 table.name, listOf(table.int.name, table.string.name), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = UpdateImpl(expectedSql, listOf(5, "test"))
+        val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(5, "test"))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -136,7 +136,7 @@ class UpdateBuilderImplTest {
                 table.name, listOf(table.int.name), null, ARG_PLACEHOLDER
         )
 
-        val expectedUpdate = UpdateImpl(expectedSql, listOf(overwritingValue))
+        val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(overwritingValue))
 
         // Verify
         assertEquality(actualUpdate, expectedUpdate)
@@ -193,8 +193,8 @@ class UpdateBuilderImplTest {
         )
 
         val expectedUpdate = UpdateImpl(
-                expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
-                byteArrayOf(11), TypedNull(Type.INT))
+                table.name, expectedSql,
+                listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
         )
 
         // Verify
@@ -235,6 +235,7 @@ class UpdateBuilderImplTest {
         private const val ARG_PLACEHOLDER = "?"
 
         private fun assertEquality(actualUpdate: Update, expectedUpdate: Update) {
+            assertThat(actualUpdate.tableName).isEqualTo(expectedUpdate.tableName)
             assertThat(actualUpdate.sql).isEqualTo(expectedUpdate.sql)
             assertThat(actualUpdate.arguments).containsExactlyElementsOf(expectedUpdate.arguments)
         }

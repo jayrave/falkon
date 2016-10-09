@@ -126,7 +126,7 @@ class QueryBuilderImplTest {
                 ))
         )
 
-        val expectedQuery = QueryImpl(expectedSql, listOf(5))
+        val expectedQuery = QueryImpl(listOf(table.name), expectedSql, listOf(5))
 
         // Verify
         val engine = bundle.engine
@@ -394,7 +394,9 @@ class QueryBuilderImplTest {
                 )
         )
 
-        val expectedQuery = QueryImpl(expectedSql, listOf(5F, 6L))
+        val expectedQuery = QueryImpl(
+                listOf(table1.name, table2.name, table3.name), expectedSql, listOf(5F, 6L)
+        )
 
         // Verify
         val engine = bundle.engine
@@ -518,7 +520,9 @@ class QueryBuilderImplTest {
                 limit = 5, offset = 8
         )
 
-        val expectedQuery = QueryImpl(expectedSql, listOf(5.0, 6))
+        val expectedQuery = QueryImpl(
+                listOf(table.name, tableForJoin.name), expectedSql, listOf(5.0, 6)
+        )
 
         // Verify
         val engine = bundle.engine
@@ -581,8 +585,8 @@ class QueryBuilderImplTest {
         )
 
         val expectedQuery = QueryImpl(
-                expectedSql, listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10",
-                byteArrayOf(11), TypedNull(Type.INT))
+                listOf(table.name), expectedSql,
+                listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
         )
 
         // Verify
@@ -622,7 +626,7 @@ class QueryBuilderImplTest {
                 limit = 5, offset = 8
         )
 
-        val expectedQuery = QueryImpl(expectedSql, listOf(5.0))
+        val expectedQuery = QueryImpl(listOf(table.name), expectedSql, listOf(5.0))
 
         // Verify
         val engine = bundle.engine
@@ -654,7 +658,11 @@ class QueryBuilderImplTest {
                 limit = limit, offset = offset
         )
 
-        val expectedQuery = QueryImpl(expectedSql, emptyList())
+        val tableNames = HashSet<String>()
+        tableNames.add(bundle.table.name)
+        joinInfos?.forEach { tableNames.add(it.nameOfTableToJoin) }
+
+        val expectedQuery = QueryImpl(tableNames, expectedSql, emptyList())
         val allConcernedTables = HashSet<String>()
         allConcernedTables.add(bundle.table.name)
         joinInfos?.forEach { allConcernedTables.add(it.nameOfTableToJoin) }

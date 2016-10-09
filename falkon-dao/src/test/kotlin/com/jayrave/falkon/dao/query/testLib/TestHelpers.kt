@@ -30,6 +30,7 @@ internal fun buildColumnInfoList(vararg tables: Table<*, *>): Iterable<SelectCol
 
 
 internal fun assertQueryEquality(actualQuery: Query, expectedQuery: Query) {
+    Assertions.assertThat(actualQuery.tableNames).hasSameElementsAs(expectedQuery.tableNames)
     Assertions.assertThat(actualQuery.sql).isEqualTo(expectedQuery.sql)
     Assertions.assertThat(actualQuery.arguments).containsExactlyElementsOf(expectedQuery.arguments)
 }
