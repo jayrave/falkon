@@ -2,6 +2,7 @@ package com.jayrave.falkon.dao.where.lenient
 
 import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereImpl
 import com.jayrave.falkon.engine.TypedNull
@@ -84,10 +85,22 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
     }
 
 
+    override fun <T : Any, C> isIn(column: Column<T, C>, subQuery: Query): Z {
+        handleIsIn(sections, column, subQuery, qualifyColumnNames)
+        return adderOrEnder
+    }
+
+
     override fun <T : Any, C> isIn(
             column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z {
 
         handleIsIn(sections, column, firstValue, remainingValues, qualifyColumnNames)
+        return adderOrEnder
+    }
+
+
+    override fun <T : Any, C> isNotIn(column: Column<T, C>, subQuery: Query): Z {
+        handleIsNotIn(sections, column, subQuery, qualifyColumnNames)
         return adderOrEnder
     }
 
@@ -179,10 +192,18 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
             handleLike(sections, column, pattern, qualifyColumnNames)
         }
 
+        override fun <T : Any, C> isIn(column: Column<T, C>, subQuery: Query) {
+            handleIsIn(sections, column, subQuery, qualifyColumnNames)
+        }
+
         override fun <T : Any, C> isIn(
                 column: Column<T, C>, firstValue: C, vararg remainingValues: C) {
 
             handleIsIn(sections, column, firstValue, remainingValues, qualifyColumnNames)
+        }
+
+        override fun <T : Any, C> isNotIn(column: Column<T, C>, subQuery: Query) {
+            handleIsNotIn(sections, column, subQuery, qualifyColumnNames)
         }
 
         override fun <T : Any, C> isNotIn(
@@ -222,6 +243,14 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
     companion object {
         
         private val transformerForList: (ArgAwareWhereSection) -> WhereSection = { it.whereSection }
+
+        private val <T> Iterable<T>.size: Int
+            get() {
+                return when {
+                    this is Collection<T> -> size
+                    else -> count()
+                }
+            }
 
         private fun <T: Any, C> handleEq(
                 sections: MutableList<ArgAwareWhereSection>, column: Column<T, C>,
@@ -340,6 +369,22 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
 
 
         private fun <T: Any, C> handleIsIn(
+                sections: MutableList<ArgAwareWhereSection>, column: Column<T, C>,
+                subQuery: Query, qualifyColumnName: Boolean) {
+
+            sections.add(ArgAwareWhereSection(
+                    MultiArgPredicateWithSubQuery(
+                            MultiArgPredicateWithSubQuery.Type.IS_IN,
+                            column.getAppropriateName(qualifyColumnName),
+                            subQuery.sql, subQuery.arguments.size
+                    ),
+
+                    subQuery.arguments
+            ))
+        }
+
+
+        private fun <T: Any, C> handleIsIn(
                 sections: MutableList<ArgAwareWhereSection>, column: Column<T, C>, firstValue: C,
                 remainingValues: Array<out C>, qualifyColumnName: Boolean) {
 
@@ -355,6 +400,22 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
                     ),
 
                     args
+            ))
+        }
+
+
+        private fun <T: Any, C> handleIsNotIn(
+                sections: MutableList<ArgAwareWhereSection>, column: Column<T, C>,
+                subQuery: Query, qualifyColumnName: Boolean) {
+
+            sections.add(ArgAwareWhereSection(
+                    MultiArgPredicateWithSubQuery(
+                            MultiArgPredicateWithSubQuery.Type.IS_NOT_IN,
+                            column.getAppropriateName(qualifyColumnName),
+                            subQuery.sql, subQuery.arguments.size
+                    ),
+
+                    subQuery.arguments
             ))
         }
 

@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.where.lenient
 
 import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.assertWhereEquality
 import com.jayrave.falkon.dao.where.Where
@@ -129,6 +130,40 @@ class WhereBuilderImplTest {
 
 
     @Test
+    fun testIsInWithSubQueryWithNoArgs() {
+        val table = TableForTest()
+        val builder = newBuilder()
+        val subQuery = QueryImpl(emptyList(), "test sub query", emptyList())
+        val actualWhere = builder.isIn(table.int, subQuery).build()
+        val expectedWhere = WhereImpl(
+                listOf(MultiArgPredicateWithSubQuery(
+                        MultiArgPredicateWithSubQuery.Type.IS_IN,
+                        table.int.name, subQuery.sql, 0
+                )), emptyList()
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testIsInWithSubQueryWithMultipleArgs() {
+        val table = TableForTest()
+        val builder = newBuilder()
+        val subQuery = QueryImpl(emptyList(), "test sub query", listOf(5, "test 6"))
+        val actualWhere = builder.isIn(table.int, subQuery).build()
+        val expectedWhere = WhereImpl(
+                listOf(MultiArgPredicateWithSubQuery(
+                        MultiArgPredicateWithSubQuery.Type.IS_IN,
+                        table.int.name, subQuery.sql, 2
+                )), listOf(5, "test 6")
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
     fun testIsInWithSingleArg() {
         val table = TableForTest()
         val builder = newBuilder()
@@ -150,6 +185,40 @@ class WhereBuilderImplTest {
         val expectedWhere = WhereImpl(
                 listOf(MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.int.name, 4)),
                 listOf(5, 6, 7, 8)
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testIsNotInWithSubQueryWithNoArgs() {
+        val table = TableForTest()
+        val builder = newBuilder()
+        val subQuery = QueryImpl(emptyList(), "test sub query", emptyList())
+        val actualWhere = builder.isNotIn(table.int, subQuery).build()
+        val expectedWhere = WhereImpl(
+                listOf(MultiArgPredicateWithSubQuery(
+                        MultiArgPredicateWithSubQuery.Type.IS_NOT_IN,
+                        table.int.name, subQuery.sql, 0
+                )), emptyList()
+        )
+
+        assertWhereEquality(actualWhere, expectedWhere)
+    }
+
+
+    @Test
+    fun testIsNotInWithSubQueryWithMultipleArgs() {
+        val table = TableForTest()
+        val builder = newBuilder()
+        val subQuery = QueryImpl(emptyList(), "test sub query", listOf(5, "test 6"))
+        val actualWhere = builder.isNotIn(table.int, subQuery).build()
+        val expectedWhere = WhereImpl(
+                listOf(MultiArgPredicateWithSubQuery(
+                        MultiArgPredicateWithSubQuery.Type.IS_NOT_IN,
+                        table.int.name, subQuery.sql, 2
+                )), listOf(5, "test 6")
         )
 
         assertWhereEquality(actualWhere, expectedWhere)
@@ -438,8 +507,22 @@ class WhereBuilderImplTest {
                     lt(table.blob, byteArrayOf(11))
                     like(table.long, "12")
                 }.and()
-                .isIn(table.nullableFloat, 13F, 14F, 15F).or()
-                .isNotIn(table.nullableDouble, 16.0).and()
+                .isIn(
+                        table.nullableString,
+                        QueryImpl(
+                                listOf("table_1"), "test sub query for is in",
+                                listOf("test 13", "test 14")
+                        )
+                ).or()
+                .isIn(table.nullableFloat, 15F, 16F, 17F).or()
+                .isNotIn(
+                        table.blob,
+                        QueryImpl(
+                                listOf("table_1"), "test sub query for is not in",
+                                listOf(byteArrayOf(18), 19.0)
+                        )
+                ).or()
+                .isNotIn(table.nullableDouble, 20.0).and()
                 .isNull(table.nullableInt).or()
                 .isNotNull(table.int).build()
 
@@ -467,8 +550,16 @@ class WhereBuilderImplTest {
                                         OneArgPredicate(OneArgPredicate.Type.LIKE, table.long.name)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
+                        MultiArgPredicateWithSubQuery(
+                                MultiArgPredicateWithSubQuery.Type.IS_IN, table.nullableString.name,
+                                "test sub query for is in", 2
+                        ), SimpleConnector(SimpleConnector.Type.OR),
                         MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.nullableFloat.name, 3),
                         SimpleConnector(SimpleConnector.Type.OR),
+                        MultiArgPredicateWithSubQuery(
+                                MultiArgPredicateWithSubQuery.Type.IS_NOT_IN, table.blob.name,
+                                "test sub query for is not in", 2
+                        ), SimpleConnector(SimpleConnector.Type.OR),
                         MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.nullableDouble.name, 1),
                         SimpleConnector(SimpleConnector.Type.AND),
                         NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.name),
@@ -476,8 +567,8 @@ class WhereBuilderImplTest {
                         NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.int.name)
                 ),
                 listOf(
-                        5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12",
-                        13F, 14F, 15F, 16.0
+                        5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12", "test 13",
+                        "test 14", 15F, 16F, 17F, byteArrayOf(18), 19.0, 20.0
                 )
         )
 
@@ -502,8 +593,22 @@ class WhereBuilderImplTest {
                     lt(table.blob, byteArrayOf(11))
                     like(table.long, "12")
                 }.and()
-                .isIn(table.nullableFloat, 13F, 14F, 15F).or()
-                .isNotIn(table.nullableDouble, 16.0).and()
+                .isIn(
+                        table.nullableString,
+                        QueryImpl(
+                                listOf("table_1"), "test sub query for is in",
+                                listOf("test 13", "test 14")
+                        )
+                ).or()
+                .isIn(table.nullableFloat, 15F, 16F, 17F).or()
+                .isNotIn(
+                        table.blob,
+                        QueryImpl(
+                                listOf("table_1"), "test sub query for is not in",
+                                listOf(byteArrayOf(18), 19.0)
+                        )
+                ).or()
+                .isNotIn(table.nullableDouble, 20.0).and()
                 .isNull(table.nullableInt).or()
                 .isNotNull(table.int).build()
 
@@ -531,8 +636,16 @@ class WhereBuilderImplTest {
                                         OneArgPredicate(OneArgPredicate.Type.LIKE, table.long.qualifiedName)
                                 )
                         ), SimpleConnector(SimpleConnector.Type.AND),
+                        MultiArgPredicateWithSubQuery(
+                                MultiArgPredicateWithSubQuery.Type.IS_IN, table.nullableString.qualifiedName,
+                                "test sub query for is in", 2
+                        ), SimpleConnector(SimpleConnector.Type.OR),
                         MultiArgPredicate(MultiArgPredicate.Type.IS_IN, table.nullableFloat.qualifiedName, 3),
                         SimpleConnector(SimpleConnector.Type.OR),
+                        MultiArgPredicateWithSubQuery(
+                                MultiArgPredicateWithSubQuery.Type.IS_NOT_IN, table.blob.qualifiedName,
+                                "test sub query for is not in", 2
+                        ), SimpleConnector(SimpleConnector.Type.OR),
                         MultiArgPredicate(MultiArgPredicate.Type.IS_NOT_IN, table.nullableDouble.qualifiedName, 1),
                         SimpleConnector(SimpleConnector.Type.AND),
                         NoArgPredicate(NoArgPredicate.Type.IS_NULL, table.nullableInt.qualifiedName),
@@ -540,8 +653,8 @@ class WhereBuilderImplTest {
                         NoArgPredicate(NoArgPredicate.Type.IS_NOT_NULL, table.int.qualifiedName)
                 ),
                 listOf(
-                        5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12",
-                        13F, 14F, 15F, 16.0
+                        5, 6, 7, 8f, 9.0, 10.0, "test 1", byteArrayOf(11), "12", "test 13",
+                        "test 14", 15F, 16F, 17F, byteArrayOf(18), 19.0, 20.0
                 )
         )
 

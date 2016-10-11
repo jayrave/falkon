@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.where
 
+import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.mapper.Column
 
 /**
@@ -24,7 +25,17 @@ interface PredicateAdder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun <C> le(column: Column<T, C>, value: C): Z
     fun <C> between(column: Column<T, C>, low: C, high: C): Z
     fun <C> like(column: Column<T, C>, pattern: String): Z
+
+    /**
+     * [subQuery] should only return a single column of result
+     */
+    fun <C> isIn(column: Column<T, C>, subQuery: Query): Z
     fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z
+
+    /**
+     * [subQuery] should only return a single column of result
+     */
+    fun <C> isNotIn(column: Column<T, C>, subQuery: Query): Z
     fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z
     fun <C> isNull(column: Column<T, C>): Z
     fun <C> isNotNull(column: Column<T, C>): Z
@@ -78,7 +89,17 @@ interface InnerAdder<T : Any> {
     fun <C> le(column: Column<T, C>, value: C)
     fun <C> between(column: Column<T, C>, low: C, high: C)
     fun <C> like(column: Column<T, C>, pattern: String)
+
+    /**
+     * [subQuery] should only return a single column of result
+     */
+    fun <C> isIn(column: Column<T, C>, subQuery: Query)
     fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C)
+
+    /**
+     * [subQuery] should only return a single column of result
+     */
+    fun <C> isNotIn(column: Column<T, C>, subQuery: Query)
     fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C)
     fun <C> isNull(column: Column<T, C>)
     fun <C> isNotNull(column: Column<T, C>)

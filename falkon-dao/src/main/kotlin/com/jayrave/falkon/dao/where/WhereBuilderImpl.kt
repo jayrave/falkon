@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.where
 
+import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.dao.where.lenient.AdderOrEnder as LenientAdderOrEnder
 import com.jayrave.falkon.dao.where.lenient.InnerAdder as LenientInnerAdder
@@ -80,8 +81,20 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
     }
 
 
+    override fun <C> isIn(column: Column<T, C>, subQuery: Query): Z {
+        lenientWhereBuilderImpl.isIn(column, subQuery)
+        return adderOrEnder
+    }
+
+
     override fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C): Z {
         lenientWhereBuilderImpl.isIn(column, firstValue, *remainingValues)
+        return adderOrEnder
+    }
+
+
+    override fun <C> isNotIn(column: Column<T, C>, subQuery: Query): Z {
+        lenientWhereBuilderImpl.isNotIn(column, subQuery)
         return adderOrEnder
     }
 
@@ -174,8 +187,16 @@ internal class WhereBuilderImpl<T : Any, Z : AdderOrEnder<T, Z>>(
             lenientInnerAdder.like(column, pattern)
         }
 
+        override fun <C> isIn(column: Column<T, C>, subQuery: Query) {
+            lenientInnerAdder.isIn(column, subQuery)
+        }
+
         override fun <C> isIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C) {
             lenientInnerAdder.isIn(column, firstValue, *remainingValues)
+        }
+
+        override fun <C> isNotIn(column: Column<T, C>, subQuery: Query) {
+            lenientInnerAdder.isNotIn(column, subQuery)
         }
 
         override fun <C> isNotIn(column: Column<T, C>, firstValue: C, vararg remainingValues: C) {
