@@ -51,6 +51,7 @@ private fun Predicate.addTo(clause: StringBuilder, argPlaceholder: String) {
         is OneArgPredicate -> this.addTo(clause, argPlaceholder)
         is BetweenPredicate -> this.addTo(clause, argPlaceholder)
         is MultiArgPredicate -> this.addTo(clause, argPlaceholder)
+        is MultiArgPredicateWithSubQuery -> this.addTo(clause)
     }
 }
 
@@ -76,6 +77,11 @@ private fun OneArgPredicate.addTo(clause: StringBuilder, argPlaceholder: String)
 
 private fun MultiArgPredicate.addTo(clause: StringBuilder, argPlaceholder: String) {
     clause.appendMultiArgPredicate(this, argPlaceholder)
+}
+
+
+private fun MultiArgPredicateWithSubQuery.addTo(clause: StringBuilder) {
+    clause.appendMultiArgPredicateWithSubQuery(this)
 }
 
 
@@ -148,6 +154,19 @@ private fun StringBuilder.appendMultiArgPredicate(
 }
 
 
+private fun StringBuilder.appendMultiArgPredicateWithSubQuery(
+        predicate: MultiArgPredicateWithSubQuery) {
+
+    if (predicate.numberOfArgs < 0) {
+        throw SQLSyntaxErrorException(
+                "${predicate.type} can't have ${predicate.numberOfArgs} arguments"
+        )
+    }
+
+    append("${predicate.columnName} ${predicate.type.sqlText()} (${predicate.subQuery})")
+}
+
+
 private fun StringBuilder.appendBetweenPredicate(
         predicate: BetweenPredicate, argPlaceholder: String) {
     append("${predicate.columnName} BETWEEN $argPlaceholder AND $argPlaceholder")
@@ -157,6 +176,9 @@ private fun StringBuilder.appendBetweenPredicate(
 
 
 // --------------------------------- Start of SQL text section -------------------------------------
+
+private const val TEXT_FOR_IN_PREDICATE = "IN"
+private const val TEXT_FOR_NOT_IN_PREDICATE = "NOT IN"
 
 private fun NoArgPredicate.Type.sqlText(): String {
     return when (this) {
@@ -181,8 +203,16 @@ private fun OneArgPredicate.Type.sqlText(): String {
 
 private fun MultiArgPredicate.Type.sqlText(): String {
     return when (this) {
-        MultiArgPredicate.Type.IS_IN -> "IN"
-        MultiArgPredicate.Type.IS_NOT_IN -> "NOT IN"
+        MultiArgPredicate.Type.IS_IN -> TEXT_FOR_IN_PREDICATE
+        MultiArgPredicate.Type.IS_NOT_IN -> TEXT_FOR_NOT_IN_PREDICATE
+    }
+}
+
+
+private fun MultiArgPredicateWithSubQuery.Type.sqlText(): String {
+    return when (this) {
+        MultiArgPredicateWithSubQuery.Type.IS_IN -> TEXT_FOR_IN_PREDICATE
+        MultiArgPredicateWithSubQuery.Type.IS_NOT_IN -> TEXT_FOR_NOT_IN_PREDICATE
     }
 }
 

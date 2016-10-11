@@ -128,6 +128,27 @@ class BuildWhereFromPartsTest {
 
 
     @Test(expected = SQLSyntaxErrorException::class)
+    fun testIsInWithSubQueryWithNegativeNumberOfArgsThrows() {
+        listOf(MultiArgPredicateWithSubQuery(
+                MultiArgPredicateWithSubQuery.Type.IS_IN, "column_name", "test sub query", -1
+        )).buildWhereClause(ARG_PLACEHOLDER)
+    }
+
+
+    @Test
+    fun testIsInWithSubQueryWithZeroArgs() {
+        testIsInWithSubQueryWithNonNegativeNumberOfArgs(0)
+    }
+
+
+    @Test
+    fun testIsInWithSubQueryWithPositiveNumberOfArgs() {
+        testIsInWithSubQueryWithNonNegativeNumberOfArgs(1)
+        testIsInWithSubQueryWithNonNegativeNumberOfArgs(2)
+    }
+
+
+    @Test(expected = SQLSyntaxErrorException::class)
     fun testIsInWithNegativeNumberOfArgsThrows() {
         listOf(MultiArgPredicate(
                 MultiArgPredicate.Type.IS_IN, "column_name", -1
@@ -162,6 +183,27 @@ class BuildWhereFromPartsTest {
 
         val expectedWhereClause = "WHERE column_name IN (?, ?, ?)"
         assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+    }
+
+
+    @Test(expected = SQLSyntaxErrorException::class)
+    fun testIsNotInWithSubQueryWithNegativeNumberOfArgsThrows() {
+        listOf(MultiArgPredicateWithSubQuery(
+                MultiArgPredicateWithSubQuery.Type.IS_NOT_IN, "column_name", "test sub query", -1
+        )).buildWhereClause(ARG_PLACEHOLDER)
+    }
+
+
+    @Test
+    fun testIsNotInWithSubQueryWithZeroArgs() {
+        testIsNotInWithSubQueryWithNonNegativeNumberOfArgs(0)
+    }
+
+
+    @Test
+    fun testIsNotInWithSubQueryWithPositiveNumberOfArgs() {
+        testIsNotInWithSubQueryWithNonNegativeNumberOfArgs(1)
+        testIsNotInWithSubQueryWithNonNegativeNumberOfArgs(2)
     }
 
 
@@ -341,5 +383,26 @@ class BuildWhereFromPartsTest {
 
     companion object {
         private const val ARG_PLACEHOLDER = "?"
+
+        private fun testIsInWithSubQueryWithNonNegativeNumberOfArgs(numberOfArgs: Int) {
+            val actualWhereClause = listOf(MultiArgPredicateWithSubQuery(
+                    MultiArgPredicateWithSubQuery.Type.IS_IN, "column_name",
+                    "test sub query", numberOfArgs
+            )).buildWhereClause(ARG_PLACEHOLDER)
+
+            val expectedWhereClause = "WHERE column_name IN (test sub query)"
+            assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+        }
+
+
+        private fun testIsNotInWithSubQueryWithNonNegativeNumberOfArgs(numberOfArgs: Int) {
+            val actualWhereClause = listOf(MultiArgPredicateWithSubQuery(
+                    MultiArgPredicateWithSubQuery.Type.IS_NOT_IN, "column_name",
+                    "test sub query", numberOfArgs
+            )).buildWhereClause(ARG_PLACEHOLDER)
+
+            val expectedWhereClause = "WHERE column_name NOT IN (test sub query)"
+            assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
+        }
     }
 }

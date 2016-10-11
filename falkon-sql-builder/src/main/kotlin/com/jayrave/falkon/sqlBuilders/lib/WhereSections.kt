@@ -40,10 +40,25 @@ sealed class WhereSection {
 
         /**
          * Represents conditions that compare the value in a column against a list of values.
-         * Eg., `column_1 in 5, 6`
+         * Eg., `column_1 IN (5, 6)`
          */
         class MultiArgPredicate(val type: Type, val columnName: String, val numberOfArgs: Int) :
                 Predicate() {
+
+            enum class Type {
+                IS_IN,
+                IS_NOT_IN
+            }
+        }
+
+
+        /**
+         * Represents conditions that compare the value in a column against a values
+         * returned by another query. Eg., `column_1 IN (SELECT ...)`
+         */
+        class MultiArgPredicateWithSubQuery(
+                val type: Type, val columnName: String, val subQuery: String,
+                val numberOfArgs: Int) : Predicate() {
 
             enum class Type {
                 IS_IN,
