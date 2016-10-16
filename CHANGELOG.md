@@ -1,3 +1,7 @@
+#Version 0.5-alpha (2016-10-15)
+- All `WhereBuilder`'s `IN` & `NOT IN` can now work with sub-queries
+- `Insert`, `Update`, `Delete` & `Query` classes carry info about the tables they correspond to
+
 #Version 0.4-alpha (2016-10-07)
 - add & publish `falkon-rxjava-1`
 - `falkon-android` now also brings `falkon-rxjava-1` as a transitive dependency
