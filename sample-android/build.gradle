@@ -28,7 +28,7 @@ android {
 
 dependencies {
 
-    String falkonVersion = '0.4-alpha'
+    String falkonVersion = '0.5-alpha'
     compile "com.jayrave.falkon:falkon-android:$falkonVersion"
 
     compile libraries.kotlinStdlib

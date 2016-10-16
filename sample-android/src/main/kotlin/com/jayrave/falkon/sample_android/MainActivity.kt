@@ -181,11 +181,14 @@ class MainActivity : AppCompatActivity() {
          */
         val query = usersTable.dao.queryBuilder().build()
         val observable = usersTable.configuration.engine.createCompiledQueryObservable(
-                listOf(usersTable.name), query.sql, query.arguments, Schedulers.newThread()
+                query.tableNames, query.sql, query.arguments, Schedulers.newThread()
         )
 
         observable.subscribe({ compiledQuery ->
-            logInfo("This will be run whenever there is a change to ${usersTable.name} table")
+            logInfo(
+                    "This will be run whenever there is a change to " +
+                            "${query.tableNames.joinToString()} table(s)"
+            )
         })
     }
 
