@@ -22,7 +22,7 @@ Clean & simple API to talk with the database (for Android & Kotlin)
 
 ##Dependency
 The following is true for an Android gradle project. For more configurations, check out the advanced section
-```
+```gradle
 // This is usually in the top-level build.gradle file
 allprojects {
     repositories {
@@ -39,7 +39,7 @@ dependencies {
 ##Simple tutorial
 Let's look at the model that we will be saving to / retrieving from the database
 
-```
+```kotlin
 // There is no need for the model to be a data class or to just contain read-only fields!
 // These are just good recommendations (immutability for the win)
 data class User(
@@ -59,13 +59,13 @@ Every table needs a configuration. This carries information like
 ####Engine
 There is a default implementation => `DefaultEngine`. This guy needs a core to talk with the actual database. To talk with Android's SQLite use `AndroidSqliteEngineCore`
 
-```
+```kotlin
 val engine = DefaultEngine(AndroidSqliteEngineCore(new YourSqliteOpenHelper()))
 ```
 
 There is a default implementation of `TableConfiguration` => `TableConfigurationImpl`. To build it, in addition to an engine, some more stuff are required.
 
-```
+```kotlin
 val tableConfiguration = TableConfigurationImpl(
         engine = engine, // The engine we just built
         typeTranslator = AndroidSqliteTypeTranslator(), // How Kotlin types are stored in this particular db
@@ -86,7 +86,7 @@ tableConfiguration.registerDefaultConverters()
 Tables inform Falkon about how a model maps to a table. `BaseEnhancedTable` provides
 a lot of defaults & is a good class to extend for you table mappings
 
-```
+```kotlin
 class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
         BaseEnhancedTable<User, UUID, UsersDao>(
                 "users", configuration, sqlBuilders.createTableSqlBuilder) {
@@ -109,7 +109,7 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
 All the builders (for insert, update, delete & query) in the following section are context aware (suggests appropriate methods at appropriate time when used as a fluent-interface) & are type-safe
 
 ####Insert
-```
+```kotlin
 // Models can be directly inserted
 usersTable.dao.insert(createRandomUser())
 usersTable.dao.insert(listOf(createRandomUser(), createRandomUser(), createRandomUser()))
@@ -122,7 +122,7 @@ usersTable.dao.insertBuilder()
 ```
 
 ####Update
-```
+```kotlin
 // Models can be directly updated
 usersTable.dao.update(editedUser)
 usersTable.dao.update(listOf(editedUser1, editedUser2))
@@ -136,7 +136,7 @@ usersTable.dao.updateBuilder()
 ```
 
 ####Delete
-```
+```kotlin
 // Models can be directly deleted
 usersTable.dao.delete(user)
 usersTable.dao.delete(listOf(user1, user2))
@@ -153,7 +153,7 @@ usersTable.dao.deleteBuilder()
 ```
 
 ####Query
-```
+```kotlin
 // There are several convenience methods
 usersTable.dao.findById(user.id)
 usersTable.dao.findAll()
@@ -230,24 +230,28 @@ Rx modules introduce reactive stream semantics to SQL operations
 ##Gradle dependencies
 All artifacts live in Bintray's `jcenter`
 
-    compile 'com.jayrave.falkon:falkon-dao:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-dao-extn:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-engine:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-engine-jdbc:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-mapper:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-mapper-basic:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-mapper-enhanced:$falkonVersion'
-    compile "com.jayrave.falkon:falkon-rxjava-1:$falkonVersion"
-    compile 'com.jayrave.falkon:falkon-sql-builder:$falkonVersion'
-    compile 'com.jayrave.falkon:falkon-sql-builder-simple:$falkonVersion'
+```gradle
+compile 'com.jayrave.falkon:falkon-dao:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-dao-extn:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-engine:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-engine-jdbc:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-mapper:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-mapper-basic:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-mapper-enhanced:$falkonVersion'
+compile "com.jayrave.falkon:falkon-rxjava-1:$falkonVersion"
+compile 'com.jayrave.falkon:falkon-sql-builder:$falkonVersion'
+compile 'com.jayrave.falkon:falkon-sql-builder-simple:$falkonVersion'
+```
 
 **To use any module, its dependencies must also be included. These dependencies are NOT automatically included!**
 
 For example, to use `falkon-engine-android-sqlite`, its dependency `falkon-engine` is also required which means that the following 2 compile statements must be included
 
-    compile "com.jayrave.falkon:falkon-engine:$falkonVersion"
-    compile "com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion"
+```gradle
+compile "com.jayrave.falkon:falkon-engine:$falkonVersion"
+compile "com.jayrave.falkon:falkon-engine-android-sqlite:$falkonVersion"
+```
 
 | Modules                      | Dependencies                                                                      |
 |------------------------------|-----------------------------------------------------------------------------------|
