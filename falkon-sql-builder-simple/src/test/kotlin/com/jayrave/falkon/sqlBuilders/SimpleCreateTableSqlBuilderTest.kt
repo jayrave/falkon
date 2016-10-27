@@ -9,7 +9,7 @@ import java.sql.SQLSyntaxErrorException
 
 class SimpleCreateTableSqlBuilderTest {
 
-    private val builder = SimpleCreateTableSqlBuilder()
+    private val builder = SimpleCreateTableSqlBuilder(DialectForTesting)
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildThrowsForEmptyColumnInfos() {
@@ -21,7 +21,7 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testBuildWithSingleColumnInfo() {
-        val columnInfo = ColumnInfoForTest("column_name", "TEXT", 256, false)
+        val columnInfo = ColumnInfoForTest("column_name", "TEXT", 256, false, false)
         val actualSql = builder.build(TableInfoForTest(
                 "test", listOf(columnInfo), columnInfo.name, emptyList(), emptyList()
         ))
@@ -33,9 +33,9 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testBuildWithMultipleColumnInfo() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", 256, false)
-        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", 128, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", 256, false, false)
+        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", 128, false, false)
         val actualSql = builder.build(TableInfoForTest(
                 "test", listOf(columnInfo1, columnInfo2, columnInfo3),
                 columnInfo1.name, emptyList(), emptyList()
@@ -51,8 +51,8 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testBuildWithBothNullableAndNonNullColumns() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, true)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, true, false)
         val actualSql = builder.build(TableInfoForTest(
                 "test", listOf(columnInfo1, columnInfo2),
                 columnInfo1.name, emptyList(), emptyList()
@@ -67,9 +67,27 @@ class SimpleCreateTableSqlBuilderTest {
 
 
     @Test
+    fun testBuildWithBothWithAndWithoutAutoIncrementingColumns() {
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, true)
+        val actualSql = builder.build(TableInfoForTest(
+                "test", listOf(columnInfo1, columnInfo2),
+                columnInfo1.name, emptyList(), emptyList()
+        ))
+
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, " +
+                "column_name_2 TEXT ${DialectForTesting.autoIncrementExpression}, " +
+                "PRIMARY KEY (column_name_1))"
+
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
     fun testSingleUniquenessConstraintWithOneColumn() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, false)
         val actualSql = builder.build(TableInfoForTest(
                 "test", listOf(columnInfo1, columnInfo2),
                 columnInfo1.name, listOf(listOf(columnInfo2.name)), emptyList()
@@ -86,9 +104,9 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testSingleUniquenessConstraintWithMultipleColumns() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false)
-        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", null, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, false)
+        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", null, false, false)
         val actualSql = builder.build(TableInfoForTest(
                 "test", listOf(columnInfo1, columnInfo2, columnInfo3), columnInfo1.name,
                 listOf(listOf(columnInfo2.name, columnInfo3.name)), emptyList()
@@ -105,10 +123,10 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testMultipleUniquenessConstraints() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false)
-        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", null, false)
-        val columnInfo4 = ColumnInfoForTest("column_name_4", "TEXT", null, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, false)
+        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", null, false, false)
+        val columnInfo4 = ColumnInfoForTest("column_name_4", "TEXT", null, false, false)
         val actualSql = builder.build(TableInfoForTest(
                 "test", listOf(columnInfo1, columnInfo2, columnInfo3, columnInfo4),
                 columnInfo1.name,
@@ -132,8 +150,8 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testSingleForeignKeyConstraint() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, false)
         val foreignKeyConstraint = ForeignKeyConstraintForTest(
                 columnInfo2.name, "foreign_table", "foreign_column_name"
         )
@@ -154,8 +172,8 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testMultipleForeignKeyConstraints() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, false)
         val foreignKeyConstraint1 = ForeignKeyConstraintForTest(
                 columnInfo1.name, "foreign_table_1", "foreign_column_name_1"
         )
@@ -181,10 +199,10 @@ class SimpleCreateTableSqlBuilderTest {
 
     @Test
     fun testBuildWithAllConstraints() {
-        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", 64, false)
-        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, true)
-        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", 1024, true)
-        val columnInfo4 = ColumnInfoForTest("column_name_4", "TEXT", null, false)
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", 64, false, true)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, true, false)
+        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", 1024, true, true)
+        val columnInfo4 = ColumnInfoForTest("column_name_4", "TEXT", null, false, false)
 
         val foreignKeyConstraint1 = ForeignKeyConstraintForTest(
                 columnInfo1.name, "foreign_table_1", "foreign_column_name_1"
@@ -204,8 +222,10 @@ class SimpleCreateTableSqlBuilderTest {
                 ), listOf(foreignKeyConstraint1, foreignKeyConstraint2)
         ))
 
-        val expectedSql = "CREATE TABLE test (column_name_1 NUMBER(64), " +
-                "column_name_2 TEXT NOT NULL, column_name_3 BLOB(1024) NOT NULL, " +
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER(64) ${DialectForTesting.autoIncrementExpression}, " +
+                "column_name_2 TEXT NOT NULL, " +
+                "column_name_3 BLOB(1024) NOT NULL ${DialectForTesting.autoIncrementExpression}, " +
                 "column_name_4 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2, column_name_3), " +
@@ -221,7 +241,8 @@ class SimpleCreateTableSqlBuilderTest {
 
     private class ColumnInfoForTest(
             override val name: String, override val dataType: String,
-            override val maxSize: Int?, override val isNonNull: Boolean) : ColumnInfo
+            override val maxSize: Int?, override val isNonNull: Boolean,
+            override val autoIncrement: Boolean) : ColumnInfo
 
 
 
@@ -236,4 +257,10 @@ class SimpleCreateTableSqlBuilderTest {
             override val primaryKeyConstraint: String,
             override val uniquenessConstraints: Iterable<Iterable<String>>,
             override val foreignKeyConstraints: Iterable<ForeignKeyConstraint>) : TableInfo
+
+
+
+    object DialectForTesting : Dialect {
+        override val autoIncrementExpression: String = "AUTO_INCREMENT_FOR_TESTING"
+    }
 }

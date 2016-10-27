@@ -6,8 +6,9 @@ import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 
 class EnhancedColumnImpl<T : Any, C>(
         table: Table<T, *>, name: String, override val maxSize: Int?,
-        override val isNonNull: Boolean, propertyExtractor: PropertyExtractor<T, C>,
-        converter: Converter<C>, typeTranslator: TypeTranslator) :
+        override val isNonNull: Boolean, override val autoIncrement: Boolean,
+        propertyExtractor: PropertyExtractor<T, C>, converter: Converter<C>,
+        typeTranslator: TypeTranslator) :
         EnhancedColumn<T, C>, ColumnInfo {
 
     private val delegate = ColumnImpl(table, name, propertyExtractor, converter)

@@ -21,4 +21,10 @@ interface ColumnInfo {
      * Whether this column allows NULL values
      */
     val isNonNull: Boolean
+
+    /**
+     * Whether an auto incremented value should be used for this column in case no
+     * explicit value is passed in
+     */
+    val autoIncrement: Boolean
 }

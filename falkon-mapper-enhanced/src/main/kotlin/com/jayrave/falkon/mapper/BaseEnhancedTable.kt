@@ -53,6 +53,8 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * @param maxSize of this column. If it is `null`, column size isn't bounded
      * @param isNonNull whether this column accepts `null` values; `false` by default
      * @param isUnique whether this column expects all values to be unique; `false` by default
+     * @param autoIncrement whether to insert an auto incremented value if nothing is set
+     * explicitly; `false` by default
      * @param converter to convert [C] from/to appropriate SQL type. If it isn't
      * provided, whatever [configuration] returns for [property]'s type is used
      * @param propertyExtractor to extract the property from an instance of [T]. If it isn't
@@ -64,13 +66,14 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
+            autoIncrement: Boolean = DEFAULT_AUTO_INCREMENT_FLAG,
             converter: Converter<C> = getConverterForType(property, configuration),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
 
         return addColumn<C, Any, Any?>(
-                name, maxSize, isNonNull, isUnique, null,
-                converter, propertyExtractor
+                name, maxSize, isNonNull, isUnique, autoIncrement,
+                null, converter, propertyExtractor
         )
     }
 
@@ -84,6 +87,8 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * @param maxSize of this column. If it is `null`, column size isn't bounded
      * @param isNonNull whether this column accepts `null` values; `false` by default
      * @param isUnique whether this column expects all values to be unique; `false` by default
+     * @param autoIncrement whether to insert an auto incremented value if nothing is set
+     * explicitly; `false` by default
      * @param foreignColumn column from a foreign table this column corresponds to
      * @param converter to convert [C] from/to appropriate SQL type. If it isn't
      * provided, whatever [configuration] returns for [property]'s type is used
@@ -96,13 +101,14 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
+            autoIncrement: Boolean = DEFAULT_AUTO_INCREMENT_FLAG,
             foreignColumn: Column<FT, FC>,
             converter: Converter<C> = getConverterForType(property, configuration),
             propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
             EnhancedColumn<T, C> {
 
         return addColumn(
-                name, maxSize, isNonNull, isUnique,
+                name, maxSize, isNonNull, isUnique, autoIncrement,
                 foreignColumn, converter, propertyExtractor
         )
     }
@@ -115,6 +121,8 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * @param maxSize of this column. If it is `null`, column size isn't bounded
      * @param isNonNull whether this column accepts `null` values; `false` by default
      * @param isUnique whether this column expects all values to be unique; `false` by default
+     * @param autoIncrement whether to insert an auto incremented value if nothing is set
+     * explicitly; `false` by default
      * @param foreignColumn column from a foreign table this column corresponds to
      * @param converter to convert [C] from/to appropriate SQL type
      * @param propertyExtractor to extract the property from an instance of [T]
@@ -124,14 +132,15 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             maxSize: Int?,
             isNonNull: Boolean,
             isUnique: Boolean,
+            autoIncrement: Boolean,
             foreignColumn: Column<FT, FC>?,
             converter: Converter<C>,
             propertyExtractor: PropertyExtractor<T, C>):
             EnhancedColumn<T, C> {
 
         val column = EnhancedColumnImpl(
-                this, name, maxSize, isNonNull, propertyExtractor, converter,
-                configuration.typeTranslator
+                this, name, maxSize, isNonNull, autoIncrement, propertyExtractor,
+                converter, configuration.typeTranslator
         )
 
         if (allColumnImpls.offer(column)) {
@@ -181,5 +190,6 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
         val DEFAULT_MAX_SIZE: Int? = null
         const val DEFAULT_IS_NON_NULL_FLAG = false
         const val DEFAULT_IS_UNIQUE_FLAG = false
+        const val DEFAULT_AUTO_INCREMENT_FLAG = false
     }
 }

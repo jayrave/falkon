@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 import java.sql.SQLSyntaxErrorException
 
-class SimpleCreateTableSqlBuilder : CreateTableSqlBuilder {
+class SimpleCreateTableSqlBuilder(private val dialect: Dialect) : CreateTableSqlBuilder {
 
     override fun build(tableInfo: TableInfo): String {
         // Add basic create table stuff
@@ -45,6 +45,13 @@ class SimpleCreateTableSqlBuilder : CreateTableSqlBuilder {
             // Add nullability if required
             if (it.isNonNull) {
                 columnDefinitionBuilder.append(" NOT NULL")
+            }
+
+            // Add expression for auto incrementing if required
+            if (it.autoIncrement) {
+                columnDefinitionBuilder
+                        .append(" ")
+                        .append(dialect.autoIncrementExpression)
             }
 
             columnDefinitionBuilder.toString()

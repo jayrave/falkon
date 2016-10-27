@@ -3,6 +3,7 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypeTranslator
+import com.jayrave.falkon.sqlBuilders.Dialect
 import com.jayrave.falkon.sqlBuilders.SimpleCreateTableSqlBuilder
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -135,13 +136,16 @@ class BaseEnhancedTableTest {
         val foreignTable1 = ForeignTableForTest1()
         val foreignTable2 = ForeignTableForTest2()
         class TableForTest : BaseEnhancedTableForTest() {
-            override val idColumn: EnhancedColumn<ModelForTest, Int> = col(ModelForTest::int, "id")
+            override val idColumn: EnhancedColumn<ModelForTest, Int> = col(
+                    ModelForTest::int, "id", autoIncrement = true
+            )
+
             val int = foreignCol(ModelForTest::int, foreignColumn = foreignTable1.idColumn)
             val string = col(ModelForTest::string, maxSize = 128, isNonNull = true, isUnique = true)
             val nullableInt = col(ModelForTest::nullableInt)
             val nullableString = foreignCol(
                     ModelForTest::nullableString, foreignColumn = foreignTable2.idColumn,
-                    isNonNull = true
+                    isNonNull = true, autoIncrement = true
             )
 
             init {
@@ -153,11 +157,11 @@ class BaseEnhancedTableTest {
         val table = TableForTest()
         val actualCreateTableSql = table.buildCreateTableSql()
         val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
-                "${table.idColumn.name} DUMMY_TYPE, " +
+                "${table.idColumn.name} DUMMY_TYPE ${DialectForTesting.autoIncrementExpression}, " +
                 "${table.int.name} DUMMY_TYPE, " +
                 "${table.string.name} DUMMY_TYPE(128) NOT NULL, " +
                 "${table.nullableInt.name} DUMMY_TYPE, " +
-                "${table.nullableString.name} DUMMY_TYPE NOT NULL, " +
+                "${table.nullableString.name} DUMMY_TYPE NOT NULL ${DialectForTesting.autoIncrementExpression}, " +
                 "PRIMARY KEY (${table.idColumn.name}), " +
                 "UNIQUE (${table.string.name}), " +
                 "UNIQUE (${table.string.name}, ${table.nullableInt.name}), " +
@@ -191,6 +195,12 @@ class BaseEnhancedTableTest {
 
 
 
+    object DialectForTesting : Dialect {
+        override val autoIncrementExpression: String = "AUTO_INCREMENT_FOR_TESTING"
+    }
+
+
+
     companion object {
         private val dummyTypeTranslator = object : TypeTranslator {
             override fun translate(type: Type): String = "DUMMY_TYPE"
@@ -198,7 +208,7 @@ class BaseEnhancedTableTest {
         }
 
         private val tableConfigurationImpl: TableConfiguration
-        private val simpleCreateTableSqlBuilder = SimpleCreateTableSqlBuilder()
+        private val simpleCreateTableSqlBuilder = SimpleCreateTableSqlBuilder(DialectForTesting)
 
         init {
             tableConfigurationImpl = TableConfigurationImpl(mock(), dummyTypeTranslator)
