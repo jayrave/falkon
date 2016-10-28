@@ -5,7 +5,7 @@ import java.sql.SQLSyntaxErrorException
 
 class SimpleCreateTableSqlBuilder(private val dialect: Dialect) : CreateTableSqlBuilder {
 
-    override fun build(tableInfo: TableInfo): String {
+    override fun build(tableInfo: TableInfo): List<String> {
         // Add basic create table stuff
         val createTableSql = StringBuilder(120)
         createTableSql.append("CREATE TABLE ${tableInfo.name} (")
@@ -18,7 +18,7 @@ class SimpleCreateTableSqlBuilder(private val dialect: Dialect) : CreateTableSql
         createTableSql.append(")")
 
         // Build & return SQL statement
-        return createTableSql.toString()
+        return listOf(createTableSql.toString())
     }
 
 

@@ -23,7 +23,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
     private val foreignKeyConstraints: MutableList<ForeignKeyConstraint> = LinkedList()
     private val allColumnImpls = ConcurrentLinkedQueue<EnhancedColumnImpl<T, *>>()
 
-    override fun buildCreateTableSql(): String {
+    override fun buildCreateTableSql(): List<String> {
         return createTableSqlBuilder.build(TableInfoImpl())
     }
 

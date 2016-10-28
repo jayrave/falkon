@@ -25,7 +25,7 @@ class BaseEnhancedTableTest {
                 "${table.nullableInt.name} DUMMY_TYPE, " +
                 "PRIMARY KEY (${table.idColumn.name}))"
 
-        assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
+        assertThat(actualCreateTableSql).containsOnly(expectedCreateTableSql)
     }
 
 
@@ -51,7 +51,7 @@ class BaseEnhancedTableTest {
                 "PRIMARY KEY (${table.idColumn.name}), " +
                 "FOREIGN KEY (${table.int.name}) REFERENCES ${foreignTable.name}(${foreignTable.idColumn.name}))"
 
-        assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
+        assertThat(actualCreateTableSql).containsOnly(expectedCreateTableSql)
     }
 
 
@@ -69,7 +69,7 @@ class BaseEnhancedTableTest {
                 "${table.nullableInt.name} DUMMY_TYPE(24), " +
                 "PRIMARY KEY (${table.idColumn.name}))"
 
-        assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
+        assertThat(actualCreateTableSql).containsOnly(expectedCreateTableSql)
     }
 
 
@@ -87,7 +87,7 @@ class BaseEnhancedTableTest {
                 "${table.string.name} DUMMY_TYPE NOT NULL, " +
                 "PRIMARY KEY (${table.idColumn.name}))"
 
-        assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
+        assertThat(actualCreateTableSql).containsOnly(expectedCreateTableSql)
     }
 
 
@@ -115,7 +115,7 @@ class BaseEnhancedTableTest {
                 "UNIQUE (${table.int.name}), " +
                 "UNIQUE (${table.nullableInt.name}, ${table.nullableString.name}))"
 
-        assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
+        assertThat(actualCreateTableSql).containsOnly(expectedCreateTableSql)
     }
 
 
@@ -169,7 +169,7 @@ class BaseEnhancedTableTest {
                 "FOREIGN KEY (${table.int.name}) REFERENCES ${foreignTable1.name}(${foreignTable1.idColumn.name}), " +
                 "FOREIGN KEY (${table.nullableString.name}) REFERENCES ${foreignTable2.name}(${foreignTable2.idColumn.name}))"
 
-        assertThat(actualCreateTableSql).isEqualTo(expectedCreateTableSql)
+        assertThat(actualCreateTableSql).containsOnly(expectedCreateTableSql)
     }
 
 

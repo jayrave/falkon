@@ -27,7 +27,7 @@ class SimpleCreateTableSqlBuilderTest {
         ))
 
         val expectedSql = "CREATE TABLE test (column_name TEXT(256), PRIMARY KEY (column_name))"
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -45,7 +45,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "column_name_1 NUMBER, column_name_2 TEXT(256), column_name_3 BLOB(128), " +
                 "PRIMARY KEY (column_name_1))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -62,7 +62,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "column_name_1 NUMBER, column_name_2 TEXT NOT NULL, " +
                 "PRIMARY KEY (column_name_1))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -80,7 +80,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "column_name_2 TEXT ${DialectForTesting.autoIncrementExpression}, " +
                 "PRIMARY KEY (column_name_1))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -98,7 +98,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -117,7 +117,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2, column_name_3))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -144,7 +144,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "UNIQUE (column_name_3, column_name_4), " +
                 "UNIQUE (column_name_4))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -166,7 +166,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "PRIMARY KEY (column_name_1), " +
                 "FOREIGN KEY (column_name_2) REFERENCES foreign_table(foreign_column_name))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -193,7 +193,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "FOREIGN KEY (column_name_1) REFERENCES foreign_table_1(foreign_column_name_1), " +
                 "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
@@ -234,7 +234,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "FOREIGN KEY (column_name_1) REFERENCES foreign_table_1(foreign_column_name_1), " +
                 "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2))"
 
-        assertThat(actualSql).isEqualTo(expectedSql)
+        assertThat(actualSql).containsOnly(expectedSql)
     }
 
 
