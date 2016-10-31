@@ -61,7 +61,9 @@ ext.falkonModules = [
         mapperEnhanced     : project(':falkon-mapper-enhanced'),
         rxJava1            : project(':falkon-rxjava-1'),
         sqlBuilder         : project(':falkon-sql-builder'),
-        sqlBuilderSimple   : project(':falkon-sql-builder-simple')
+        sqlBuilderCommon   : project(':falkon-sql-builder-common'),
+        sqlBuilderH2       : project(':falkon-sql-builder-h2'),
+        sqlBuilderSqlite   : project(':falkon-sql-builder-sqlite')
 ]
 
 // Android projects could have been excluded. Check before adding them to `falkonModules` map

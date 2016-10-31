@@ -5,6 +5,7 @@ targetCompatibility = javaVersions.target
 
 dependencies {
     compileOnly falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilderCommon // TODO - repackage this using jarjar
     compile libraries.kotlinStdlib
 
     testCompile falkonModules.sqlBuilder
@@ -14,9 +15,9 @@ dependencies {
 
 ext {
     mavenInstallInfo = [
-            artifactId: 'falkon-sql-builder-simple',
-            name: 'FalkonSqlBuilderSimple',
-            description: 'Provides simple SQL building capabilities for falkon',
+            artifactId: 'falkon-sql-builder-sqlite',
+            name: 'FalkonSqlBuilderSqlite',
+            description: 'Provides SQL building capabilities for falkon for SQLite database',
             packagingType: 'jar'
     ]
 

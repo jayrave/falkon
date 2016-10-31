@@ -4,30 +4,20 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compileOnly falkonModules.dao
-    compileOnly falkonModules.engine
-    compileOnly falkonModules.mapper
+    compileOnly falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilderCommon // TODO - repackage this using jarjar
     compile libraries.kotlinStdlib
 
-    testCompile falkonModules.dao
-    testCompile falkonModules.engine
-    testCompile falkonModules.engineJdbc
-    testCompile falkonModules.mapper
-    testCompile falkonModules.mapperBasic
     testCompile falkonModules.sqlBuilder
-    testCompile falkonModules.sqlBuilderH2
     testCompile libraries.assertJ
-    testCompile libraries.h2
     testCompile libraries.jUnit
-    testCompile libraries.mockito
-    testCompile libraries.mockitoKotlin
 }
 
 ext {
     mavenInstallInfo = [
-            artifactId: 'falkon-dao-extn',
-            name: 'FalkonDaoExtn',
-            description: 'Provides enhancements for falkon\'s basic DAO',
+            artifactId: 'falkon-sql-builder-h2',
+            name: 'FalkonSqlBuilderH2',
+            description: 'Provides SQL building capabilities for falkon for H2 database',
             packagingType: 'jar'
     ]
 

@@ -33,7 +33,7 @@ dependencies {
 
     // Provides SQL builder interface & implementation
     compile falkonModules.sqlBuilder
-    compile falkonModules.sqlBuilderSimple
+    compile falkonModules.sqlBuilderSqlite
 
     // Provides DAO & its extension
     compile falkonModules.dao

@@ -254,7 +254,7 @@ class SimpleQuerySqlBuilderTest {
     @Test
     fun testWithEverythingWithAndWithoutAliases() {
         val actualSql = callBuildQuerySqlFromParts(
-                tableName = "$tableName",
+                tableName = tableName,
                 distinct = true,
                 columns = listOf(
                         SelectColumnInfoForTest("column_name_1", null),
