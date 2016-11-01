@@ -1,13 +1,10 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 import java.sql.SQLSyntaxErrorException
 
-class SimpleInsertSqlBuilder : InsertSqlBuilder {
+class SimpleInsertSqlBuilder {
 
-    override fun build(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String {
-
+    fun build(tableName: String, columns: Iterable<String>, argPlaceholder: String): String {
         // Add basic insert stuff
         val insertSql = StringBuilder(120)
         insertSql.append("INSERT INTO $tableName ")

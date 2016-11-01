@@ -1,11 +1,11 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 import java.sql.SQLSyntaxErrorException
 
-class SimpleCreateTableSqlBuilder(private val dialect: Dialect) : CreateTableSqlBuilder {
+class SimpleCreateTableSqlBuilder(private val autoIncrementExpression: String) {
 
-    override fun build(tableInfo: TableInfo): List<String> {
+    fun build(tableInfo: TableInfo): String {
         // Add basic create table stuff
         val createTableSql = StringBuilder(120)
         createTableSql.append("CREATE TABLE ${tableInfo.name} (")
@@ -18,7 +18,7 @@ class SimpleCreateTableSqlBuilder(private val dialect: Dialect) : CreateTableSql
         createTableSql.append(")")
 
         // Build & return SQL statement
-        return listOf(createTableSql.toString())
+        return createTableSql.toString()
     }
 
 
@@ -51,7 +51,7 @@ class SimpleCreateTableSqlBuilder(private val dialect: Dialect) : CreateTableSql
             if (it.autoIncrement) {
                 columnDefinitionBuilder
                         .append(" ")
-                        .append(dialect.autoIncrementExpression)
+                        .append(autoIncrementExpression)
             }
 
             columnDefinitionBuilder.toString()

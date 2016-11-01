@@ -1,4 +1,4 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 internal fun <T> Iterable<T>?.joinToStringIfHasItems(
         separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "",

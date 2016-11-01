@@ -1,4 +1,4 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

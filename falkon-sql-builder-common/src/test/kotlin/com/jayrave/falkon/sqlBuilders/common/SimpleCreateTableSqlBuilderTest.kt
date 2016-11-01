@@ -1,4 +1,4 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.ForeignKeyConstraint
@@ -9,7 +9,7 @@ import java.sql.SQLSyntaxErrorException
 
 class SimpleCreateTableSqlBuilderTest {
 
-    private val builder = SimpleCreateTableSqlBuilder(DialectForTesting)
+    private val builder = SimpleCreateTableSqlBuilder(AUTO_INCREMENT_FOR_TESTING)
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildThrowsForEmptyColumnInfos() {
@@ -27,7 +27,7 @@ class SimpleCreateTableSqlBuilderTest {
         ))
 
         val expectedSql = "CREATE TABLE test (column_name TEXT(256), PRIMARY KEY (column_name))"
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -45,7 +45,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "column_name_1 NUMBER, column_name_2 TEXT(256), column_name_3 BLOB(128), " +
                 "PRIMARY KEY (column_name_1))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -62,7 +62,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "column_name_1 NUMBER, column_name_2 TEXT NOT NULL, " +
                 "PRIMARY KEY (column_name_1))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -77,10 +77,10 @@ class SimpleCreateTableSqlBuilderTest {
 
         val expectedSql = "CREATE TABLE test (" +
                 "column_name_1 NUMBER, " +
-                "column_name_2 TEXT ${DialectForTesting.autoIncrementExpression}, " +
+                "column_name_2 TEXT ${AUTO_INCREMENT_FOR_TESTING}, " +
                 "PRIMARY KEY (column_name_1))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -98,7 +98,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -117,7 +117,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2, column_name_3))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -144,7 +144,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "UNIQUE (column_name_3, column_name_4), " +
                 "UNIQUE (column_name_4))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -166,7 +166,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "PRIMARY KEY (column_name_1), " +
                 "FOREIGN KEY (column_name_2) REFERENCES foreign_table(foreign_column_name))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -193,7 +193,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "FOREIGN KEY (column_name_1) REFERENCES foreign_table_1(foreign_column_name_1), " +
                 "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -223,9 +223,9 @@ class SimpleCreateTableSqlBuilderTest {
         ))
 
         val expectedSql = "CREATE TABLE test (" +
-                "column_name_1 NUMBER(64) ${DialectForTesting.autoIncrementExpression}, " +
+                "column_name_1 NUMBER(64) ${AUTO_INCREMENT_FOR_TESTING}, " +
                 "column_name_2 TEXT NOT NULL, " +
-                "column_name_3 BLOB(1024) NOT NULL ${DialectForTesting.autoIncrementExpression}, " +
+                "column_name_3 BLOB(1024) NOT NULL ${AUTO_INCREMENT_FOR_TESTING}, " +
                 "column_name_4 TEXT, " +
                 "PRIMARY KEY (column_name_1), " +
                 "UNIQUE (column_name_2, column_name_3), " +
@@ -234,7 +234,7 @@ class SimpleCreateTableSqlBuilderTest {
                 "FOREIGN KEY (column_name_1) REFERENCES foreign_table_1(foreign_column_name_1), " +
                 "FOREIGN KEY (column_name_2) REFERENCES foreign_table_2(foreign_column_name_2))"
 
-        assertThat(actualSql).containsOnly(expectedSql)
+        assertThat(actualSql).isEqualTo(expectedSql)
     }
 
 
@@ -259,8 +259,7 @@ class SimpleCreateTableSqlBuilderTest {
             override val foreignKeyConstraints: Iterable<ForeignKeyConstraint>) : TableInfo
 
 
-
-    object DialectForTesting : Dialect {
-        override val autoIncrementExpression: String = "AUTO_INCREMENT_FOR_TESTING"
+    companion object {
+        private const val AUTO_INCREMENT_FOR_TESTING = "AUTO_INC"
     }
 }

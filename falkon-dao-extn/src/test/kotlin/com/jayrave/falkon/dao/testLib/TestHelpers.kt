@@ -5,10 +5,10 @@ import com.jayrave.falkon.dao.DaoImpl
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.mapper.*
-import com.jayrave.falkon.sqlBuilders.SimpleDeleteSqlBuilder
-import com.jayrave.falkon.sqlBuilders.SimpleInsertSqlBuilder
-import com.jayrave.falkon.sqlBuilders.SimpleQuerySqlBuilder
-import com.jayrave.falkon.sqlBuilders.SimpleUpdateSqlBuilder
+import com.jayrave.falkon.sqlBuilders.h2.H2DeleteSqlBuilder
+import com.jayrave.falkon.sqlBuilders.h2.H2InsertSqlBuilder
+import com.jayrave.falkon.sqlBuilders.h2.H2QuerySqlBuilder
+import com.jayrave.falkon.sqlBuilders.h2.H2UpdateSqlBuilder
 import com.nhaarman.mockito_kotlin.mock
 import java.util.*
 
@@ -36,8 +36,8 @@ internal class TableForTest(
         BaseTable<ModelForTest, UUID>("test", configuration) {
 
     val dao: Dao<ModelForTest, UUID> = DaoImpl(
-            this, "?", SimpleInsertSqlBuilder(), SimpleUpdateSqlBuilder(),
-            SimpleDeleteSqlBuilder(), SimpleQuerySqlBuilder()
+            this, "?", H2InsertSqlBuilder(), H2UpdateSqlBuilder(),
+            H2DeleteSqlBuilder(), H2QuerySqlBuilder()
     )
 
     override val idColumn: Column<ModelForTest, UUID> get() = id

@@ -1,11 +1,11 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import java.sql.SQLSyntaxErrorException
 
-class SimpleUpdateSqlBuilder : UpdateSqlBuilder {
+class SimpleUpdateSqlBuilder {
 
-    override fun build(
+    fun build(
             tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
             argPlaceholder: String): String {
 

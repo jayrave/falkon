@@ -1,12 +1,12 @@
-package com.jayrave.falkon.sqlBuilders
+package com.jayrave.falkon.sqlBuilders.common
 
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
-class SimpleDeleteSqlBuilder : DeleteSqlBuilder {
+class SimpleDeleteSqlBuilder {
 
-    override fun build(
-            tableName: String, whereSections: Iterable<WhereSection>?,
-            argPlaceholder: String): String {
+    fun build(
+            tableName: String, whereSections: Iterable<WhereSection>?, argPlaceholder: String):
+            String {
 
         // Add basic delete stuff
         val deleteSql = StringBuilder(120)

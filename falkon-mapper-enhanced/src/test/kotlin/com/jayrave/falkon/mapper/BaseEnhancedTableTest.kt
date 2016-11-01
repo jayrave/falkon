@@ -3,8 +3,7 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypeTranslator
-import com.jayrave.falkon.sqlBuilders.Dialect
-import com.jayrave.falkon.sqlBuilders.SimpleCreateTableSqlBuilder
+import com.jayrave.falkon.sqlBuilders.h2.H2CreateTableSqlBuilder
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -157,11 +156,11 @@ class BaseEnhancedTableTest {
         val table = TableForTest()
         val actualCreateTableSql = table.buildCreateTableSql()
         val expectedCreateTableSql = "CREATE TABLE ${table.name} (" +
-                "${table.idColumn.name} DUMMY_TYPE ${DialectForTesting.autoIncrementExpression}, " +
+                "${table.idColumn.name} DUMMY_TYPE AUTO_INCREMENT, " +
                 "${table.int.name} DUMMY_TYPE, " +
                 "${table.string.name} DUMMY_TYPE(128) NOT NULL, " +
                 "${table.nullableInt.name} DUMMY_TYPE, " +
-                "${table.nullableString.name} DUMMY_TYPE NOT NULL ${DialectForTesting.autoIncrementExpression}, " +
+                "${table.nullableString.name} DUMMY_TYPE NOT NULL AUTO_INCREMENT, " +
                 "PRIMARY KEY (${table.idColumn.name}), " +
                 "UNIQUE (${table.string.name}), " +
                 "UNIQUE (${table.string.name}, ${table.nullableInt.name}), " +
@@ -195,12 +194,6 @@ class BaseEnhancedTableTest {
 
 
 
-    object DialectForTesting : Dialect {
-        override val autoIncrementExpression: String = "AUTO_INCREMENT_FOR_TESTING"
-    }
-
-
-
     companion object {
         private val dummyTypeTranslator = object : TypeTranslator {
             override fun translate(type: Type): String = "DUMMY_TYPE"
@@ -208,7 +201,7 @@ class BaseEnhancedTableTest {
         }
 
         private val tableConfigurationImpl: TableConfiguration
-        private val simpleCreateTableSqlBuilder = SimpleCreateTableSqlBuilder(DialectForTesting)
+        private val simpleCreateTableSqlBuilder = H2CreateTableSqlBuilder()
 
         init {
             tableConfigurationImpl = TableConfigurationImpl(mock(), dummyTypeTranslator)
