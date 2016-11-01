@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders.common
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 import java.sql.SQLSyntaxErrorException
 
-class SimpleCreateTableSqlBuilder(private val autoIncrementExpression: String) {
+class SimpleCreateTableSqlBuilder(private val phraseForAutoIncrement: String) {
 
     fun build(tableInfo: TableInfo): String {
         // Add basic create table stuff
@@ -51,7 +51,7 @@ class SimpleCreateTableSqlBuilder(private val autoIncrementExpression: String) {
             if (it.autoIncrement) {
                 columnDefinitionBuilder
                         .append(" ")
-                        .append(autoIncrementExpression)
+                        .append(phraseForAutoIncrement)
             }
 
             columnDefinitionBuilder.toString()

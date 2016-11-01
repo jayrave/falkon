@@ -5,10 +5,6 @@ import com.jayrave.falkon.sqlBuilders.common.SimpleCreateTableSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 
 class H2CreateTableSqlBuilder : CreateTableSqlBuilder {
-
     private val delegate = SimpleCreateTableSqlBuilder("AUTO_INCREMENT")
-
-    override fun build(tableInfo: TableInfo): List<String> {
-        return listOf(delegate.build(tableInfo))
-    }
+    override fun build(tableInfo: TableInfo): List<String> = listOf(delegate.build(tableInfo))
 }
