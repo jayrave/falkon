@@ -5,16 +5,22 @@ import com.jayrave.falkon.sqlBuilders.common.SimpleInsertSqlBuilder
 
 class H2InsertSqlBuilder : InsertSqlBuilder {
 
-    private val delegate = SimpleInsertSqlBuilder() {
-        throw UnsupportedOperationException(
-                "Insert or replace functionality for H2 database hasn't yet been implemented yet"
-        )
-    }
+    override val isInsertOrReplaceSupported: Boolean = false
+    private val delegate = SimpleInsertSqlBuilder({ throwForInsertOrReplace() })
 
     override fun build(
             tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String {
+            String = delegate.build(tableName, columns, argPlaceholder)
 
-        return delegate.build(tableName, columns, argPlaceholder)
+
+    override fun buildInsertOrReplace(
+            tableName: String, columns: Iterable<String>, argPlaceholder: String):
+            List<String> = throwForInsertOrReplace()
+
+
+    private fun <R> throwForInsertOrReplace(): R {
+        throw UnsupportedOperationException(
+                "As of Nov 1, 2016, H2 database doesn't support `insert or replace` functionality"
+        )
     }
 }
