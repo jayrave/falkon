@@ -3,15 +3,18 @@ package com.jayrave.falkon.sqlBuilders.common
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 import java.sql.SQLSyntaxErrorException
 
-class SimpleCreateTableSqlBuilder(private val phraseForAutoIncrement: String) {
+object SimpleCreateTableSqlBuilder {
 
-    fun build(tableInfo: TableInfo): String {
+    /**
+     * Builds a `CREATE TABLE ...` statement with the passed in info
+     */
+    fun build(tableInfo: TableInfo, phraseForAutoIncrement: String): String {
         // Add basic create table stuff
         val createTableSql = StringBuilder(120)
         createTableSql.append("CREATE TABLE ${tableInfo.name} (")
 
         // Add remaining parts
-        createTableSql.addColumnDefinitionsOrThrow(tableInfo)
+        createTableSql.addColumnDefinitionsOrThrow(tableInfo, phraseForAutoIncrement)
         createTableSql.addPrimaryKeyConstraint(tableInfo)
         createTableSql.addUniquenessConstraints(tableInfo)
         createTableSql.addForeignKeyConstraints(tableInfo)
@@ -22,7 +25,9 @@ class SimpleCreateTableSqlBuilder(private val phraseForAutoIncrement: String) {
     }
 
 
-    private fun StringBuilder.addColumnDefinitionsOrThrow(tableInfo: TableInfo) {
+    private fun StringBuilder.addColumnDefinitionsOrThrow(
+            tableInfo: TableInfo, phraseForAutoIncrement: String) {
+
         var columnCount = 0
         val columnInfos = tableInfo.columnInfos
         append(columnInfos.joinToString(separator = ", ") {

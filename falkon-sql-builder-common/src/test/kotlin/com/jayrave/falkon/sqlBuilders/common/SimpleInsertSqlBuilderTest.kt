@@ -10,19 +10,19 @@ class SimpleInsertSqlBuilderTest {
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildThrowsForEmptyColumnsIterable() {
-        SimpleInsertSqlBuilder({""}).build("test", emptyList(), ARG_PLACEHOLDER)
+        SimpleInsertSqlBuilder.build("test", emptyList(), ARG_PLACEHOLDER)
     }
 
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildInsertOrReplaceThrowsForEmptyColumnsIterable() {
-        SimpleInsertSqlBuilder({"I_O_R"}).buildInsertOrReplace("test", emptyList(), ARG_PLACEHOLDER)
+        SimpleInsertSqlBuilder.buildInsertOrReplace("I_O_R", "test", emptyList(), ARG_PLACEHOLDER)
     }
 
 
     @Test
     fun testSuccessfulBuild() {
-        val actualSql = SimpleInsertSqlBuilder({""}).build(
+        val actualSql = SimpleInsertSqlBuilder.build(
                 tableName, listOf("column_name_1", "column_name_2"), ARG_PLACEHOLDER
         )
 
@@ -33,8 +33,8 @@ class SimpleInsertSqlBuilderTest {
 
     @Test
     fun testSuccessfulBuildInsertOrReplace() {
-        val actualSql = SimpleInsertSqlBuilder({ "I_O_R" }).buildInsertOrReplace(
-                tableName, listOf("column_name_1"), ARG_PLACEHOLDER
+        val actualSql = SimpleInsertSqlBuilder.buildInsertOrReplace(
+                "I_O_R", tableName, listOf("column_name_1"), ARG_PLACEHOLDER
         )
 
         val expectedSql = "I_O_R INTO $tableName (column_name_1) VALUES (?)"

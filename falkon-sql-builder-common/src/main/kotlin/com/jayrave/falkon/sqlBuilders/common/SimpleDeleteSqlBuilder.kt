@@ -2,8 +2,12 @@ package com.jayrave.falkon.sqlBuilders.common
 
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
-class SimpleDeleteSqlBuilder {
+object SimpleDeleteSqlBuilder {
 
+    /**
+     * Builds a `DELETE FROM ...` statement with the passed in info. Conditions for `WHERE`
+     * clause are added in the iteration order of [whereSections]
+     */
     fun build(
             tableName: String, whereSections: Iterable<WhereSection>?, argPlaceholder: String):
             String {

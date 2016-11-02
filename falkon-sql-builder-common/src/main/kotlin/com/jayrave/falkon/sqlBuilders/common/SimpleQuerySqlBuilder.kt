@@ -5,8 +5,12 @@ import com.jayrave.falkon.sqlBuilders.lib.OrderInfo
 import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
-class SimpleQuerySqlBuilder {
+object SimpleQuerySqlBuilder {
 
+    /**
+     * Builds a `SELECT ...` statement with the passed in info. Conditions for `WHERE`
+     * clause are added in the iteration order of [whereSections]
+     */
     fun build(
             tableName: String, distinct: Boolean, columns: Iterable<SelectColumnInfo>?,
             joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,

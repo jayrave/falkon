@@ -6,12 +6,10 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 class SqliteDeleteSqlBuilder : DeleteSqlBuilder {
 
-    private val delegate = SimpleDeleteSqlBuilder()
-
     override fun build(
             tableName: String, whereSections: Iterable<WhereSection>?,
             argPlaceholder: String): String {
 
-        return delegate.build(tableName, whereSections, argPlaceholder)
+        return SimpleDeleteSqlBuilder.build(tableName, whereSections, argPlaceholder)
     }
 }

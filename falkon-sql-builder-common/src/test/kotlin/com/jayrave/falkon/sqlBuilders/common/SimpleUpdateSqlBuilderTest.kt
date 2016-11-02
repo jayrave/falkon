@@ -12,13 +12,13 @@ class SimpleUpdateSqlBuilderTest {
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildThrowsForEmptyColumnsIterable() {
-        SimpleUpdateSqlBuilder().build("test", emptyList(), null, ARG_PLACEHOLDER)
+        SimpleUpdateSqlBuilder.build("test", emptyList(), null, ARG_PLACEHOLDER)
     }
 
 
     @Test
     fun testSuccessfulBuildWithoutWhere() {
-        val actualSql = SimpleUpdateSqlBuilder().build(
+        val actualSql = SimpleUpdateSqlBuilder.build(
                 tableName, listOf("column_name_1", "column_name_2", "column_name_3"),
                 null, ARG_PLACEHOLDER
         )
@@ -39,7 +39,7 @@ class SimpleUpdateSqlBuilderTest {
                 OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_2")
         )
 
-        val actualSql = SimpleUpdateSqlBuilder().build(
+        val actualSql = SimpleUpdateSqlBuilder.build(
                 tableName, listOf("column_name_1", "column_name_2", "column_name_3"),
                 whereSections, ARG_PLACEHOLDER
         )

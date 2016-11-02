@@ -10,14 +10,18 @@ import com.jayrave.falkon.sqlBuilders.common.SimpleInsertSqlBuilder
 class SqliteInsertSqlBuilder : InsertSqlBuilder {
 
     override val isInsertOrReplaceSupported: Boolean = true
-    private val delegate = SimpleInsertSqlBuilder({ "INSERT OR REPLACE" })
 
     override fun build(
             tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String = delegate.build(tableName, columns, argPlaceholder)
+            String = SimpleInsertSqlBuilder.build(tableName, columns, argPlaceholder)
 
 
     override fun buildInsertOrReplace(
             tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String = delegate.buildInsertOrReplace(tableName, columns, argPlaceholder)
+            String {
+
+        return SimpleInsertSqlBuilder.buildInsertOrReplace(
+                "INSERT OR REPLACE", tableName, columns, argPlaceholder
+        )
+    }
 }

@@ -3,8 +3,12 @@ package com.jayrave.falkon.sqlBuilders.common
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import java.sql.SQLSyntaxErrorException
 
-class SimpleUpdateSqlBuilder {
+object SimpleUpdateSqlBuilder {
 
+    /**
+     * Builds a `UPDATE ...` statement with the passed in info. Conditions for `WHERE`
+     * clause are added in the iteration order of [whereSections]
+     */
     fun build(
             tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
             argPlaceholder: String): String {

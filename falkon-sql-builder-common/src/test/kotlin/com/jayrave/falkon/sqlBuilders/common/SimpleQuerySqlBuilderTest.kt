@@ -293,7 +293,7 @@ class SimpleQuerySqlBuilderTest {
             orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null):
             String {
 
-        return SimpleQuerySqlBuilder().build(
+        return SimpleQuerySqlBuilder.build(
                 tableName = tableName, distinct = distinct, columns = columns,
                 joinInfos = joinInfos, whereSections = whereSections, groupBy = groupBy,
                 orderBy = orderBy, limit = limit, offset = offset, argPlaceholder = "?"
