@@ -9,9 +9,11 @@ interface InsertSqlBuilder {
 
 
     /**
-     * Builds `INSERT INTO ...` statement
+     * Builds a db specific statement similar to `INSERT INTO ...`
+     *
      * @param [tableName] the table to insert into
-     * @param [columns] a list of columns for which values will be bound later
+     * @param [columns] a list of columns (applied in iteration order) for which values will
+     * be bound later
      * @param [argPlaceholder] to use as placeholders to prevent SQL injection
      */
     fun build(
@@ -36,7 +38,8 @@ interface InsertSqlBuilder {
      * *CAUTION:* This method could throw if [isInsertOrReplaceSupported] is `false`
      *
      * @param [tableName] the table to insert into
-     * @param [columns] a list of columns for which values will be bound later
+     * @param [columns] a list of columns (applied in iteration order) for which values will
+     * be bound later
      * @param [argPlaceholder] to use as placeholders to prevent SQL injection
      */
     fun buildInsertOrReplace(

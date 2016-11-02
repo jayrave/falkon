@@ -5,6 +5,8 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 interface UpdateSqlBuilder {
 
     /**
+     * Builds a db specific statement similar to `UPDATE ...`
+     *
      * @param [tableName] the table to update
      * @param [columns] A list of columns for which values will be bound later
      * @param [whereSections] A list of sections, applied in iteration order used to build

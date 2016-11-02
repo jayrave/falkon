@@ -11,6 +11,8 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 interface QuerySqlBuilder {
 
     /**
+     * Builds a db specific statement similar to `SELECT ...`
+     *
      * @param [tableName] the table to query from
      * @param [distinct] `true` if you want each row to be unique, `false` otherwise
      * @param [columns] A list of which columns (with potential aliases) to return, applied in
