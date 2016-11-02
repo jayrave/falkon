@@ -33,9 +33,6 @@ interface InsertSqlBuilder {
      * Not all databases have support for this functionality. This can be checked via the
      * flag [isInsertOrReplaceSupported]
      *
-     * *NOTE:* If multiple statements are returned, they should be executed atomically
-     * for the desired effect
-     *
      * *CAUTION:* This method could throw if [isInsertOrReplaceSupported] is `false`
      *
      * @param [tableName] the table to insert into
@@ -46,5 +43,5 @@ interface InsertSqlBuilder {
             tableName: String,
             columns: Iterable<String>,
             argPlaceholder: String
-    ): List<String>
+    ): String
 }

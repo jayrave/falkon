@@ -15,7 +15,7 @@ class H2InsertSqlBuilder : InsertSqlBuilder {
 
     override fun buildInsertOrReplace(
             tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            List<String> = throwForInsertOrReplace()
+            String = throwForInsertOrReplace()
 
 
     private fun <R> throwForInsertOrReplace(): R {

@@ -12,5 +12,5 @@ class InsertSqlBuilderForTesting : InsertSqlBuilder {
 
     override fun buildInsertOrReplace(
             tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            List<String> = throw UnsupportedOperationException("not implemented")
+            String = throw UnsupportedOperationException("not implemented")
 }

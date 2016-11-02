@@ -19,5 +19,5 @@ class SqliteInsertSqlBuilder : InsertSqlBuilder {
 
     override fun buildInsertOrReplace(
             tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            List<String> = listOf(delegate.buildInsertOrReplace(tableName, columns, argPlaceholder))
+            String = delegate.buildInsertOrReplace(tableName, columns, argPlaceholder)
 }
