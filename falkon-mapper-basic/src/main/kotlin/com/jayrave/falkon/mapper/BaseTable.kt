@@ -1,8 +1,8 @@
 package com.jayrave.falkon.mapper
 
-import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
+import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFor
 import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
-import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForType
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterFor
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KProperty1
 
@@ -22,18 +22,18 @@ abstract class BaseTable<T : Any, ID : Any>(
      * Any [Column] created by calling this method will be automatically added to [allColumns]
      *
      * @param property the kotlin property this column corresponds to
-     * @param name of this column. If it isn't provided, [configuration.nameFormatter]
+     * @param name of this column. If it isn't provided, [TableConfiguration.nameFormatter]
      * formatted name of [property] is used
      * @param converter to convert [C] from/to appropriate SQL type. If it isn't
      * provided, whatever [configuration] returns for [property]'s type is used
      * @param propertyExtractor to extract the property from an instance of [T]. If it isn't
-     * provided, [property.get] is used
+     * provided, [KProperty1.get] is used
      */
-    inline fun <reified C> col(
+    fun <C> col(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
-            converter: Converter<C> = getConverterForType(property, configuration),
-            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
+            converter: Converter<C> = getConverterFor(property, configuration),
+            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFor(property)):
             Column<T, C> {
 
         return addColumn(name, converter, propertyExtractor)

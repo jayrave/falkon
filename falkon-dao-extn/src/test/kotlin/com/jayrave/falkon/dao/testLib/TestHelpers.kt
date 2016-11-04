@@ -77,7 +77,7 @@ internal fun defaultTableConfiguration(engine: Engine = mock()): TableConfigurat
 
 
 internal fun TableConfigurationImpl.registerUuidConverters() {
-    registerForNullableType(UUID::class.java, NullableUuidConverter(), true)
+    registerForNullableValues(UUID::class.java, NullableUuidConverter(), true)
 }
 
 

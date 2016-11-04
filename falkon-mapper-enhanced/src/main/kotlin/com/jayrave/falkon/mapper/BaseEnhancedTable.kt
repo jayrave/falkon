@@ -1,9 +1,9 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.dao.Dao
-import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFrom
+import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFor
 import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
-import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterForType
+import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterFor
 import com.jayrave.falkon.sqlBuilders.CreateTableSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.ForeignKeyConstraint
@@ -48,7 +48,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * Any [Column] created by calling this method will be automatically added to [allColumns]
      *
      * @param property the kotlin property this column corresponds to
-     * @param name of this column. If it isn't provided, [configuration.nameFormatter]
+     * @param name of this column. If it isn't provided, [TableConfiguration.nameFormatter]
      * formatted name of [property] is used
      * @param maxSize of this column. If it is `null`, column size isn't bounded
      * @param isNonNull whether this column accepts `null` values; `false` by default
@@ -58,17 +58,17 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * @param converter to convert [C] from/to appropriate SQL type. If it isn't
      * provided, whatever [configuration] returns for [property]'s type is used
      * @param propertyExtractor to extract the property from an instance of [T]. If it isn't
-     * provided, [property.get] is used
+     * provided, [KProperty1.get] is used
      */
-    inline fun <reified C> col(
+    fun <C> col(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
             isNonNull: Boolean = DEFAULT_IS_NON_NULL_FLAG,
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
             autoIncrement: Boolean = DEFAULT_AUTO_INCREMENT_FLAG,
-            converter: Converter<C> = getConverterForType(property, configuration),
-            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
+            converter: Converter<C> = getConverterFor(property, configuration),
+            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFor(property)):
             EnhancedColumn<T, C> {
 
         return addColumn<C, Any, Any?>(
@@ -82,7 +82,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * Any [Column] created by calling this method will be automatically added to [allColumns]
      *
      * @param property the kotlin property this column corresponds to
-     * @param name of this column. If it isn't provided, [configuration.nameFormatter]
+     * @param name of this column. If it isn't provided, [TableConfiguration.nameFormatter]
      * formatted name of [property] is used
      * @param maxSize of this column. If it is `null`, column size isn't bounded
      * @param isNonNull whether this column accepts `null` values; `false` by default
@@ -93,9 +93,9 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      * @param converter to convert [C] from/to appropriate SQL type. If it isn't
      * provided, whatever [configuration] returns for [property]'s type is used
      * @param propertyExtractor to extract the property from an instance of [T]. If it isn't
-     * provided, [property.get] is used
+     * provided, [KProperty1.get] is used
      */
-    inline fun <reified C, FT : Any, FC> foreignCol(
+    fun <C, FT : Any, FC> foreignCol(
             property: KProperty1<T, C>,
             name: String = computeFormattedNameOf(property, configuration),
             maxSize: Int? = DEFAULT_MAX_SIZE,
@@ -103,8 +103,8 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             isUnique: Boolean = DEFAULT_IS_UNIQUE_FLAG,
             autoIncrement: Boolean = DEFAULT_AUTO_INCREMENT_FLAG,
             foreignColumn: Column<FT, FC>,
-            converter: Converter<C> = getConverterForType(property, configuration),
-            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFrom(property)):
+            converter: Converter<C> = getConverterFor(property, configuration),
+            propertyExtractor: PropertyExtractor<T, C> = buildDefaultExtractorFor(property)):
             EnhancedColumn<T, C> {
 
         return addColumn(

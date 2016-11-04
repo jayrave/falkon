@@ -1,8 +1,9 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.mapper.exceptions.MissingConverterException
-import kotlin.reflect.KClass
+import java.lang.reflect.Type
 import kotlin.reflect.KProperty1
+import kotlin.reflect.jvm.javaType
 
 @Suppress("unused")
 object TableImplementationHelper {
@@ -22,70 +23,47 @@ object TableImplementationHelper {
     private enum class DummyEnum
 
 
-    @Suppress("UNCHECKED_CAST")
-    inline fun <reified C> getConverterForType(
+    fun <C> getConverterFor(
             property: KProperty1<*, C>, configuration: TableConfiguration):
             Converter<C> {
 
-        val javaClass: Class<C> = (C::class as KClass<*>).java as Class<C>
-        val converter = when (property.returnType.isMarkedNullable) {
-            true -> configuration.getConverterForNullableType(javaClass)
-            else -> configuration.getConverterForNonNullType(javaClass as Class<Any>)
-        } as Converter<C>?
-
-        return converter ?:
-                buildConverterIfEnum(javaClass, true) ?:
-                throw buildMissingConverterException(javaClass, true)
-    }
-
-
-    inline fun <reified C> getConverterForNullableType(
-            configuration: TableConfiguration): Converter<C> {
+        val kType = property.returnType
+        val javaType = kType.javaType
+        val converter = when (kType.isMarkedNullable) {
+            true -> configuration.getConverterForNullableValuesOf<Any>(javaType)
+            else -> configuration.getConverterForNonNullValuesOf<Any>(javaType)
+        } ?: buildConverterIfEnum(javaType, true)
 
         @Suppress("UNCHECKED_CAST")
-        val javaClass: Class<C> = (C::class as KClass<*>).java as Class<C>
-        return configuration.getConverterForNullableType(javaClass) ?:
-                buildConverterIfEnum(javaClass, true) ?:
-                throw buildMissingConverterException(javaClass, true)
+        return converter as Converter<C>? ?: throw buildMissingConverterException(javaType, true)
     }
 
 
-    inline fun <reified C : Any> getConverterForNonNullType(
-            configuration: TableConfiguration): Converter<C> {
-
-        val javaClass: Class<C> = C::class.java
-        return configuration.getConverterForNonNullType(javaClass) ?:
-                buildConverterIfEnum(javaClass, false) ?:
-                throw buildMissingConverterException(javaClass, false)
-    }
-
-
-    fun <C> buildConverterIfEnum(clazz: Class<C>, isNullable: Boolean): Converter<C>? {
-        // Can't cast C to Enum<C> due to recursive type, so cast to any enum
-        @Suppress("UNCHECKED_CAST", "CAST_NEVER_SUCCEEDS")
-        return when (clazz.isEnum) {
-            false -> null
-            else -> {
-                val nullableConverter = NullableEnumByNameConverter(clazz as Class<DummyEnum>)
-                when (isNullable) {
-                    true -> nullableConverter
-                    else -> NullableToNonNullConverter(nullableConverter)
-                } as Converter<C>
+    fun buildConverterIfEnum(type: Type, isNullable: Boolean): Converter<*>? {
+        return when (type) {
+            !is Class<*> -> null
+            else -> when {
+                !type.isEnum -> null
+                else -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val nullableConverter = NullableEnumByNameConverter(type as Class<DummyEnum>)
+                    when (isNullable) {
+                        true -> nullableConverter
+                        else -> NullableToNonNullConverter(nullableConverter)
+                    }
+                }
             }
         }
     }
 
 
-    fun buildMissingConverterException(
-            clazz: Class<*>, isNullable: Boolean):
-            MissingConverterException {
-
+    fun buildMissingConverterException(type: Type, isNullable: Boolean): MissingConverterException {
         val nullability = when (isNullable) {
             true -> "nullable"
             else -> "non-null"
         }
 
-        return MissingConverterException("Converter not found for $nullability form of $clazz")
+        return MissingConverterException("Converter not found for $nullability form of $type")
     }
 
     // -------------------------------------- Converters -------------------------------------------
@@ -98,7 +76,7 @@ object TableImplementationHelper {
      * For eg., if `item` is the instance & `price` is the property, the returned property
      * extractor does the equivalent of `item.price`
      */
-    fun <T : Any, C> buildDefaultExtractorFrom(property: KProperty1<T, C>):
+    fun <T : Any, C> buildDefaultExtractorFor(property: KProperty1<T, C>):
             PropertyExtractor<T, C> = SimplePropertyExtractor(property)
 
     // ---------------------------------- Property extractor ---------------------------------------

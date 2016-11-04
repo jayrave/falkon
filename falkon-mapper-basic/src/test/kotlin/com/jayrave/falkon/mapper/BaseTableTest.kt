@@ -77,7 +77,7 @@ class BaseTableTest {
     fun testConverterAcquisitionForNullableType() {
         val expectedUuid = UUID.randomUUID()
         val configuration = TableConfigurationImpl(mock(), mock())
-        configuration.registerForNullableType(
+        configuration.registerForNullableValues(
                 UUID::class.java, CustomUuidConverter(expectedUuid), false
         )
 
@@ -94,7 +94,7 @@ class BaseTableTest {
     fun testConverterAcquisitionForNonNullType() {
         val expectedUuid = UUID.randomUUID()
         val configuration = TableConfigurationImpl(mock(), mock())
-        configuration.registerForNonNullType(
+        configuration.registerForNonNullValues(
                 UUID::class.java, NullableToNonNullConverter(CustomUuidConverter(expectedUuid))
         )
 
@@ -110,7 +110,7 @@ class BaseTableTest {
     @Test(expected = MissingConverterException::class)
     fun testConverterAcquisitionForUnregisteredNullableTypeThrows() {
         val configuration = TableConfigurationImpl(mock(), mock())
-        configuration.registerForNonNullType(
+        configuration.registerForNonNullValues(
                 String::class.java, NullableToNonNullConverter(NullableStringConverter())
         )
 
@@ -123,7 +123,9 @@ class BaseTableTest {
     @Test(expected = MissingConverterException::class)
     fun testConverterAcquisitionForUnregisteredNonNullTypeThrows() {
         val configuration = TableConfigurationImpl(mock(), mock())
-        configuration.registerForNullableType(String::class.java, NullableStringConverter(), false)
+        configuration.registerForNullableValues(
+                String::class.java, NullableStringConverter(), false
+        )
 
         object : TableForTest(configuration) {
             init { col(ModelForTest::string) }
