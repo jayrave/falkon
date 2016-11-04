@@ -21,9 +21,9 @@ interface Table<T : Any, ID : Any> {
     val idColumn: Column<T, ID>
 
     /**
-     * A collection of all columns that belong to the table this class deals with. Implementations
-     * must make sure that the backing [Collection] implementation is thread-safe & the iteration
-     * order is the same as the insertion order
+     * An immutable collection of all columns that belong to the table this class deals with.
+     * Implementations must make sure that the backing [Collection] implementation has
+     * deterministic iteration order
      */
     val allColumns: Collection<Column<T, *>>
 

@@ -3,19 +3,29 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.mapper.TableImplementationHelper.buildDefaultExtractorFor
 import com.jayrave.falkon.mapper.TableImplementationHelper.computeFormattedNameOf
 import com.jayrave.falkon.mapper.TableImplementationHelper.getConverterFor
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.*
 import kotlin.reflect.KProperty1
 
 /**
  * An abstract extension of [Table] that could be sub-classed for easy & pain-free
  * implementation of [Table]
+ *
+ * *NOTE:* All columns should be declared up front, before accessing [allColumns].
+ * Adding new columns via any method after that will result in an exception being thrown
  */
 abstract class BaseTable<T : Any, ID : Any>(
         override val name: String, override val configuration: TableConfiguration) :
         Table<T, ID> {
 
-    private val allColumnImpls = ConcurrentLinkedQueue<Column<T, *>>()
-    override final val allColumns: Collection<Column<T, *>> = allColumnImpls
+    private var newColumnsCanBeAdded = true
+    private val tempColumns = LinkedHashSet<Column<T, *>>()
+    override final val allColumns: Collection<Column<T, *>> by lazy { tempColumns.toImmutable() }
+
+
+    private fun <Z> lazy(operation: () -> Z) = kotlin.lazy(LazyThreadSafetyMode.NONE) {
+        newColumnsCanBeAdded = false
+        operation.invoke()
+    }
 
 
     /**
@@ -51,8 +61,24 @@ abstract class BaseTable<T : Any, ID : Any>(
             name: String, converter: Converter<C>, propertyExtractor: PropertyExtractor<T, C>):
             Column<T, C> {
 
-        val column = ColumnImpl(this, name, propertyExtractor, converter)
-        allColumnImpls.offer(column)
-        return column
+        when {
+            !newColumnsCanBeAdded -> throw IllegalStateException(
+                    "It's too late to add new columns now. All columns must be declared up front"
+            )
+
+            else -> {
+                val column = ColumnImpl(this, name, propertyExtractor, converter)
+                tempColumns.add(column)
+                return column
+            }
+        }
+    }
+
+
+
+    companion object {
+        private fun<Z> Collection<Z>.toImmutable(): Collection<Z> {
+            return Collections.unmodifiableCollection(this)
+        }
     }
 }

@@ -9,19 +9,34 @@ import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.ForeignKeyConstraint
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KProperty1
 
+/**
+ * An abstract extension of [EnhancedTable] that could be sub-classed for easy & pain-free
+ * implementation of [EnhancedTable] & [Table] by extension
+ *
+ * *NOTE:* All columns should be declared up front, before accessing [allColumns].
+ * Adding new columns via any method after that will result in an exception being thrown
+ */
 abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
         override val name: String, override val configuration: TableConfiguration,
         private val createTableSqlBuilder: CreateTableSqlBuilder) :
         EnhancedTable<T, ID, D> {
 
-    override final val allColumns: Collection<EnhancedColumn<T, *>> get() = allColumnImpls
-
+    private var newColumnsCanBeAdded = true
+    private val tempColumns = LinkedHashSet<EnhancedColumnImpl<T, *>>()
     private val uniquenessConstraints: MutableList<List<String>> = LinkedList()
     private val foreignKeyConstraints: MutableList<ForeignKeyConstraint> = LinkedList()
-    private val allColumnImpls = ConcurrentLinkedQueue<EnhancedColumnImpl<T, *>>()
+    override final val allColumns: Collection<EnhancedColumn<T, *>> by lazy {
+        tempColumns.toImmutable()
+    }
+
+
+    private fun <Z> lazy(operation: () -> Z) = kotlin.lazy(LazyThreadSafetyMode.NONE) {
+        newColumnsCanBeAdded = false
+        operation.invoke()
+    }
+
 
     override fun buildCreateTableSql(): List<String> {
         return createTableSqlBuilder.build(TableInfoImpl())
@@ -138,24 +153,32 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
             propertyExtractor: PropertyExtractor<T, C>):
             EnhancedColumn<T, C> {
 
-        val column = EnhancedColumnImpl(
-                this, name, maxSize, isNonNull, autoIncrement, propertyExtractor,
-                converter, configuration.typeTranslator
-        )
+        when {
+            !newColumnsCanBeAdded -> throw IllegalStateException(
+                    "It's too late to add new columns now. All columns must be declared up front"
+            )
 
-        if (allColumnImpls.offer(column)) {
-            if (isUnique) {
-                uniquenessConstraints.add(listOf(column.name))
-            }
+            else -> {
+                val column = EnhancedColumnImpl(
+                        this, name, maxSize, isNonNull, autoIncrement, propertyExtractor,
+                        converter, configuration.typeTranslator
+                )
 
-            if (foreignColumn != null) {
-                foreignKeyConstraints.add(ForeignKeyConstraintImpl(
-                        name, foreignColumn.table.name, foreignColumn.name
-                ))
+                if (tempColumns.add(column)) {
+                    if (isUnique) {
+                        uniquenessConstraints.add(listOf(column.name))
+                    }
+
+                    if (foreignColumn != null) {
+                        foreignKeyConstraints.add(ForeignKeyConstraintImpl(
+                                name, foreignColumn.table.name, foreignColumn.name
+                        ))
+                    }
+                }
+
+                return column
             }
         }
-
-        return column
     }
 
 
@@ -165,7 +188,7 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
      */
     private inner class TableInfoImpl : TableInfo {
         override val name: String = this@BaseEnhancedTable.name
-        override val columnInfos: Iterable<ColumnInfo> = LinkedList(allColumnImpls)
+        override val columnInfos: Iterable<ColumnInfo> = LinkedList(tempColumns)
         override val primaryKeyConstraint: String = idColumn.name
         override val uniquenessConstraints: Iterable<Iterable<String>> = LinkedList(
                 this@BaseEnhancedTable.uniquenessConstraints
@@ -191,5 +214,9 @@ abstract class BaseEnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>>(
         const val DEFAULT_IS_NON_NULL_FLAG = false
         const val DEFAULT_IS_UNIQUE_FLAG = false
         const val DEFAULT_AUTO_INCREMENT_FLAG = false
+
+        private fun<Z> Collection<Z>.toImmutable(): Collection<Z> {
+            return Collections.unmodifiableCollection(this)
+        }
     }
 }

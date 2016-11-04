@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.*
 
-// TODO - how to test addColumn ?
 class BaseTableTest {
 
     @Test
@@ -34,10 +33,11 @@ class BaseTableTest {
             val col1 = col(ModelForTest::int)
             val col2 = col(ModelForTest::blob)
             val col3 = col(ModelForTest::nullableString)
+            val col4 = addColumn<String>("string", mock(), mock())
         }
 
         assertThat(tableForTest.allColumns).containsOnly(
-                tableForTest.col1, tableForTest.col2, tableForTest.col3
+                tableForTest.col1, tableForTest.col2, tableForTest.col3, tableForTest.col4
         )
     }
 
@@ -130,6 +130,22 @@ class BaseTableTest {
         object : TableForTest(configuration) {
             init { col(ModelForTest::string) }
         }
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #col after accessing allColumns throws`() {
+        val tableForTest = object : TableForTest() {}
+        assertThat(tableForTest.allColumns).isEmpty()
+        tableForTest.col(ModelForTest::string)
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #addColumn after accessing allColumns throws`() {
+        val tableForTest = object : TableForTest() {}
+        assertThat(tableForTest.allColumns).isEmpty()
+        tableForTest.addColumn<String>("string", mock(), mock())
     }
 
 

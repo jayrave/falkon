@@ -172,6 +172,51 @@ class BaseEnhancedTableTest {
     }
 
 
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #col after accessing allColumns throws`() {
+        val tableForTest = object : BaseEnhancedTableForTest() {
+            val id = col(ModelForTest::int)
+            override val idColumn: EnhancedColumn<ModelForTest, Int> = id
+        }
+
+        assertThat(tableForTest.allColumns).isNotEmpty()
+        tableForTest.col(ModelForTest::string)
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #foreignCol after accessing allColumns throws`() {
+        val tableForTest = object : BaseEnhancedTableForTest() {
+            override val idColumn: EnhancedColumn<ModelForTest, Int> = col(
+                    ModelForTest::int, "foreign_table_1_pk_column"
+            )
+        }
+
+        val foreignTableForTest = object : BaseEnhancedTableForTest() {
+            override val idColumn: EnhancedColumn<ModelForTest, Int> = col(
+                    ModelForTest::int, "foreign_table_1_pk_column"
+            )
+        }
+
+        assertThat(tableForTest.allColumns).isNotEmpty()
+        tableForTest.foreignCol(ModelForTest::string, foreignColumn = foreignTableForTest.idColumn)
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #addColumn after accessing allColumns throws`() {
+        val tableForTest = object : BaseEnhancedTableForTest() {
+            val id = col(ModelForTest::int)
+            override val idColumn: EnhancedColumn<ModelForTest, Int> = id
+        }
+
+        assertThat(tableForTest.allColumns).isNotEmpty()
+        tableForTest.addColumn<String, Unit, Unit>(
+                "string", null, false, false, false, null, mock(), mock()
+        )
+    }
+
+
 
     private class ModelForTest(
         val int: Int = 0,
