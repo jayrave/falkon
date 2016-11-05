@@ -27,9 +27,10 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(vararg ts: T): Int {
  */
 fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
     var numberOfRowsUpdated = 0
-    val orderedNonIdColumns = OrderedColumns.forNonIdColumnsOf(table)
+    val idColumn = table.idColumn
+    val nonIdColumns = table.allColumns.filter { it != idColumn }
 
-    if (orderedNonIdColumns.isNotEmpty()) {
+    if (nonIdColumns.isNotEmpty()) {
         table.configuration.engine.executeInTransaction {
             var compiledStatementForUpdate: CompiledStatement<Int>? = null
             try {
@@ -38,18 +39,15 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
 
                         // First item. Build CompiledStatement for update
                         null -> buildCompiledStatementForUpdate(
-                                item, table.idColumn, orderedNonIdColumns, updateBuilder()
+                                item, idColumn, nonIdColumns, updateBuilder()
                         )
 
                         // Not the first item. Clear bindings, rebind required columns & set id
                         else -> {
                             compiledStatementForUpdate.clearBindings()
-                            bindAllNonIdColumns(
-                                    item, orderedNonIdColumns, compiledStatementForUpdate
-                            )
-
+                            compiledStatementForUpdate.bindColumns(nonIdColumns, item)
                             compiledStatementForUpdate.bind(
-                                    orderedNonIdColumns.size + 1, table.extractIdFrom(item)
+                                    nonIdColumns.size + 1, table.extractIdFrom(item)
                             )
 
                             compiledStatementForUpdate
@@ -72,19 +70,21 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
 
 /**
  * @param item Item to build [CompiledStatement] for
- * @param orderedNonIdColumns the list of ordered, non-id, non empty columns
+ * @param nonIdColumns list of non-id, non empty columns with deterministic iteration order
  *
  * @return [CompiledStatement] corresponding to the passed in [item]
- * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
+ * @throws IllegalArgumentException if the passed in [nonIdColumns] is empty
  */
 private fun <T: Any, ID: Any> buildCompiledStatementForUpdate(
-        item: T, idColumn: Column<T, ID>, orderedNonIdColumns: OrderedColumns<T>,
+        item: T, idColumn: Column<T, ID>, nonIdColumns: Collection<Column<T, *>>,
         updateBuilder: UpdateBuilder<T>): CompiledStatement<Int> {
 
-    throwIfOrderedNonIdColumnsIsEmpty(orderedNonIdColumns)
+    if (nonIdColumns.isEmpty()) {
+        throw IllegalArgumentException("Non ID columns can't be empty for updates")
+    }
 
     var adderOrEnder: AdderOrEnder<T>? = null
-    orderedNonIdColumns.forEach {
+    nonIdColumns.forEach {
 
         @Suppress("UNCHECKED_CAST")
         val column = it as Column<T, Any?>
@@ -98,27 +98,4 @@ private fun <T: Any, ID: Any> buildCompiledStatementForUpdate(
             .where()
             .eq(idColumn, idColumn.extractPropertyFrom(item))
             .compile()
-}
-
-
-/**
- * @param item Item to build [CompiledStatement] for
- * @param orderedNonIdColumns the list of ordered, non-id, non empty columns
- * @param compiledStatementForUpdate the compiled statement to bind the columns to
- *
- * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
- */
-private fun <T: Any> bindAllNonIdColumns(
-        item: T, orderedNonIdColumns: OrderedColumns<T>,
-        compiledStatementForUpdate: CompiledStatement<Int>) {
-
-    throwIfOrderedNonIdColumnsIsEmpty(orderedNonIdColumns)
-    compiledStatementForUpdate.bindOrderedColumns(orderedNonIdColumns, item)
-}
-
-
-private fun throwIfOrderedNonIdColumnsIsEmpty(orderedNonIdColumns: OrderedColumns<*>) {
-    if (orderedNonIdColumns.isEmpty()) {
-        throw IllegalArgumentException("Non ID columns can't be empty for updates")
-    }
 }

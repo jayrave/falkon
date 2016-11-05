@@ -16,8 +16,8 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(vararg ts: T) {
 
 
 fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
-    val orderedColumns = OrderedColumns.forAllColumnsOf(table)
-    throwIfOrderedColumnsIsEmpty(orderedColumns)
+    val allColumns = table.allColumns
+    throwIfColumnCollectionIsEmpty(allColumns)
 
     table.configuration.engine.executeInTransaction {
         var compiledStatementForInsert: CompiledStatement<Int>? = null
@@ -26,12 +26,12 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
                 compiledStatementForInsert = when (compiledStatementForInsert) {
 
                     // First item. Build CompiledStatement for insert
-                    null -> buildCompiledStatementForInsert(item, orderedColumns, insertBuilder())
+                    null -> buildCompiledStatementForInsert(item, allColumns, insertBuilder())
 
                     // Not the first item. Clear bindings & rebind all columns
                     else -> {
                         compiledStatementForInsert.clearBindings()
-                        bindAllColumns(item, orderedColumns, compiledStatementForInsert)
+                        compiledStatementForInsert.bindColumns(allColumns, item)
                         compiledStatementForInsert
                     }
                 }
@@ -49,19 +49,19 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
 
 /**
  * @param item Item to build [CompiledStatement] for
- * @param orderedColumns the list of ordered, non empty columns
+ * @param columns list of non empty columns with deterministic iteration order
  *
  * @return [CompiledStatement] corresponding to the passed in [item]
- * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
+ * @throws IllegalArgumentException if the passed in [columns] is empty
  */
 private fun <T: Any> buildCompiledStatementForInsert(
-        item: T, orderedColumns: OrderedColumns<T>, insertBuilder: InsertBuilder<T>):
+        item: T, columns: Collection<Column<T, *>>, insertBuilder: InsertBuilder<T>):
         CompiledStatement<Int> {
 
-    throwIfOrderedColumnsIsEmpty(orderedColumns)
+    throwIfColumnCollectionIsEmpty(columns)
 
     var adderOrEnder: AdderOrEnder<T>? = null
-    orderedColumns.forEach {
+    columns.forEach {
 
         @Suppress("UNCHECKED_CAST")
         val column = it as Column<T, Any?>
@@ -75,24 +75,8 @@ private fun <T: Any> buildCompiledStatementForInsert(
 }
 
 
-/**
- * @param item Item to build [CompiledStatement] for
- * @param orderedColumns the list of ordered, non empty columns
- * @param compiledStatementForInsert the compiled statement to bind the columns to
- *
- * @throws IllegalArgumentException if the passed in [OrderedColumns] is empty
- */
-private fun <T: Any> bindAllColumns(
-        item: T, orderedColumns: OrderedColumns<T>,
-        compiledStatementForInsert: CompiledStatement<Int>) {
-
-    throwIfOrderedColumnsIsEmpty(orderedColumns)
-    compiledStatementForInsert.bindOrderedColumns(orderedColumns, item)
-}
-
-
-private fun throwIfOrderedColumnsIsEmpty(orderedColumns: OrderedColumns<*>) {
-    if (orderedColumns.isEmpty()) {
+private fun throwIfColumnCollectionIsEmpty(columns: Collection<*>) {
+    if (columns.isEmpty()) {
         throw IllegalArgumentException("Columns can't be empty for inserts")
     }
 }
