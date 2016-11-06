@@ -1,12 +1,12 @@
-package com.jayrave.falkon.engine.android.sqlite
+package com.jayrave.falkon.sqlBuilders.sqlite
 
 import com.jayrave.falkon.engine.Type
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class AndroidSqliteTypeTranslatorTest {
+class SqliteTypeTranslatorTest {
 
-    private val typeTranslator = AndroidSqliteTypeTranslator()
+    private val typeTranslator = SqliteTypeTranslator()
 
     @Test
     fun testTranslateForShort() {

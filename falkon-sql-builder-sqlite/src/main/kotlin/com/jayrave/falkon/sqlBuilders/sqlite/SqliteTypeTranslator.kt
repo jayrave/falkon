@@ -1,9 +1,9 @@
-package com.jayrave.falkon.engine.android.sqlite
+package com.jayrave.falkon.sqlBuilders.sqlite
 
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypeTranslator
 
-class AndroidSqliteTypeTranslator : TypeTranslator {
+class SqliteTypeTranslator : TypeTranslator {
 
     override fun translate(type: Type): String {
         return when (type) {
