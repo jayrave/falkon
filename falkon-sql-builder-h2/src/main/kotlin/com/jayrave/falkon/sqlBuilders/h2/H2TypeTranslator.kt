@@ -1,9 +1,9 @@
-package com.jayrave.falkon.engine.jdbc
+package com.jayrave.falkon.sqlBuilders.h2
 
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypeTranslator
 
-class JdbcTypeTranslator : TypeTranslator {
+class H2TypeTranslator : TypeTranslator {
 
     override fun translate(type: Type): String {
         return when (type) {
@@ -18,6 +18,6 @@ class JdbcTypeTranslator : TypeTranslator {
     }
 
     override fun translate(type: Type, maxLength: Int): String {
-        return translate(type)
+        return "${translate(type)}($maxLength)"
     }
 }
