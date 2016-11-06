@@ -7,9 +7,9 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 class SqliteUpdateSqlBuilder : UpdateSqlBuilder {
 
     override fun build(
-            tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
-            argPlaceholder: String): String {
+            tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?):
+            String {
 
-        return SimpleUpdateSqlBuilder.build(tableName, columns, whereSections, argPlaceholder)
+        return SimpleUpdateSqlBuilder.build(tableName, columns, whereSections)
     }
 }

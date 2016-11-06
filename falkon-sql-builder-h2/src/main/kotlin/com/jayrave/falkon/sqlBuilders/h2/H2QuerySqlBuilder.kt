@@ -13,11 +13,11 @@ class H2QuerySqlBuilder : QuerySqlBuilder {
             tableName: String, distinct: Boolean, columns: Iterable<SelectColumnInfo>?,
             joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
-            offset: Long?, argPlaceholder: String): String {
+            offset: Long?): String {
 
         return SimpleQuerySqlBuilder.build(
                 tableName, distinct, columns, joinInfos, whereSections, groupBy,
-                orderBy, limit, offset, argPlaceholder
+                orderBy, limit, offset
         )
     }
 }

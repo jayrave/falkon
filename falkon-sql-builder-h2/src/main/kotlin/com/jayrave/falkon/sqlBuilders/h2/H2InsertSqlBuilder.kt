@@ -7,15 +7,11 @@ class H2InsertSqlBuilder : InsertSqlBuilder {
 
     override val isInsertOrReplaceSupported: Boolean = false
 
-    override fun build(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String = SimpleInsertSqlBuilder.build(tableName, columns, argPlaceholder)
+    override fun build(tableName: String, columns: Iterable<String>): String {
+        return SimpleInsertSqlBuilder.build(tableName, columns)
+    }
 
-
-    override fun buildInsertOrReplace(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String {
-
+    override fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String {
         throw UnsupportedOperationException(
                 "As of Nov 1, 2016, H2 database doesn't support `insert or replace` functionality"
         )

@@ -10,8 +10,8 @@ object SimpleUpdateSqlBuilder {
      * clause are added in the iteration order of [whereSections]
      */
     fun build(
-            tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?,
-            argPlaceholder: String): String {
+            tableName: String, columns: Iterable<String>, whereSections: Iterable<WhereSection>?):
+            String {
 
         // Add basic update stuff
         val updateSql = StringBuilder(120)
@@ -21,7 +21,7 @@ object SimpleUpdateSqlBuilder {
         var columnCount = 0
         updateSql.append(columns.joinToString(separator = ", ") {
             columnCount++
-            "$it = $argPlaceholder"
+            "$it = $ARG_PLACEHOLDER"
         })
 
         when (columnCount) {
@@ -31,7 +31,7 @@ object SimpleUpdateSqlBuilder {
 
             else -> {
                 // Add where clause if required
-                val whereSql = whereSections?.buildWhereClause(argPlaceholder)
+                val whereSql = whereSections?.buildWhereClause(ARG_PLACEHOLDER)
                 if (whereSql != null) {
                     updateSql.append(" $whereSql")
                 }

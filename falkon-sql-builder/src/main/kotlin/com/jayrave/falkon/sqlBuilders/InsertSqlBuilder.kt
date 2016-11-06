@@ -14,13 +14,8 @@ interface InsertSqlBuilder {
      * @param [tableName] the table to insert into
      * @param [columns] a list of columns (applied in iteration order) for which values will
      * be bound later
-     * @param [argPlaceholder] to use as placeholders to prevent SQL injection
      */
-    fun build(
-            tableName: String,
-            columns: Iterable<String>,
-            argPlaceholder: String
-    ): String
+    fun build(tableName: String, columns: Iterable<String>): String
 
 
     /**
@@ -40,11 +35,6 @@ interface InsertSqlBuilder {
      * @param [tableName] the table to insert into
      * @param [columns] a list of columns (applied in iteration order) for which values will
      * be bound later
-     * @param [argPlaceholder] to use as placeholders to prevent SQL injection
      */
-    fun buildInsertOrReplace(
-            tableName: String,
-            columns: Iterable<String>,
-            argPlaceholder: String
-    ): String
+    fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String
 }

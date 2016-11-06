@@ -29,7 +29,6 @@ interface QuerySqlBuilder {
      * Passing null denotes no limit
      * @param [offset] Skips the requested number of rows from the beginning and then forms
      * the result set. Passing null denotes no offset
-     * @param [argPlaceholder] to use as placeholders to prevent SQL injection
      */
     fun build(
             tableName: String,
@@ -40,7 +39,6 @@ interface QuerySqlBuilder {
             groupBy: Iterable<String>?,
             orderBy: Iterable<OrderInfo>?,
             limit: Long?,
-            offset: Long?,
-            argPlaceholder: String
+            offset: Long?
     ): String
 }

@@ -12,13 +12,12 @@ import org.junit.Test
 
 class DeleteBuilderDeleteExtnTest {
 
-    private val argPlaceholder = "?"
     private val deleteSqlBuilder = DeleteSqlBuilderForTesting()
 
     @Test
     fun testDeleteViaDeleteBuilderReportsCorrectRowCount() {
         testDeleteReportsCorrectRowCount { table: TableForTest ->
-            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder).delete()
+            DeleteBuilderImpl(table, deleteSqlBuilder).delete()
         }
     }
 
@@ -26,7 +25,7 @@ class DeleteBuilderDeleteExtnTest {
     @Test
     fun testDeleteViaAdderOrEnderReportsCorrectRowCount() {
         testDeleteReportsCorrectRowCount { table: TableForTest ->
-            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder)
+            DeleteBuilderImpl(table, deleteSqlBuilder)
                     .where()
                     .eq(table.int, 6)
                     .delete()
@@ -37,7 +36,7 @@ class DeleteBuilderDeleteExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfDeleteViaDeleteBuilderThrows() {
         testStatementGetsClosedEvenIfDeleteThrows { table: TableForTest ->
-            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder).delete()
+            DeleteBuilderImpl(table, deleteSqlBuilder).delete()
         }
     }
 
@@ -45,7 +44,7 @@ class DeleteBuilderDeleteExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfDeleteViaAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfDeleteThrows { table: TableForTest ->
-            DeleteBuilderImpl(table, deleteSqlBuilder, argPlaceholder)
+            DeleteBuilderImpl(table, deleteSqlBuilder)
                     .where()
                     .eq(table.int, 6)
                     .delete()

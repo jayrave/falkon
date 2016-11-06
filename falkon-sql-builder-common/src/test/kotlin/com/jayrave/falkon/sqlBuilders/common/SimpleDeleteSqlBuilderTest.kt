@@ -11,7 +11,7 @@ class SimpleDeleteSqlBuilderTest {
 
     @Test
     fun testBuildWithoutWhere() {
-        val actualSql = SimpleDeleteSqlBuilder.build(tableName, null, ARG_PLACEHOLDER)
+        val actualSql = SimpleDeleteSqlBuilder.build(tableName, null)
         val expectedSql = "DELETE FROM $tableName"
         assertThat(actualSql).isEqualTo(expectedSql)
     }
@@ -25,13 +25,8 @@ class SimpleDeleteSqlBuilderTest {
                 OneArgPredicate(OneArgPredicate.Type.EQ, "column_name_2")
         )
 
-        val actualSql = SimpleDeleteSqlBuilder.build(tableName, whereSections, ARG_PLACEHOLDER)
+        val actualSql = SimpleDeleteSqlBuilder.build(tableName, whereSections)
         val expectedSql = "DELETE FROM $tableName WHERE column_name_1 = ? AND column_name_2 = ?"
         assertThat(actualSql).isEqualTo(expectedSql)
-    }
-
-
-    companion object {
-        private const val ARG_PLACEHOLDER = "?"
     }
 }

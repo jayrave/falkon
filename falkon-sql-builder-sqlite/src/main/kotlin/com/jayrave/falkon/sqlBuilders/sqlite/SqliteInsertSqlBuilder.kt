@@ -11,17 +11,11 @@ class SqliteInsertSqlBuilder : InsertSqlBuilder {
 
     override val isInsertOrReplaceSupported: Boolean = true
 
-    override fun build(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String = SimpleInsertSqlBuilder.build(tableName, columns, argPlaceholder)
+    override fun build(tableName: String, columns: Iterable<String>): String {
+        return SimpleInsertSqlBuilder.build(tableName, columns)
+    }
 
-
-    override fun buildInsertOrReplace(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String {
-
-        return SimpleInsertSqlBuilder.buildInsertOrReplace(
-                "INSERT OR REPLACE", tableName, columns, argPlaceholder
-        )
+    override fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String {
+        return SimpleInsertSqlBuilder.buildInsertOrReplace("INSERT OR REPLACE", tableName, columns)
     }
 }

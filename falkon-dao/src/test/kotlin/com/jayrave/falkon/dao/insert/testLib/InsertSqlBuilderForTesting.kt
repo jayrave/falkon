@@ -6,11 +6,11 @@ class InsertSqlBuilderForTesting : InsertSqlBuilder {
 
     override val isInsertOrReplaceSupported: Boolean = false
 
-    override fun build(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String = "tableName: $tableName; columns: ${columns.joinToString()}"
+    override fun build(tableName: String, columns: Iterable<String>): String {
+        return "tableName: $tableName; columns: ${columns.joinToString()}"
+    }
 
-    override fun buildInsertOrReplace(
-            tableName: String, columns: Iterable<String>, argPlaceholder: String):
-            String = throw UnsupportedOperationException("not implemented")
+    override fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String {
+        throw UnsupportedOperationException("not implemented")
+    }
 }

@@ -10,20 +10,20 @@ class SimpleInsertSqlBuilderTest {
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildThrowsForEmptyColumnsIterable() {
-        SimpleInsertSqlBuilder.build("test", emptyList(), ARG_PLACEHOLDER)
+        SimpleInsertSqlBuilder.build("test", emptyList())
     }
 
 
     @Test(expected = SQLSyntaxErrorException::class)
     fun testBuildInsertOrReplaceThrowsForEmptyColumnsIterable() {
-        SimpleInsertSqlBuilder.buildInsertOrReplace("I_O_R", "test", emptyList(), ARG_PLACEHOLDER)
+        SimpleInsertSqlBuilder.buildInsertOrReplace("I_O_R", "test", emptyList())
     }
 
 
     @Test
     fun testSuccessfulBuild() {
         val actualSql = SimpleInsertSqlBuilder.build(
-                tableName, listOf("column_name_1", "column_name_2"), ARG_PLACEHOLDER
+                tableName, listOf("column_name_1", "column_name_2")
         )
 
         val expectedSql = "INSERT INTO $tableName (column_name_1, column_name_2) VALUES (?, ?)"
@@ -34,16 +34,10 @@ class SimpleInsertSqlBuilderTest {
     @Test
     fun testSuccessfulBuildInsertOrReplace() {
         val actualSql = SimpleInsertSqlBuilder.buildInsertOrReplace(
-                "I_O_R", tableName, listOf("column_name_1"), ARG_PLACEHOLDER
+                "I_O_R", tableName, listOf("column_name_1")
         )
 
         val expectedSql = "I_O_R INTO $tableName (column_name_1) VALUES (?)"
         assertThat(actualSql).isEqualTo(expectedSql)
-    }
-
-
-
-    companion object {
-        private const val ARG_PLACEHOLDER = "?"
     }
 }

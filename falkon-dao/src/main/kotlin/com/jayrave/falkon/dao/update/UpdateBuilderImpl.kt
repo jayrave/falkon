@@ -16,8 +16,8 @@ import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
 import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class UpdateBuilderImpl<T : Any>(
-        override val table: Table<T, *>, private val updateSqlBuilder: UpdateSqlBuilder,
-        private val argPlaceholder: String) : UpdateBuilder<T> {
+        override val table: Table<T, *>, private val updateSqlBuilder: UpdateSqlBuilder) :
+        UpdateBuilder<T> {
 
     private val dataConsumer = LinkedHashMapBackedDataConsumer()
     private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null
@@ -40,7 +40,7 @@ internal class UpdateBuilderImpl<T : Any>(
         val where: Where? = whereBuilder?.build()
         val columns: Iterable<String> = LinkedHashMapBackedIterable.forKeys(map)
 
-        val sql = updateSqlBuilder.build(table.name, columns, where?.whereSections, argPlaceholder)
+        val sql = updateSqlBuilder.build(table.name, columns, where?.whereSections)
         val arguments = IterablesBackedIterable(listOf(
                 LinkedHashMapBackedIterable.forValues(map),
                 where?.arguments ?: emptyList()

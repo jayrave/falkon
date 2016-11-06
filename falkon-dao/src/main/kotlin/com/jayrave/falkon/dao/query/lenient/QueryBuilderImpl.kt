@@ -21,8 +21,7 @@ import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import java.util.*
 import com.jayrave.falkon.dao.where.lenient.AdderOrEnder as WhereAdderOrEnder
 
-internal class QueryBuilderImpl(
-        private val querySqlBuilder: QuerySqlBuilder, private val argPlaceholder: String) :
+internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         QueryBuilder,
         AdderOrEnderBeforeWhere {
 
@@ -149,8 +148,7 @@ internal class QueryBuilderImpl(
         val where = whereBuilder?.build()
         val sql = querySqlBuilder.build(
                 table.name, distinct, buildSelectColumnInfoList(), joinInfoList,
-                where?.whereSections, buildGroupByList(), orderByInfoList, limitCount,
-                offsetCount, argPlaceholder
+                where?.whereSections, buildGroupByList(), orderByInfoList, limitCount, offsetCount
         )
 
         return QueryImpl(tableNames, sql, where?.arguments ?: emptyList())

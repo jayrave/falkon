@@ -5,12 +5,8 @@ import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 class DeleteSqlBuilderForTesting : DeleteSqlBuilder {
-
-    override fun build(
-            tableName: String, whereSections: Iterable<WhereSection>?,
-            argPlaceholder: String): String {
+    override fun build(tableName: String, whereSections: Iterable<WhereSection>?): String {
         val whereClause = buildWhereClauseWithPlaceholders(whereSections)
         return "tableName: $tableName; whereClause: $whereClause"
     }
-
 }

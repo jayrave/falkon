@@ -38,7 +38,7 @@ internal class TableForTest(
 
     data class Id(val id1: UUID, val id2: UUID)
     val dao: Dao<ModelForTest, Id> = DaoImpl(
-            this, "?", H2InsertSqlBuilder(), H2UpdateSqlBuilder(),
+            this, H2InsertSqlBuilder(), H2UpdateSqlBuilder(),
             H2DeleteSqlBuilder(), H2QuerySqlBuilder()
     )
 

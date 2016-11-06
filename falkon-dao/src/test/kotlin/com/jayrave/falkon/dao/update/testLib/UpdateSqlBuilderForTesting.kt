@@ -8,7 +8,7 @@ class UpdateSqlBuilderForTesting : UpdateSqlBuilder {
 
     override fun build(
             tableName: String, columns: Iterable<String>,
-            whereSections: Iterable<WhereSection>?, argPlaceholder: String): String {
+            whereSections: Iterable<WhereSection>?): String {
         val whereClause = buildWhereClauseWithPlaceholders(whereSections)
         return "tableName: $tableName; columns: ${columns.joinToString()}; " +
                 "whereClause: $whereClause"

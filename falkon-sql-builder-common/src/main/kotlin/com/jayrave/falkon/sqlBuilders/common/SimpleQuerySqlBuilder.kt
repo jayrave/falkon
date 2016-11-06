@@ -15,7 +15,7 @@ object SimpleQuerySqlBuilder {
             tableName: String, distinct: Boolean, columns: Iterable<SelectColumnInfo>?,
             joinInfos: Iterable<JoinInfo>?, whereSections: Iterable<WhereSection>?,
             groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
-            offset: Long?, argPlaceholder: String): String {
+            offset: Long?): String {
 
         val querySql = StringBuilder(120)
         querySql.append("SELECT")
@@ -30,7 +30,7 @@ object SimpleQuerySqlBuilder {
             querySql.append(" $tableName")
         }
 
-        querySql.addWhereIfPossible(whereSections, argPlaceholder)
+        querySql.addWhereIfPossible(whereSections, ARG_PLACEHOLDER)
         querySql.addGroupIfPossible(groupBy)
         querySql.addOrderByIfPossible(orderBy)
         querySql.addLimitIfPossible(limit)

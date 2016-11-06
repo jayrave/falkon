@@ -22,7 +22,7 @@ class QueryBuilderImplTest {
         val engine = bundle.engine
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+        val builder = QueryBuilderImpl(table, querySqlBuilder)
         val actualQuery = builder.build()
         builder.compile()
 
@@ -50,7 +50,7 @@ class QueryBuilderImplTest {
         val tableForJoin = TableForTest("table_for_join")
         val querySqlBuilder = bundle.querySqlBuilder
 
-        val builder = QueryBuilderImpl(table, querySqlBuilder, ARG_PLACEHOLDER)
+        val builder = QueryBuilderImpl(table, querySqlBuilder)
         builder
                 .distinct()
                 .select(table.int)

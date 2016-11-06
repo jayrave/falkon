@@ -382,8 +382,6 @@ class BuildWhereFromPartsTest {
 
 
     companion object {
-        private const val ARG_PLACEHOLDER = "?"
-
         private fun testIsInWithSubQueryWithNonNegativeNumberOfArgs(numberOfArgs: Int) {
             val actualWhereClause = listOf(MultiArgPredicateWithSubQuery(
                     MultiArgPredicateWithSubQuery.Type.IS_IN, "column_name",
@@ -393,7 +391,6 @@ class BuildWhereFromPartsTest {
             val expectedWhereClause = "WHERE column_name IN (test sub query)"
             assertThat(actualWhereClause).isEqualTo(expectedWhereClause)
         }
-
 
         private fun testIsNotInWithSubQueryWithNonNegativeNumberOfArgs(numberOfArgs: Int) {
             val actualWhereClause = listOf(MultiArgPredicateWithSubQuery(

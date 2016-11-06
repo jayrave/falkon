@@ -296,7 +296,7 @@ class SimpleQuerySqlBuilderTest {
         return SimpleQuerySqlBuilder.build(
                 tableName = tableName, distinct = distinct, columns = columns,
                 joinInfos = joinInfos, whereSections = whereSections, groupBy = groupBy,
-                orderBy = orderBy, limit = limit, offset = offset, argPlaceholder = "?"
+                orderBy = orderBy, limit = limit, offset = offset
         )
     }
 

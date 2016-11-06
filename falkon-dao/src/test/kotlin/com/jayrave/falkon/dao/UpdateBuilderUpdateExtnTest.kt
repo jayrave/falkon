@@ -12,13 +12,12 @@ import org.junit.Test
 
 class UpdateBuilderUpdateExtnTest {
 
-    private val argPlaceholder = "?"
     private val updateSqlBuilder = UpdateSqlBuilderForTesting()
 
     @Test
     fun testUpdateViaAdderOrEnderReportsCorrectRowCount() {
         testUpdateReportsCorrectRowCount { table: TableForTest ->
-            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder).set(table.int, 5).update()
+            UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5).update()
         }
     }
 
@@ -26,7 +25,7 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testUpdateViaPredicateAdderOrEnderReportsCorrectRowCount() {
         testUpdateReportsCorrectRowCount { table: TableForTest ->
-            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder)
+            UpdateBuilderImpl(table, updateSqlBuilder)
                     .set(table.int, 5)
                     .where()
                     .eq(table.int, 6)
@@ -38,7 +37,7 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfUpdateViaAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
-            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder).set(table.int, 5).update()
+            UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5).update()
         }
     }
 
@@ -46,7 +45,7 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfUpdateViaPredicateAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
-            UpdateBuilderImpl(table, updateSqlBuilder, argPlaceholder)
+            UpdateBuilderImpl(table, updateSqlBuilder)
                     .set(table.int, 5)
                     .where()
                     .eq(table.int, 6)

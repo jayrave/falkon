@@ -21,15 +21,12 @@ class UpdateBuilderImplTest {
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER).set(table.int, 5)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5)
         val actualUpdate = builder.build()
         builder.compile()
 
         // build expected update
-        val expectedSql = updateSqlBuilder.build(
-                table.name, listOf(table.int.name), null, ARG_PLACEHOLDER
-        )
-
+        val expectedSql = updateSqlBuilder.build(table.name, listOf(table.int.name), null)
         val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(5))
 
         // Verify
@@ -51,7 +48,7 @@ class UpdateBuilderImplTest {
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
                 .set(table.int, 5)
                 .where()
                 .eq(table.string, "test")
@@ -62,8 +59,7 @@ class UpdateBuilderImplTest {
         // build expected update
         val expectedSql = updateSqlBuilder.build(
                 table.name, listOf(table.int.name),
-                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)),
-                ARG_PLACEHOLDER
+                listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name))
         )
 
         val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(5, "test"))
@@ -88,7 +84,7 @@ class UpdateBuilderImplTest {
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
                 .set(table.int, 5)
                 .set(table.string, "test")
 
@@ -97,7 +93,7 @@ class UpdateBuilderImplTest {
 
         // build expected insert
         val expectedSql = updateSqlBuilder.build(
-                table.name, listOf(table.int.name, table.string.name), null, ARG_PLACEHOLDER
+                table.name, listOf(table.int.name, table.string.name), null
         )
 
         val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(5, "test"))
@@ -124,7 +120,7 @@ class UpdateBuilderImplTest {
         // build & compile
         val initialValue = 5
         val overwritingValue = initialValue + 1
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
                 .set(table.int, initialValue)
                 .set(table.int, overwritingValue)
 
@@ -132,10 +128,7 @@ class UpdateBuilderImplTest {
         builder.compile()
 
         // build expected insert
-        val expectedSql = updateSqlBuilder.build(
-                table.name, listOf(table.int.name), null, ARG_PLACEHOLDER
-        )
-
+        val expectedSql = updateSqlBuilder.build(table.name, listOf(table.int.name), null)
         val expectedUpdate = UpdateImpl(table.name, expectedSql, listOf(overwritingValue))
 
         // Verify
@@ -156,7 +149,7 @@ class UpdateBuilderImplTest {
         val engine = bundle.engine
         val updateSqlBuilder = bundle.updateSqlBuilder
 
-        UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER).set(table.int, 5)
+        UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5)
         assertThat(engine.compiledStatementsForUpdate).isEmpty()
     }
 
@@ -169,7 +162,7 @@ class UpdateBuilderImplTest {
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder, ARG_PLACEHOLDER)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
                 .set(table.short, 5.toShort())
                 .set(table.int, 6)
                 .set(table.long, 7L)
@@ -189,7 +182,7 @@ class UpdateBuilderImplTest {
                         table.short.name, table.int.name, table.long.name, table.float.name,
                         table.double.name, table.string.name, table.blob.name,
                         table.nullableInt.name
-                ), null, ARG_PLACEHOLDER
+                ), null
         )
 
         val expectedUpdate = UpdateImpl(
@@ -232,8 +225,6 @@ class UpdateBuilderImplTest {
 
 
     companion object {
-        private const val ARG_PLACEHOLDER = "?"
-
         private fun assertEquality(actualUpdate: Update, expectedUpdate: Update) {
             assertThat(actualUpdate.tableName).isEqualTo(expectedUpdate.tableName)
             assertThat(actualUpdate.sql).isEqualTo(expectedUpdate.sql)

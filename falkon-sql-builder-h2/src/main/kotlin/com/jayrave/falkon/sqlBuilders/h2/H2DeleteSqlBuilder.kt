@@ -6,10 +6,7 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 
 class H2DeleteSqlBuilder : DeleteSqlBuilder {
 
-    override fun build(
-            tableName: String, whereSections: Iterable<WhereSection>?,
-            argPlaceholder: String): String {
-
-        return SimpleDeleteSqlBuilder.build(tableName, whereSections, argPlaceholder)
+    override fun build(tableName: String, whereSections: Iterable<WhereSection>?): String {
+        return SimpleDeleteSqlBuilder.build(tableName, whereSections)
     }
 }

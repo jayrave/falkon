@@ -10,8 +10,8 @@ import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
 
 internal class InsertBuilderImpl<T : Any>(
-        override val table: Table<T, *>, private val insertSqlBuilder: InsertSqlBuilder,
-        private val argPlaceholder: String) : InsertBuilder<T> {
+        override val table: Table<T, *>, private val insertSqlBuilder: InsertSqlBuilder) :
+        InsertBuilder<T> {
 
     private val dataConsumer = LinkedHashMapBackedDataConsumer()
 
@@ -37,10 +37,7 @@ internal class InsertBuilderImpl<T : Any>(
 
         override fun build(): Insert {
             val map = dataConsumer.map
-            val sql = insertSqlBuilder.build(
-                    table.name, LinkedHashMapBackedIterable.forKeys(map), argPlaceholder
-            )
-
+            val sql = insertSqlBuilder.build(table.name, LinkedHashMapBackedIterable.forKeys(map))
             return InsertImpl(table.name, sql, LinkedHashMapBackedIterable.forValues(map))
         }
 

@@ -12,7 +12,6 @@ import org.junit.Test
 
 class InsertBuilderInsertExtnTest {
 
-    private val argPlaceholder = "?"
     private val insertSqlBuilder = InsertSqlBuilderForTesting()
 
     @Test
@@ -40,7 +39,7 @@ class InsertBuilderInsertExtnTest {
         )
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))
-        val builder = InsertBuilderImpl(table, insertSqlBuilder, argPlaceholder)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder)
 
         var exceptionWasThrown = false
         try {
@@ -72,7 +71,7 @@ class InsertBuilderInsertExtnTest {
         )
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))
-        val builder = InsertBuilderImpl(table, insertSqlBuilder, argPlaceholder)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder)
         assertThat(builder.set(table.int, 5).insert()).isEqualTo(expectedFlag)
 
         // Assert that the statement was executed and closed
