@@ -11,7 +11,7 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelUsingInsertBuilder(table, modelToBeUpdated)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
-        val updatedModel = buildModelForTest(88, modelToBeUpdated.id)
+        val updatedModel = buildModelForTest(88, modelToBeUpdated.id1, modelToBeUpdated.id2)
         val numberOfRowsUpdated = table.dao.update(updatedModel)
 
         assertPresenceOf(table, updatedModel)
@@ -27,8 +27,8 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelsUsingInsertBuilder(table, modelToBeUpdated1, modelToBeUpdated2)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
-        val updatedModel1 = buildModelForTest(66, modelToBeUpdated1.id)
-        val updatedModel2 = buildModelForTest(99, modelToBeUpdated2.id)
+        val updatedModel1 = buildModelForTest(66, modelToBeUpdated1.id1, modelToBeUpdated1.id2)
+        val updatedModel2 = buildModelForTest(99, modelToBeUpdated2.id1, modelToBeUpdated2.id2)
         val numberOfRowsUpdated = table.dao.update(updatedModel1, updatedModel2)
 
         assertPresenceOf(table, updatedModel1, updatedModel2)
@@ -44,8 +44,8 @@ class DaoForUpdatesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelsUsingInsertBuilder(table, modelToBeUpdated1, modelToBeUpdated2)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
-        val updatedModel1 = buildModelForTest(55, modelToBeUpdated1.id)
-        val updatedModel2 = buildModelForTest(77, modelToBeUpdated2.id)
+        val updatedModel1 = buildModelForTest(55, modelToBeUpdated1.id1, modelToBeUpdated1.id2)
+        val updatedModel2 = buildModelForTest(77, modelToBeUpdated2.id1, modelToBeUpdated2.id2)
         val numberOfRowsUpdated = table.dao.update(listOf(updatedModel1, updatedModel2))
 
         assertPresenceOf(table, updatedModel1, updatedModel2)

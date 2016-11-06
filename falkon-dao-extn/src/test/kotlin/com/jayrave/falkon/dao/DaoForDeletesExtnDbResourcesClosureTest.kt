@@ -56,42 +56,48 @@ class DaoForDeletesExtnDbResourcesClosureTest {
     @Test
     fun testDeletionByIdOfSingleModelClosesCompiledStatementForDeleteOnSuccessfulExecution() {
         testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
-            it.dao.deleteById(UUID.randomUUID())
+            it.dao.deleteById(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()))
         }
     }
 
     @Test
     fun testDeletionByIdOfSingleModelClosesCompiledStatementForDeleteEvenOnException() {
         testCompiledStatementForDeleteIsClosedEventOnException {
-            it.dao.deleteById(UUID.randomUUID())
+            it.dao.deleteById(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()))
         }
     }
 
     @Test
     fun testDeletionByIdOfVarargModelsClosesCompiledStatementForDeleteOnSuccessfulExecution() {
         testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
-            it.dao.deleteById(UUID.randomUUID(), UUID.randomUUID())
+            it.dao.deleteById(
+                    TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()),
+                    TableForTest.Id(UUID.randomUUID(), UUID.randomUUID())
+            )
         }
     }
 
     @Test
     fun testDeletionByIdOfVarargModelsClosesCompiledStatementForDeleteEvenOnException() {
         testCompiledStatementForDeleteIsClosedEventOnException {
-            it.dao.deleteById(UUID.randomUUID(), UUID.randomUUID())
+            it.dao.deleteById(
+                    TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()),
+                    TableForTest.Id(UUID.randomUUID(), UUID.randomUUID())
+            )
         }
     }
 
     @Test
     fun testDeletionByIdOfModelIterableClosesCompiledStatementForDeleteOnSuccessfulExecution() {
         testCompiledStatementForDeleteIsClosedOnSuccessfulExecution {
-            it.dao.deleteById(listOf(UUID.randomUUID()))
+            it.dao.deleteById(listOf(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID())))
         }
     }
 
     @Test
     fun testDeletionByIdOfModelIterableClosesCompiledStatementForDeleteEvenOnException() {
         testCompiledStatementForDeleteIsClosedEventOnException {
-            it.dao.deleteById(listOf(UUID.randomUUID()))
+            it.dao.deleteById(listOf(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID())))
         }
     }
 

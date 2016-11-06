@@ -1,5 +1,6 @@
 package com.jayrave.falkon.sqlBuilders.common
 
+import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.TableInfo
 import java.sql.SQLSyntaxErrorException
 
@@ -71,7 +72,16 @@ object SimpleCreateTableSqlBuilder {
 
 
     private fun StringBuilder.addPrimaryKeyConstraint(tableInfo: TableInfo) {
-        append(", PRIMARY KEY (${tableInfo.primaryKeyConstraint})")
+        val clause = tableInfo
+                .columnInfos
+                .filter { it.isId }
+                .joinToStringIfHasItems(
+                        prefix = ", PRIMARY KEY (", postfix = ")", transform = ColumnInfo::name
+                )
+
+        if (clause != null) {
+            append(clause)
+        }
     }
 
 

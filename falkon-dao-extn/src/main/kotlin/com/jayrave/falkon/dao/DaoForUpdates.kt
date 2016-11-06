@@ -1,35 +1,44 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.update.AdderOrEnder
-import com.jayrave.falkon.dao.update.UpdateBuilder
 import com.jayrave.falkon.engine.CompiledStatement
-import com.jayrave.falkon.engine.bind
 import com.jayrave.falkon.mapper.Column
 
 /**
+ * Updates a record if possible based on the primary key of [t] according to
+ * the table it is connected to
+ *
  * @return number of rows updated by this operation
  */
-fun <T: Any, ID : Any> Dao<T, ID>.update(t: T): Int {
+fun <T : Any, ID : Any> Dao<T, ID>.update(t: T): Int {
     return update(listOf(t))
 }
 
 
 /**
+ * Updates a record if possible based on the primary keys of each of [ts] according to
+ * the table it is connected to
+ *
  * @return number of rows updated by this operation
+ * @see [update]
  */
-fun <T: Any, ID : Any> Dao<T, ID>.update(vararg ts: T): Int {
+fun <T : Any, ID : Any> Dao<T, ID>.update(vararg ts: T): Int {
     return update(ts.asList())
 }
 
 
 /**
+ * Updates a record if possible based on the primary keys of each of [ts] according to
+ * the table it is connected to
+ *
  * @return number of rows updated by this operation
  */
-fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
+fun <T : Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
     var numberOfRowsUpdated = 0
-    val idColumn = table.idColumn
-    val nonIdColumns = table.allColumns.filter { it != idColumn }
+    val idColumns = table.idColumns
+    val nonIdColumns = table.nonIdColumns
 
+    throwIfColumnCollectionIsEmpty(idColumns, "id")
     if (nonIdColumns.isNotEmpty()) {
         table.configuration.engine.executeInTransaction {
             var compiledStatementForUpdate: CompiledStatement<Int>? = null
@@ -38,16 +47,14 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
                     compiledStatementForUpdate = when (compiledStatementForUpdate) {
 
                         // First item. Build CompiledStatement for update
-                        null -> buildCompiledStatementForUpdate(
-                                item, idColumn, nonIdColumns, updateBuilder()
-                        )
+                        null -> buildCompiledStatementForUpdate(item, idColumns, nonIdColumns)
 
                         // Not the first item. Clear bindings, rebind required columns & set id
                         else -> {
                             compiledStatementForUpdate.clearBindings()
                             compiledStatementForUpdate.bindColumns(nonIdColumns, item)
-                            compiledStatementForUpdate.bind(
-                                    nonIdColumns.size + 1, table.extractIdFrom(item)
+                            compiledStatementForUpdate.bindColumns(
+                                    idColumns, item, nonIdColumns.size + 1
                             )
 
                             compiledStatementForUpdate
@@ -70,19 +77,22 @@ fun <T: Any, ID : Any> Dao<T, ID>.update(ts: Iterable<T>): Int {
 
 /**
  * @param item Item to build [CompiledStatement] for
+ * @param idColumns list of id, non empty columns with deterministic iteration order
  * @param nonIdColumns list of non-id, non empty columns with deterministic iteration order
  *
  * @return [CompiledStatement] corresponding to the passed in [item]
  * @throws IllegalArgumentException if the passed in [nonIdColumns] is empty
  */
-private fun <T: Any, ID: Any> buildCompiledStatementForUpdate(
-        item: T, idColumn: Column<T, ID>, nonIdColumns: Collection<Column<T, *>>,
-        updateBuilder: UpdateBuilder<T>): CompiledStatement<Int> {
+private fun <T : Any> Dao<T, *>.buildCompiledStatementForUpdate(
+        item: T, idColumns: Collection<Column<T, *>>, nonIdColumns: Collection<Column<T, *>>):
+        CompiledStatement<Int> {
 
-    if (nonIdColumns.isEmpty()) {
-        throw IllegalArgumentException("Non ID columns can't be empty for updates")
-    }
+    throwIfColumnCollectionIsEmpty(idColumns, "id")
+    throwIfColumnCollectionIsEmpty(nonIdColumns, "non-id")
 
+    val updateBuilder = updateBuilder()
+
+    // Set all non-id columns
     var adderOrEnder: AdderOrEnder<T>? = null
     nonIdColumns.forEach {
 
@@ -94,8 +104,21 @@ private fun <T: Any, ID: Any> buildCompiledStatementForUpdate(
         }
     }
 
-    return adderOrEnder!!
-            .where()
-            .eq(idColumn, idColumn.extractPropertyFrom(item))
-            .compile()
+    // Add predicates for id columns
+    adderOrEnder!!.where().and {
+        idColumns.forEach { idColumn ->
+
+            @Suppress("UNCHECKED_CAST")
+            eq(idColumn as Column<T, Any?>, idColumn.extractPropertyFrom(item))
+        }
+    }
+
+    return adderOrEnder!!.compile()
+}
+
+
+private fun throwIfColumnCollectionIsEmpty(columns: Collection<*>, kind: String) {
+    if (columns.isEmpty()) {
+        throw IllegalArgumentException("$kind columns can't be empty for updates")
+    }
 }

@@ -11,39 +11,64 @@ import java.util.*
 class BaseTableTest {
 
     @Test
-    fun testAllColumnsWithZeroColumns() {
+    fun `table without any columns`() {
         val tableForTest = object : TableForTest() {}
         assertThat(tableForTest.allColumns).isEmpty()
+        assertThat(tableForTest.idColumns).isEmpty()
+        assertThat(tableForTest.nonIdColumns).isEmpty()
     }
 
 
     @Test
-    fun testAllColumnsWithOneColumn() {
-        val tableForTest1 = object : TableForTest() { val col = col(ModelForTest::int) }
-        val tableForTest2 = object : TableForTest() { val col = col(ModelForTest::nullableInt) }
-
-        assertThat(tableForTest1.allColumns).containsOnly(tableForTest1.col)
-        assertThat(tableForTest2.allColumns).containsOnly(tableForTest2.col)
-    }
-
-
-    @Test
-    fun testAllColumnsWithMultipleColumns() {
+    fun `table with one id column`() {
         val tableForTest = object : TableForTest() {
-            val col1 = col(ModelForTest::int)
-            val col2 = col(ModelForTest::blob)
-            val col3 = col(ModelForTest::nullableString)
-            val col4 = addColumn<String>("string", mock(), mock())
+            val col = col(ModelForTest::int, isId = true)
+        }
+
+        assertThat(tableForTest.allColumns).containsOnly(tableForTest.col)
+        assertThat(tableForTest.idColumns).containsOnly(tableForTest.col)
+        assertThat(tableForTest.nonIdColumns).isEmpty()
+    }
+
+
+    @Test
+    fun `table with one non id column`() {
+        val tableForTest = object : TableForTest() { val col = col(ModelForTest::int) }
+
+        assertThat(tableForTest.allColumns).containsOnly(tableForTest.col)
+        assertThat(tableForTest.idColumns).isEmpty()
+        assertThat(tableForTest.nonIdColumns).containsOnly(tableForTest.col)
+    }
+
+
+    @Test
+    fun `table with multiple id & non id columns`() {
+        val tableForTest = object : TableForTest() {
+            val id1 = col(ModelForTest::int, isId = true)
+            val nonId1 = col(ModelForTest::blob)
+            val id2 = col(ModelForTest::nullableString, isId = true)
+            val nonId2 = addColumn<String>("string", false, mock(), mock())
+            val id3 = addColumn<String>("name", true, mock(), mock())
+            val nonId3 = col(ModelForTest::nullableInt)
         }
 
         assertThat(tableForTest.allColumns).containsOnly(
-                tableForTest.col1, tableForTest.col2, tableForTest.col3, tableForTest.col4
+                tableForTest.id1, tableForTest.id2, tableForTest.id3,
+                tableForTest.nonId1, tableForTest.nonId2, tableForTest.nonId3
+        )
+
+        assertThat(tableForTest.idColumns).containsOnly(
+                tableForTest.id1, tableForTest.id2, tableForTest.id3
+        )
+
+        assertThat(tableForTest.nonIdColumns).containsOnly(
+                tableForTest.nonId1, tableForTest.nonId2, tableForTest.nonId3
         )
     }
 
 
     @Test
-    fun testDefaultNameFormatting() {
+    fun `default name formatting`() {
         val tableForTest = object : TableForTest() {
             val col1 = col(ModelForTest::blob)
             val col2 = col(ModelForTest::nullableString)
@@ -58,7 +83,7 @@ class BaseTableTest {
 
 
     @Test
-    fun testDefaultPropertyExtractor() {
+    fun `default property extractor`() {
         val tableForTest = object : TableForTest() {
             val col1 = col(ModelForTest::int)
             val col2 = col(ModelForTest::nullableInt)
@@ -74,7 +99,7 @@ class BaseTableTest {
 
 
     @Test
-    fun testConverterAcquisitionForNullableType() {
+    fun `acquisition of converter for nullable value`() {
         val expectedUuid = UUID.randomUUID()
         val configuration = TableConfigurationImpl(mock(), mock())
         configuration.registerForNullableValues(
@@ -91,7 +116,7 @@ class BaseTableTest {
 
 
     @Test
-    fun testConverterAcquisitionForNonNullType() {
+    fun `acquisition of converter for non-null value`() {
         val expectedUuid = UUID.randomUUID()
         val configuration = TableConfigurationImpl(mock(), mock())
         configuration.registerForNonNullValues(
@@ -108,7 +133,7 @@ class BaseTableTest {
 
 
     @Test(expected = MissingConverterException::class)
-    fun testConverterAcquisitionForUnregisteredNullableTypeThrows() {
+    fun `acquisition of converter for nullable value for unregistered class throws`() {
         val configuration = TableConfigurationImpl(mock(), mock())
         configuration.registerForNonNullValues(
                 String::class.java, NullableToNonNullConverter(NullableStringConverter())
@@ -121,7 +146,7 @@ class BaseTableTest {
 
 
     @Test(expected = MissingConverterException::class)
-    fun testConverterAcquisitionForUnregisteredNonNullTypeThrows() {
+    fun `acquisition of converter for non-null value for unregistered class throws`() {
         val configuration = TableConfigurationImpl(mock(), mock())
         configuration.registerForNullableValues(
                 String::class.java, NullableStringConverter(), false
@@ -135,17 +160,55 @@ class BaseTableTest {
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #col after accessing allColumns throws`() {
-        val tableForTest = object : TableForTest() {}
-        assertThat(tableForTest.allColumns).isEmpty()
-        tableForTest.col(ModelForTest::string)
+        `adding columns via #col too late throws`() { it.allColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addColumn after accessing allColumns throws`() {
+        `adding columns via #addColumn too late throws`() { it.allColumns }
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #col after accessing idColumns throws`() {
+        `adding columns via #col too late throws`() { it.idColumns }
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #addColumn after accessing idColumns throws`() {
+        `adding columns via #addColumn too late throws`() { it.idColumns }
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #col after accessing nonIdColumns throws`() {
+        `adding columns via #col too late throws`() { it.nonIdColumns }
+    }
+
+
+    @Test(expected = IllegalStateException::class)
+    fun `adding columns via #addColumn after accessing nonIdColumns throws`() {
+        `adding columns via #addColumn too late throws`() { it.nonIdColumns }
+    }
+
+
+    private fun `adding columns via #col too late throws`(
+            latenessCausingOp: (TableForTest) -> Any?) {
+
         val tableForTest = object : TableForTest() {}
-        assertThat(tableForTest.allColumns).isEmpty()
-        tableForTest.addColumn<String>("string", mock(), mock())
+        latenessCausingOp.invoke(tableForTest)
+        tableForTest.col(ModelForTest::string)
+    }
+
+
+    private fun `adding columns via #addColumn too late throws`(
+            latenessCausingOp: (TableForTest) -> Any?) {
+
+        val tableForTest = object : TableForTest() {}
+        latenessCausingOp.invoke(tableForTest)
+        tableForTest.addColumn<String>("string", false, mock(), mock())
     }
 
 
@@ -167,11 +230,9 @@ class BaseTableTest {
             configuration: TableConfiguration = defaultTableConfiguration()) :
             BaseTable<ModelForTest, Int>("test", configuration) {
 
-        override val idColumn: Column<ModelForTest, Int> = mock()
-        override fun create(value: Value<ModelForTest>): ModelForTest {
-            throw UnsupportedOperationException()
-        }
-
+        override fun <C> extractFrom(id: Int, column: Column<ModelForTest, C>) = throw exception()
+        override fun create(value: Value<ModelForTest>) = throw exception()
+        private fun exception() = UnsupportedOperationException()
 
         companion object {
             private fun defaultTableConfiguration(engine: Engine = mock()): TableConfiguration {

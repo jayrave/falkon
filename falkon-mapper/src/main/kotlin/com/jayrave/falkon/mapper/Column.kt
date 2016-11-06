@@ -25,6 +25,12 @@ interface Column<T : Any, C> {
     val dbType: Type
 
     /**
+     * `true` if this column is (or part of) the primary key of the table it belongs to;
+     * `false` otherwise
+     */
+    val isId: Boolean
+
+    /**
      * To extract the property from the containing object
      */
     fun extractPropertyFrom(t: T): C

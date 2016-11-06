@@ -52,7 +52,8 @@ abstract class BaseClassForIntegrationTests {
             this.compileSql(
                     listOf(table.name),
                     "CREATE TABLE ${table.name} (" +
-                            "${table.id.name} VARCHAR PRIMARY KEY, " +
+                            "${table.id1.name} VARCHAR NOT NULL, " +
+                            "${table.id2.name} VARCHAR NOT NULL, " +
                             "${table.short.name} SMALLINT NOT NULL, " +
                             "${table.int.name} INTEGER NOT NULL, " +
                             "${table.long.name} BIGINT NOT NULL, " +
@@ -66,8 +67,8 @@ abstract class BaseClassForIntegrationTests {
                             "${table.nullableFloat.name} REAL, " +
                             "${table.nullableDouble.name} DOUBLE, " +
                             "${table.nullableString.name} VARCHAR, " +
-                            "${table.nullableBlob.name} BLOB" +
-                            ")"
+                            "${table.nullableBlob.name} BLOB, " +
+                            "PRIMARY KEY(${table.id1.name}, ${table.id2.name}))"
             ).execute()
         }
 
@@ -76,17 +77,22 @@ abstract class BaseClassForIntegrationTests {
                 table: TableForTest, model: ModelForTest):
                 CompiledStatement<Source> {
 
-            val storageFormOfId = table.idColumn.computeStorageFormOf(
-                    table.idColumn.extractPropertyFrom(model)
+            val storageFormOfId1 = table.id1.computeStorageFormOf(
+                    table.id1.extractPropertyFrom(model)
             ) as String
+
+            val storageFormOfId2 = table.id2.computeStorageFormOf(
+                    table.id2.extractPropertyFrom(model)
+            ) as String
+
+            val sql = "SELECT * FROM ${table.name} WHERE ${table.id1.name} = ? AND ${table.id2.name} = ?"
 
             return table
                     .configuration
                     .engine
-                    .compileQuery(
-                            listOf(table.name),
-                            "SELECT * FROM ${table.name} WHERE ${table.idColumn.name} = ?"
-                    ).bind(1, storageFormOfId)
+                    .compileQuery(listOf(table.name), sql)
+                    .bind(1, storageFormOfId1)
+                    .bind(2, storageFormOfId2)
         }
 
 
@@ -95,13 +101,13 @@ abstract class BaseClassForIntegrationTests {
          * be 1 more than the previous parameter
          */
         internal fun buildModelForTest(
-                seedValue: Short, id: UUID = UUID.randomUUID()): ModelForTest {
+                seedValue: Short, id1: UUID = UUID.randomUUID(), id2: UUID = UUID.randomUUID()):
+                ModelForTest {
 
             return ModelForTest(
-                    id, short = seedValue, int = seedValue + 1, long = seedValue + 2L,
-                    float = seedValue + 3F, double = seedValue + 4.0,
-                    string = "test ${seedValue + 5}",
-                    blob = byteArrayOf((seedValue + 6).toByte())
+                    id1 = id1, id2 = id2, short = seedValue, int = seedValue + 1,
+                    long = seedValue + 2L, float = seedValue + 3F, double = seedValue + 4.0,
+                    string = "test ${seedValue + 5}", blob = byteArrayOf((seedValue + 6).toByte())
             )
         }
 
@@ -153,8 +159,12 @@ abstract class BaseClassForIntegrationTests {
                 source: Source, model: ModelForTest, table: TableForTest) {
 
             assertThat(source.getString(
-                    source.getColumnIndex(table.id.name))
-            ).isEqualTo(model.id.toString())
+                    source.getColumnIndex(table.id1.name))
+            ).isEqualTo(model.id1.toString())
+
+            assertThat(source.getString(
+                    source.getColumnIndex(table.id2.name))
+            ).isEqualTo(model.id2.toString())
 
             assertThat(source.getShort(
                     source.getColumnIndex(table.short.name))
@@ -264,7 +274,8 @@ abstract class BaseClassForIntegrationTests {
                 table: TableForTest, model: ModelForTest) {
 
             table.dao.insertBuilder()
-                    .set(table.id, model.id)
+                    .set(table.id1, model.id1)
+                    .set(table.id2, model.id2)
                     .set(table.short, model.short)
                     .set(table.int, model.int)
                     .set(table.long, model.long)

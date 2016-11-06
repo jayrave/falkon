@@ -13,7 +13,8 @@ import com.nhaarman.mockito_kotlin.mock
 import java.util.*
 
 internal class ModelForTest(
-        val id: UUID = UUID.randomUUID(),
+        val id1: UUID = UUID.randomUUID(),
+        val id2: UUID = UUID.randomUUID(),
         val short: Short = 0.toShort(),
         val int: Int = 0,
         val long: Long = 0L,
@@ -33,24 +34,35 @@ internal class ModelForTest(
 
 internal class TableForTest(
         configuration: TableConfiguration = defaultTableConfiguration()) :
-        BaseTable<ModelForTest, UUID>("test", configuration) {
+        BaseTable<ModelForTest, TableForTest.Id>("test", configuration) {
 
-    val dao: Dao<ModelForTest, UUID> = DaoImpl(
+    data class Id(val id1: UUID, val id2: UUID)
+    val dao: Dao<ModelForTest, Id> = DaoImpl(
             this, "?", H2InsertSqlBuilder(), H2UpdateSqlBuilder(),
             H2DeleteSqlBuilder(), H2QuerySqlBuilder()
     )
 
-    override val idColumn: Column<ModelForTest, UUID> get() = id
+    @Suppress("UNCHECKED_CAST")
+    override fun <C> extractFrom(id: Id, column: Column<ModelForTest, C>): C {
+        return when (column) {
+            id1 -> id.id1
+            id2 -> id.id2
+            else -> throw IllegalArgumentException("not an id column: ${column.name}")
+        } as C
+    }
+
     override fun create(value: Value<ModelForTest>): ModelForTest {
         return ModelForTest(
-                value of id, value of short, value of int, value of long, value of float,
-                value of double, value of string, value of blob, value of nullableShort,
-                value of nullableInt, value of nullableLong, value of nullableFloat,
-                value of nullableDouble, value of nullableString, value of nullableBlob
+                value of id1, value of id2, value of short, value of int, value of long,
+                value of float, value of double, value of string, value of blob,
+                value of nullableShort, value of nullableInt, value of nullableLong,
+                value of nullableFloat, value of nullableDouble, value of nullableString,
+                value of nullableBlob
         )
     }
 
-    val id = col(ModelForTest::id)
+    val id1 = col(ModelForTest::id1, isId = true)
+    val id2 = col(ModelForTest::id2, isId = true)
     val short = col(ModelForTest::short)
     val int = col(ModelForTest::int)
     val long = col(ModelForTest::long)
@@ -82,7 +94,8 @@ internal fun TableConfigurationImpl.registerUuidConverters() {
 
 
 internal fun ModelForTest.testEquality(modelForTest: ModelForTest): Boolean {
-    return id == modelForTest.id &&
+    return id1 == modelForTest.id1 &&
+            id2 == modelForTest.id2 &&
             short == modelForTest.short &&
             int == modelForTest.int &&
             long == modelForTest.long &&

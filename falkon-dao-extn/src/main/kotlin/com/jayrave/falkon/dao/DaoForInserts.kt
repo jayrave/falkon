@@ -1,21 +1,20 @@
 package com.jayrave.falkon.dao
 
 import com.jayrave.falkon.dao.insert.AdderOrEnder
-import com.jayrave.falkon.dao.insert.InsertBuilder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Column
 
-fun <T: Any, ID : Any> Dao<T, ID>.insert(t: T) {
+fun <T : Any, ID : Any> Dao<T, ID>.insert(t: T) {
     insert(listOf(t))
 }
 
 
-fun <T: Any, ID : Any> Dao<T, ID>.insert(vararg ts: T) {
+fun <T : Any, ID : Any> Dao<T, ID>.insert(vararg ts: T) {
     insert(ts.asList())
 }
 
 
-fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
+fun <T : Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
     val allColumns = table.allColumns
     throwIfColumnCollectionIsEmpty(allColumns)
 
@@ -26,7 +25,7 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
                 compiledStatementForInsert = when (compiledStatementForInsert) {
 
                     // First item. Build CompiledStatement for insert
-                    null -> buildCompiledStatementForInsert(item, allColumns, insertBuilder())
+                    null -> buildCompiledStatementForInsert(item, allColumns)
 
                     // Not the first item. Clear bindings & rebind all columns
                     else -> {
@@ -54,12 +53,12 @@ fun <T: Any, ID : Any> Dao<T, ID>.insert(ts: Iterable<T>) {
  * @return [CompiledStatement] corresponding to the passed in [item]
  * @throws IllegalArgumentException if the passed in [columns] is empty
  */
-private fun <T: Any> buildCompiledStatementForInsert(
-        item: T, columns: Collection<Column<T, *>>, insertBuilder: InsertBuilder<T>):
-        CompiledStatement<Int> {
+private fun <T : Any> Dao<T, *>.buildCompiledStatementForInsert(
+        item: T, columns: Collection<Column<T, *>>): CompiledStatement<Int> {
 
     throwIfColumnCollectionIsEmpty(columns)
 
+    val insertBuilder = insertBuilder()
     var adderOrEnder: AdderOrEnder<T>? = null
     columns.forEach {
 
