@@ -13,6 +13,7 @@ include ':falkon-sql-builder'
 include ':falkon-sql-builder-common'
 include ':falkon-sql-builder-h2'
 include ':falkon-sql-builder-sqlite'
+include ':falkon-sql-builder-test-common'
 
 // By default, all modules are included in the build. To build Falkon without Android SDK,
 // include `falkon.excludeAndroidModulesFromBuild = true` in `local.properties` file
