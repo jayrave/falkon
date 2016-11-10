@@ -11,7 +11,9 @@ dependencies {
 
     testCompile falkonModules.engine
     testCompile falkonModules.sqlBuilder
+    testCompile falkonModules.sqlBuilderTestCommon
     testCompile libraries.assertJ
+    testCompile libraries.h2
     testCompile libraries.jUnit
 }
 
