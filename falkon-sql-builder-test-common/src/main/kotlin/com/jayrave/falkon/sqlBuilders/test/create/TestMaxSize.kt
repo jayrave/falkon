@@ -1,9 +1,7 @@
 package com.jayrave.falkon.sqlBuilders.test.create
 
 import com.jayrave.falkon.sqlBuilders.CreateTableSqlBuilder
-import com.jayrave.falkon.sqlBuilders.test.DbForTest
-import com.jayrave.falkon.sqlBuilders.test.buildArgListForSql
-import com.jayrave.falkon.sqlBuilders.test.failIfOpDoesNotThrow
+import com.jayrave.falkon.sqlBuilders.test.*
 import org.assertj.core.api.Assertions.assertThat
 import java.util.*
 
@@ -12,11 +10,12 @@ class TestMaxSize(
         private val db: DbForTest) {
 
     fun `max sized column does not allow values that are too big`() {
+        val dataSource = db.dataSource
 
         // Create table with a max sized column
         val columnInfo = ColumnInfoForTest("max_sized_column", db.stringDataType, maxSize = 50)
         val tableInfo = TableInfoForTest("test", listOf(columnInfo), emptyList(), emptyList())
-        db.execute(createTableSqlBuilder.build(tableInfo))
+        dataSource.execute(createTableSqlBuilder.build(tableInfo))
 
         // Insert SQL builder
         fun buildInsertSql(value: String?): String {
@@ -24,12 +23,12 @@ class TestMaxSize(
         }
 
         // Make sure records can be inserted
-        db.execute(buildInsertSql(randomStringGenerator(columnInfo.maxSize!! - 1)))
-        assertThat(db.findRecordCountInTable(tableInfo.name)).isEqualTo(1)
+        dataSource.execute(buildInsertSql(randomStringGenerator(columnInfo.maxSize!! - 1)))
+        assertThat(dataSource.findRecordCountInTable(tableInfo.name)).isEqualTo(1)
 
         // Try inserting a max size constraint violating value
         failIfOpDoesNotThrow {
-            db.execute(buildInsertSql(randomStringGenerator(columnInfo.maxSize * 2)))
+            dataSource.execute(buildInsertSql(randomStringGenerator(columnInfo.maxSize * 2)))
         }
     }
 

@@ -3,6 +3,8 @@ package com.jayrave.falkon.sqlBuilders.test.create
 import com.jayrave.falkon.sqlBuilders.CreateTableSqlBuilder
 import com.jayrave.falkon.sqlBuilders.test.DbForTest
 import com.jayrave.falkon.sqlBuilders.test.buildArgListForSql
+import com.jayrave.falkon.sqlBuilders.test.execute
+import com.jayrave.falkon.sqlBuilders.test.findAllRecordsInTable
 import org.assertj.core.api.Assertions.assertThat
 
 class TestAutoIncrement(
@@ -18,19 +20,20 @@ class TestAutoIncrement(
                 "test", listOf(idColumn, counterColumn), emptyList(), emptyList()
         )
 
-        db.execute(createTableSqlBuilder.build(tableInfo))
+        val dataSource = db.dataSource
+        dataSource.execute(createTableSqlBuilder.build(tableInfo))
 
         // Insert records with increasing counter
         val counter = 1..5
         counter.forEach {
-            db.execute(
+            dataSource.execute(
                     "INSERT INTO ${tableInfo.name} (${counterColumn.name}) " +
                             "VALUES (${buildArgListForSql(it)})"
             )
         }
 
         // Get all records from db
-        val allRecords = db.findAllRecordsInTable(
+        val allRecords = dataSource.findAllRecordsInTable(
                 tableInfo.name, listOf(idColumn.name, counterColumn.name)
         )
 

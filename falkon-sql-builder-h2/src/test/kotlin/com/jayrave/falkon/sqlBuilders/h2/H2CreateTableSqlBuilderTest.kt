@@ -5,7 +5,7 @@ import org.junit.Test
 
 class H2CreateTableSqlBuilderTest : BaseClassForTesting() {
 
-    val createTableSqlBuilder = H2CreateTableSqlBuilder()
+    private val createTableSqlBuilder = H2CreateTableSqlBuilder()
 
     @Test
     fun `simple primary key does not allow duplicates`() {

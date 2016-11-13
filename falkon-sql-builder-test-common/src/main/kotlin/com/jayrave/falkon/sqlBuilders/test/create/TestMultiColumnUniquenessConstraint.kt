@@ -1,10 +1,7 @@
 package com.jayrave.falkon.sqlBuilders.test.create
 
 import com.jayrave.falkon.sqlBuilders.CreateTableSqlBuilder
-import com.jayrave.falkon.sqlBuilders.test.DbForTest
-import com.jayrave.falkon.sqlBuilders.test.buildArgListForSql
-import com.jayrave.falkon.sqlBuilders.test.failIfOpDoesNotThrow
-import com.jayrave.falkon.sqlBuilders.test.randomUuid
+import com.jayrave.falkon.sqlBuilders.test.*
 import org.assertj.core.api.Assertions.assertThat
 import java.util.*
 
@@ -13,6 +10,7 @@ class TestMultiColumnUniquenessConstraint(
         private val db: DbForTest) {
 
     fun `multi column uniqueness constraint does not allow duplicates`() {
+        val dataSource = db.dataSource
 
         // Create table with column with unique constraint
         val column1Info = ColumnInfoForTest("column_1", dataType = db.stringDataType)
@@ -22,7 +20,7 @@ class TestMultiColumnUniquenessConstraint(
                 listOf(listOf(column1Info.name, column2Info.name)), emptyList()
         )
 
-        db.execute(createTableSqlBuilder.build(tableInfo))
+        dataSource.execute(createTableSqlBuilder.build(tableInfo))
 
         // Insert SQL builder
         fun buildInsertSql(value1: UUID, value2: UUID): String {
@@ -32,14 +30,14 @@ class TestMultiColumnUniquenessConstraint(
         // Make sure records can be inserted
         val value1ToBeDuplicated = randomUuid()
         val value2ToBeDuplicated = randomUuid()
-        db.execute(buildInsertSql(value1ToBeDuplicated, value2ToBeDuplicated))
-        db.execute(buildInsertSql(value1ToBeDuplicated, randomUuid()))
-        db.execute(buildInsertSql(randomUuid(), value2ToBeDuplicated))
-        assertThat(db.findRecordCountInTable(tableInfo.name)).isEqualTo(3)
+        dataSource.execute(buildInsertSql(value1ToBeDuplicated, value2ToBeDuplicated))
+        dataSource.execute(buildInsertSql(value1ToBeDuplicated, randomUuid()))
+        dataSource.execute(buildInsertSql(randomUuid(), value2ToBeDuplicated))
+        assertThat(dataSource.findRecordCountInTable(tableInfo.name)).isEqualTo(3)
 
         // Try inserting a record with duplicate value. It should throw
         failIfOpDoesNotThrow {
-            db.execute(buildInsertSql(value1ToBeDuplicated, value2ToBeDuplicated))
+            dataSource.execute(buildInsertSql(value1ToBeDuplicated, value2ToBeDuplicated))
         }
     }
 }
