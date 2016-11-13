@@ -11,5 +11,12 @@ interface DbForTest {
     fun execute(sql: String)
     fun execute(sql: List<String>)
     fun findRecordCountInTable(tableName: String): Int
-    fun findAllRecordsInTable(tableName: String): List<Map<String, String>>
+
+    /**
+     * If [columnNames] is empty, all columns should be selected; otherwise only those in
+     * the list should be
+     */
+    fun findAllRecordsInTable(
+            tableName: String, columnNames: List<String>
+    ): List<Map<String, String>>
 }

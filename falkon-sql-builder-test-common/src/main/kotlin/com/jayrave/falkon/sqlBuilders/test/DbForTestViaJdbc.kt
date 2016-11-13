@@ -31,18 +31,19 @@ class DbForTestViaJdbc(private val dataSource: DataSource) : DbForTest {
     }
 
 
-    override fun findAllRecordsInTable(tableName: String): List<Map<String, String>> {
-        return executeQuery("SELECT * FROM $tableName") { resultSet ->
-            val allRecords = ArrayList<Map<String, String>>()
-            val metaData = resultSet.metaData
-            while (!resultSet.isAfterLast) {
-                val record = HashMap<String, String>()
-                (1..metaData.columnCount).forEach { columnIndex ->
-                    val columnName = metaData.getColumnName(columnIndex)
-                    record[columnName] = resultSet.getString(columnName)
-                }
+    override fun findAllRecordsInTable(
+            tableName: String, columnNames: List<String>):
+            List<Map<String, String>> {
 
-                allRecords.add(record)
+        val columnsSelector = when {
+            columnNames.isEmpty() -> "*"
+            else -> columnNames.joinToString()
+        }
+
+        return executeQuery("SELECT $columnsSelector FROM $tableName") { resultSet ->
+            val allRecords = ArrayList<Map<String, String>>()
+            while (!resultSet.isAfterLast) {
+                allRecords.add(columnNames.associate { it to resultSet.getString(it) })
                 resultSet.next()
             }
 

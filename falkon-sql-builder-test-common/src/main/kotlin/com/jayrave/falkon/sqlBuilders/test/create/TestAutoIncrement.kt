@@ -30,7 +30,11 @@ class TestAutoIncrement(
         }
 
         // Get all records from db
-        val allRecords = db.findAllRecordsInTable(tableInfo.name)
+        val allRecords = db.findAllRecordsInTable(
+                tableInfo.name, listOf(idColumn.name, counterColumn.name)
+        )
+
+        // Make sure all records got inserted
         assertThat(allRecords).hasSize(counter.count())
 
         // Assert auto increment works

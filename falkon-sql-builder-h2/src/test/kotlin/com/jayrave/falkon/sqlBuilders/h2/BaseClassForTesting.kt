@@ -19,7 +19,7 @@ abstract class BaseClassForTesting {
     fun setUp() {
         // http://www.h2database.com/html/features.html#in_memory_databases
         // Give the database a name to enabled multiple connections to the same database
-        dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false", "user", "pw")
+        dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=0", "user", "pw")
         db = DbForTestViaJdbc(dataSource)
     }
 
