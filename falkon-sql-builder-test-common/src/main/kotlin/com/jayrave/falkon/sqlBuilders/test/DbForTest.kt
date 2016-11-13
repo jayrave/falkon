@@ -18,5 +18,5 @@ interface DbForTest {
      */
     fun findAllRecordsInTable(
             tableName: String, columnNames: List<String>
-    ): List<Map<String, String>>
+    ): List<Map<String, String?>>
 }

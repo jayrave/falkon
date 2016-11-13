@@ -33,7 +33,7 @@ class DbForTestViaJdbc(private val dataSource: DataSource) : DbForTest {
 
     override fun findAllRecordsInTable(
             tableName: String, columnNames: List<String>):
-            List<Map<String, String>> {
+            List<Map<String, String?>> {
 
         val columnsSelector = when {
             columnNames.isEmpty() -> "*"
@@ -41,9 +41,19 @@ class DbForTestViaJdbc(private val dataSource: DataSource) : DbForTest {
         }
 
         return executeQuery("SELECT $columnsSelector FROM $tableName") { resultSet ->
-            val allRecords = ArrayList<Map<String, String>>()
+            val allRecords = ArrayList<Map<String, String?>>()
             while (!resultSet.isAfterLast) {
-                allRecords.add(columnNames.associate { it to resultSet.getString(it) })
+                allRecords.add(columnNames.associate { columnName ->
+                    val columnIndex = resultSet.findColumn(columnName)
+                    resultSet.getObject(columnIndex)
+                    val string: String? = when {
+                        resultSet.wasNull() -> null
+                        else -> resultSet.getString(columnIndex)
+                    }
+
+                    columnName to string
+                })
+
                 resultSet.next()
             }
 
