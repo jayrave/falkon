@@ -1,8 +1,14 @@
 package com.jayrave.falkon.sqlBuilders.test
 
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.util.*
 import javax.sql.DataSource
+
+fun DataSource.execute(sql: List<String>) {
+    sql.forEach { execute(it) }
+}
+
 
 fun DataSource.execute(sql: String) {
     val connection = connection
@@ -13,8 +19,13 @@ fun DataSource.execute(sql: String) {
 }
 
 
-fun DataSource.execute(sql: List<String>) {
-    sql.forEach { execute(it) }
+fun DataSource.execute(sql: String, argsBinder: (PreparedStatement) -> Any?) {
+    val connection = connection
+    val preparedStatement = connection.prepareStatement(sql)
+    argsBinder.invoke(preparedStatement)
+    preparedStatement.execute()
+    preparedStatement.close()
+    connection.close()
 }
 
 
