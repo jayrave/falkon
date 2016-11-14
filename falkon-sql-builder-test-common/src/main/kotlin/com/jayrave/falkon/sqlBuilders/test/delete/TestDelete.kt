@@ -159,10 +159,10 @@ class TestDelete(private val deleteSqlBuilder: DeleteSqlBuilder, db: DbForTest) 
         // Delete record
         deleteIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
-                        WhereSection.Predicate.OneArgPredicate.Type.LESS_THAN,
+                        WhereSection.Predicate.OneArgPredicate.Type.LESS_THAN_OR_EQ,
                         INT_COLUMN_NAME))) {
 
-            it.setInt(1, 7)
+            it.setInt(1, 5)
         }
 
         // Assert record got deleted

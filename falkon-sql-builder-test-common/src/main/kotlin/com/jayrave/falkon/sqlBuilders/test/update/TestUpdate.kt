@@ -61,8 +61,7 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
                         WhereSection.Predicate.OneArgPredicate.Type.EQ,
-                        ID_COLUMN_NAME
-                ))) {
+                        ID_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
@@ -88,8 +87,7 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
                         WhereSection.Predicate.OneArgPredicate.Type.NOT_EQ,
-                        ID_COLUMN_NAME
-                ))) {
+                        ID_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
@@ -114,8 +112,7 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
                         WhereSection.Predicate.OneArgPredicate.Type.GREATER_THAN,
-                        INT_COLUMN_NAME
-                ))) {
+                        INT_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
@@ -140,8 +137,7 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
                         WhereSection.Predicate.OneArgPredicate.Type.GREATER_THAN_OR_EQ,
-                        INT_COLUMN_NAME
-                ))) {
+                        INT_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
@@ -166,8 +162,7 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
                         WhereSection.Predicate.OneArgPredicate.Type.LESS_THAN,
-                        INT_COLUMN_NAME
-                ))) {
+                        INT_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
@@ -191,13 +186,12 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         // Update record
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
-                        WhereSection.Predicate.OneArgPredicate.Type.LESS_THAN,
-                        INT_COLUMN_NAME
-                ))) {
+                        WhereSection.Predicate.OneArgPredicate.Type.LESS_THAN_OR_EQ,
+                        INT_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
-            it.setInt(3, 7)
+            it.setInt(3, 5)
         }
 
         // Assert record got updated
@@ -218,8 +212,7 @@ class TestUpdate(private val updateSqlBuilder: UpdateSqlBuilder, db: DbForTest) 
         updateIndividualRecord(listOf(
                 WhereSection.Predicate.OneArgPredicate(
                         WhereSection.Predicate.OneArgPredicate.Type.LIKE,
-                        ID_COLUMN_NAME
-                ))) {
+                        ID_COLUMN_NAME))) {
 
             it.setInt(1, intValueAfterUpdate)
             it.setString(2, stringValueAfterUpdate)
