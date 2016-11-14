@@ -29,6 +29,11 @@ fun DataSource.executeUpdate(sql: String, argsBinder: (PreparedStatement) -> Any
 }
 
 
+fun DataSource.executeDelete(sql: String, argsBinder: (PreparedStatement) -> Any?): Int {
+    return executeUpdate(sql, argsBinder)
+}
+
+
 fun <R> DataSource.executeQuery(
         sql: String, argsBinder: (PreparedStatement) -> Any?, op: (ResultSet) -> R): R {
 
