@@ -66,23 +66,7 @@ fun DataSource.findAllRecordsInTable(
     }
 
     return executeQuery("SELECT $columnsSelector FROM $tableName", {}) { resultSet ->
-        val allRecords = ArrayList<Map<String, String?>>()
-        while (!resultSet.isAfterLast) {
-            allRecords.add(columnNames.associate { columnName ->
-                val columnIndex = resultSet.findColumn(columnName)
-                resultSet.getObject(columnIndex)
-                val string: String? = when {
-                    resultSet.wasNull() -> null
-                    else -> resultSet.getString(columnIndex)
-                }
-
-                columnName to string
-            })
-
-            resultSet.next()
-        }
-
-        allRecords
+        resultSet.extractRecordsAsMap(columnNames)
     }
 }
 
