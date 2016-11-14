@@ -20,18 +20,32 @@ fun DataSource.execute(sql: String) {
 
 
 fun DataSource.execute(sql: String, argsBinder: (PreparedStatement) -> Any?) {
-    val connection = connection
-    val preparedStatement = connection.prepareStatement(sql)
-    argsBinder.invoke(preparedStatement)
-    preparedStatement.execute()
-    preparedStatement.close()
-    connection.close()
+    privateExecute(sql, argsBinder) { it.execute() }
+}
+
+
+fun DataSource.executeUpdate(sql: String, argsBinder: (PreparedStatement) -> Any?): Int {
+    return privateExecute(sql, argsBinder, PreparedStatement::executeUpdate)
+}
+
+
+fun <R> DataSource.executeQuery(
+        sql: String, argsBinder: (PreparedStatement) -> Any?, op: (ResultSet) -> R): R {
+
+    return privateExecute(sql, {}) { ps ->
+        argsBinder.invoke(ps)
+        val resultSet = ps.executeQuery()
+        resultSet.first()
+        val result = op.invoke(resultSet)
+        resultSet.close()
+        result
+    }
 }
 
 
 fun DataSource.findRecordCountInTable(tableName: String): Int {
     val countColumnName = "count"
-    return executeQuery("SELECT COUNT(*) AS $countColumnName FROM $tableName") {
+    return executeQuery("SELECT COUNT(*) AS $countColumnName FROM $tableName", {}) {
         it.getInt(it.findColumn(countColumnName))
     }
 }
@@ -46,7 +60,7 @@ fun DataSource.findAllRecordsInTable(
         else -> columnNames.joinToString()
     }
 
-    return executeQuery("SELECT $columnsSelector FROM $tableName") { resultSet ->
+    return executeQuery("SELECT $columnsSelector FROM $tableName", {}) { resultSet ->
         val allRecords = ArrayList<Map<String, String?>>()
         while (!resultSet.isAfterLast) {
             allRecords.add(columnNames.associate { columnName ->
@@ -68,14 +82,14 @@ fun DataSource.findAllRecordsInTable(
 }
 
 
-private fun <R> DataSource.executeQuery(sql: String, op: (ResultSet) -> R): R {
+private fun <R> DataSource.privateExecute(
+        sql: String, argsBinder: (PreparedStatement) -> Any?,
+        executor: (PreparedStatement) -> R): R {
+
     val connection = connection
     val preparedStatement = connection.prepareStatement(sql)
-    val resultSet = preparedStatement.executeQuery()
-
-    resultSet.first()
-    val result = op.invoke(resultSet)
-    resultSet.close()
+    argsBinder.invoke(preparedStatement)
+    val result = executor.invoke(preparedStatement)
     preparedStatement.close()
     connection.close()
 
