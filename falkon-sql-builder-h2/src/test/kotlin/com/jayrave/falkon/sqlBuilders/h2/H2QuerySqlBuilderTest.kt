@@ -128,6 +128,26 @@ class H2QuerySqlBuilderTest : BaseClassForTesting() {
     }
 
     @Test
+    fun `select with inner join`() {
+        TestJoin(querySqlBuilder, db).`select with inner join`()
+    }
+
+    @Test
+    fun `select with left outer join`() {
+        TestJoin(querySqlBuilder, db).`select with left outer join`()
+    }
+
+    @Test
+    fun `select with right outer join`() {
+        TestJoin(querySqlBuilder, db).`select with right outer join`()
+    }
+
+    @Test
+    fun `select with group by`() {
+        TestGroupBy(querySqlBuilder, db).`select with group by`()
+    }
+
+    @Test
     fun `select with order by clause`() {
         TestOrderBy(querySqlBuilder, db).`select with order by clause`()
     }
