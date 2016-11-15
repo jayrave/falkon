@@ -124,10 +124,6 @@ class SimpleQuerySqlBuilderTest {
                         JoinInfoForTest(
                                 JoinInfo.Type.RIGHT_OUTER_JOIN, "$tableName.column_name_3",
                                 "table_4", "table_4.column_name_1"
-                        ),
-                        JoinInfoForTest(
-                                JoinInfo.Type.FULL_OUTER_JOIN, "$tableName.column_name_4",
-                                "table_5", "table_5.column_name_1"
                         )
                 )
         )
@@ -135,8 +131,7 @@ class SimpleQuerySqlBuilderTest {
         val expectedSql = "SELECT * FROM $tableName " +
                 "INNER JOIN table_2 ON $tableName.column_name_1 = table_2.column_name_1 " +
                 "LEFT OUTER JOIN table_3 ON $tableName.column_name_2 = table_3.column_name_1 " +
-                "RIGHT OUTER JOIN table_4 ON $tableName.column_name_3 = table_4.column_name_1 " +
-                "FULL OUTER JOIN table_5 ON $tableName.column_name_4 = table_5.column_name_1"
+                "RIGHT OUTER JOIN table_4 ON $tableName.column_name_3 = table_4.column_name_1"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }

@@ -40,6 +40,5 @@ private fun JoinInfo.Type.sqlText(): String {
         JoinInfo.Type.INNER_JOIN -> "INNER JOIN"
         JoinInfo.Type.LEFT_OUTER_JOIN -> "LEFT OUTER JOIN"
         JoinInfo.Type.RIGHT_OUTER_JOIN -> "RIGHT OUTER JOIN"
-        JoinInfo.Type.FULL_OUTER_JOIN -> "FULL OUTER JOIN"
     }
 }
