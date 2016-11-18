@@ -60,6 +60,24 @@ class SimpleCreateTableSqlBuilderTest {
     @Test
     fun `build with multiple column infos with both id & non id columns`() {
         val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, true, false, false)
+        val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", null, false, false, false)
+        val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", null, false, false, false)
+        val actualSql = buildCreateTableStatement(TableInfoForTest(
+                "test", listOf(columnInfo1, columnInfo2, columnInfo3),
+                emptyList(), emptyList()
+        ))
+
+        val expectedSql = "CREATE TABLE test (" +
+                "column_name_1 NUMBER, column_name_2 TEXT, column_name_3 BLOB, " +
+                "PRIMARY KEY (column_name_1))"
+
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun `build with columns with & without max size specified`() {
+        val columnInfo1 = ColumnInfoForTest("column_name_1", "NUMBER", null, false, false, false)
         val columnInfo2 = ColumnInfoForTest("column_name_2", "TEXT", 256, false, false, false)
         val columnInfo3 = ColumnInfoForTest("column_name_3", "BLOB", 128, false, false, false)
         val actualSql = buildCreateTableStatement(TableInfoForTest(
@@ -68,8 +86,9 @@ class SimpleCreateTableSqlBuilderTest {
         ))
 
         val expectedSql = "CREATE TABLE test (" +
-                "column_name_1 NUMBER, column_name_2 TEXT(256), column_name_3 BLOB(128), " +
-                "PRIMARY KEY (column_name_1))"
+                "column_name_1 NUMBER, " +
+                "column_name_2 TEXT(256), " +
+                "column_name_3 BLOB(128))"
 
         assertThat(actualSql).isEqualTo(expectedSql)
     }
