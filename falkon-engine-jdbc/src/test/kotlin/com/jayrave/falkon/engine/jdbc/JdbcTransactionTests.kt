@@ -20,7 +20,11 @@ class JdbcTransactionTests {
     fun setUp() {
         // http://www.h2database.com/html/features.html#in_memory_databases
         // Give the database a name to enabled multiple connections to the same database
-        dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "pw")
+        val ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "pw")
+        ds.loginTimeout = 1
+        ds.maxConnections = 1
+
+        dataSource = ds
         engineCore = JdbcEngineCore(dataSource)
     }
 

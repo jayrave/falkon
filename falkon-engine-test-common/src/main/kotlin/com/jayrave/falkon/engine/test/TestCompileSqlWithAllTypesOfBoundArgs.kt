@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 
 class TestCompileSqlWithAllTypesOfBoundArgs private constructor(
         private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
@@ -18,7 +19,7 @@ class TestCompileSqlWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
-                .execute()
+                .safeCloseAfterExecution()
 
         assertOneRowWithAllTypesUsingDataSource(5, 6, 7, 8F, 9.0, "test 10", byteArrayOf(11))
     }

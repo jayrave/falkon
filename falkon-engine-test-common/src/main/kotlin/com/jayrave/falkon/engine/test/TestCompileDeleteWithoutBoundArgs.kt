@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileDeleteWithoutBoundArgs private constructor(
@@ -19,7 +20,7 @@ class TestCompileDeleteWithoutBoundArgs private constructor(
         val countBeforeDelete = nativeQueryExecutor.getCount(tableName)
 
         // Delete stuff using engine
-        engineCore.compileDelete("DELETE FROM $tableName").execute()
+        engineCore.compileDelete("DELETE FROM $tableName").safeCloseAfterExecution()
 
         // Get count after delete & perform assertions
         val countAfterDelete = nativeQueryExecutor.getCount(tableName)

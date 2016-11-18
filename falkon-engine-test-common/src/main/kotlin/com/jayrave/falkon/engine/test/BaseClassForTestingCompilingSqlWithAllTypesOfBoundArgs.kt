@@ -47,6 +47,7 @@ abstract class BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
         assertThat(source.getString(source.getColumnIndex(STRING_COLUMN_NAME))).isEqualTo(string)
         assertThat(source.getBlob(source.getColumnIndex(BLOB_COLUMN_NAME))).isEqualTo(blob)
         assertThat(source.moveToNext()).isFalse()
+        source.close()
     }
 
 

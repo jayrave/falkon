@@ -26,6 +26,8 @@ interface NativeQueryExecutor {
     /**
      * Even though [Source] is asked to be returned, make sure to execute the query
      * using native methods
+     *
+     * *NOTE:* Returned [Source] should be closed by the caller
      */
     fun execute(query: String): Source
 }

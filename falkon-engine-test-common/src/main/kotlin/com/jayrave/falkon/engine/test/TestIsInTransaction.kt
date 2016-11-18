@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestIsInTransaction private constructor(private val engineCore: EngineCore) {
@@ -14,7 +15,10 @@ class TestIsInTransaction private constructor(private val engineCore: EngineCore
 
         engineCore.executeInTransaction {
             assertThat(engineCore.isInTransaction()).isTrue()
-            engineCore.compileSql("CREATE TABLE $tableName ($columnName INTEGER)").execute()
+            engineCore.compileSql(
+                    "CREATE TABLE $tableName ($columnName INTEGER)"
+            ).safeCloseAfterExecution()
+
             assertThat(engineCore.isInTransaction()).isTrue()
         }
 
@@ -23,7 +27,10 @@ class TestIsInTransaction private constructor(private val engineCore: EngineCore
 
         engineCore.executeInTransaction {
             assertThat(engineCore.isInTransaction()).isTrue()
-            engineCore.compileInsert("INSERT INTO $tableName ($columnName) VALUES (1)").execute()
+            engineCore.compileInsert(
+                    "INSERT INTO $tableName ($columnName) VALUES (1)"
+            ).safeCloseAfterExecution()
+
             assertThat(engineCore.isInTransaction()).isTrue()
         }
 
