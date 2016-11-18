@@ -8,9 +8,8 @@ fun ResultSet.extractRecordsAsMap(columnNamesInQuery: List<String>): List<Map<St
     while (!isAfterLast) {
         allRecords.add(columnNamesInQuery.associate { columnName ->
             val columnIndex = findColumn(columnName)
-            getObject(columnIndex)
             val string: String? = when {
-                wasNull() -> null
+                getObject(columnIndex) == null -> null
                 else -> getString(columnIndex)
             }
 
