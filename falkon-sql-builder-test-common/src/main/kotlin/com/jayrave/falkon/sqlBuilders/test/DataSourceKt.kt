@@ -2,7 +2,6 @@ package com.jayrave.falkon.sqlBuilders.test
 
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.util.*
 import javax.sql.DataSource
 
 fun DataSource.execute(sql: List<String>) {
@@ -13,9 +12,12 @@ fun DataSource.execute(sql: List<String>) {
 fun DataSource.execute(sql: String) {
     val connection = connection
     val preparedStatement = connection.prepareStatement(sql)
-    preparedStatement.execute()
-    preparedStatement.close()
-    connection.close()
+    try {
+        preparedStatement.execute()
+    } finally {
+        preparedStatement.close()
+        connection.close()
+    }
 }
 
 
@@ -40,7 +42,7 @@ fun <R> DataSource.executeQuery(
     return privateExecute(sql, {}) { ps ->
         argsBinder.invoke(ps)
         val resultSet = ps.executeQuery()
-        resultSet.first()
+        resultSet.next() // To point to the first row in the result set
         val result = op.invoke(resultSet)
         resultSet.close()
         result
@@ -77,10 +79,11 @@ private fun <R> DataSource.privateExecute(
 
     val connection = connection
     val preparedStatement = connection.prepareStatement(sql)
-    argsBinder.invoke(preparedStatement)
-    val result = executor.invoke(preparedStatement)
-    preparedStatement.close()
-    connection.close()
-
-    return result
+    return try {
+        argsBinder.invoke(preparedStatement)
+        executor.invoke(preparedStatement)
+    } finally {
+        preparedStatement.close()
+        connection.close()
+    }
 }
