@@ -15,9 +15,21 @@ class SqliteQuerySqlBuilder : QuerySqlBuilder {
             groupBy: Iterable<String>?, orderBy: Iterable<OrderInfo>?, limit: Long?,
             offset: Long?): String {
 
+        // https://www.sqlite.org/lang_select.html
+        // Sqlite `OFFSET` is a part of its `LIMIT` expression. So, if an offset is
+        // asked for without giving a limit, use a negative value for limit which
+        // denotes having no upper bound
+        val sqliteLimit = when {
+            limit != null -> limit
+            else -> when {
+                offset != null -> -1L
+                else -> null
+            }
+        }
+
         return SimpleQuerySqlBuilder.build(
                 tableName, distinct, columns, joinInfos, whereSections, groupBy,
-                orderBy, limit, offset
+                orderBy, sqliteLimit, offset
         )
     }
 }
