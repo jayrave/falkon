@@ -22,12 +22,12 @@ class DeleteBuilderImplTest {
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
         // build & compile
-        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         val actualDelete = deleteBuilder.build()
         deleteBuilder.compile()
 
         // build expected delete
-        val expectedSql = deleteSqlBuilder.build(table.name, null, ARG_PLACEHOLDER)
+        val expectedSql = deleteSqlBuilder.build(table.name, null)
         val expectedDelete = DeleteImpl(table.name, expectedSql, emptyList())
 
         // Verify
@@ -48,15 +48,14 @@ class DeleteBuilderImplTest {
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
         // build & compile
-        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         deleteBuilder.where().eq(table.int, 5)
         val actualDelete = deleteBuilder.build()
         deleteBuilder.compile()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name)),
-                ARG_PLACEHOLDER
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name))
         )
 
         val expectedDelete = DeleteImpl(table.name, expectedSql, listOf(5))
@@ -80,15 +79,14 @@ class DeleteBuilderImplTest {
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
         // build & compile
-        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         deleteBuilder.where().eq(table.int, 5)
         val actualDelete = deleteBuilder.build()
         deleteBuilder.compile()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name)),
-                ARG_PLACEHOLDER
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name))
         )
 
         val expectedDelete = DeleteImpl(table.name, expectedSql, listOf(5))
@@ -112,7 +110,7 @@ class DeleteBuilderImplTest {
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
         // build & compile
-        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         deleteBuilder.where().eq(table.int, 5)
         deleteBuilder.where().eq(table.string, "test")
         val actualDelete = deleteBuilder.build()
@@ -120,8 +118,7 @@ class DeleteBuilderImplTest {
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
-                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name)),
-                ARG_PLACEHOLDER
+                table.name, listOf(OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name))
         )
 
         val expectedDelete = DeleteImpl(table.name, expectedSql, listOf("test"))
@@ -144,7 +141,7 @@ class DeleteBuilderImplTest {
         val engine = bundle.engine
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER).where().eq(table.int, 5)
+        DeleteBuilderImpl(table, deleteSqlBuilder).where().eq(table.int, 5)
         assertThat(engine.compiledStatementsForDelete).isEmpty()
     }
 
@@ -156,7 +153,7 @@ class DeleteBuilderImplTest {
         val engine = bundle.engine
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
-        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder, ARG_PLACEHOLDER)
+        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         deleteBuilder.where()
                 .eq(table.short, 5.toShort()).and()
                 .eq(table.int, 6).and()
@@ -189,7 +186,7 @@ class DeleteBuilderImplTest {
                         OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.name),
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name)
-                ), ARG_PLACEHOLDER
+                )
         )
 
         val expectedDelete = DeleteImpl(
@@ -232,8 +229,6 @@ class DeleteBuilderImplTest {
 
 
     companion object {
-        private const val ARG_PLACEHOLDER = "?"
-
         private fun assertEquality(actualDelete: Delete, expectedDelete: Delete) {
             assertThat(actualDelete.tableName).isEqualTo(expectedDelete.tableName)
             assertThat(actualDelete.sql).isEqualTo(expectedDelete.sql)

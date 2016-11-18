@@ -12,12 +12,12 @@ import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuil
 import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class QueryBuilderImpl<T : Any>(
-        override val table: Table<T, *>, querySqlBuilder: QuerySqlBuilder,
-        argPlaceholder: String) : QueryBuilder<T> {
+        override val table: Table<T, *>, querySqlBuilder: QuerySqlBuilder) :
+        QueryBuilder<T> {
 
     private val lenientQueryBuilderImpl: LenientQueryBuilderImpl
     init {
-        lenientQueryBuilderImpl = LenientQueryBuilderImpl(querySqlBuilder, argPlaceholder)
+        lenientQueryBuilderImpl = LenientQueryBuilderImpl(querySqlBuilder)
         lenientQueryBuilderImpl.fromTable(table)
     }
 

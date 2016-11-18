@@ -1,0 +1,36 @@
+apply plugin: 'kotlin'
+
+sourceCompatibility = javaVersions.source
+targetCompatibility = javaVersions.target
+
+dependencies {
+    compileOnly falkonModules.engine
+    compileOnly falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilderCommon // TODO - repackage this using jarjar
+    compile libraries.kotlinStdlib
+
+    testCompile falkonModules.engine
+    testCompile falkonModules.sqlBuilder
+    testCompile falkonModules.sqlBuilderTestCommon
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.sqliteJdbc
+}
+
+ext {
+    mavenInstallInfo = [
+            artifactId: 'falkon-sql-builder-sqlite',
+            name: 'FalkonSqlBuilderSqlite',
+            description: 'Provides SQL building capabilities for falkon for SQLite database',
+            packagingType: 'jar'
+    ]
+
+    bintrayUploadInfo = [
+            'name': mavenInstallInfo.artifactId,
+            'description': mavenInstallInfo.description
+    ]
+}
+
+// Scripts should be applied after defining the required properties
+apply from: '../gradle/falkon-maven-install.gradle'
+apply from: '../gradle/falkon-bintray-upload.gradle'

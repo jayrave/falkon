@@ -75,7 +75,7 @@ class ColumnImplTest {
         private fun nullableUuidConverter() = NullableUuidConverter()
 
         private fun <C> buildColumnImplForTest(converter: Converter<C>): Column<Any, C> {
-            return ColumnImpl(mock(), "test", mock(), converter)
+            return ColumnImpl(mock(), "test", false, mock(), converter)
         }
 
 

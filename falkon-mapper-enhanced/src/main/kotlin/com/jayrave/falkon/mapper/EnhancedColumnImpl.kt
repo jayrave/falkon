@@ -5,12 +5,13 @@ import com.jayrave.falkon.engine.TypeTranslator
 import com.jayrave.falkon.sqlBuilders.lib.ColumnInfo
 
 class EnhancedColumnImpl<T : Any, C>(
-        table: Table<T, *>, name: String, override val maxSize: Int?,
-        override val isNonNull: Boolean, propertyExtractor: PropertyExtractor<T, C>,
-        converter: Converter<C>, typeTranslator: TypeTranslator) :
+        table: Table<T, *>, name: String, override val isId: Boolean, override val maxSize: Int?,
+        override val isNonNull: Boolean, override val autoIncrement: Boolean,
+        propertyExtractor: PropertyExtractor<T, C>, converter: Converter<C>,
+        typeTranslator: TypeTranslator) :
         EnhancedColumn<T, C>, ColumnInfo {
 
-    private val delegate = ColumnImpl(table, name, propertyExtractor, converter)
+    private val delegate = ColumnImpl(table, name, isId, propertyExtractor, converter)
     override val dataType: String
 
     // ------------------------ Start of delegated properties & methods ----------------------------

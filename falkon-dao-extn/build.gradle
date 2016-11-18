@@ -15,7 +15,7 @@ dependencies {
     testCompile falkonModules.mapper
     testCompile falkonModules.mapperBasic
     testCompile falkonModules.sqlBuilder
-    testCompile falkonModules.sqlBuilderSimple
+    testCompile falkonModules.sqlBuilderH2
     testCompile libraries.assertJ
     testCompile libraries.h2
     testCompile libraries.jUnit

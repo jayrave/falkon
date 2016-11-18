@@ -26,7 +26,6 @@ interface JoinInfo {
     enum class Type {
         INNER_JOIN,
         LEFT_OUTER_JOIN,
-        RIGHT_OUTER_JOIN,
-        FULL_OUTER_JOIN
+        RIGHT_OUTER_JOIN
     }
 }

@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileUpdateWithoutBoundArgs private constructor(
@@ -18,13 +19,14 @@ class TestCompileUpdateWithoutBoundArgs private constructor(
         // Update stuff using engine
         engineCore.compileUpdate(
                 "UPDATE $tableName SET $columnName = 5 WHERE $columnName = 1"
-        ).execute()
+        ).safeCloseAfterExecution()
 
         // Query using native methods & perform assertions
         val source = nativeQueryExecutor.execute("SELECT * FROM $tableName")
         assertThat(source.moveToFirst()).isTrue()
         assertThat(source.getInt(source.getColumnIndex(columnName))).isEqualTo(5)
         assertThat(source.moveToNext()).isFalse()
+        source.close()
     }
 
 

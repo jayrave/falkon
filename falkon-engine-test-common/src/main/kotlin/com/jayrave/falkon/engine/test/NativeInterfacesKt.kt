@@ -8,6 +8,7 @@ fun NativeQueryExecutor.getCount(tableName: String): Int {
     assertThat(source.moveToFirst()).isTrue()
     val count = source.getInt(source.getColumnIndex("count"))
     assertThat(source.moveToNext()).isFalse()
+    source.close()
 
     return count
 }

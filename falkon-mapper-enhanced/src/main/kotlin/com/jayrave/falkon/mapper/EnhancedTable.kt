@@ -8,8 +8,9 @@ import com.jayrave.falkon.dao.Dao
  */
 interface EnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>> : Table<T, ID> {
 
-    override val idColumn: EnhancedColumn<T, ID>
     override val allColumns: Collection<EnhancedColumn<T, *>>
+    override val idColumns: Collection<EnhancedColumn<T, *>>
+    override val nonIdColumns: Collection<EnhancedColumn<T, *>>
 
     /**
      * DAO associated with this table
@@ -17,8 +18,10 @@ interface EnhancedTable<T : Any, ID : Any, out D : Dao<T, ID>> : Table<T, ID> {
     val dao: D
 
     /**
-     * When called, implementations should build a CREATE TABLE SQL statement
-     * for this table & return it
+     * When called, implementations should build statements to create this table
+     *
+     * *NOTE:* If multiple statements are returned, they should be executed atomically i.e.,
+     * either all the statements must be executed or none of them should be
      */
-    fun buildCreateTableSql(): String
+    fun buildCreateTableSql(): List<String>
 }

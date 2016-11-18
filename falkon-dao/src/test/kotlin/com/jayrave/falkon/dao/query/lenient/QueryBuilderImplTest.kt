@@ -681,7 +681,7 @@ class QueryBuilderImplTest {
 
     companion object {
         private fun Bundle.newBuilder(): QueryBuilderImpl {
-            return QueryBuilderImpl(querySqlBuilder, ARG_PLACEHOLDER)
+            return QueryBuilderImpl(querySqlBuilder)
         }
     }
 }

@@ -12,8 +12,8 @@ import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
 import com.jayrave.falkon.dao.where.AdderOrEnder as WhereAdderOrEnder
 
 internal class DeleteBuilderImpl<T : Any>(
-        override val table: Table<T, *>, private val deleteSqlBuilder: DeleteSqlBuilder,
-        private val argPlaceholder: String) : DeleteBuilder<T> {
+        override val table: Table<T, *>, private val deleteSqlBuilder: DeleteSqlBuilder) :
+        DeleteBuilder<T> {
 
     private var whereBuilder: WhereBuilderImpl<T, AdderOrEnder<T>>? = null
 
@@ -26,7 +26,7 @@ internal class DeleteBuilderImpl<T : Any>(
         val where: Where? = whereBuilder?.build()
         return DeleteImpl(
                 table.name,
-                deleteSqlBuilder.build(table.name, where?.whereSections, argPlaceholder),
+                deleteSqlBuilder.build(table.name, where?.whereSections),
                 where?.arguments ?: emptyList()
         )
     }

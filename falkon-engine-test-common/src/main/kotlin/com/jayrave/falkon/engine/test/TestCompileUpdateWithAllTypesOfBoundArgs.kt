@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
@@ -21,7 +22,7 @@ class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
-                .execute()
+                .safeCloseAfterExecution()
 
         // Execute update using engine
         val numberOfRowsAffected = engineCore.compileUpdate(
@@ -56,7 +57,7 @@ class TestCompileUpdateWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(12, 9.0)
                 .bindString(13, "test 10")
                 .bindBlob(14, byteArrayOf(11))
-                .execute()
+                .safeCloseAfterExecution()
 
         assertThat(numberOfRowsAffected).isEqualTo(1)
         assertOneRowWithAllTypesUsingDataSource(12, 13, 14, 15F, 16.0, "test 17", byteArrayOf(18))

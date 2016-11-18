@@ -20,15 +20,12 @@ class InsertBuilderImplTest {
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         // build & compile
-        val builder = InsertBuilderImpl(table, insertSqlBuilder, ARG_PLACEHOLDER).set(table.int, 5)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder).set(table.int, 5)
         val actualInsert = builder.build()
         builder.compile()
 
         // build expected insert
-        val expectedSql = insertSqlBuilder.build(
-                table.name, listOf(table.int.name), ARG_PLACEHOLDER
-        )
-
+        val expectedSql = insertSqlBuilder.build(table.name, listOf(table.int.name))
         val expectedInsert = InsertImpl(table.name, expectedSql, listOf(5))
 
         // Verify
@@ -50,7 +47,7 @@ class InsertBuilderImplTest {
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         // build & compile
-        val builder = InsertBuilderImpl(table, insertSqlBuilder, ARG_PLACEHOLDER)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder)
                 .set(table.int, 5)
                 .set(table.string, "test")
 
@@ -59,7 +56,7 @@ class InsertBuilderImplTest {
 
         // build expected insert
         val expectedSql = insertSqlBuilder.build(
-                table.name, listOf(table.int.name, table.string.name), ARG_PLACEHOLDER
+                table.name, listOf(table.int.name, table.string.name)
         )
 
         val expectedInsert = InsertImpl(table.name, expectedSql, listOf(5, "test"))
@@ -86,7 +83,7 @@ class InsertBuilderImplTest {
         // build & compile
         val initialValue = 5
         val overwritingValue = initialValue + 1
-        val builder = InsertBuilderImpl(table, insertSqlBuilder, ARG_PLACEHOLDER)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder)
                 .set(table.int, initialValue)
                 .set(table.int, overwritingValue)
 
@@ -94,10 +91,7 @@ class InsertBuilderImplTest {
         builder.compile()
 
         // build expected insert
-        val expectedSql = insertSqlBuilder.build(
-                table.name, listOf(table.int.name), ARG_PLACEHOLDER
-        )
-
+        val expectedSql = insertSqlBuilder.build(table.name, listOf(table.int.name))
         val expectedInsert = InsertImpl(table.name, expectedSql, listOf(6))
 
         // Verify
@@ -118,7 +112,7 @@ class InsertBuilderImplTest {
         val engine = bundle.engine
         val insertSqlBuilder = bundle.insertSqlBuilder
 
-        InsertBuilderImpl(table, insertSqlBuilder, ARG_PLACEHOLDER).set(table.int, 5)
+        InsertBuilderImpl(table, insertSqlBuilder).set(table.int, 5)
         assertThat(engine.compiledStatementsForInsert).isEmpty()
     }
 
@@ -131,7 +125,7 @@ class InsertBuilderImplTest {
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         // build & compile
-        val builder = InsertBuilderImpl(table, insertSqlBuilder, ARG_PLACEHOLDER)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder)
                 .set(table.short, 5.toShort())
                 .set(table.int, 6)
                 .set(table.long, 7L)
@@ -151,7 +145,7 @@ class InsertBuilderImplTest {
                         table.short.name, table.int.name, table.long.name, table.float.name,
                         table.double.name, table.string.name, table.blob.name,
                         table.nullableInt.name
-                ), ARG_PLACEHOLDER
+                )
         )
 
         val expectedInsert = InsertImpl(
@@ -194,8 +188,6 @@ class InsertBuilderImplTest {
 
 
     companion object {
-        private const val ARG_PLACEHOLDER = "?"
-
         private fun assertEquality(actualInsert: Insert, expectedInsert: Insert) {
             assertThat(actualInsert.tableName).isEqualTo(expectedInsert.tableName)
             assertThat(actualInsert.sql).isEqualTo(expectedInsert.sql)

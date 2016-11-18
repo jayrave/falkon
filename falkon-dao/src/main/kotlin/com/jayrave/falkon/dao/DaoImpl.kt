@@ -17,7 +17,6 @@ import com.jayrave.falkon.dao.query.lenient.QueryBuilder as LenientQueryBuilder
 import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuilderImpl
 
 /**
- * @param [argPlaceholder] to use as placeholders to prevent SQL injection
  * @param [insertSqlBuilder] to build SQL `INSERT INTO...` statements from components
  * @param [updateSqlBuilder] to build SQL `UPDATE...` statements from components
  * @param [deleteSqlBuilder] to build SQL `DELETE FROM...` statements from components
@@ -25,32 +24,29 @@ import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuil
  */
 open class DaoImpl<T : Any, ID : Any>(
         override val table: Table<T, ID>,
-        private var argPlaceholder: String,
         private val insertSqlBuilder: InsertSqlBuilder,
         private val updateSqlBuilder: UpdateSqlBuilder,
         private val deleteSqlBuilder: DeleteSqlBuilder,
         private val querySqlBuilder: QuerySqlBuilder) : Dao<T, ID> {
 
     override final fun insertBuilder(): InsertBuilder<T> = InsertBuilderImpl(
-            table, insertSqlBuilder, argPlaceholder
+            table, insertSqlBuilder
     )
 
     override final fun updateBuilder(): UpdateBuilder<T> = UpdateBuilderImpl(
-            table, updateSqlBuilder, argPlaceholder
+            table, updateSqlBuilder
     )
 
     override final fun deleteBuilder(): DeleteBuilder<T>  = DeleteBuilderImpl(
-            table, deleteSqlBuilder, argPlaceholder
+            table, deleteSqlBuilder
     )
 
     override final fun queryBuilder(): QueryBuilder<T> = QueryBuilderImpl(
-            table, querySqlBuilder, argPlaceholder
+            table, querySqlBuilder
     )
 
     /**
      * Use this when [QueryBuilder] is too restrictive
      */
-    fun lenientQueryBuilder(): LenientQueryBuilder = lenientQueryBuilder(
-            querySqlBuilder, argPlaceholder
-    )
+    fun lenientQueryBuilder(): LenientQueryBuilder = lenientQueryBuilder(querySqlBuilder)
 }

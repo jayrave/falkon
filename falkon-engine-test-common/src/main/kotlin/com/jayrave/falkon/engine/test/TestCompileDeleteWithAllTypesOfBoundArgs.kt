@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
@@ -21,7 +22,7 @@ class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
-                .execute()
+                .safeCloseAfterExecution()
 
         // Execute delete using engine
         val numberOfRowsAffected = engineCore.compileDelete(
@@ -41,7 +42,7 @@ class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
-                .execute()
+                .safeCloseAfterExecution()
 
         assertThat(numberOfRowsAffected).isEqualTo(1)
         assertThat(nativeQueryExecutor.getCount(TABLE_NAME)).isEqualTo(0)

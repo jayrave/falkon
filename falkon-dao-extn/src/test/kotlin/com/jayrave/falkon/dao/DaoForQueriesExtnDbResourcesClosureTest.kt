@@ -20,21 +20,21 @@ class DaoForQueriesExtnDbResourcesClosureTest {
     @Test
     fun testFindByIdClosesSourceAndCompiledStatementForQueryOnSuccessfulExecution() {
         testSourceAndCompiledStatementForQueryIsClosedOnSuccessfulExecution {
-            it.dao.findById(UUID.randomUUID())
+            it.dao.findById(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()))
         }
     }
 
     @Test
     fun testFindByIdClosesSourceAndCompiledStatementForQueryEvenOnSourceException() {
         testSourceAndCompiledStatementForQueryAreClosedEventOnSourceException {
-            it.dao.findById(UUID.randomUUID())
+            it.dao.findById(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()))
         }
     }
 
     @Test
     fun testFindByIdClosesCompiledStatementForQueryEvenOnCompiledStatementException() {
         testCompiledStatementForQueryIsClosedEventOnCompiledStatementException {
-            it.dao.findById(UUID.randomUUID())
+            it.dao.findById(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()))
         }
     }
 

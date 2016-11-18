@@ -2,6 +2,7 @@ package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.TypeTranslator
+import java.lang.reflect.Type
 
 interface TableConfiguration {
 
@@ -24,10 +25,24 @@ interface TableConfiguration {
     /**
      * Implementations should return an appropriate converter or throw
      */
-    fun <R> getConverterForNullableType(clazz: Class<R>): Converter<R>?
+    fun <R> getConverterForNullableValuesOf(clazz: Class<R>): Converter<R>?
+
+    /**
+     * A more flexible, less strict version of [getConverterForNullableValuesOf] that takes
+     * in a class. Prefer to use this only if [getConverterForNullableValuesOf] doesn't cut it
+     * as this method is not type-safe
+     */
+    fun <R> getConverterForNullableValuesOf(type: Type): Converter<R>?
 
     /**
      * Implementations should return an appropriate converter or throw
      */
-    fun <R : Any> getConverterForNonNullType(clazz: Class<R>): Converter<R>?
+    fun <R : Any> getConverterForNonNullValuesOf(clazz: Class<R>): Converter<R>?
+
+    /**
+     * A more flexible, less strict version of [getConverterForNonNullValuesOf] that takes
+     * in a class. Prefer to use this only if [getConverterForNonNullValuesOf] doesn't cut it
+     * as this method is not type-safe
+     */
+    fun <R : Any> getConverterForNonNullValuesOf(type: Type): Converter<R>?
 }

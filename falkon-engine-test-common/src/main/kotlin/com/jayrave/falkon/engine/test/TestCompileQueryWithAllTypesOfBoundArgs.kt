@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
@@ -21,10 +22,10 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
-                .execute()
+                .safeCloseAfterExecution()
 
         // Execute query using engine
-        val source = engineCore.compileQuery(
+        val compiledQuery = engineCore.compileQuery(
                 "SELECT * FROM $TABLE_NAME WHERE " +
                         "$SHORT_COLUMN_NAME = ? AND " +
                         "$INT_COLUMN_NAME = ? AND " +
@@ -41,7 +42,8 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
-                .execute()
+
+        val source = compiledQuery.execute()
 
         // Assert source's result set
         assertThat(source.moveToFirst()).isEqualTo(true)
@@ -56,6 +58,8 @@ class TestCompileQueryWithAllTypesOfBoundArgs private constructor(
         )).isEqualTo(byteArrayOf(11))
 
         assertThat(source.moveToNext()).isEqualTo(false)
+        source.close()
+        compiledQuery.close()
     }
 
 

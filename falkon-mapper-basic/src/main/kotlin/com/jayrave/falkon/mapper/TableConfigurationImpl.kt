@@ -2,6 +2,7 @@ package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.TypeTranslator
+import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentHashMap
 
 class TableConfigurationImpl(
@@ -9,71 +10,98 @@ class TableConfigurationImpl(
         override val nameFormatter: NameFormatter = CamelCaseToSnakeCaseFormatter()) :
         TableConfiguration {
 
-    private val convertersForNonNullTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
-    private val convertersForNullableTypes: MutableMap<Class<*>, Converter<*>> = ConcurrentHashMap()
+    private val convertersForNonNullTypes = ConcurrentHashMap<Type, Converter<*>?>()
+    private val convertersForNullableTypes = ConcurrentHashMap<Type, Converter<*>?>()
 
-    override fun <R> getConverterForNullableType(clazz: Class<R>): Converter<R>? {
-        return getFrom(clazz, convertersForNullableTypes)
+    override fun <R> getConverterForNullableValuesOf(clazz: Class<R>): Converter<R>? {
+        return getConverterForNullableValuesOf(clazz as Type)
     }
 
 
-    override fun <R : Any> getConverterForNonNullType(clazz: Class<R>): Converter<R>? {
-        return getFrom(clazz, convertersForNonNullTypes)
+    override fun <R> getConverterForNullableValuesOf(type: Type): Converter<R>? {
+        return convertersForNullableTypes.forType(type)
+    }
+
+
+    override fun <R : Any> getConverterForNonNullValuesOf(clazz: Class<R>): Converter<R>? {
+        return getConverterForNonNullValuesOf(clazz as Type)
+    }
+
+
+    override fun <R : Any> getConverterForNonNullValuesOf(type: Type): Converter<R>? {
+        return convertersForNonNullTypes.forType(type)
     }
 
 
     /**
-     * Registers a [Converter] for the nullable form of [R] which can ge retrieved from
-     * [getConverterForNullableType]
+     * Registers a [Converter] for the nullable form of [R]. Converters registered via this
+     * method can be retrieved via both `getConverterForNullableValuesOf` for class & type
      *
-     * CAUTION: Overwrites converters that were previously registered for the same form of [R]
+     * *CAUTION:* Overwrites converters that were previously registered for the same form of [R]
      *
-     * @param wrapForNonNullTypeIfRequired - If `true` & if the non-null form of [R] doesn't have
-     * any registered converter, the passed in [converter] will be wrapped up in a
-     * [NullableToNonNullConverter] & used for non-null form of [R]
+     * @param wrapForNonNullValuesIfRequired - If `true` & if the non-null form of [R]
+     * doesn't have any registered converter, the passed in [converter] will be wrapped
+     * up in a [NullableToNonNullConverter] & used for non-null form of [R]
      */
-    fun <R> registerForNullableType(
-            clazz: Class<R>, converter: Converter<R?>, wrapForNonNullTypeIfRequired: Boolean) {
+    fun <R> registerForNullableValues(
+            clazz: Class<R>, converter: Converter<R?>,
+            wrapForNonNullValuesIfRequired: Boolean) {
 
-        putIn(clazz, converter, convertersForNullableTypes)
-        if (wrapForNonNullTypeIfRequired) {
-            synchronized(convertersForNonNullTypes) {
-                if (!convertersForNonNullTypes.contains(clazz)) {
-                    putIn(clazz, NullableToNonNullConverter(converter), convertersForNonNullTypes)
-                }
-            }
+        registerForNullableValues(clazz as Type, converter, wrapForNonNullValuesIfRequired)
+    }
+
+
+    /**
+     * A more flexible, less strict version of [registerForNullableValues] that takes
+     * in a class. Prefer to use this only if [registerForNullableValues] doesn't cut it
+     * as this method is not type-safe
+     *
+     * Converters registered via this method can be retrieved via both
+     * `getConverterForNullableValuesOf` for class & type
+     *
+     * @see registerForNullableValues
+     */
+    fun <R> registerForNullableValues(
+            type: Type, converter: Converter<R?>,
+            wrapForNonNullValuesIfRequired: Boolean) {
+
+        convertersForNullableTypes[type] = converter
+        if (wrapForNonNullValuesIfRequired) {
+            convertersForNonNullTypes.putIfAbsent(type, NullableToNonNullConverter(converter))
         }
     }
 
 
     /**
-     * Registers a [Converter] for the non-null form of [R] which can ge retrieved from
-     * [getConverterForNonNullType]
+     * Registers a [Converter] for the non-null form of [R]. Converters registered via this
+     * method can be retrieved via both `getConverterForNonNullValuesOf` for class & type
      *
-     * CAUTION: Overwrites converters that were previously registered for the same form of [R]
+     * *CAUTION:* Overwrites converters that were previously registered for the same form of [R]
      */
-    fun <R : Any> registerForNonNullType(clazz: Class<R>, converter: Converter<R>) {
-        putIn(clazz, converter, convertersForNonNullTypes)
+    fun <R : Any> registerForNonNullValues(clazz: Class<R>, converter: Converter<R>) {
+        registerForNonNullValues(clazz as Type, converter)
+    }
+
+
+    /**
+     * A more flexible, less strict version of [registerForNonNullValues] that takes
+     * in a class. Prefer to use this only if [registerForNonNullValues] doesn't cut it
+     * as this method is not type-safe.
+     *
+     * Converters registered via this method can be retrieved via both
+     * `getConverterForNonNullValuesOf` for class & type
+     */
+    fun <R : Any> registerForNonNullValues(type: Type, converter: Converter<R>) {
+        convertersForNonNullTypes[type] = converter
     }
 
 
 
     companion object {
 
-        private fun putIn(
-                clazz: Class<*>, converter: Converter<*>,
-                to: MutableMap<Class<*>, Converter<*>>) {
-
-            to[clazz] = converter
-        }
-
-
-        private fun <R> getFrom(
-                clazz: Class<*>, from: Map<Class<*>, Converter<*>>):
-                Converter<R>? {
-
-            @Suppress("UNCHECKED_CAST")
-            return from[clazz] as Converter<R>?
+        @Suppress("UNCHECKED_CAST")
+        private fun <R> Map<Type, Converter<*>?>.forType(type: Type): Converter<R>? {
+            return get(type) as Converter<R>?
         }
     }
 }

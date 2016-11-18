@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao
 
+import com.jayrave.falkon.dao.testLib.TableForTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -26,8 +27,8 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
-        val deletedModel1 = buildModelForTest(66, modelToBeDeleted1.id)
-        val deletedModel2 = buildModelForTest(99, modelToBeDeleted2.id)
+        val deletedModel1 = buildModelForTest(66, modelToBeDeleted1.id1, modelToBeDeleted1.id2)
+        val deletedModel2 = buildModelForTest(99, modelToBeDeleted2.id1, modelToBeDeleted2.id2)
         val numberOfRowsDeleted = table.dao.delete(deletedModel1, deletedModel2)
 
         assertAbsenceOf(table, deletedModel1, deletedModel2)
@@ -43,8 +44,8 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
-        val deletedModel1 = buildModelForTest(55, modelToBeDeleted1.id)
-        val deletedModel2 = buildModelForTest(77, modelToBeDeleted2.id)
+        val deletedModel1 = buildModelForTest(55, modelToBeDeleted1.id1, modelToBeDeleted1.id2)
+        val deletedModel2 = buildModelForTest(77, modelToBeDeleted2.id1, modelToBeDeleted2.id2)
         val numberOfRowsDeleted = table.dao.delete(listOf(deletedModel1, deletedModel2))
 
         assertAbsenceOf(table, deletedModel1, deletedModel2)
@@ -59,7 +60,9 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelUsingInsertBuilder(table, modelToBeDeleted)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
-        val numberOfRowsDeleted = table.dao.deleteById(modelToBeDeleted.id)
+        val numberOfRowsDeleted = table.dao.deleteById(
+                TableForTest.Id(modelToBeDeleted.id1, modelToBeDeleted.id2)
+        )
 
         assertAbsenceOf(table, modelToBeDeleted)
         assertThat(numberOfRowsDeleted).isEqualTo(1)
@@ -74,9 +77,12 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
-        val deletedModel1 = buildModelForTest(66, modelToBeDeleted1.id)
-        val deletedModel2 = buildModelForTest(99, modelToBeDeleted2.id)
-        val numberOfRowsDeleted = table.dao.deleteById(deletedModel1.id, deletedModel2.id)
+        val deletedModel1 = buildModelForTest(66, modelToBeDeleted1.id1, modelToBeDeleted1.id2)
+        val deletedModel2 = buildModelForTest(99, modelToBeDeleted2.id1, modelToBeDeleted2.id2)
+        val numberOfRowsDeleted = table.dao.deleteById(
+                TableForTest.Id(deletedModel1.id1, deletedModel1.id2),
+                TableForTest.Id(deletedModel2.id1, deletedModel2.id2)
+        )
 
         assertAbsenceOf(table, deletedModel1, deletedModel2)
         assertThat(numberOfRowsDeleted).isEqualTo(2)
@@ -91,9 +97,12 @@ class DaoForDeletesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelsUsingInsertBuilder(table, modelToBeDeleted1, modelToBeDeleted2)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 6)
 
-        val deletedModel1 = buildModelForTest(55, modelToBeDeleted1.id)
-        val deletedModel2 = buildModelForTest(77, modelToBeDeleted2.id)
-        val numberOfRowsDeleted = table.dao.deleteById(listOf(deletedModel1.id, deletedModel2.id))
+        val deletedModel1 = buildModelForTest(55, modelToBeDeleted1.id1, modelToBeDeleted1.id2)
+        val deletedModel2 = buildModelForTest(77, modelToBeDeleted2.id1, modelToBeDeleted2.id2)
+        val numberOfRowsDeleted = table.dao.deleteById(listOf(
+                TableForTest.Id(deletedModel1.id1, deletedModel1.id2),
+                TableForTest.Id(deletedModel2.id1, deletedModel2.id2)
+        ))
 
         assertAbsenceOf(table, deletedModel1, deletedModel2)
         assertThat(numberOfRowsDeleted).isEqualTo(2)

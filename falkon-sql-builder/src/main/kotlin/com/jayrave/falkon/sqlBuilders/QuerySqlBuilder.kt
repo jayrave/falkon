@@ -11,6 +11,8 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 interface QuerySqlBuilder {
 
     /**
+     * Builds a db specific statement similar to `SELECT ...`
+     *
      * @param [tableName] the table to query from
      * @param [distinct] `true` if you want each row to be unique, `false` otherwise
      * @param [columns] A list of which columns (with potential aliases) to return, applied in
@@ -27,7 +29,6 @@ interface QuerySqlBuilder {
      * Passing null denotes no limit
      * @param [offset] Skips the requested number of rows from the beginning and then forms
      * the result set. Passing null denotes no offset
-     * @param [argPlaceholder] to use as placeholders to prevent SQL injection
      */
     fun build(
             tableName: String,
@@ -38,7 +39,6 @@ interface QuerySqlBuilder {
             groupBy: Iterable<String>?,
             orderBy: Iterable<OrderInfo>?,
             limit: Long?,
-            offset: Long?,
-            argPlaceholder: String
+            offset: Long?
     ): String
 }

@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileSqlWithoutBoundArgs private constructor(
@@ -12,7 +13,9 @@ class TestCompileSqlWithoutBoundArgs private constructor(
         val columnName = "column_name_1"
 
         // Execute using engine
-        engineCore.compileSql("CREATE TABLE $tableName ($columnName INTEGER)").execute()
+        engineCore.compileSql(
+                "CREATE TABLE $tableName ($columnName INTEGER)"
+        ).safeCloseAfterExecution()
 
         // Insert using native method
         nativeSqlExecutor.execute("INSERT INTO $tableName ($columnName) VALUES (1)")

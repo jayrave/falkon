@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao
 
+import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.testEquality
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -13,7 +14,9 @@ class DaoForQueriesIntegrationTests : BaseClassForIntegrationTests() {
         insertModelUsingInsertBuilder(table, modelToBeQueried)
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 7)
 
-        val queriedModel = table.dao.findById(modelToBeQueried.id)
+        val queriedModel = table.dao.findById(
+                TableForTest.Id(modelToBeQueried.id1, modelToBeQueried.id2)
+        )
 
         assertThat(queriedModel).isNotNull()
         assertThat(modelToBeQueried.testEquality(queriedModel!!)).isTrue()
@@ -24,8 +27,10 @@ class DaoForQueriesIntegrationTests : BaseClassForIntegrationTests() {
     @Test
     fun testFindByIdReturnsNullOnIdOfNonExistingModel() {
         insertAdditionalRandomModelsUsingInsertBuilder(table, count = 8)
-        assertThat(table.dao.findById(UUID.randomUUID())).isNull()
         assertThat(getNumberOfModelsInTableForTest(table)).isEqualTo(8)
+        assertThat(
+                table.dao.findById(TableForTest.Id(UUID.randomUUID(), UUID.randomUUID()))
+        ).isNull()
     }
 
 

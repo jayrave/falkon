@@ -3,10 +3,10 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.engine.Type
 
 /**
- * [converter] A converter between the SQL type and `C`
+ * [converter] A converter between the SQL type and [C]
  */
 class ColumnImpl<T : Any, C>(
-        override val table: Table<T, *>, override val name: String,
+        override val table: Table<T, *>, override val name: String, override val isId: Boolean,
         private val propertyExtractor: PropertyExtractor<T, C>,
         private val converter: Converter<C>) : Column<T, C> {
 

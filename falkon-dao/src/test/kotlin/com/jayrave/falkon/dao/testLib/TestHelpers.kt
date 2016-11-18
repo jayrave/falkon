@@ -26,8 +26,8 @@ internal class TableForTest(
         name: String = "test", configuration: TableConfiguration = defaultTableConfiguration()) :
         BaseTable<ModelForTest, Int>(name, configuration) {
 
-    override val idColumn: Column<ModelForTest, Int> = mock()
-    override fun create(value: Value<ModelForTest>) = throw UnsupportedOperationException()
+    override fun <C> extractFrom(id: Int, column: Column<ModelForTest, C>) = throw exception()
+    override fun create(value: Value<ModelForTest>) = throw exception()
 
     val short = col(ModelForTest::short)
     val int = col(ModelForTest::int)
@@ -43,6 +43,8 @@ internal class TableForTest(
     val nullableDouble = col(ModelForTest::nullableDouble)
     val nullableString = col(ModelForTest::nullableString)
     val nullableBlob = col(ModelForTest::nullableBlob)
+
+    private fun exception() = UnsupportedOperationException()
 }
 
 

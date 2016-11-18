@@ -15,8 +15,6 @@ import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection
 import org.assertj.core.api.Assertions
 
-internal const val ARG_PLACEHOLDER = "?"
-
 internal fun Column<*, *>.buildSelectColumnInfoForTest(): SelectColumnInfo {
     return SelectColumnInfoForTest(qualifiedName, uniqueNameInDb)
 }
@@ -46,8 +44,7 @@ internal fun buildQuerySql(
     return querySqlBuilder.build(
             tableName = tableName, distinct = distinct, columns = columns,
             joinInfos = joinInfos, whereSections = whereSections, groupBy = groupBy,
-            orderBy = orderBy, limit = limit, offset = offset,
-            argPlaceholder = ARG_PLACEHOLDER
+            orderBy = orderBy, limit = limit, offset = offset
     )
 }
 

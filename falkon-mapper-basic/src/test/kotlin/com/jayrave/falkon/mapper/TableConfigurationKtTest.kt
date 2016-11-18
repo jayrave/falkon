@@ -13,82 +13,107 @@ class TableConfigurationKtTest {
         configuration.registerDefaultConverters()
 
         // Check primitives
-        assertThat(configuration.getConverterForNonNullType(Byte::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Byte::class.javaPrimitiveType!!
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Char::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Char::class.javaPrimitiveType!!
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Short::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Short::class.javaPrimitiveType!!
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Int::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Int::class.javaPrimitiveType!!
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Long::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Long::class.javaPrimitiveType!!
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Float::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Float::class.javaPrimitiveType!!
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Double::class.javaPrimitiveType!!))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Double::class.javaPrimitiveType!!
+        )).isNotNull()
 
         // Check non-null form of boxed primitives
-        assertThat(configuration.getConverterForNonNullType(Byte::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Byte::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Char::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Char::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Short::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Short::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Int::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Int::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Long::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Long::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Float::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Float::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(Double::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                Double::class.javaObjectType
+        )).isNotNull()
 
         // Check nullable form of boxed primitives
-        assertThat(configuration.getConverterForNullableType(Byte::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Byte::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(Char::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Char::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(Short::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Short::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(Int::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Int::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(Long::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Long::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(Float::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Float::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(Double::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                Double::class.javaObjectType
+        )).isNotNull()
 
         // Check the following => String, String?, ByteArray, ByteArray?
-        assertThat(configuration.getConverterForNonNullType(String::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                String::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(String::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                String::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNonNullType(ByteArray::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNonNullValuesOf(
+                ByteArray::class.javaObjectType
+        )).isNotNull()
 
-        assertThat(configuration.getConverterForNullableType(ByteArray::class.javaObjectType))
-                .isNotNull()
+        assertThat(configuration.getConverterForNullableValuesOf(
+                ByteArray::class.javaObjectType
+        )).isNotNull()
     }
 }

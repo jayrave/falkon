@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestCompileInsertWithoutBoundArgs private constructor(
@@ -15,8 +16,13 @@ class TestCompileInsertWithoutBoundArgs private constructor(
         nativeSqlExecutor.execute("CREATE TABLE $tableName ($columnName INTEGER)")
 
         // Insert stuff using engine
-        engineCore.compileInsert("INSERT INTO $tableName ($columnName) VALUES (1)").execute()
-        engineCore.compileInsert("INSERT INTO $tableName ($columnName) VALUES (2)").execute()
+        engineCore.compileInsert(
+                "INSERT INTO $tableName ($columnName) VALUES (1)"
+        ).safeCloseAfterExecution()
+
+        engineCore.compileInsert(
+                "INSERT INTO $tableName ($columnName) VALUES (2)"
+        ).safeCloseAfterExecution()
 
         // Query via native methods & perform assertions
         assertThat(nativeQueryExecutor.getCount(tableName)).isEqualTo(2)

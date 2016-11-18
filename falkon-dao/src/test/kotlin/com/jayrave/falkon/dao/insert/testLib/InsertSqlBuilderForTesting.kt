@@ -4,9 +4,13 @@ import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
 
 class InsertSqlBuilderForTesting : InsertSqlBuilder {
 
-    override fun build(
-            tableName: String, columns: Iterable<String>,
-            argPlaceholder: String): String {
+    override val isInsertOrReplaceSupported: Boolean = false
+
+    override fun build(tableName: String, columns: Iterable<String>): String {
         return "tableName: $tableName; columns: ${columns.joinToString()}"
+    }
+
+    override fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String {
+        throw UnsupportedOperationException("not implemented")
     }
 }

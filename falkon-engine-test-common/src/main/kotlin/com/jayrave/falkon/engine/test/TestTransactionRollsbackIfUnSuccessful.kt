@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
 class TestTransactionRollsbackIfUnSuccessful private constructor(
@@ -18,7 +19,7 @@ class TestTransactionRollsbackIfUnSuccessful private constructor(
         val wasExceptionThrown: Boolean
         try {
             engineCore.executeInTransaction {
-                engineCore.compileUpdate("DELETE FROM $tableName").execute()
+                engineCore.compileUpdate("DELETE FROM $tableName").safeCloseAfterExecution()
                 throw RuntimeException()
             }
 

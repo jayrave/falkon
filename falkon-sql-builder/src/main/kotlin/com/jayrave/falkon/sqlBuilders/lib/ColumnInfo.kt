@@ -18,7 +18,18 @@ interface ColumnInfo {
     val maxSize: Int?
 
     /**
+     * Whether this is (or part of) the primary key of table this column belongs to
+     */
+    val isId: Boolean
+
+    /**
      * Whether this column allows NULL values
      */
     val isNonNull: Boolean
+
+    /**
+     * Whether an auto incremented value should be used for this column in case no
+     * explicit value is passed in
+     */
+    val autoIncrement: Boolean
 }
