@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders.h2
 import com.jayrave.falkon.sqlBuilders.test.query.*
 import org.junit.Test
 
-class H2QuerySqlBuilderTest : BaseClassForTesting() {
+class H2QuerySqlBuilderIntegrationTests : BaseClassForTesting() {
 
     private val querySqlBuilder = H2QuerySqlBuilder()
 

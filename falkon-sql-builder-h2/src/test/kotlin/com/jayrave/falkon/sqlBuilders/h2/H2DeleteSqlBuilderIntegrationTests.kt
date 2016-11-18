@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders.h2
 import com.jayrave.falkon.sqlBuilders.test.delete.TestDelete
 import org.junit.Test
 
-class H2DeleteSqlBuilderTest : BaseClassForTesting() {
+class H2DeleteSqlBuilderIntegrationTests : BaseClassForTesting() {
 
     private val deleteSqlBuilder = H2DeleteSqlBuilder()
 

@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders.h2
 import com.jayrave.falkon.sqlBuilders.test.create.*
 import org.junit.Test
 
-class H2CreateTableSqlBuilderTest : BaseClassForTesting() {
+class H2CreateTableSqlBuilderIntegrationTests : BaseClassForTesting() {
 
     private val createTableSqlBuilder = H2CreateTableSqlBuilder()
 

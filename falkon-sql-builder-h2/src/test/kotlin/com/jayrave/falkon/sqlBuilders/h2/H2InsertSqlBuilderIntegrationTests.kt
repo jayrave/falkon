@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders.h2
 import com.jayrave.falkon.sqlBuilders.test.insert.TestInsert
 import org.junit.Test
 
-class H2InsertSqlBuilderTest : BaseClassForTesting() {
+class H2InsertSqlBuilderIntegrationTests : BaseClassForTesting() {
 
     @Test
     fun `can insert both null & non null values`() {

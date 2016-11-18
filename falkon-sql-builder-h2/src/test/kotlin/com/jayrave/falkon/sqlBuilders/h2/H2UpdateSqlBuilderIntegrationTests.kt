@@ -3,7 +3,7 @@ package com.jayrave.falkon.sqlBuilders.h2
 import com.jayrave.falkon.sqlBuilders.test.update.TestUpdate
 import org.junit.Test
 
-class H2UpdateSqlBuilderTest : BaseClassForTesting() {
+class H2UpdateSqlBuilderIntegrationTests : BaseClassForTesting() {
 
     private val updateSqlBuilder = H2UpdateSqlBuilder()
 
