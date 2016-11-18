@@ -34,6 +34,7 @@ buildscript {
             mockitoKotlin   : '0.4.1',
             robolectric     : '3.0',
             rxJava1         : '1.2.0',
+            sqliteJdbc      : '3.7.2',
             supportAppCompat: baseVersions.supportLibrary,
     ]
 
@@ -84,6 +85,7 @@ ext.libraries = [
         mockitoKotlin   : "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
         robolectric     : "org.robolectric:robolectric:${librariesVersions.robolectric}",
         rxJava1         : "io.reactivex:rxjava:${librariesVersions.rxJava1}",
+        sqliteJdbc      : "org.xerial:sqlite-jdbc:${librariesVersions.sqliteJdbc}",
         supportAppCompat: "com.android.support:appcompat-v7:${librariesVersions.supportAppCompat}",
 ]
 
