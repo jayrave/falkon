@@ -1,27 +1,7 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.engine.safeCloseAfterExecution
 import com.jayrave.falkon.mapper.Column
 import java.sql.SQLException
-
-// ------------------------------------------ Delete -----------------------------------------------
-
-/**
- * @return number of rows affected by this delete operation
- */
-fun <T : Any> com.jayrave.falkon.dao.delete.DeleteBuilder<T>.delete(): Int {
-    return compile().safeCloseAfterExecution()
-}
-
-/**
- * @return number of rows affected by this delete operation
- */
-fun <T : Any> com.jayrave.falkon.dao.delete.AdderOrEnder<T>.delete(): Int {
-    return compile().safeCloseAfterExecution()
-}
-
-// ------------------------------------------ Delete -----------------------------------------------
-
 
 // ------------------------------------------- Query -----------------------------------------------
 

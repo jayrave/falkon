@@ -2,6 +2,7 @@ package com.jayrave.falkon.dao.delete
 
 import com.jayrave.falkon.dao.delete.testLib.DeleteSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
+import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForDeleteForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Type
@@ -10,12 +11,13 @@ import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
 
 class DeleteBuilderImplTest {
 
     @Test
-    fun testDeleteWithoutWhere() {
+    fun `delete without where`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -24,7 +26,7 @@ class DeleteBuilderImplTest {
         // build & compile
         val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         val actualDelete = deleteBuilder.build()
-        deleteBuilder.compile()
+        deleteBuilder.delete()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(table.name, null)
@@ -41,7 +43,7 @@ class DeleteBuilderImplTest {
 
 
     @Test
-    fun testDeleteWithWhere() {
+    fun `delete with where`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -51,7 +53,7 @@ class DeleteBuilderImplTest {
         val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
         deleteBuilder.where().eq(table.int, 5)
         val actualDelete = deleteBuilder.build()
-        deleteBuilder.compile()
+        deleteBuilder.delete()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
@@ -72,17 +74,16 @@ class DeleteBuilderImplTest {
 
 
     @Test
-    fun testDeleteViaWhere() {
+    fun `delete via where`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val deleteSqlBuilder = bundle.deleteSqlBuilder
 
         // build & compile
-        val deleteBuilder = DeleteBuilderImpl(table, deleteSqlBuilder)
-        deleteBuilder.where().eq(table.int, 5)
-        val actualDelete = deleteBuilder.build()
-        deleteBuilder.compile()
+        val builder = DeleteBuilderImpl(table, deleteSqlBuilder).where().eq(table.int, 5)
+        val actualDelete = builder.build()
+        builder.delete()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
@@ -101,9 +102,46 @@ class DeleteBuilderImplTest {
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
     }
 
+    @Test
+    fun `delete via delete builder reports correct row count & compiled statement gets closed`() {
+        testDeleteReportsCorrectRowCountAndCompiledStatementGetsClosed { table: TableForTest ->
+            DeleteBuilderImpl(table, DELETE_SQL_BUILDER).delete()
+        }
+    }
+
 
     @Test
-    fun testWhereGetsOverwrittenOnRedefining() {
+    fun `delete via adder or ender reports correct row count & compiled statement gets closed`() {
+        testDeleteReportsCorrectRowCountAndCompiledStatementGetsClosed { table: TableForTest ->
+            DeleteBuilderImpl(table, DELETE_SQL_BUILDER)
+                    .where()
+                    .eq(table.int, 6)
+                    .delete()
+        }
+    }
+
+
+    @Test
+    fun `compiled statement gets closed even if delete via delete builder throws`() {
+        testStatementGetsClosedEvenIfDeleteThrows { table: TableForTest ->
+            DeleteBuilderImpl(table, DELETE_SQL_BUILDER).delete()
+        }
+    }
+
+
+    @Test
+    fun `compiled statement gets closed even if delete via adder or ender throws`() {
+        testStatementGetsClosedEvenIfDeleteThrows { table: TableForTest ->
+            DeleteBuilderImpl(table, DELETE_SQL_BUILDER)
+                    .where()
+                    .eq(table.int, 6)
+                    .delete()
+        }
+    }
+
+
+    @Test
+    fun `where gets overwritten on redefining`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -114,7 +152,7 @@ class DeleteBuilderImplTest {
         deleteBuilder.where().eq(table.int, 5)
         deleteBuilder.where().eq(table.string, "test")
         val actualDelete = deleteBuilder.build()
-        deleteBuilder.compile()
+        deleteBuilder.delete()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
@@ -135,7 +173,7 @@ class DeleteBuilderImplTest {
 
 
     @Test
-    fun testDefiningWhereClauseDoesNotFireADeleteCall() {
+    fun `defining where clause does not fire delete`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -147,7 +185,7 @@ class DeleteBuilderImplTest {
 
 
     @Test
-    fun testAllTypesAreBoundCorrectly() {
+    fun `all types are bound correctly`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -165,7 +203,7 @@ class DeleteBuilderImplTest {
                 .gt(table.nullableInt, null)
 
         val actualDelete = deleteBuilder.build()
-        deleteBuilder.compile()
+        deleteBuilder.delete()
 
         // build expected delete
         val expectedSql = deleteSqlBuilder.build(
@@ -221,7 +259,7 @@ class DeleteBuilderImplTest {
             fun default(): Bundle {
                 val engine = EngineForTestingBuilders.createWithOneShotStatements()
                 val table = TableForTest(configuration = defaultTableConfiguration(engine))
-                return Bundle(table, engine, DeleteSqlBuilderForTesting())
+                return Bundle(table, engine, DELETE_SQL_BUILDER)
             }
         }
     }
@@ -229,10 +267,64 @@ class DeleteBuilderImplTest {
 
 
     companion object {
+
+        private val DELETE_SQL_BUILDER = DeleteSqlBuilderForTesting()
+
         private fun assertEquality(actualDelete: Delete, expectedDelete: Delete) {
             assertThat(actualDelete.tableName).isEqualTo(expectedDelete.tableName)
             assertThat(actualDelete.sql).isEqualTo(expectedDelete.sql)
             assertThat(actualDelete.arguments).containsExactlyElementsOf(expectedDelete.arguments)
+        }
+
+
+        private fun testDeleteReportsCorrectRowCountAndCompiledStatementGetsClosed(
+                deleteOp: (TableForTest) -> Int) {
+
+            val numberOfRowsAffected = 8745
+            val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                    deleteProvider = { tableName, sql ->
+                        OneShotCompiledStatementForDeleteForTest(
+                                tableName, sql, numberOfRowsAffected
+                        )
+                    }
+            )
+
+            val table = TableForTest(configuration = defaultTableConfiguration(engine))
+            assertThat(deleteOp.invoke(table)).isEqualTo(numberOfRowsAffected)
+
+            // Assert that the statement was not successfully executed but closed
+            val statement = engine.compiledStatementsForDelete.first()
+            assertThat(statement.isExecuted).isTrue()
+            assertThat(statement.isClosed).isTrue()
+        }
+
+
+        private fun testStatementGetsClosedEvenIfDeleteThrows(deleteOp: (TableForTest) -> Int) {
+            val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                    deleteProvider = { tableName, sql ->
+                        OneShotCompiledStatementForDeleteForTest(
+                                tableName, sql, shouldThrowOnExecution = true
+                        )
+                    }
+            )
+
+            var exceptionWasThrown = false
+            try {
+                deleteOp.invoke(TableForTest(configuration = defaultTableConfiguration(engine)))
+            } catch (e: Exception) {
+                exceptionWasThrown = true
+            }
+
+            when {
+                !exceptionWasThrown -> failBecauseExceptionWasNotThrown(Exception::class.java)
+                else -> {
+                    // Assert that the statement was not successfully executed but closed
+                    val statement = engine.compiledStatementsForDelete.first()
+                    assertThat(statement.wasExecutionAttempted).isTrue()
+                    assertThat(statement.isExecuted).isFalse()
+                    assertThat(statement.isClosed).isTrue()
+                }
+            }
         }
     }
 }

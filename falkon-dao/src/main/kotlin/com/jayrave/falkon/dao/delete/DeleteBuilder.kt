@@ -23,6 +23,11 @@ interface DeleteBuilder<T : Any> {
      * @return [CompiledStatement] for this [DeleteBuilder]
      */
     fun compile(): CompiledStatement<Int>
+
+    /**
+     * @return number of rows affected by this delete operation
+     */
+    fun delete(): Int
 }
 
 
@@ -32,4 +37,5 @@ interface DeleteBuilder<T : Any> {
 interface AdderOrEnder<T : Any> : com.jayrave.falkon.dao.where.AdderOrEnder<T, AdderOrEnder<T>> {
     fun build(): Delete
     fun compile(): CompiledStatement<Int>
+    fun delete(): Int
 }
