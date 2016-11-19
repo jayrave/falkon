@@ -23,16 +23,12 @@ internal class UpdateBuilderImpl<T : Any>(
     private var whereBuilder: WhereBuilderImpl<T, PredicateAdderOrEnder<T>>? = null
 
     /**
-     * Calling this method again for a column that has been already set will overwrite the
-     * existing value for that column
+     * Calling this method again for columns that have been already set will overwrite the
+     * existing values for those columns
      */
-    override fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T> {
-        return AdderOrEnderImpl().set(column, value)
-    }
-
-    private fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
-        whereBuilder = WhereBuilderImpl({ PredicateAdderOrEnderImpl(it) })
-        return whereBuilder!!
+    override fun values(setter: InnerSetter<T>.() -> Any?): AdderOrEnder<T> {
+        InnerSetterImpl().setter()
+        return AdderOrEnderImpl()
     }
 
     private fun build(): Update {
@@ -59,17 +55,9 @@ internal class UpdateBuilderImpl<T : Any>(
 
     private inner class AdderOrEnderImpl : AdderOrEnder<T> {
 
-        /**
-         * @see [UpdateBuilderImpl.set]
-         */
-        override fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T> {
-            dataConsumer.setColumnName(column.name)
-            column.putStorageFormIn(value, dataConsumer)
-            return this
-        }
-
         override fun where(): WhereBuilder<T, PredicateAdderOrEnder<T>> {
-            return this@UpdateBuilderImpl.where()
+            whereBuilder = WhereBuilderImpl({ PredicateAdderOrEnderImpl(it) })
+            return whereBuilder!!
         }
 
         override fun build(): Update {
@@ -100,6 +88,19 @@ internal class UpdateBuilderImpl<T : Any>(
 
         override fun compile(): CompiledStatement<Int> {
             return this@UpdateBuilderImpl.compile()
+        }
+    }
+
+
+    private inner class InnerSetterImpl : InnerSetter<T> {
+
+        /**
+         * Calling this method again for a column that has been already set will overwrite the
+         * existing value for that column
+         */
+        override fun <C> set(column: Column<T, C>, value: C) {
+            dataConsumer.setColumnName(column.name)
+            column.putStorageFormIn(value, dataConsumer)
         }
     }
 }

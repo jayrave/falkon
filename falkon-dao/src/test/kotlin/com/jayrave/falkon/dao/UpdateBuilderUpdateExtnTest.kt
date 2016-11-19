@@ -17,7 +17,7 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testUpdateViaAdderOrEnderReportsCorrectRowCount() {
         testUpdateReportsCorrectRowCount { table: TableForTest ->
-            UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5).update()
+            UpdateBuilderImpl(table, updateSqlBuilder).values { set(table.int, 5) }.update()
         }
     }
 
@@ -26,7 +26,7 @@ class UpdateBuilderUpdateExtnTest {
     fun testUpdateViaPredicateAdderOrEnderReportsCorrectRowCount() {
         testUpdateReportsCorrectRowCount { table: TableForTest ->
             UpdateBuilderImpl(table, updateSqlBuilder)
-                    .set(table.int, 5)
+                    .values { set(table.int, 5) }
                     .where()
                     .eq(table.int, 6)
                     .update()
@@ -37,7 +37,7 @@ class UpdateBuilderUpdateExtnTest {
     @Test
     fun testStatementGetsClosedEvenIfUpdateViaAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
-            UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5).update()
+            UpdateBuilderImpl(table, updateSqlBuilder).values { set(table.int, 5) }.update()
         }
     }
 
@@ -46,7 +46,7 @@ class UpdateBuilderUpdateExtnTest {
     fun testStatementGetsClosedEvenIfUpdateViaPredicateAdderOrEnderThrows() {
         testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
             UpdateBuilderImpl(table, updateSqlBuilder)
-                    .set(table.int, 5)
+                    .values { set(table.int, 5) }
                     .where()
                     .eq(table.int, 6)
                     .update()

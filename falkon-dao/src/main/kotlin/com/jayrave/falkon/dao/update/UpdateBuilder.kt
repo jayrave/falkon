@@ -10,20 +10,14 @@ interface UpdateBuilder<T : Any> {
     val table: Table<T, *>
 
     /**
-     * Sets the value a column should have after update. This method can be called multiple times
-     * to set values for multiple columns. Behaviour on calling this method again for a column
-     * that has already been set is implementation dependent
+     * Sets the values to update columns with. Behaviour on calling this method multiple
+     * times is implementation dependent
      */
-    fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T>
+    fun values(setter: InnerSetter<T>.() -> Any?): AdderOrEnder<T>
 }
 
 
 interface AdderOrEnder<T : Any> {
-
-    /**
-     * @see [set]
-     */
-    fun <C> set(column: Column<T, C>, value: C): AdderOrEnder<T>
 
     /**
      * Use to build the WHERE clause of UPDATE SQL statement. Each call would erase the
@@ -51,4 +45,15 @@ interface PredicateAdderOrEnder<T : Any> :
 
     fun build(): Update
     fun compile(): CompiledStatement<Int>
+}
+
+
+interface InnerSetter<T : Any> {
+
+    /**
+     * Sets the value a column should have after update. This method can be called multiple times
+     * to set values for multiple columns. Behaviour on calling this method again for a column
+     * that has already been set is implementation dependent
+     */
+    fun <C> set(column: Column<T, C>, value: C)
 }

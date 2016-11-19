@@ -14,14 +14,14 @@ import org.junit.Test
 class UpdateBuilderImplTest {
 
     @Test
-    fun testUpdateWithoutWhere() {
+    fun `update without where`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder).values { set(table.int, 5) }
         val actualUpdate = builder.build()
         builder.compile()
 
@@ -41,7 +41,7 @@ class UpdateBuilderImplTest {
 
 
     @Test
-    fun testUpdateWithWhere() {
+    fun `update with where`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -49,7 +49,7 @@ class UpdateBuilderImplTest {
 
         // build & compile
         val builder = UpdateBuilderImpl(table, updateSqlBuilder)
-                .set(table.int, 5)
+                .values { set(table.int, 5) }
                 .where()
                 .eq(table.string, "test")
 
@@ -77,16 +77,17 @@ class UpdateBuilderImplTest {
 
 
     @Test
-    fun testCanUpdateMultipleColumns() {
+    fun `update multiple columns`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
-                .set(table.int, 5)
-                .set(table.string, "test")
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder).values {
+            set(table.int, 5)
+            set(table.string, "test")
+        }
 
         val actualUpdate = builder.build()
         builder.compile()
@@ -111,7 +112,7 @@ class UpdateBuilderImplTest {
 
 
     @Test
-    fun testSetOverwritesExistingValueForTheSameColumn() {
+    fun `setting value for an already set column, overrides the existing value`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -120,9 +121,10 @@ class UpdateBuilderImplTest {
         // build & compile
         val initialValue = 5
         val overwritingValue = initialValue + 1
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
-                .set(table.int, initialValue)
-                .set(table.int, overwritingValue)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder).values {
+            set(table.int, initialValue)
+            set(table.int, overwritingValue)
+        }
 
         val actualUpdate = builder.build()
         builder.compile()
@@ -143,34 +145,35 @@ class UpdateBuilderImplTest {
 
 
     @Test
-    fun testDefiningSetAndWhereClausesDoesNotFireAnUpdateCall() {
+    fun `setting values for columns does not fire an update`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val updateSqlBuilder = bundle.updateSqlBuilder
 
-        UpdateBuilderImpl(table, updateSqlBuilder).set(table.int, 5)
+        UpdateBuilderImpl(table, updateSqlBuilder).values { set(table.int, 5) }
         assertThat(engine.compiledStatementsForUpdate).isEmpty()
     }
 
 
     @Test
-    fun testAllTypesAreBoundCorrectly() {
+    fun `all types are bound correctly`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
-                .set(table.short, 5.toShort())
-                .set(table.int, 6)
-                .set(table.long, 7L)
-                .set(table.float, 8F)
-                .set(table.double, 9.toDouble())
-                .set(table.string, "test 10")
-                .set(table.blob, byteArrayOf(11))
-                .set(table.nullableInt, null)
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder).values {
+            set(table.short, 5.toShort())
+            set(table.int, 6)
+            set(table.long, 7L)
+            set(table.float, 8F)
+            set(table.double, 9.toDouble())
+            set(table.string, "test 10")
+            set(table.blob, byteArrayOf(11))
+            set(table.nullableInt, null)
+        }
 
         val actualUpdate = builder.build()
         builder.compile()

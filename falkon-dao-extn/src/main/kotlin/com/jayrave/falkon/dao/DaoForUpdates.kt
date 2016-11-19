@@ -1,6 +1,5 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.dao.update.AdderOrEnder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Column
 
@@ -90,30 +89,24 @@ private fun <T : Any> Dao<T, *>.buildCompiledStatementForUpdate(
     throwIfColumnCollectionIsEmpty(idColumns, "id")
     throwIfColumnCollectionIsEmpty(nonIdColumns, "non-id")
 
-    val updateBuilder = updateBuilder()
-
     // Set all non-id columns
-    var adderOrEnder: AdderOrEnder<T>? = null
-    nonIdColumns.forEach {
+    val builder = updateBuilder().values {
+        nonIdColumns.forEach {
 
-        @Suppress("UNCHECKED_CAST")
-        val column = it as Column<T, Any?>
-        adderOrEnder = when (adderOrEnder) {
-            null -> updateBuilder.set(column, column.extractPropertyFrom(item))
-            else -> adderOrEnder!!.set(column, column.extractPropertyFrom(item))
+            @Suppress("UNCHECKED_CAST")
+            val column = it as Column<T, Any?>
+            set(column, column.extractPropertyFrom(item))
         }
     }
 
-    // Add predicates for id columns
-    adderOrEnder!!.where().and {
+    // Add predicates for id columns & compile
+    return builder.where().and {
         idColumns.forEach { idColumn ->
 
             @Suppress("UNCHECKED_CAST")
             eq(idColumn as Column<T, Any?>, idColumn.extractPropertyFrom(item))
         }
-    }
-
-    return adderOrEnder!!.compile()
+    }.compile()
 }
 
 
