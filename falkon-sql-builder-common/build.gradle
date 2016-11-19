@@ -4,10 +4,27 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compileOnly falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilder
     compile libraries.kotlinStdlib
 
-    testCompile falkonModules.sqlBuilder
     testCompile libraries.assertJ
     testCompile libraries.jUnit
 }
+
+ext {
+    mavenInstallInfo = [
+            artifactId: 'falkon-sql-builder-common',
+            name: 'FalkonSqlBuilderCommon',
+            description: 'Provides common SQL building capabilities for falkon',
+            packagingType: 'jar'
+    ]
+
+    bintrayUploadInfo = [
+            'name': mavenInstallInfo.artifactId,
+            'description': mavenInstallInfo.description
+    ]
+}
+
+// Scripts should be applied after defining the required properties
+apply from: '../gradle/falkon-maven-install.gradle'
+apply from: '../gradle/falkon-bintray-upload.gradle'

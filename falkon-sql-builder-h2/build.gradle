@@ -4,13 +4,11 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compileOnly falkonModules.engine
-    compileOnly falkonModules.sqlBuilder
-    compile falkonModules.sqlBuilderCommon // TODO - repackage this using jarjar
+    compile falkonModules.engine
+    compile falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilderCommon
     compile libraries.kotlinStdlib
 
-    testCompile falkonModules.engine
-    testCompile falkonModules.sqlBuilder
     testCompile falkonModules.sqlBuilderTestCommon
     testCompile libraries.assertJ
     testCompile libraries.h2

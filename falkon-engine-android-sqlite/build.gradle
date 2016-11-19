@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    provided falkonModules.engine
+    compile falkonModules.engine
     compile libraries.kotlinStdlib
 
     testCompile falkonModules.engineTestCommon
