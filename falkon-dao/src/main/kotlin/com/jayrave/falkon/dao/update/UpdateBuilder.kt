@@ -34,6 +34,11 @@ interface AdderOrEnder<T : Any> {
      * @return [CompiledStatement] for this [UpdateBuilder]
      */
     fun compile(): CompiledStatement<Int>
+
+    /**
+     * @return number of rows affected by this update operation
+     */
+    fun update(): Int
 }
 
 
@@ -45,6 +50,7 @@ interface PredicateAdderOrEnder<T : Any> :
 
     fun build(): Update
     fun compile(): CompiledStatement<Int>
+    fun update(): Int
 }
 
 

@@ -10,6 +10,7 @@ import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
@@ -52,6 +53,10 @@ internal class UpdateBuilderImpl<T : Any>(
                 .closeIfOpThrows { bindAll(update.arguments) }
     }
 
+    private fun update(): Int {
+        return compile().safeCloseAfterExecution()
+    }
+
 
     private inner class AdderOrEnderImpl : AdderOrEnder<T> {
 
@@ -66,6 +71,10 @@ internal class UpdateBuilderImpl<T : Any>(
 
         override fun compile(): CompiledStatement<Int> {
             return this@UpdateBuilderImpl.compile()
+        }
+
+        override fun update(): Int {
+            return this@UpdateBuilderImpl.update()
         }
     }
 
@@ -88,6 +97,10 @@ internal class UpdateBuilderImpl<T : Any>(
 
         override fun compile(): CompiledStatement<Int> {
             return this@UpdateBuilderImpl.compile()
+        }
+
+        override fun update(): Int {
+            return this@UpdateBuilderImpl.update()
         }
     }
 

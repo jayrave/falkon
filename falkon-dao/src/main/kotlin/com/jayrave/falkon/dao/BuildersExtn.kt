@@ -4,25 +4,6 @@ import com.jayrave.falkon.engine.safeCloseAfterExecution
 import com.jayrave.falkon.mapper.Column
 import java.sql.SQLException
 
-// ------------------------------------------ Update -----------------------------------------------
-
-/**
- * @return number of rows affected by this update operation
- */
-fun <T : Any> com.jayrave.falkon.dao.update.AdderOrEnder<T>.update(): Int {
-    return compile().safeCloseAfterExecution()
-}
-
-/**
- * @return number of rows affected by this update operation
- */
-fun <T : Any> com.jayrave.falkon.dao.update.PredicateAdderOrEnder<T>.update(): Int {
-    return compile().safeCloseAfterExecution()
-}
-
-// ------------------------------------------ Update -----------------------------------------------
-
-
 // ------------------------------------------ Delete -----------------------------------------------
 
 /**

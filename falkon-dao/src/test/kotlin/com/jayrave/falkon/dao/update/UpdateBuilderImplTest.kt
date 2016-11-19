@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.update
 
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
+import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForUpdateForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.dao.update.testLib.UpdateSqlBuilderForTesting
@@ -9,6 +10,7 @@ import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
 
 class UpdateBuilderImplTest {
@@ -54,7 +56,7 @@ class UpdateBuilderImplTest {
                 .eq(table.string, "test")
 
         val actualUpdate = builder.build()
-        builder.compile()
+        builder.update()
 
         // build expected update
         val expectedSql = updateSqlBuilder.build(
@@ -90,7 +92,7 @@ class UpdateBuilderImplTest {
         }
 
         val actualUpdate = builder.build()
-        builder.compile()
+        builder.update()
 
         // build expected insert
         val expectedSql = updateSqlBuilder.build(
@@ -112,6 +114,46 @@ class UpdateBuilderImplTest {
 
 
     @Test
+    fun `update via adder or ender reports correct row count & compiled statement gets closed`() {
+        testUpdateReportsCorrectRowCount { table: TableForTest ->
+            UpdateBuilderImpl(table, UPDATE_SQL_BUILDER).values { set(table.int, 5) }.update()
+        }
+    }
+
+
+    @Test
+    fun `update via predicate adder or ender reports correct row count & compiled statement gets closed`() {
+        testUpdateReportsCorrectRowCount { table: TableForTest ->
+            UpdateBuilderImpl(table, UPDATE_SQL_BUILDER)
+                    .values { set(table.int, 5) }
+                    .where()
+                    .eq(table.int, 6)
+                    .update()
+        }
+    }
+
+
+    @Test
+    fun `compiled statement gets closed even if update via adder or ender throws`() {
+        testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
+            UpdateBuilderImpl(table, UPDATE_SQL_BUILDER).values { set(table.int, 5) }.update()
+        }
+    }
+
+
+    @Test
+    fun `compiled statement gets closed even if update via predicate adder or ender throws`() {
+        testStatementGetsClosedEvenIfUpdateThrows { table: TableForTest ->
+            UpdateBuilderImpl(table, UPDATE_SQL_BUILDER)
+                    .values { set(table.int, 5) }
+                    .where()
+                    .eq(table.int, 6)
+                    .update()
+        }
+    }
+
+
+    @Test
     fun `setting value for an already set column, overrides the existing value`() {
         val bundle = Bundle.default()
         val table = bundle.table
@@ -127,7 +169,7 @@ class UpdateBuilderImplTest {
         }
 
         val actualUpdate = builder.build()
-        builder.compile()
+        builder.update()
 
         // build expected insert
         val expectedSql = updateSqlBuilder.build(table.name, listOf(table.int.name), null)
@@ -176,7 +218,7 @@ class UpdateBuilderImplTest {
         }
 
         val actualUpdate = builder.build()
-        builder.compile()
+        builder.update()
 
         // build expected insert
         val expectedSql = updateSqlBuilder.build(
@@ -220,7 +262,7 @@ class UpdateBuilderImplTest {
             fun default(): Bundle {
                 val engine = EngineForTestingBuilders.createWithOneShotStatements()
                 val table = TableForTest(configuration = defaultTableConfiguration(engine))
-                return Bundle(table, engine, UpdateSqlBuilderForTesting())
+                return Bundle(table, engine, UPDATE_SQL_BUILDER)
             }
         }
     }
@@ -228,10 +270,62 @@ class UpdateBuilderImplTest {
 
 
     companion object {
+
+        private val UPDATE_SQL_BUILDER = UpdateSqlBuilderForTesting()
+
         private fun assertEquality(actualUpdate: Update, expectedUpdate: Update) {
             assertThat(actualUpdate.tableName).isEqualTo(expectedUpdate.tableName)
             assertThat(actualUpdate.sql).isEqualTo(expectedUpdate.sql)
             assertThat(actualUpdate.arguments).containsExactlyElementsOf(expectedUpdate.arguments)
+        }
+
+
+        private fun testUpdateReportsCorrectRowCount(updateOp: (TableForTest) -> Int) {
+            val numberOfRowsAffected = 8745
+            val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                    updateProvider = { tableName, sql ->
+                        OneShotCompiledStatementForUpdateForTest(
+                                tableName, sql, numberOfRowsAffected
+                        )
+                    }
+            )
+
+            val table = TableForTest(configuration = defaultTableConfiguration(engine))
+            assertThat(updateOp.invoke(table)).isEqualTo(numberOfRowsAffected)
+
+            // Assert that the statement was executed and closed
+            val statement = engine.compiledStatementsForUpdate.first()
+            assertThat(statement.isExecuted).isTrue()
+            assertThat(statement.isClosed).isTrue()
+        }
+
+
+        private fun testStatementGetsClosedEvenIfUpdateThrows(updateOp: (TableForTest) -> Int) {
+            val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                    updateProvider = { tableName, sql ->
+                        OneShotCompiledStatementForUpdateForTest(
+                                tableName, sql, shouldThrowOnExecution = true
+                        )
+                    }
+            )
+
+            val exceptionWasThrown = try {
+                updateOp.invoke(TableForTest(configuration = defaultTableConfiguration(engine)))
+                false
+            } catch (e: Exception) {
+                true
+            }
+
+            when {
+                !exceptionWasThrown -> failBecauseExceptionWasNotThrown(Exception::class.java)
+                else -> {
+                    // Assert that the statement was not successfully executed but closed
+                    val statement = engine.compiledStatementsForUpdate.first()
+                    assertThat(statement.wasExecutionAttempted).isTrue()
+                    assertThat(statement.isExecuted).isFalse()
+                    assertThat(statement.isClosed).isTrue()
+                }
+            }
         }
     }
 }
