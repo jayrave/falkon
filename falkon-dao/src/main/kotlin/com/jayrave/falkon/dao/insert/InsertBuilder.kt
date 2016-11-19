@@ -27,6 +27,11 @@ interface Ender {
      * @return [CompiledStatement] for this [InsertBuilder]
      */
     fun compile(): CompiledStatement<Int>
+
+    /**
+     * @return `true` if the insertion was successful; `false` otherwise
+     */
+    fun insert(): Boolean
 }
 
 

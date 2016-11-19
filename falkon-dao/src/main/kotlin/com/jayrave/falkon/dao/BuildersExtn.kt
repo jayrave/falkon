@@ -4,18 +4,6 @@ import com.jayrave.falkon.engine.safeCloseAfterExecution
 import com.jayrave.falkon.mapper.Column
 import java.sql.SQLException
 
-// ------------------------------------------ Insert -----------------------------------------------
-
-/**
- * @return `true` if the insertion was successful; `false` otherwise
- */
-fun com.jayrave.falkon.dao.insert.Ender.insert(): Boolean {
-    return compile().safeCloseAfterExecution() == 1
-}
-
-// ------------------------------------------ Insert -----------------------------------------------
-
-
 // ------------------------------------------ Update -----------------------------------------------
 
 /**

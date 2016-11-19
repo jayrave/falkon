@@ -5,6 +5,7 @@ import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.engine.safeCloseAfterExecution
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
@@ -38,6 +39,10 @@ internal class InsertBuilderImpl<T : Any>(
             return table.configuration.engine
                     .compileInsert(table.name, insert.sql)
                     .closeIfOpThrows { bindAll(insert.arguments) }
+        }
+
+        override fun insert(): Boolean {
+            return compile().safeCloseAfterExecution() >= 1
         }
     }
 

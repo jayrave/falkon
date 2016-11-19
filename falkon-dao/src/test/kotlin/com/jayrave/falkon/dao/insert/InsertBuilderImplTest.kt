@@ -2,12 +2,14 @@ package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.dao.insert.testLib.InsertSqlBuilderForTesting
 import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
+import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForInsertForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
 
 class InsertBuilderImplTest {
@@ -22,7 +24,7 @@ class InsertBuilderImplTest {
         // build & compile
         val builder = InsertBuilderImpl(table, insertSqlBuilder).values { set(table.int, 5) }
         val actualInsert = builder.build()
-        builder.compile()
+        builder.insert()
 
         // build expected insert
         val expectedSql = insertSqlBuilder.build(table.name, listOf(table.int.name))
@@ -53,7 +55,7 @@ class InsertBuilderImplTest {
         }
 
         val actualInsert = builder.build()
-        builder.compile()
+        builder.insert()
 
         // build expected insert
         val expectedSql = insertSqlBuilder.build(
@@ -75,6 +77,54 @@ class InsertBuilderImplTest {
 
 
     @Test
+    fun `insert returns true if successful & compiled statement gets closed`() {
+        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(1, true)
+        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(2, true)
+    }
+
+
+    @Test
+    fun `insert returns false if nothing was inserted & compiled statement gets closed`() {
+        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(-2, false)
+        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(-1, false)
+        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(0, false)
+    }
+
+
+    @Test
+    fun `compiled statement gets closed even if insert throws`() {
+        val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                insertProvider = { tableName, sql ->
+                    OneShotCompiledStatementForInsertForTest(
+                            tableName, sql, shouldThrowOnExecution = true
+                    )
+                }
+        )
+
+        val table = TableForTest(configuration = defaultTableConfiguration(engine))
+        val builder = InsertBuilderImpl(table, INSERT_SQL_BUILDER)
+
+        val exceptionWasThrown = try {
+            builder.values { set(table.int, 5) }.insert()
+            false
+        } catch (e: Exception) {
+            true
+        }
+
+        when {
+            !exceptionWasThrown -> failBecauseExceptionWasNotThrown(Exception::class.java)
+            else -> {
+                // Assert that the statement was not successfully executed but closed
+                val statement = engine.compiledStatementsForInsert.first()
+                assertThat(statement.wasExecutionAttempted).isTrue()
+                assertThat(statement.isExecuted).isFalse()
+                assertThat(statement.isClosed).isTrue()
+            }
+        }
+    }
+
+
+    @Test
     fun `setting value for an already set column, overrides the existing value`() {
         val bundle = Bundle.default()
         val table = bundle.table
@@ -90,7 +140,7 @@ class InsertBuilderImplTest {
         }
 
         val actualInsert = builder.build()
-        builder.compile()
+        builder.insert()
 
         // build expected insert
         val expectedSql = insertSqlBuilder.build(table.name, listOf(table.int.name))
@@ -139,7 +189,7 @@ class InsertBuilderImplTest {
         }
 
         val actualInsert = builder.build()
-        builder.compile()
+        builder.insert()
 
         // build expected insert
         val expectedSql = insertSqlBuilder.build(
@@ -183,7 +233,7 @@ class InsertBuilderImplTest {
             fun default(): Bundle {
                 val engine = EngineForTestingBuilders.createWithOneShotStatements()
                 val table = TableForTest(configuration = defaultTableConfiguration(engine))
-                return Bundle(table, engine, InsertSqlBuilderForTesting())
+                return Bundle(table, engine, INSERT_SQL_BUILDER)
             }
         }
     }
@@ -191,10 +241,35 @@ class InsertBuilderImplTest {
 
 
     companion object {
+
+        private val INSERT_SQL_BUILDER = InsertSqlBuilderForTesting()
+
         private fun assertEquality(actualInsert: Insert, expectedInsert: Insert) {
             assertThat(actualInsert.tableName).isEqualTo(expectedInsert.tableName)
             assertThat(actualInsert.sql).isEqualTo(expectedInsert.sql)
             assertThat(actualInsert.arguments).containsExactlyElementsOf(expectedInsert.arguments)
+        }
+
+
+        private fun testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(
+                numberOfRowsInserted: Int, expected: Boolean) {
+
+            val engine = EngineForTestingBuilders.createWithOneShotStatements(
+                    insertProvider = { tableName, sql ->
+                        OneShotCompiledStatementForInsertForTest(
+                                tableName, sql, numberOfRowsInserted
+                        )
+                    }
+            )
+
+            val table = TableForTest(configuration = defaultTableConfiguration(engine))
+            val builder = InsertBuilderImpl(table, INSERT_SQL_BUILDER)
+            assertThat(builder.values { set(table.int, 5) }.insert()).isEqualTo(expected)
+
+            // Assert that the statement was executed and closed
+            val statement = engine.compiledStatementsForInsert.first()
+            assertThat(statement.isExecuted).isTrue()
+            assertThat(statement.isClosed).isTrue()
         }
     }
 }
