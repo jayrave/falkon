@@ -278,24 +278,24 @@ abstract class BaseClassForIntegrationTests {
         internal fun insertModelUsingInsertBuilder(
                 table: TableForTest, model: ModelForTest) {
 
-            table.dao.insertBuilder()
-                    .set(table.id1, model.id1)
-                    .set(table.id2, model.id2)
-                    .set(table.short, model.short)
-                    .set(table.int, model.int)
-                    .set(table.long, model.long)
-                    .set(table.float, model.float)
-                    .set(table.double, model.double)
-                    .set(table.string, model.string)
-                    .set(table.blob, model.blob)
-                    .set(table.nullableShort, model.nullableShort)
-                    .set(table.nullableInt, model.nullableInt)
-                    .set(table.nullableLong, model.nullableLong)
-                    .set(table.nullableFloat, model.nullableFloat)
-                    .set(table.nullableDouble, model.nullableDouble)
-                    .set(table.nullableString, model.nullableString)
-                    .set(table.nullableBlob, model.nullableBlob)
-                    .insert()
+            table.dao.insertBuilder().values {
+                set(table.id1, model.id1)
+                set(table.id2, model.id2)
+                set(table.short, model.short)
+                set(table.int, model.int)
+                set(table.long, model.long)
+                set(table.float, model.float)
+                set(table.double, model.double)
+                set(table.string, model.string)
+                set(table.blob, model.blob)
+                set(table.nullableShort, model.nullableShort)
+                set(table.nullableInt, model.nullableInt)
+                set(table.nullableLong, model.nullableLong)
+                set(table.nullableFloat, model.nullableFloat)
+                set(table.nullableDouble, model.nullableDouble)
+                set(table.nullableString, model.nullableString)
+                set(table.nullableBlob, model.nullableBlob)
+            }.insert()
         }
 
 

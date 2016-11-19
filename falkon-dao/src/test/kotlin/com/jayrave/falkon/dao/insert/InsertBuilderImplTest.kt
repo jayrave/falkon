@@ -13,14 +13,14 @@ import org.junit.Test
 class InsertBuilderImplTest {
 
     @Test
-    fun testInsertWithSingleColumn() {
+    fun `insert with one column`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         // build & compile
-        val builder = InsertBuilderImpl(table, insertSqlBuilder).set(table.int, 5)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder).values { set(table.int, 5) }
         val actualInsert = builder.build()
         builder.compile()
 
@@ -40,16 +40,17 @@ class InsertBuilderImplTest {
 
 
     @Test
-    fun testInsertWithMultipleColumns() {
+    fun `insert with multiple columns`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         // build & compile
-        val builder = InsertBuilderImpl(table, insertSqlBuilder)
-                .set(table.int, 5)
-                .set(table.string, "test")
+        val builder = InsertBuilderImpl(table, insertSqlBuilder).values {
+            set(table.int, 5)
+            set(table.string, "test")
+        }
 
         val actualInsert = builder.build()
         builder.compile()
@@ -74,7 +75,7 @@ class InsertBuilderImplTest {
 
 
     @Test
-    fun testSetOverwritesExistingValueForTheSameColumn() {
+    fun `setting value for an already set column, overrides the existing value`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -83,9 +84,10 @@ class InsertBuilderImplTest {
         // build & compile
         val initialValue = 5
         val overwritingValue = initialValue + 1
-        val builder = InsertBuilderImpl(table, insertSqlBuilder)
-                .set(table.int, initialValue)
-                .set(table.int, overwritingValue)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder).values {
+            set(table.int, initialValue)
+            set(table.int, overwritingValue)
+        }
 
         val actualInsert = builder.build()
         builder.compile()
@@ -106,34 +108,35 @@ class InsertBuilderImplTest {
 
 
     @Test
-    fun testDefiningSetDoesNotFireAnUpdateCall() {
+    fun `setting values for columns does not fire an update`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val insertSqlBuilder = bundle.insertSqlBuilder
 
-        InsertBuilderImpl(table, insertSqlBuilder).set(table.int, 5)
+        InsertBuilderImpl(table, insertSqlBuilder).values { set(table.int, 5) }
         assertThat(engine.compiledStatementsForInsert).isEmpty()
     }
 
 
     @Test
-    fun testAllTypesAreBoundCorrectly() {
+    fun `all types are bound correctly`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
         val insertSqlBuilder = bundle.insertSqlBuilder
 
         // build & compile
-        val builder = InsertBuilderImpl(table, insertSqlBuilder)
-                .set(table.short, 5.toShort())
-                .set(table.int, 6)
-                .set(table.long, 7L)
-                .set(table.float, 8F)
-                .set(table.double, 9.toDouble())
-                .set(table.string, "test 10")
-                .set(table.blob, byteArrayOf(11))
-                .set(table.nullableInt, null)
+        val builder = InsertBuilderImpl(table, insertSqlBuilder).values {
+            set(table.short, 5.toShort())
+            set(table.int, 6)
+            set(table.long, 7L)
+            set(table.float, 8F)
+            set(table.double, 9.toDouble())
+            set(table.string, "test 10")
+            set(table.blob, byteArrayOf(11))
+            set(table.nullableInt, null)
+        }
 
         val actualInsert = builder.build()
         builder.compile()

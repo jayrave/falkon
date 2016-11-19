@@ -1,6 +1,5 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.dao.insert.AdderOrEnder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.mapper.Column
 
@@ -58,19 +57,14 @@ private fun <T : Any> Dao<T, *>.buildCompiledStatementForInsert(
 
     throwIfColumnCollectionIsEmpty(columns)
 
-    val insertBuilder = insertBuilder()
-    var adderOrEnder: AdderOrEnder<T>? = null
-    columns.forEach {
+    return insertBuilder().values {
+        columns.forEach { it ->
 
-        @Suppress("UNCHECKED_CAST")
-        val column = it as Column<T, Any?>
-        adderOrEnder = when (adderOrEnder) {
-            null -> insertBuilder.set(column, column.extractPropertyFrom(item))
-            else -> adderOrEnder!!.set(column, column.extractPropertyFrom(item))
+            @Suppress("UNCHECKED_CAST")
+            val column = it as Column<T, Any?>
+            set(column, column.extractPropertyFrom(item))
         }
-    }
-
-    return adderOrEnder!!.compile()
+    }.compile()
 }
 
 

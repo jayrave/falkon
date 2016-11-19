@@ -9,7 +9,7 @@ import java.sql.SQLException
 /**
  * @return `true` if the insertion was successful; `false` otherwise
  */
-fun <T : Any> com.jayrave.falkon.dao.insert.AdderOrEnder<T>.insert(): Boolean {
+fun com.jayrave.falkon.dao.insert.Ender.insert(): Boolean {
     return compile().safeCloseAfterExecution() == 1
 }
 

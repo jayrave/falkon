@@ -43,7 +43,7 @@ class InsertBuilderInsertExtnTest {
 
         var exceptionWasThrown = false
         try {
-            builder.set(table.int, 5).insert()
+            builder.values { set(table.int, 5) }.insert()
         } catch (e: Exception) {
             exceptionWasThrown = true
         }
@@ -72,7 +72,7 @@ class InsertBuilderInsertExtnTest {
 
         val table = TableForTest(configuration = defaultTableConfiguration(engine))
         val builder = InsertBuilderImpl(table, insertSqlBuilder)
-        assertThat(builder.set(table.int, 5).insert()).isEqualTo(expectedFlag)
+        assertThat(builder.values { set(table.int, 5) }.insert()).isEqualTo(expectedFlag)
 
         // Assert that the statement was executed and closed
         val statement = engine.compiledStatementsForInsert.first()
