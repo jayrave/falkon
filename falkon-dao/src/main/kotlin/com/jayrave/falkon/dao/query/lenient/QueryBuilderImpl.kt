@@ -1,7 +1,5 @@
 package com.jayrave.falkon.dao.query.lenient
 
-import com.jayrave.falkon.dao.lib.IterableBackedIterable
-import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.lib.uniqueNameInDb
 import com.jayrave.falkon.dao.query.Query
@@ -12,6 +10,8 @@ import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
+import com.jayrave.falkon.iterables.IterableBackedIterable
+import com.jayrave.falkon.iterables.IterablesBackedIterable
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
@@ -185,7 +185,7 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         val tempGroupByColumns = groupByColumns
         return when (tempGroupByColumns) {
             null -> null
-            else -> IterableBackedIterable(tempGroupByColumns) { it.qualifiedName }
+            else -> IterableBackedIterable.create(tempGroupByColumns) { it.qualifiedName }
         }
     }
 
@@ -299,7 +299,7 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
 
         private fun Iterable<Column<*, *>>.buildColumnInfoList(): Iterable<SelectColumnInfo> {
-            return IterableBackedIterable(this) {
+            return IterableBackedIterable.create(this) {
                 object : SelectColumnInfo {
                     override val columnName: String get() = it.qualifiedName
                     override val alias: String? get() = it.uniqueNameInDb

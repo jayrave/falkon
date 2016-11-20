@@ -1,11 +1,11 @@
 package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
-import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.engine.safeCloseAfterExecution
+import com.jayrave.falkon.iterables.IterableBackedIterable
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
@@ -30,8 +30,8 @@ internal class InsertBuilderImpl<T : Any>(
 
         override fun build(): Insert {
             val map = dataConsumer.map
-            val sql = insertSqlBuilder.build(table.name, LinkedHashMapBackedIterable.forKeys(map))
-            return InsertImpl(table.name, sql, LinkedHashMapBackedIterable.forValues(map))
+            val sql = insertSqlBuilder.build(table.name, IterableBackedIterable.create(map.keys))
+            return InsertImpl(table.name, sql, IterableBackedIterable.create(map.values))
         }
 
         override fun compile(): CompiledStatement<Int> {

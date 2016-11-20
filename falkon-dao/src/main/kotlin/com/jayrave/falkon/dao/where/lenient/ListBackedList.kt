@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao.where.lenient
 
-import com.jayrave.falkon.dao.lib.IterableBackedIterable
+import com.jayrave.falkon.iterables.IterableBackedIterable
 import java.util.*
 
 /**
@@ -34,7 +34,7 @@ internal class ListBackedList<T, R>(
     }
 
     override fun iterator(): Iterator<R> {
-        return IterableBackedIterable(list, transformer).iterator()
+        return IterableBackedIterable.create(list, transformer).iterator()
     }
 
     override fun lastIndexOf(element: R): Int {

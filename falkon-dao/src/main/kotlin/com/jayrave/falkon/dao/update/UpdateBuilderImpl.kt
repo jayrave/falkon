@@ -1,8 +1,6 @@
 package com.jayrave.falkon.dao.update
 
-import com.jayrave.falkon.dao.lib.IterablesBackedIterable
 import com.jayrave.falkon.dao.lib.LinkedHashMapBackedDataConsumer
-import com.jayrave.falkon.dao.lib.LinkedHashMapBackedIterable
 import com.jayrave.falkon.dao.where.AfterSimpleConnectorAdder
 import com.jayrave.falkon.dao.where.Where
 import com.jayrave.falkon.dao.where.WhereBuilder
@@ -11,6 +9,8 @@ import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.engine.safeCloseAfterExecution
+import com.jayrave.falkon.iterables.IterableBackedIterable
+import com.jayrave.falkon.iterables.IterablesBackedIterable
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
@@ -35,11 +35,11 @@ internal class UpdateBuilderImpl<T : Any>(
     private fun build(): Update {
         val map = dataConsumer.map
         val where: Where? = whereBuilder?.build()
-        val columns: Iterable<String> = LinkedHashMapBackedIterable.forKeys(map)
+        val columns: Iterable<String> = IterableBackedIterable.create(map.keys)
 
         val sql = updateSqlBuilder.build(table.name, columns, where?.whereSections)
         val arguments = IterablesBackedIterable(listOf(
-                LinkedHashMapBackedIterable.forValues(map),
+                IterableBackedIterable.create(map.values),
                 where?.arguments ?: emptyList()
         ))
 

@@ -57,6 +57,7 @@ ext.falkonModules = [
         engine              : project(':falkon-engine'),
         engineJdbc          : project(':falkon-engine-jdbc'),
         engineTestCommon    : project(':falkon-engine-test-common'),
+        iterableUtils       : project(':falkon-iterable-utils'),
         mapper              : project(':falkon-mapper'),
         mapperBasic         : project(':falkon-mapper-basic'),
         mapperEnhanced      : project(':falkon-mapper-enhanced'),
