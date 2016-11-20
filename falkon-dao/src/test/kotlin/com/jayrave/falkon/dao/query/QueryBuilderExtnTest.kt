@@ -1,12 +1,12 @@
-package com.jayrave.falkon.dao
+package com.jayrave.falkon.dao.query
 
-import com.jayrave.falkon.dao.query.AdderOrEnder
 import com.jayrave.falkon.dao.testLib.ModelForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.mapper.Column
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.sql.SQLException
+import java.util.*
 
 class QueryBuilderExtnTest {
 
@@ -22,23 +22,20 @@ class QueryBuilderExtnTest {
         val adderOrEnderForTest = AdderOrEnderForTest()
         adderOrEnderForTest.select(listOf(table.int))
 
-        assertThat(adderOrEnderForTest.firstColumn).isSameAs(table.int)
-        assertThat(adderOrEnderForTest.remainingColumns).isNullOrEmpty()
+        assertThat(adderOrEnderForTest.columns).containsOnly(table.int)
     }
 
 
-    // TODO - Causes compilation errors (with kotlin 1.0.3)
-//    @Test
-//    fun testSelectWithMultiArgList() {
-//        val table = TableForTest()
-//        val adderOrEnderForTest = AdderOrEnderForTest()
-//        adderOrEnderForTest.select(listOf(table.int, table.nullableString, table.blob))
-//
-//        assertThat(adderOrEnderForTest.firstColumn).isSameAs(table.int)
-//        assertThat(adderOrEnderForTest.remainingColumns).containsExactlyElementsOf(
-//                listOf(table.nullableString, table.blob)
-//        )
-//    }
+    @Test
+    fun testSelectWithMultiArgList() {
+        val table = TableForTest()
+        val adderOrEnderForTest = AdderOrEnderForTest()
+        adderOrEnderForTest.select(listOf(table.int, table.nullableString, table.blob))
+
+        assertThat(adderOrEnderForTest.columns).containsOnly(
+                table.int, table.nullableString, table.blob
+        )
+    }
 
 
     /**
@@ -46,15 +43,14 @@ class QueryBuilderExtnTest {
      */
     internal class AdderOrEnderForTest : AdderOrEnder<ModelForTest, AdderOrEnderForTest> {
 
-        var firstColumn: Column<ModelForTest, *>? = null
-        var remainingColumns: List<Column<ModelForTest, *>>? = null
+        var columns = ArrayList<Column<*, *>>()
 
         override fun select(
                 column: Column<ModelForTest, *>, vararg others: Column<ModelForTest, *>):
                 AdderOrEnderForTest {
 
-            firstColumn = column
-            remainingColumns = others.toList()
+            columns.add(column)
+            columns.addAll(others)
             return this
         }
 
