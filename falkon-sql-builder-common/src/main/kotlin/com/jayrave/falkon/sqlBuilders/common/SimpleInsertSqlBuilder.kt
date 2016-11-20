@@ -1,5 +1,7 @@
 package com.jayrave.falkon.sqlBuilders.common
 
+import com.jayrave.falkon.iterables.IterablesBackedIterable
+import com.jayrave.falkon.sqlBuilders.lib.SqlAndIndexToIndicesMap
 import java.sql.SQLSyntaxErrorException
 
 object SimpleInsertSqlBuilder {
@@ -12,16 +14,29 @@ object SimpleInsertSqlBuilder {
         return build("INSERT", tableName, columns)
     }
 
+
     /**
-     * Builds a statement akin to `INSERT OR REPLACE INTO ...`. Columns are specified
-     * in the iteration order of [columns]. [phraseForInsertOrReplace] is used to replace
-     * the `INSERT` from `INSERT INTO ...`
+     * [phraseForInsertOrReplace] is used to replace the `INSERT` in `INSERT INTO ...`.
+     * Columns are specified in the iteration order of [idColumns] & [nonIdColumns]
      */
     fun buildInsertOrReplace(
             phraseForInsertOrReplace: String, tableName: String,
-            columns: Iterable<String>): String {
+            idColumns: Iterable<String>, nonIdColumns: Iterable<String>):
+            SqlAndIndexToIndicesMap {
 
-        return build(phraseForInsertOrReplace, tableName, columns)
+        if (idColumns.size() == 0) {
+            throw SQLSyntaxErrorException("ID columns can't be empty for insert or replace")
+        }
+
+        if (nonIdColumns.size() == 0) {
+            throw SQLSyntaxErrorException("Non id columns can't be empty for insert or replace")
+        }
+
+        val allColumns = IterablesBackedIterable(listOf(idColumns, nonIdColumns))
+        return SqlAndIndexToIndicesMap(
+                build(phraseForInsertOrReplace, tableName, allColumns),
+                SimpleIndexToIndicesMap(allColumns.count())
+        )
     }
 
 
@@ -56,6 +71,14 @@ object SimpleInsertSqlBuilder {
 
                 sql.toString()
             }
+        }
+    }
+
+
+    private fun Iterable<*>.size(): Int {
+        return when (this) {
+            is Collection -> size
+            else -> count()
         }
     }
 }

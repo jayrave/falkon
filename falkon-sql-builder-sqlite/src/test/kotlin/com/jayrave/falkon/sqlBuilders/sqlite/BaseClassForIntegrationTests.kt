@@ -40,7 +40,7 @@ abstract class BaseClassForIntegrationTests {
         // This makes sure that we have a clean slate for every test
         val dbFile = File(dbFilePath)
         if (dbFile.exists()) {
-            assertThat(dbFile.delete ()).isTrue()
+            assertThat(dbFile.delete()).isTrue()
         }
     }
 }

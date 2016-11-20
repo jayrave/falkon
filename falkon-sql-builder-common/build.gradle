@@ -5,6 +5,7 @@ targetCompatibility = javaVersions.target
 
 dependencies {
     compile falkonModules.sqlBuilder
+    compile falkonModules.iterableUtils
     compile libraries.kotlinStdlib
 
     testCompile libraries.assertJ

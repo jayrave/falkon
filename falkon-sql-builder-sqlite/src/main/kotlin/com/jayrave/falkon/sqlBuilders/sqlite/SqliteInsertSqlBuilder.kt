@@ -2,6 +2,7 @@ package com.jayrave.falkon.sqlBuilders.sqlite
 
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
 import com.jayrave.falkon.sqlBuilders.common.SimpleInsertSqlBuilder
+import com.jayrave.falkon.sqlBuilders.lib.SqlAndIndexToIndicesMap
 
 /**
  * Take a look at https://www.sqlite.org/lang_conflict.html, to learn how `insert or replace`
@@ -15,7 +16,12 @@ class SqliteInsertSqlBuilder : InsertSqlBuilder {
         return SimpleInsertSqlBuilder.build(tableName, columns)
     }
 
-    override fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String {
-        return SimpleInsertSqlBuilder.buildInsertOrReplace("INSERT OR REPLACE", tableName, columns)
+    override fun buildInsertOrReplace(
+            tableName: String, idColumns: Iterable<String>, nonIdColumns: Iterable<String>):
+            SqlAndIndexToIndicesMap {
+
+        return SimpleInsertSqlBuilder.buildInsertOrReplace(
+                "INSERT OR REPLACE", tableName, idColumns, nonIdColumns
+        )
     }
 }

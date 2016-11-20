@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.insert.testLib
 
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
+import com.jayrave.falkon.sqlBuilders.lib.SqlAndIndexToIndicesMap
 
 class InsertSqlBuilderForTesting : InsertSqlBuilder {
 
@@ -10,7 +11,10 @@ class InsertSqlBuilderForTesting : InsertSqlBuilder {
         return "tableName: $tableName; columns: ${columns.joinToString()}"
     }
 
-    override fun buildInsertOrReplace(tableName: String, columns: Iterable<String>): String {
+    override fun buildInsertOrReplace(
+            tableName: String, idColumns: Iterable<String>,
+            nonIdColumns: Iterable<String>): SqlAndIndexToIndicesMap {
+
         throw UnsupportedOperationException("not implemented")
     }
 }
