@@ -3,11 +3,10 @@ package com.jayrave.falkon.iterables
 /**
  * To expose multiple iterables as a single continuous iterable
  */
-internal class IterablesBackedIterable<out T>(
-        private val iterables: List<Iterable<T>>) :
-        Iterable<T> {
+class IterablesBackedIterable<out T>(private val iterables: List<Iterable<T>>) : Iterable<T> {
 
     override fun iterator(): Iterator<T> = IterablesBackedIterator()
+
 
     private inner class IterablesBackedIterator : Iterator<T> {
 

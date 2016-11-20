@@ -3,7 +3,7 @@ package com.jayrave.falkon.iterables
 /**
  * To expose items from an iterable in a different form
  */
-internal class IterableBackedIterable<T, out R>(
+class IterableBackedIterable<T, out R>(
         private val iterable: Iterable<T>,
         private val transformer: (T) -> R) : Iterable<R> {
 
