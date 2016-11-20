@@ -16,8 +16,8 @@ class H2InsertSqlBuilder : InsertSqlBuilder {
             tableName: String, idColumns: Iterable<String>,
             nonIdColumns: Iterable<String>): SqlAndIndexToIndicesMap {
 
-        throw UnsupportedOperationException(
-                "As of Nov 1, 2016, H2 database doesn't support `insert or replace` functionality"
+        return SimpleInsertSqlBuilder.buildInsertOrReplace(
+                "MERGE", tableName, idColumns, nonIdColumns
         )
     }
 }
