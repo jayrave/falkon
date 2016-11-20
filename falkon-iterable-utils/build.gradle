@@ -1,0 +1,29 @@
+apply plugin: 'kotlin'
+
+sourceCompatibility = javaVersions.source
+targetCompatibility = javaVersions.target
+
+dependencies {
+    compile libraries.kotlinStdlib
+
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+}
+
+ext {
+    mavenInstallInfo = [
+            artifactId: 'falkon-iterable-utils',
+            name: 'FalkonIterableUtils',
+            description: 'Provides iterable utilities',
+            packagingType: 'jar'
+    ]
+
+    bintrayUploadInfo = [
+            'name': mavenInstallInfo.artifactId,
+            'description': mavenInstallInfo.description
+    ]
+}
+
+// Scripts should be applied after defining the required properties
+apply from: '../gradle/falkon-maven-install.gradle'
+apply from: '../gradle/falkon-bintray-upload.gradle'
