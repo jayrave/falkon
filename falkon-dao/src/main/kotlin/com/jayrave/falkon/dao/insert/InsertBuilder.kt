@@ -29,9 +29,9 @@ interface Ender {
     fun compile(): CompiledStatement<Int>
 
     /**
-     * @return `true` if the insertion was successful; `false` otherwise
+     * Inserts record represented by this builder
      */
-    fun insert(): Boolean
+    fun insert()
 }
 
 

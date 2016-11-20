@@ -77,17 +77,12 @@ class InsertBuilderImplTest {
 
 
     @Test
-    fun `insert returns true if successful & compiled statement gets closed`() {
-        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(1, true)
-        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(2, true)
-    }
-
-
-    @Test
-    fun `insert returns false if nothing was inserted & compiled statement gets closed`() {
-        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(-2, false)
-        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(-1, false)
-        testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(0, false)
+    fun `insert throws if unexpected number of rows are affected & compiled statement gets closed`() {
+        testInsertThrowsIfUnexpectedNumberOfRowsAreAffectedAndCompiledStatementIsClosed(-2, true)
+        testInsertThrowsIfUnexpectedNumberOfRowsAreAffectedAndCompiledStatementIsClosed(-1, true)
+        testInsertThrowsIfUnexpectedNumberOfRowsAreAffectedAndCompiledStatementIsClosed(0, true)
+        testInsertThrowsIfUnexpectedNumberOfRowsAreAffectedAndCompiledStatementIsClosed(1, false)
+        testInsertThrowsIfUnexpectedNumberOfRowsAreAffectedAndCompiledStatementIsClosed(2, true)
     }
 
 
@@ -251,8 +246,8 @@ class InsertBuilderImplTest {
         }
 
 
-        private fun testInsertReturnsAppropriateFlagAndCompiledStatementGetsClosed(
-                numberOfRowsInserted: Int, expected: Boolean) {
+        private fun testInsertThrowsIfUnexpectedNumberOfRowsAreAffectedAndCompiledStatementIsClosed(
+                numberOfRowsInserted: Int, shouldThrow: Boolean) {
 
             val engine = EngineForTestingBuilders.createWithOneShotStatements(
                     insertProvider = { tableName, sql ->
@@ -264,12 +259,21 @@ class InsertBuilderImplTest {
 
             val table = TableForTest(configuration = defaultTableConfiguration(engine))
             val builder = InsertBuilderImpl(table, INSERT_SQL_BUILDER)
-            assertThat(builder.values { set(table.int, 5) }.insert()).isEqualTo(expected)
+
+            val exceptionThrown = try {
+                assertThat(builder.values { set(table.int, 5) }.insert())
+                false
+            } catch (e: Exception) {
+                true
+            }
 
             // Assert that the statement was executed and closed
             val statement = engine.compiledStatementsForInsert.first()
             assertThat(statement.isExecuted).isTrue()
             assertThat(statement.isClosed).isTrue()
+
+            // Assert exception was thrown if it was supposed to
+            assertThat(exceptionThrown).isEqualTo(shouldThrow)
         }
     }
 }

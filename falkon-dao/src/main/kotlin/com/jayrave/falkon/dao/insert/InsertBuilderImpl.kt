@@ -9,6 +9,7 @@ import com.jayrave.falkon.iterables.IterableBackedIterable
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
+import java.sql.SQLException
 
 internal class InsertBuilderImpl<T : Any>(
         override val table: Table<T, *>, private val insertSqlBuilder: InsertSqlBuilder) :
@@ -41,8 +42,14 @@ internal class InsertBuilderImpl<T : Any>(
                     .closeIfOpThrows { bindAll(insert.arguments) }
         }
 
-        override fun insert(): Boolean {
-            return compile().safeCloseAfterExecution() >= 1
+        override fun insert() {
+            val numberOfRecordsInserted = compile().safeCloseAfterExecution()
+            if (numberOfRecordsInserted != 1) {
+                throw SQLException(
+                        "Number of records inserted: $numberOfRecordsInserted. " +
+                                "It should have been 1"
+                )
+            }
         }
     }
 
