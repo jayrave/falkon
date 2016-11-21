@@ -1,6 +1,6 @@
-package com.jayrave.falkon.sqlBuilders.test.insert
+package com.jayrave.falkon.sqlBuilders.test.insertOrReplace
 
-import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
+import com.jayrave.falkon.sqlBuilders.InsertOrReplaceSqlBuilder
 import com.jayrave.falkon.sqlBuilders.test.DbForTest
 import com.jayrave.falkon.sqlBuilders.test.buildArgListForSql
 import com.jayrave.falkon.sqlBuilders.test.execute
@@ -8,36 +8,34 @@ import com.jayrave.falkon.sqlBuilders.test.findAllRecordsInTable
 import org.assertj.core.api.Assertions.assertThat
 import java.sql.Types
 
-class TestInsertOrReplace(private val insertSqlBuilder: InsertSqlBuilder, db: DbForTest) {
+class TestInsertOrReplace(
+        private val insertOrReplaceSqlBuilder: InsertOrReplaceSqlBuilder, db: DbForTest) {
 
     private val dataSource = db.dataSource
     init {
         // Create table
         dataSource.execute(
-                "CREATE TABLE $TABLE_NAME (" +
-                        "$INT_COLUMN_NAME ${db.intDataType} PRIMARY KEY, " +
-                        "$STRING_COLUMN_NAME ${db.stringDataType})"
+                "CREATE TABLE ${TABLE_NAME} (" +
+                        "${INT_COLUMN_NAME} ${db.intDataType} PRIMARY KEY, " +
+                        "${STRING_COLUMN_NAME} ${db.stringDataType})"
         )
     }
 
 
     fun `new records are inserted via insert or replace with both null & non null values`() {
-
-        // Build sql & index map
-        val (insertOrReplaceSql, indexToIndicesMap) = insertSqlBuilder.buildInsertOrReplace(
-                TABLE_NAME, ID_COLUMNS, NON_ID_COLUMNS
-        )
+        // Build sql
+        val sql = insertOrReplaceSqlBuilder.build(TABLE_NAME, ID_COLUMNS, NON_ID_COLUMNS)
 
         // Insert records
-        dataSource.execute(insertOrReplaceSql) { ps ->
-            indexToIndicesMap.indicesForIndex(1).forEach { ps.setInt(it, 5) }
-            indexToIndicesMap.indicesForIndex(2).forEach { ps.setString(it, "test 6") }
+        dataSource.execute(sql) { ps ->
+            ps.setInt(1, 5)
+            ps.setString(2, "test 6")
         }
 
-        dataSource.execute(insertOrReplaceSql) { ps ->
+        dataSource.execute(sql) { ps ->
             ps.clearParameters()
-            indexToIndicesMap.indicesForIndex(1).forEach { ps.setInt(it, 7) }
-            indexToIndicesMap.indicesForIndex(2).forEach { ps.setNull(it, Types.VARCHAR) }
+            ps.setInt(1, 7)
+            ps.setNull(2, Types.VARCHAR)
         }
 
         // Query for all records
@@ -55,10 +53,9 @@ class TestInsertOrReplace(private val insertSqlBuilder: InsertSqlBuilder, db: Db
 
 
     fun `existing records are updated via insert or replace with both null & non null values`() {
-
         // Insert records
-        dataSource.execute("INSERT INTO $TABLE_NAME VALUES(${buildArgListForSql(5, "test 6")})")
-        dataSource.execute("INSERT INTO $TABLE_NAME VALUES(${buildArgListForSql(7, null)})")
+        dataSource.execute("INSERT INTO ${TABLE_NAME} VALUES(${buildArgListForSql(5, "test 6")})")
+        dataSource.execute("INSERT INTO ${TABLE_NAME} VALUES(${buildArgListForSql(7, null)})")
 
         // Query for all records
         val allRecords = dataSource.findAllRecordsInTable(
@@ -72,21 +69,19 @@ class TestInsertOrReplace(private val insertSqlBuilder: InsertSqlBuilder, db: Db
         assertThat(allRecords[1]).containsEntry(INT_COLUMN_NAME, 7.toString())
         assertThat(allRecords[1]).containsEntry(STRING_COLUMN_NAME, null)
 
-        // Build sql & index map
-        val (insertOrReplaceSql, indexToIndicesMap) = insertSqlBuilder.buildInsertOrReplace(
-                TABLE_NAME, ID_COLUMNS, NON_ID_COLUMNS
-        )
+        // Build sql
+        val sql = insertOrReplaceSqlBuilder.build(TABLE_NAME, ID_COLUMNS, NON_ID_COLUMNS)
 
         // Update records via insert or replace
-        dataSource.execute(insertOrReplaceSql) { ps ->
-            indexToIndicesMap.indicesForIndex(1).forEach { ps.setInt(it, 5) }
-            indexToIndicesMap.indicesForIndex(2).forEach { ps.setNull(it, Types.VARCHAR) }
+        dataSource.execute(sql) { ps ->
+            ps.setInt(1, 5)
+            ps.setNull(2, Types.VARCHAR)
         }
 
-        dataSource.execute(insertOrReplaceSql) { ps ->
+        dataSource.execute(sql) { ps ->
             ps.clearParameters()
-            indexToIndicesMap.indicesForIndex(1).forEach { ps.setInt(it, 7) }
-            indexToIndicesMap.indicesForIndex(2).forEach { ps.setString(it, "test 8") }
+            ps.setInt(1, 7)
+            ps.setString(2, "test 8")
         }
 
         // Query for all records
