@@ -6,41 +6,41 @@ import org.junit.Test
 class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
-    fun testCompileSqlWithAllTypesOfBoundArgs() {
-        TestCompileSqlWithAllTypesOfBoundArgs.performTestOn(
+    fun `compile sql with all types of bound args`() {
+        TestCompileSqlWithAllTypesOfBoundArgs(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 
 
     @Test
-    fun testCompileInsertWithAllTypesOfBoundArgs() {
-        TestCompileInsertWithAllTypesOfBoundArgs.performTestOn(
+    fun `compile insert with all types of bound args`() {
+        TestCompileInsertWithAllTypesOfBoundArgs(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 
 
     @Test
-    fun testCompileUpdateWithAllTypesOfBoundArgs() {
-        TestCompileUpdateWithAllTypesOfBoundArgs.performTestOn(
+    fun `compile update with all types of bound args`() {
+        TestCompileUpdateWithAllTypesOfBoundArgs(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 
 
     @Test
-    fun testCompileDeleteWithAllTypesOfBoundArgs() {
-        TestCompileDeleteWithAllTypesOfBoundArgs.performTestOn(
+    fun `compile delete with all types of bound args`() {
+        TestCompileDeleteWithAllTypesOfBoundArgs(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 
 
     @Test
-    fun testCompileQueryWithAllTypesOfBoundArgs() {
-        TestCompileQueryWithAllTypesOfBoundArgs.performTestOn(
+    fun `compile query with all types of bound args`() {
+        TestCompileQueryWithAllTypesOfBoundArgs(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 }

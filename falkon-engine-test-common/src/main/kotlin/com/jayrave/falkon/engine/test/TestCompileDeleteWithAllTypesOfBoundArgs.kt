@@ -1,17 +1,17 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
-class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
+class TestCompileDeleteWithAllTypesOfBoundArgs(
         private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
         nativeQueryExecutor: NativeQueryExecutor) :
-        BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
-                nativeSqlExecutor, nativeQueryExecutor) {
+        BaseClassForTestingSqlWithAllTypesOfBoundArgs(nativeSqlExecutor, nativeQueryExecutor) {
 
-    fun performTest() {
-        createTableWithColumnsForAllTypesUsingNativeMethods()
+    fun `perform test`() {
+        createTableWithColumnsForAllTypesUsingNativeMethod()
 
         // Execute insert using engine since its easier
         engineCore.compileInsert(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
@@ -22,7 +22,17 @@ class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
+                .bindNull(8, Type.SHORT)
+                .bindNull(9, Type.INT)
+                .bindNull(10, Type.LONG)
+                .bindNull(11, Type.FLOAT)
+                .bindNull(12, Type.DOUBLE)
+                .bindNull(13, Type.STRING)
+                .bindNull(14, Type.BLOB)
                 .safeCloseAfterExecution()
+
+        // Make sure record got inserted
+        assertThat(nativeQueryExecutor.getCount(TABLE_NAME)).isEqualTo(1)
 
         // Execute delete using engine
         val numberOfRowsAffected = engineCore.compileDelete(
@@ -33,7 +43,14 @@ class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
                         "$FLOAT_COLUMN_NAME = ? AND " +
                         "$DOUBLE_COLUMN_NAME = ? AND " +
                         "$STRING_COLUMN_NAME = ? AND " +
-                        "$BLOB_COLUMN_NAME = ?"
+                        "$BLOB_COLUMN_NAME = ? AND " +
+                        "$NULLABLE_SHORT_COLUMN_NAME IS NULL AND " +
+                        "$NULLABLE_INT_COLUMN_NAME IS NULL AND " +
+                        "$NULLABLE_LONG_COLUMN_NAME IS NULL AND " +
+                        "$NULLABLE_FLOAT_COLUMN_NAME IS NULL AND " +
+                        "$NULLABLE_DOUBLE_COLUMN_NAME IS NULL AND " +
+                        "$NULLABLE_STRING_COLUMN_NAME IS NULL AND " +
+                        "$NULLABLE_BLOB_COLUMN_NAME IS NULL"
         )
                 .bindShort(1, 5)
                 .bindInt(2, 6)
@@ -46,17 +63,5 @@ class TestCompileDeleteWithAllTypesOfBoundArgs private constructor(
 
         assertThat(numberOfRowsAffected).isEqualTo(1)
         assertThat(nativeQueryExecutor.getCount(TABLE_NAME)).isEqualTo(0)
-    }
-
-
-    companion object {
-        fun performTestOn(
-                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
-                usingNativeQueryExecutor: NativeQueryExecutor) {
-
-            TestCompileDeleteWithAllTypesOfBoundArgs(
-                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
-            ).performTest()
-        }
     }
 }

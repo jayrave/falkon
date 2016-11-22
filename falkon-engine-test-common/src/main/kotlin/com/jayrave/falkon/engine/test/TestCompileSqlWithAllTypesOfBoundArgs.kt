@@ -1,16 +1,18 @@
 package com.jayrave.falkon.engine.test
 
 import com.jayrave.falkon.engine.EngineCore
+import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.safeCloseAfterExecution
+import org.assertj.core.api.Assertions.assertThat
 
-class TestCompileSqlWithAllTypesOfBoundArgs private constructor(
+class TestCompileSqlWithAllTypesOfBoundArgs(
         private val engineCore: EngineCore, nativeSqlExecutor: NativeSqlExecutor,
         nativeQueryExecutor: NativeQueryExecutor) :
-        BaseClassForTestingCompilingSqlWithAllTypesOfBoundArgs(
+        BaseClassForTestingSqlWithAllTypesOfBoundArgs(
                 nativeSqlExecutor, nativeQueryExecutor) {
 
-    fun performTest() {
-        createTableWithColumnsForAllTypesUsingNativeMethods()
+    fun `perform test`() {
+        createTableWithColumnsForAllTypesUsingNativeMethod()
         engineCore.compileSql(getSqlToInsertOneRowWithAllTypesWithPlaceholders())
                 .bindShort(1, 5)
                 .bindInt(2, 6)
@@ -19,20 +21,20 @@ class TestCompileSqlWithAllTypesOfBoundArgs private constructor(
                 .bindDouble(5, 9.0)
                 .bindString(6, "test 10")
                 .bindBlob(7, byteArrayOf(11))
+                .bindNull(8, Type.SHORT)
+                .bindNull(9, Type.INT)
+                .bindNull(10, Type.LONG)
+                .bindNull(11, Type.FLOAT)
+                .bindNull(12, Type.DOUBLE)
+                .bindNull(13, Type.STRING)
+                .bindNull(14, Type.BLOB)
                 .safeCloseAfterExecution()
 
-        assertOneRowWithAllTypesUsingDataSource(5, 6, 7, 8F, 9.0, "test 10", byteArrayOf(11))
-    }
-
-
-    companion object {
-        fun performTestOn(
-                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
-                usingNativeQueryExecutor: NativeQueryExecutor) {
-
-            TestCompileSqlWithAllTypesOfBoundArgs(
-                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
-            ).performTest()
-        }
+        // Make sure record got inserted
+        assertThat(nativeQueryExecutor.getCount(TABLE_NAME)).isEqualTo(1)
+        assertOneRowWithAllTypesUsingNativeMethod(
+                5, 6, 7, 8F, 9.0, "test 10", byteArrayOf(11),
+                null, null, null, null, null, null, null
+        )
     }
 }
