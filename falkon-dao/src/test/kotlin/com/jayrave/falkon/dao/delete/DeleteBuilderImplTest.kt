@@ -197,7 +197,13 @@ class DeleteBuilderImplTest {
                 .eq(table.double, 9.toDouble()).and()
                 .eq(table.string, "test 10").and()
                 .eq(table.blob, byteArrayOf(11)).and()
-                .gt(table.nullableInt, null)
+                .gt(table.nullableShort, null).and()
+                .gt(table.nullableInt, null).and()
+                .gt(table.nullableLong, null).and()
+                .gt(table.nullableFloat, null).and()
+                .gt(table.nullableDouble, null).and()
+                .gt(table.nullableString, null).and()
+                .gt(table.nullableBlob, null)
 
         val actualDelete = deleteBuilder.build()
         deleteBuilder.delete()
@@ -220,13 +226,30 @@ class DeleteBuilderImplTest {
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name)
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableShort.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableLong.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableFloat.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableDouble.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableString.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.name)
                 )
         )
 
         val expectedDelete = DeleteImpl(
                 table.name, expectedSql,
-                listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
+                listOf(
+                        5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11),
+                        TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
+                        TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
+                        TypedNull(Type.BLOB)
+                )
         )
 
         // Verify
@@ -235,7 +258,7 @@ class DeleteBuilderImplTest {
         val statement = engine.compiledStatementsForDelete.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
-        assertThat(statement.boundArgs).hasSize(8)
+        assertThat(statement.boundArgs).hasSize(14)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
         assertThat(statement.longBoundAt(3)).isEqualTo(7L)
@@ -244,6 +267,12 @@ class DeleteBuilderImplTest {
         assertThat(statement.stringBoundAt(6)).isEqualTo("test 10")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(11))
         assertThat(statement.isNullBoundAt(8)).isTrue()
+        assertThat(statement.isNullBoundAt(9)).isTrue()
+        assertThat(statement.isNullBoundAt(10)).isTrue()
+        assertThat(statement.isNullBoundAt(11)).isTrue()
+        assertThat(statement.isNullBoundAt(12)).isTrue()
+        assertThat(statement.isNullBoundAt(13)).isTrue()
+        assertThat(statement.isNullBoundAt(14)).isTrue()
     }
     
     

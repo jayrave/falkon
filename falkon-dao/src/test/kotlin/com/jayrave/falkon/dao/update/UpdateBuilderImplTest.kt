@@ -211,7 +211,13 @@ class UpdateBuilderImplTest {
             set(table.double, 9.toDouble())
             set(table.string, "test 10")
             set(table.blob, byteArrayOf(11))
+            set(table.nullableShort, null)
             set(table.nullableInt, null)
+            set(table.nullableLong, null)
+            set(table.nullableFloat, null)
+            set(table.nullableDouble, null)
+            set(table.nullableString, null)
+            set(table.nullableBlob, null)
         }
 
         val actualUpdate = builder.build()
@@ -223,13 +229,20 @@ class UpdateBuilderImplTest {
                 listOf(
                         table.short.name, table.int.name, table.long.name, table.float.name,
                         table.double.name, table.string.name, table.blob.name,
-                        table.nullableInt.name
+                        table.nullableShort.name, table.nullableInt.name, table.nullableLong.name,
+                        table.nullableFloat.name, table.nullableDouble.name,
+                        table.nullableString.name, table.nullableBlob.name
                 ), null
         )
 
         val expectedUpdate = UpdateImpl(
                 table.name, expectedSql,
-                listOf(5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11), TypedNull(Type.INT))
+                listOf(
+                        5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11),
+                        TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
+                        TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
+                        TypedNull(Type.BLOB)
+                )
         )
 
         // Verify
@@ -238,7 +251,7 @@ class UpdateBuilderImplTest {
         val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
-        assertThat(statement.boundArgs).hasSize(8)
+        assertThat(statement.boundArgs).hasSize(14)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
         assertThat(statement.longBoundAt(3)).isEqualTo(7L)
@@ -247,6 +260,12 @@ class UpdateBuilderImplTest {
         assertThat(statement.stringBoundAt(6)).isEqualTo("test 10")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(11))
         assertThat(statement.isNullBoundAt(8)).isTrue()
+        assertThat(statement.isNullBoundAt(9)).isTrue()
+        assertThat(statement.isNullBoundAt(10)).isTrue()
+        assertThat(statement.isNullBoundAt(11)).isTrue()
+        assertThat(statement.isNullBoundAt(12)).isTrue()
+        assertThat(statement.isNullBoundAt(13)).isTrue()
+        assertThat(statement.isNullBoundAt(14)).isTrue()
     }
 
 
