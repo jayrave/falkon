@@ -4,9 +4,9 @@ import com.jayrave.falkon.engine.EngineCore
 import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
-class TestIsInTransaction private constructor(private val engineCore: EngineCore) {
+class TestIsInTransaction(private val engineCore: EngineCore) {
 
-    fun performTestReturnsAppropriateFlag() {
+    fun `#isInTransaction returns appropriate result`() {
         val tableName = "test"
         val columnName = "column_name_1"
 
@@ -36,12 +36,5 @@ class TestIsInTransaction private constructor(private val engineCore: EngineCore
 
         // Outside transaction
         assertThat(engineCore.isInTransaction()).isFalse()
-    }
-
-
-    companion object {
-        fun performTestReturnsAppropriateFlag(engineCore: EngineCore) {
-            TestIsInTransaction(engineCore).performTestReturnsAppropriateFlag()
-        }
     }
 }

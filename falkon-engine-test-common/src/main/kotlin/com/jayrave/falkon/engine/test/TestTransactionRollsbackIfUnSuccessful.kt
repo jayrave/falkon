@@ -4,11 +4,11 @@ import com.jayrave.falkon.engine.EngineCore
 import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
-class TestTransactionRollsbackIfUnSuccessful private constructor(
+class TestTransactionRollsbackIfUnSuccessful(
         private val engineCore: EngineCore, private val nativeSqlExecutor: NativeSqlExecutor,
         private val nativeQueryExecutor: NativeQueryExecutor) {
 
-    fun performTest() {
+    fun `perform test`() {
         val tableName = "test"
         val columnName = "column_name_1"
 
@@ -29,17 +29,5 @@ class TestTransactionRollsbackIfUnSuccessful private constructor(
 
         assertThat(wasExceptionThrown).isTrue()
         assertThat(nativeQueryExecutor.getCount(tableName)).isEqualTo(1)
-    }
-
-
-    companion object {
-        fun performTestOn(
-                engineCore: EngineCore, usingNativeSqlExecutor: NativeSqlExecutor,
-                usingNativeQueryExecutor: NativeQueryExecutor) {
-
-            TestTransactionRollsbackIfUnSuccessful(
-                    engineCore, usingNativeSqlExecutor, usingNativeQueryExecutor
-            ).performTest()
-        }
     }
 }

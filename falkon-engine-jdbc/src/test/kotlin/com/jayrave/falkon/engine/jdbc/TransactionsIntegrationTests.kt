@@ -9,27 +9,27 @@ import java.sql.SQLException
 class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
-    fun testTransactionCommitsIfSuccessful() {
-        TestTransactionCommitsIfSuccessful.performTestOn(engineCore)
+    fun `transaction commits if successful`() {
+        TestTransactionCommitsIfSuccessful(engineCore).`perform test`()
     }
 
 
     @Test
-    fun testTransactionRollsbackIfUnSuccessful() {
-        TestTransactionRollsbackIfUnSuccessful.performTestOn(
+    fun `transaction rollsback if unsuccessful`() {
+        TestTransactionRollsbackIfUnSuccessful(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 
 
     @Test
-    fun testIsInTransaction() {
-        TestIsInTransaction.performTestReturnsAppropriateFlag(engineCore)
+    fun `#isInTransaction returns appropriate result`() {
+        TestIsInTransaction(engineCore).`#isInTransaction returns appropriate result`()
     }
 
 
     @Test(expected = SQLException::class)
-    fun testWorkingOnStatementCreatedInATransactionOutsideOfItThrows() {
+    fun `working on statement after associated transaction is closed throws`() {
         val compiledStatement = engineCore.executeInTransaction {
             val tableName = "test"
             val columnName = "column_name_1"
@@ -43,7 +43,7 @@ class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
 
 
     @Test(expected = SQLException::class)
-    fun testWorkingOnSourceCreatedInATransactionOutsideOfItThrows() {
+    fun `working on source after associated transaction is closed throws`() {
         val source = engineCore.executeInTransaction {
             val tableName = "test"
             val columnName = "column_name_1"

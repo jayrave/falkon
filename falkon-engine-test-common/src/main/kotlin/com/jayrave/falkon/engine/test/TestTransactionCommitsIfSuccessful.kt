@@ -4,9 +4,9 @@ import com.jayrave.falkon.engine.EngineCore
 import com.jayrave.falkon.engine.safeCloseAfterExecution
 import org.assertj.core.api.Assertions.assertThat
 
-class TestTransactionCommitsIfSuccessful private constructor(private val engineCore: EngineCore) {
+class TestTransactionCommitsIfSuccessful(private val engineCore: EngineCore) {
 
-    fun performTest() {
+    fun `perform test`() {
         val tableName = "test"
         val columnName = "column_name_1"
 
@@ -39,12 +39,5 @@ class TestTransactionCommitsIfSuccessful private constructor(private val engineC
         assertThat(source.moveToNext()).isEqualTo(false)
         source.close()
         compiledQuery.close()
-    }
-
-
-    companion object {
-        fun performTestOn(engineCore: EngineCore) {
-            TestTransactionCommitsIfSuccessful(engineCore).performTest()
-        }
     }
 }

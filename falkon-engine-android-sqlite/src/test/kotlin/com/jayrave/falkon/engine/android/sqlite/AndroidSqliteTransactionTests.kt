@@ -9,13 +9,13 @@ class AndroidSqliteTransactionTests : RobolectricTestBaseClass() {
     private val engineCore = buildAndroidSqliteEngineCore()
 
     @Test
-    fun testIsInTransactionReturnsAppropriateFlag() {
-        TestIsInTransaction.performTestReturnsAppropriateFlag(engineCore)
+    fun `#isInTransaction returns appropriate result`() {
+        TestIsInTransaction(engineCore).`#isInTransaction returns appropriate result`()
     }
 
 
     @Test
-    fun testNestingTransactionThrows() {
-        TestNestingTransactions.performTestNestingTransactionsThrows(engineCore)
+    fun `nesting transactions throws`() {
+        TestNestingTransactions(engineCore).`nesting transactions throws`()
     }
 }

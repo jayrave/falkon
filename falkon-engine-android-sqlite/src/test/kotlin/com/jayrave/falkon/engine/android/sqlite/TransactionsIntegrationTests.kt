@@ -7,15 +7,15 @@ import org.junit.Test
 class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
-    fun testTransactionCommitsIfSuccessful() {
-        TestTransactionCommitsIfSuccessful.performTestOn(engineCore)
+    fun `transaction commits if successful`() {
+        TestTransactionCommitsIfSuccessful(engineCore).`perform test`()
     }
 
 
     @Test
-    fun testTransactionRollsbackIfUnSuccessful() {
-        TestTransactionRollsbackIfUnSuccessful.performTestOn(
+    fun `transaction rollsback if unsuccessful`() {
+        TestTransactionRollsbackIfUnSuccessful(
                 engineCore, sqlExecutorUsingDataSource, queryExecutorUsingDataSource
-        )
+        ).`perform test`()
     }
 }

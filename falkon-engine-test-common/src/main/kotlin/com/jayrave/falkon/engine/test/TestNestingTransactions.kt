@@ -4,9 +4,9 @@ import com.jayrave.falkon.engine.EngineCore
 import org.assertj.core.api.Assertions.assertThat
 import java.sql.SQLException
 
-class TestNestingTransactions private constructor(private val engineCore: EngineCore) {
+class TestNestingTransactions(private val engineCore: EngineCore) {
 
-    fun performTestNestingTransactionsThrows() {
+    fun `nesting transactions throws`() {
         var exceptionCaught = false
         engineCore.executeInTransaction {
             try {
@@ -17,12 +17,5 @@ class TestNestingTransactions private constructor(private val engineCore: Engine
         }
 
         assertThat(exceptionCaught).isTrue()
-    }
-
-
-    companion object {
-        fun performTestNestingTransactionsThrows(engineCore: EngineCore) {
-            TestNestingTransactions(engineCore).performTestNestingTransactionsThrows()
-        }
     }
 }
