@@ -1,7 +1,7 @@
 package com.jayrave.falkon.engine
 
 /**
- * Carries the type of event that took place (insert, update or delete) &
+ * Carries the type of event that took place (insert, update, delete & insert or replace) &
  * the table it took place in
  */
 data class DbEvent private constructor(val type: Type, val tableName: String) {
@@ -9,7 +9,8 @@ data class DbEvent private constructor(val type: Type, val tableName: String) {
     enum class Type {
         INSERT,
         UPDATE,
-        DELETE
+        DELETE,
+        INSERT_OR_REPLACE
     }
 
 
@@ -18,6 +19,7 @@ data class DbEvent private constructor(val type: Type, val tableName: String) {
         fun forInsert(tableName: String) = create(Type.INSERT, tableName)
         fun forUpdate(tableName: String) = create(Type.UPDATE, tableName)
         fun forDelete(tableName: String) = create(Type.DELETE, tableName)
+        fun forInsertOrReplace(tableName: String) = create(Type.INSERT_OR_REPLACE, tableName)
     }
 }
 

@@ -38,9 +38,11 @@ class DbEventsManagerTest {
         val dbEvent1 = DbEvent.forInsert("example table 1")
         val dbEvent2 = DbEvent.forUpdate("example table 2")
         val dbEvent3 = DbEvent.forDelete("example table 3")
+        val dbEvent4 = DbEvent.forInsertOrReplace("example table 4")
         dbEventsManager.onEvent(dbEvent1)
         dbEventsManager.onEvent(dbEvent2)
         dbEventsManager.onEvent(dbEvent3)
+        dbEventsManager.onEvent(dbEvent4)
 
         // Assert events are not delivered yet
         assertThat(eventListener.multiEventsList).isEmpty()
@@ -51,7 +53,9 @@ class DbEventsManagerTest {
         // Assert events are delivered
         assertThat(eventListener.singleEvents).isEmpty()
         assertThat(eventListener.multiEventsList).hasSize(1)
-        assertThat(eventListener.multiEventsList.first()).containsOnly(dbEvent1, dbEvent2, dbEvent3)
+        assertThat(eventListener.multiEventsList.first()).containsOnly(
+                dbEvent1, dbEvent2, dbEvent3, dbEvent4
+        )
     }
 
 

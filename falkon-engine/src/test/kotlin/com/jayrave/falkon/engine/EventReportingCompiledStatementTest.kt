@@ -31,10 +31,15 @@ class EventReportingCompiledStatementTest {
                 buildCompiledStatement(1), DbEvent.Type.DELETE, onExecuteWithEffects
         )
 
+        buildAndExecuteEventReportingCompiledStatement(
+                buildCompiledStatement(1), DbEvent.Type.INSERT_OR_REPLACE, onExecuteWithEffects
+        )
+
         assertThat(dbEvents).containsExactly(
                 DbEvent.forInsert(tableName),
                 DbEvent.forUpdate(tableName),
-                DbEvent.forDelete(tableName)
+                DbEvent.forDelete(tableName),
+                DbEvent.forInsertOrReplace(tableName)
         )
     }
 
@@ -54,6 +59,10 @@ class EventReportingCompiledStatementTest {
 
         buildAndExecuteEventReportingCompiledStatement(
                 buildCompiledStatement(0), DbEvent.Type.DELETE, onExecuteWithEffects
+        )
+
+        buildAndExecuteEventReportingCompiledStatement(
+                buildCompiledStatement(0), DbEvent.Type.INSERT_OR_REPLACE, onExecuteWithEffects
         )
 
         assertThat(onExecuteWithEffectsCalled).isFalse()

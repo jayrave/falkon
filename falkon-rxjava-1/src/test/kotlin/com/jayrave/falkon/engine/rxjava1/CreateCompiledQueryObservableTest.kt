@@ -70,6 +70,19 @@ class CreateCompiledQueryObservableTest {
 
 
     @Test
+    fun testCompiledQueryIsDeliveredOnInsertOrReplace() {
+        fireRelatedEventsAndAssertCompiledQueryDelivery(
+                engineForTest.createDefaultObservableQuery(), defaultQueryInfo,
+                DbEvent.forInsertOrReplace(tableNameForDefaultQuery),
+                listOf(
+                        DbEvent.forInsertOrReplace(tableNameForDefaultQuery),
+                        DbEvent.forInsertOrReplace(tableNameNotInDefaultQuery)
+                )
+        )
+    }
+
+
+    @Test
     fun testCompiledQueryIsNotDeliveredForUnrelatedEvents() {
         // Setup subscription. Use immediate scheduler to not wait around
         engineForTest.createCompiledQueryObservable(
@@ -84,7 +97,8 @@ class CreateCompiledQueryObservableTest {
         engineForTest.fireEvent(DbEvent.forInsert(tableNameNotInDefaultQuery))
         engineForTest.fireEvents(listOf(
                 DbEvent.forUpdate(tableNameNotInDefaultQuery),
-                DbEvent.forDelete(tableNameNotInDefaultQuery)
+                DbEvent.forDelete(tableNameNotInDefaultQuery),
+                DbEvent.forInsertOrReplace(tableNameNotInDefaultQuery)
         ))
 
         // Make sure compiled query wasn't delivered for unrelated subscription

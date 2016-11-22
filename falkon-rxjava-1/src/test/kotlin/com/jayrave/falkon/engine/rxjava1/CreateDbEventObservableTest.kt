@@ -40,11 +40,21 @@ class CreateDbEventObservableTest {
 
 
     @Test
+    fun testInsertOrReplaceDbEventIsDelivered() {
+        val insertOrReplaceEventToBeFired = DbEvent.forInsertOrReplace("test")
+        val caughtEvents = fireSingleEventAndCatchResult(insertOrReplaceEventToBeFired)
+        assertThat(caughtEvents).hasSize(1)
+        assertThat(caughtEvents.first()).isEqualTo(insertOrReplaceEventToBeFired)
+    }
+
+
+    @Test
     fun testAllEventsAreDeliveredWhenMultipleEventsAreFiredIndividually() {
         val eventsToBeFired = listOf(
                 DbEvent.forInsert("test_1"),
                 DbEvent.forUpdate("test_2"),
-                DbEvent.forDelete("test_3")
+                DbEvent.forDelete("test_3"),
+                DbEvent.forInsertOrReplace("test_4")
         )
 
         val countDownLatch = CountDownLatch(eventsToBeFired.count())
@@ -74,7 +84,8 @@ class CreateDbEventObservableTest {
         val eventsToBeFired = listOf(
                 DbEvent.forInsert("test_1"),
                 DbEvent.forUpdate("test_2"),
-                DbEvent.forDelete("test_3")
+                DbEvent.forDelete("test_3"),
+                DbEvent.forInsertOrReplace("test_4")
         )
 
         val countDownLatch = CountDownLatch(1)
