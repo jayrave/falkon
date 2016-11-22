@@ -54,6 +54,11 @@ internal class EngineForTestingDaoExtn private constructor(
     }
 
 
+    override fun compileInsertOrReplace(tableName: String, rawSql: String): CompiledStatement<Int> {
+        throw UnsupportedOperationException()
+    }
+
+
     override fun compileQuery(tableNames: Iterable<String>, rawSql: String):
             CompiledStatement<Source> {
 

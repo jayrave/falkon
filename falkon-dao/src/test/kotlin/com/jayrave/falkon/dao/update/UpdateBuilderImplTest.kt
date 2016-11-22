@@ -1,9 +1,6 @@
 package com.jayrave.falkon.dao.update
 
-import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForUpdateForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.dao.testLib.*
 import com.jayrave.falkon.dao.update.testLib.UpdateSqlBuilderForTesting
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
@@ -284,7 +281,7 @@ class UpdateBuilderImplTest {
             val numberOfRowsAffected = 8745
             val engine = EngineForTestingBuilders.createWithOneShotStatements(
                     updateProvider = { tableName, sql ->
-                        OneShotCompiledStatementForUpdateForTest(
+                        IntReturningOneShotCompiledStatementForTest(
                                 tableName, sql, numberOfRowsAffected
                         )
                     }
@@ -303,7 +300,7 @@ class UpdateBuilderImplTest {
         private fun testStatementGetsClosedEvenIfUpdateThrows(updateOp: (TableForTest) -> Int) {
             val engine = EngineForTestingBuilders.createWithOneShotStatements(
                     updateProvider = { tableName, sql ->
-                        OneShotCompiledStatementForUpdateForTest(
+                        IntReturningOneShotCompiledStatementForTest(
                                 tableName, sql, shouldThrowOnExecution = true
                         )
                     }

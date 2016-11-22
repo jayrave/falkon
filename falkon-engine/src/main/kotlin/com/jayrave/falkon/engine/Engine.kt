@@ -55,6 +55,14 @@ interface Engine {
     fun compileDelete(tableName: String, rawSql: String): CompiledStatement<Int>
 
     /**
+     * @param tableName name of table this [rawSql] is concerned with
+     * @param rawSql raw statement that performs insert or replace
+     *
+     * @return number of rows inserted or replaced [0, [Int.MAX_VALUE]]
+     */
+    fun compileInsertOrReplace(tableName: String, rawSql: String): CompiledStatement<Int>
+
+    /**
      * @param tableNames names of tables this [rawSql] is concerned with
      * @param rawSql raw SELECT statement
      *

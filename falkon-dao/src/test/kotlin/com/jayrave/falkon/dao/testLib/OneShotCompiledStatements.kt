@@ -109,19 +109,7 @@ internal open class OneShotCompiledStatementForTest<R>(
 }
 
 
-internal class OneShotCompiledStatementForInsertForTest(
-        val tableName: String, sql: String, returnValue: Int = 1,
-        shouldThrowOnExecution: Boolean = false) :
-        OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
-
-
-internal class OneShotCompiledStatementForUpdateForTest(
-        val tableName: String, sql: String, returnValue: Int = 1,
-        shouldThrowOnExecution: Boolean = false) :
-        OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
-
-
-internal class OneShotCompiledStatementForDeleteForTest(
+internal class IntReturningOneShotCompiledStatementForTest(
         val tableName: String, sql: String, returnValue: Int = 1,
         shouldThrowOnExecution: Boolean = false) :
         OneShotCompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)

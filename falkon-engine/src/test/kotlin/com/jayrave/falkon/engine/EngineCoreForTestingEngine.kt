@@ -5,9 +5,9 @@ import com.nhaarman.mockito_kotlin.mock
 internal class EngineCoreForTestingEngine private constructor(
         private val sqlProvider: (String) -> CompiledStatement<Unit>,
         private val insertProvider: (String) -> CompiledStatement<Int>,
-        private val insertOrReplaceProvider: (String) -> CompiledStatement<Int>,
         private val updateProvider: (String) -> CompiledStatement<Int>,
         private val deleteProvider: (String) -> CompiledStatement<Int>,
+        private val insertOrReplaceProvider: (String) -> CompiledStatement<Int>,
         private val queryProvider: (String) -> CompiledStatement<Source>) :
         EngineCore {
 
@@ -51,16 +51,16 @@ internal class EngineCoreForTestingEngine private constructor(
         return insertProvider.invoke(rawSql)
     }
 
-    override fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int> {
-        return insertOrReplaceProvider.invoke(rawSql)
-    }
-
     override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return updateProvider.invoke(rawSql)
     }
 
     override fun compileDelete(rawSql: String): CompiledStatement<Int> {
         return deleteProvider.invoke(rawSql)
+    }
+
+    override fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int> {
+        return insertOrReplaceProvider.invoke(rawSql)
     }
 
     override fun compileQuery(rawSql: String): CompiledStatement<Source> {
@@ -76,13 +76,13 @@ internal class EngineCoreForTestingEngine private constructor(
                 insertProvider: (String) -> CompiledStatement<Int> =
                 { sql -> IntReturningCompiledStatementForTest(sql, 0) },
 
-                insertOrReplaceProvider: (String) -> CompiledStatement<Int> =
-                { sql -> IntReturningCompiledStatementForTest(sql, 0) },
-
                 updateProvider: (String) -> CompiledStatement<Int> =
                 { sql -> IntReturningCompiledStatementForTest(sql, 0) },
 
                 deleteProvider: (String) -> CompiledStatement<Int> =
+                { sql -> IntReturningCompiledStatementForTest(sql, 0) },
+
+                insertOrReplaceProvider: (String) -> CompiledStatement<Int> =
                 { sql -> IntReturningCompiledStatementForTest(sql, 0) },
 
                 queryProvider: (String) -> CompiledStatement<Source> =

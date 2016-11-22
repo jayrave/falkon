@@ -197,6 +197,7 @@ class DefaultEngineTest {
             defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
             defaultEngine.compileUpdate(tableName, DUMMY_SQL).execute()
             defaultEngine.compileDelete(tableName, DUMMY_SQL).execute()
+            defaultEngine.compileInsertOrReplace(tableName, DUMMY_SQL).execute()
 
             // Assert events are not delivered yet
             assertThat(eventListener.multiEventsList).isEmpty()
@@ -208,7 +209,8 @@ class DefaultEngineTest {
         assertThat(eventListener.multiEventsList.first()).containsOnly(
                 DbEvent.forInsert(tableName),
                 DbEvent.forUpdate(tableName),
-                DbEvent.forDelete(tableName)
+                DbEvent.forDelete(tableName),
+                DbEvent.forInsertOrReplace(tableName)
         )
     }
 
@@ -230,6 +232,7 @@ class DefaultEngineTest {
                 defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
                 defaultEngine.compileUpdate(tableName, DUMMY_SQL).execute()
                 defaultEngine.compileDelete(tableName, DUMMY_SQL).execute()
+                defaultEngine.compileInsertOrReplace(tableName, DUMMY_SQL).execute()
 
                 throw Exception("just for testing")
             }
@@ -311,13 +314,15 @@ class DefaultEngineTest {
         defaultEngine.compileInsert(tableName, DUMMY_SQL).execute()
         defaultEngine.compileUpdate(tableName, DUMMY_SQL).execute()
         defaultEngine.compileDelete(tableName, DUMMY_SQL).execute()
+        defaultEngine.compileInsertOrReplace(tableName, DUMMY_SQL).execute()
 
         // Assert event is delivered
         assertThat(eventListener.multiEventsList).isEmpty()
         assertThat(eventListener.singleEvents).containsExactly(
                 DbEvent.forInsert(tableName),
                 DbEvent.forUpdate(tableName),
-                DbEvent.forDelete(tableName)
+                DbEvent.forDelete(tableName),
+                DbEvent.forInsertOrReplace(tableName)
         )
     }
 
@@ -358,6 +363,16 @@ class DefaultEngineTest {
                 .execute()
         storingLogger.assertStoredLogInfo(true, sqlForCompileDelete, argForCompileDelete)
 
+        val sqlForCompileInsertOrReplace = "SQL for compile insert or replace"
+        val argForCompileInsertOrReaplce = "insert or replace"
+        defaultEngine
+                .compileInsertOrReplace(dummyTableName, sqlForCompileInsertOrReplace)
+                .bindString(firstArgIndex, argForCompileInsertOrReaplce)
+                .execute()
+        storingLogger.assertStoredLogInfo(
+                true, sqlForCompileInsertOrReplace, argForCompileInsertOrReaplce
+        )
+
         val sqlForCompileQuery = "SQL for compile query"
         val argForCompileQuery = "query"
         defaultEngine
@@ -376,6 +391,7 @@ class DefaultEngineTest {
                 insertProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
                 updateProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
                 deleteProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
+                insertOrReplaceProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
                 queryProvider = { sql -> CompiledStatementForQueryForTest(sql, mock(), true) }
         )
 
@@ -431,6 +447,20 @@ class DefaultEngineTest {
             numberOfExceptionsCaught++
         }
 
+        val sqlForCompileInsertOrReplace = "SQL for compile insert or replace"
+        val argForCompileInsertOrReplace = "insert or replace"
+        try {
+            defaultEngine
+                    .compileInsertOrReplace(dummyTableName, sqlForCompileInsertOrReplace)
+                    .bindString(firstArgIndex, argForCompileInsertOrReplace)
+                    .execute()
+        } catch (e: Exception) {
+            numberOfExceptionsCaught++
+            storingLogger.assertStoredLogInfo(
+                    false, sqlForCompileInsertOrReplace, argForCompileInsertOrReplace
+            )
+        }
+
         val sqlForCompileQuery = "SQL for compile query"
         val argForCompileQuery = "query"
         try {
@@ -443,7 +473,7 @@ class DefaultEngineTest {
             numberOfExceptionsCaught++
         }
 
-        assertThat(numberOfExceptionsCaught).isEqualTo(5)
+        assertThat(numberOfExceptionsCaught).isEqualTo(6)
     }
 
 
@@ -456,7 +486,8 @@ class DefaultEngineTest {
             return EngineCoreForTestingEngine.createWithCompiledStatementsForTest(
                     insertProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) },
                     updateProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) },
-                    deleteProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) }
+                    deleteProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) },
+                    insertOrReplaceProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) }
             )
         }
 

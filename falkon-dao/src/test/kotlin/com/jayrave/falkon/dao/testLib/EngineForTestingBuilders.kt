@@ -8,15 +8,15 @@ import java.util.*
  * passed in rawSql string
  */
 internal class EngineForTestingBuilders private constructor(
-        private val insertProvider: (String, String) -> OneShotCompiledStatementForInsertForTest,
-        private val updateProvider: (String, String) -> OneShotCompiledStatementForUpdateForTest,
-        private val deleteProvider: (String, String) -> OneShotCompiledStatementForDeleteForTest,
+        private val insertProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest,
+        private val updateProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest,
+        private val deleteProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest,
         private val queryProvider: (Iterable<String>, String) ->
         OneShotCompiledStatementForQueryForTest) : Engine {
 
-    val compiledStatementsForInsert = ArrayList<OneShotCompiledStatementForInsertForTest>()
-    val compiledStatementsForUpdate = ArrayList<OneShotCompiledStatementForUpdateForTest>()
-    val compiledStatementsForDelete = ArrayList<OneShotCompiledStatementForDeleteForTest>()
+    val compiledStatementsForInsert = ArrayList<IntReturningOneShotCompiledStatementForTest>()
+    val compiledStatementsForUpdate = ArrayList<IntReturningOneShotCompiledStatementForTest>()
+    val compiledStatementsForDelete = ArrayList<IntReturningOneShotCompiledStatementForTest>()
     val compiledStatementsForQuery = ArrayList<OneShotCompiledStatementForQueryForTest>()
 
     override fun <R> executeInTransaction(operation: () -> R): R {
@@ -57,6 +57,11 @@ internal class EngineForTestingBuilders private constructor(
     }
 
 
+    override fun compileInsertOrReplace(tableName: String, rawSql: String): CompiledStatement<Int> {
+        throw UnsupportedOperationException()
+    }
+
+
     override fun compileQuery(tableNames: Iterable<String>, rawSql: String):
             CompiledStatement<Source> {
 
@@ -80,14 +85,14 @@ internal class EngineForTestingBuilders private constructor(
     companion object {
         
         fun createWithOneShotStatements(
-                insertProvider: (String, String) -> OneShotCompiledStatementForInsertForTest =
-                { tableName, sql -> OneShotCompiledStatementForInsertForTest(tableName, sql) },
+                insertProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest =
+                { tableName, sql -> IntReturningOneShotCompiledStatementForTest(tableName, sql) },
                 
-                updateProvider: (String, String) -> OneShotCompiledStatementForUpdateForTest =
-                { tableName, sql -> OneShotCompiledStatementForUpdateForTest(tableName, sql) },
+                updateProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest =
+                { tableName, sql -> IntReturningOneShotCompiledStatementForTest(tableName, sql) },
                 
-                deleteProvider: (String, String) -> OneShotCompiledStatementForDeleteForTest =
-                { tableName, sql -> OneShotCompiledStatementForDeleteForTest(tableName, sql) },
+                deleteProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest =
+                { tableName, sql -> IntReturningOneShotCompiledStatementForTest(tableName, sql) },
                 
                 queryProvider: (Iterable<String>, String) ->
                 OneShotCompiledStatementForQueryForTest =

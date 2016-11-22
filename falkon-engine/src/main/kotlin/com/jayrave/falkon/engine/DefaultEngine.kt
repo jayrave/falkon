@@ -87,6 +87,16 @@ class DefaultEngine(
     }
 
 
+    override fun compileInsertOrReplace(tableName: String, rawSql: String): CompiledStatement<Int> {
+        val compiledStatement = EventReportingCompiledStatement(
+                tableName, DbEvent.Type.INSERT_OR_REPLACE,
+                engineCore.compileInsertOrReplace(rawSql), onExecuteWithEffects
+        )
+
+        return wrapForLoggingIfRequired(compiledStatement)
+    }
+
+
     override fun compileQuery(
             tableNames: Iterable<String>, rawSql: String):
             CompiledStatement<Source> {

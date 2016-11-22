@@ -1,10 +1,7 @@
 package com.jayrave.falkon.dao.delete
 
 import com.jayrave.falkon.dao.delete.testLib.DeleteSqlBuilderForTesting
-import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForDeleteForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.dao.testLib.*
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
@@ -283,7 +280,7 @@ class DeleteBuilderImplTest {
             val numberOfRowsAffected = 8745
             val engine = EngineForTestingBuilders.createWithOneShotStatements(
                     deleteProvider = { tableName, sql ->
-                        OneShotCompiledStatementForDeleteForTest(
+                        IntReturningOneShotCompiledStatementForTest(
                                 tableName, sql, numberOfRowsAffected
                         )
                     }
@@ -302,7 +299,7 @@ class DeleteBuilderImplTest {
         private fun testStatementGetsClosedEvenIfDeleteThrows(deleteOp: (TableForTest) -> Int) {
             val engine = EngineForTestingBuilders.createWithOneShotStatements(
                     deleteProvider = { tableName, sql ->
-                        OneShotCompiledStatementForDeleteForTest(
+                        IntReturningOneShotCompiledStatementForTest(
                                 tableName, sql, shouldThrowOnExecution = true
                         )
                     }

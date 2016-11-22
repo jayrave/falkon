@@ -41,17 +41,17 @@ class AndroidSqliteEngineCore(sqLiteOpenHelper: SQLiteOpenHelper) : EngineCore {
     }
 
 
-    override fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int> {
-        return IUD_CompiledStatement(rawSql, database)
-    }
-
-
     override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, database)
     }
 
 
     override fun compileDelete(rawSql: String): CompiledStatement<Int> {
+        return IUD_CompiledStatement(rawSql, database)
+    }
+
+
+    override fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, database)
     }
 

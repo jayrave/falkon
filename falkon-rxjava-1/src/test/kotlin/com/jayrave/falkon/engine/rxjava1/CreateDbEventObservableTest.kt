@@ -138,6 +138,7 @@ class CreateDbEventObservableTest {
         override fun compileInsert(tableName: String, rawSql: String) = throw exception()
         override fun compileUpdate(tableName: String, rawSql: String) = throw exception()
         override fun compileDelete(tableName: String, rawSql: String) = throw exception()
+        override fun compileInsertOrReplace(tableName: String, rawSql: String) = throw exception()
         override fun compileQuery(tableNames: Iterable<String>, rawSql: String) = throw exception()
         private fun exception() = UnsupportedOperationException("not implemented")
 

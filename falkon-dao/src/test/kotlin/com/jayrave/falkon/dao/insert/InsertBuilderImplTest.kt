@@ -1,10 +1,7 @@
 package com.jayrave.falkon.dao.insert
 
 import com.jayrave.falkon.dao.insert.testLib.InsertSqlBuilderForTesting
-import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.OneShotCompiledStatementForInsertForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.dao.testLib.*
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
@@ -90,7 +87,7 @@ class InsertBuilderImplTest {
     fun `compiled statement gets closed even if insert throws`() {
         val engine = EngineForTestingBuilders.createWithOneShotStatements(
                 insertProvider = { tableName, sql ->
-                    OneShotCompiledStatementForInsertForTest(
+                    IntReturningOneShotCompiledStatementForTest(
                             tableName, sql, shouldThrowOnExecution = true
                     )
                 }
@@ -251,7 +248,7 @@ class InsertBuilderImplTest {
 
             val engine = EngineForTestingBuilders.createWithOneShotStatements(
                     insertProvider = { tableName, sql ->
-                        OneShotCompiledStatementForInsertForTest(
+                        IntReturningOneShotCompiledStatementForTest(
                                 tableName, sql, numberOfRowsInserted
                         )
                     }
