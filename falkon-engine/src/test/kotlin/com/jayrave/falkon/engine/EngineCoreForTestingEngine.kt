@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 internal class EngineCoreForTestingEngine private constructor(
         private val sqlProvider: (String) -> CompiledStatement<Unit>,
         private val insertProvider: (String) -> CompiledStatement<Int>,
+        private val insertOrReplaceProvider: (String) -> CompiledStatement<Int>,
         private val updateProvider: (String) -> CompiledStatement<Int>,
         private val deleteProvider: (String) -> CompiledStatement<Int>,
         private val queryProvider: (String) -> CompiledStatement<Source>) :
@@ -50,6 +51,10 @@ internal class EngineCoreForTestingEngine private constructor(
         return insertProvider.invoke(rawSql)
     }
 
+    override fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int> {
+        return insertOrReplaceProvider.invoke(rawSql)
+    }
+
     override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return updateProvider.invoke(rawSql)
     }
@@ -66,16 +71,19 @@ internal class EngineCoreForTestingEngine private constructor(
     companion object {
         fun createWithCompiledStatementsForTest(
                 sqlProvider: (String) -> CompiledStatement<Unit> =
-                { sql -> CompiledStatementForSqlForTest(sql) },
+                { sql -> UnitReturningCompiledStatementForTest(sql) },
 
                 insertProvider: (String) -> CompiledStatement<Int> =
-                { sql -> CompiledStatementForInsertForTest(sql, 0) },
+                { sql -> IntReturningCompiledStatementForTest(sql, 0) },
+
+                insertOrReplaceProvider: (String) -> CompiledStatement<Int> =
+                { sql -> IntReturningCompiledStatementForTest(sql, 0) },
 
                 updateProvider: (String) -> CompiledStatement<Int> =
-                { sql -> CompiledStatementForUpdateForTest(sql, 0) },
+                { sql -> IntReturningCompiledStatementForTest(sql, 0) },
 
                 deleteProvider: (String) -> CompiledStatement<Int> =
-                { sql -> CompiledStatementForDeleteForTest(sql, 0) },
+                { sql -> IntReturningCompiledStatementForTest(sql, 0) },
 
                 queryProvider: (String) -> CompiledStatement<Source> =
                 { sql -> CompiledStatementForQueryForTest(sql, mock()) }):
@@ -83,7 +91,8 @@ internal class EngineCoreForTestingEngine private constructor(
                 EngineCoreForTestingEngine {
 
             return EngineCoreForTestingEngine(
-                    sqlProvider, insertProvider, updateProvider, deleteProvider, queryProvider
+                    sqlProvider, insertProvider, insertOrReplaceProvider,
+                    updateProvider, deleteProvider, queryProvider
             )
         }
     }

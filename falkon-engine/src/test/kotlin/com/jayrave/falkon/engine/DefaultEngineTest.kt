@@ -64,7 +64,7 @@ class DefaultEngineTest {
     fun testAllChangesAreRolledBackIfOuterMostTransactionFails() {
         val engineCore = buildEngineCoreForTesting()
         val defaultEngine = DefaultEngine(engineCore)
-        var exceptionCaught = false
+        val exceptionCaught: Boolean
 
         try {
             defaultEngine.executeInTransaction {
@@ -88,7 +88,7 @@ class DefaultEngineTest {
     fun testAllChangesAreRolledBackIfAnyInnerTransactionFails() {
         val engineCore = buildEngineCoreForTesting()
         val defaultEngine = DefaultEngine(engineCore)
-        var exceptionCaught = false
+        val exceptionCaught: Boolean
 
         try {
             defaultEngine.executeInTransaction {
@@ -223,7 +223,7 @@ class DefaultEngineTest {
         assertThat(eventListener.multiEventsList).isEmpty()
 
         // Execute insert, update & delete inside transaction
-        var exceptionWasCaught = false
+        val exceptionWasCaught: Boolean
         try {
             val tableName = "example table 1"
             defaultEngine.executeInTransaction {
@@ -372,10 +372,10 @@ class DefaultEngineTest {
     fun testLoggerIsInformedOnExecutionFailure() {
         // All compiled statements from this engine core would throw on execution
         val engineCoreForTesting = EngineCoreForTestingEngine.createWithCompiledStatementsForTest(
-                sqlProvider = { sql -> CompiledStatementForSqlForTest(sql, true) },
-                insertProvider = { sql -> CompiledStatementForInsertForTest(sql, 1, true) },
-                updateProvider = { sql -> CompiledStatementForUpdateForTest(sql, 1, true) },
-                deleteProvider = { sql -> CompiledStatementForDeleteForTest(sql, 1, true) },
+                sqlProvider = { sql -> UnitReturningCompiledStatementForTest(sql, true) },
+                insertProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
+                updateProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
+                deleteProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1, true) },
                 queryProvider = { sql -> CompiledStatementForQueryForTest(sql, mock(), true) }
         )
 
@@ -454,9 +454,9 @@ class DefaultEngineTest {
 
         private fun buildEngineCoreForTesting():EngineCoreForTestingEngine {
             return EngineCoreForTestingEngine.createWithCompiledStatementsForTest(
-                    insertProvider = { sql -> CompiledStatementForInsertForTest(sql, 1) },
-                    updateProvider = { sql -> CompiledStatementForUpdateForTest(sql, 1) },
-                    deleteProvider = { sql -> CompiledStatementForDeleteForTest(sql, 1) }
+                    insertProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) },
+                    updateProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) },
+                    deleteProvider = { sql -> IntReturningCompiledStatementForTest(sql, 1) }
             )
         }
 

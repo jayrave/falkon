@@ -16,7 +16,11 @@ internal class UnitReturningCompiledStatement(sql: String, database: SQLiteDatab
 
 
 /**
- * For compiling & executing INSERT, UPDATE & DELETE statements
+ * For compiling & executing
+ *  - INSERT
+ *  - UPDATE
+ *  - DELETE
+ *  - INSERT OR REPLACE
  */
 internal class IUD_CompiledStatement(sql: String, database: SQLiteDatabase) :
         BaseCompiledStatement<Int>(sql, database) {

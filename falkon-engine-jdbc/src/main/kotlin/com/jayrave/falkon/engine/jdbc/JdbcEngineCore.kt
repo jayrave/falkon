@@ -35,6 +35,11 @@ class JdbcEngineCore(dataSource: DataSource) : EngineCore {
     }
 
 
+    override fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int> {
+        return IUD_CompiledStatement(rawSql, connectionManager)
+    }
+
+
     override fun compileUpdate(rawSql: String): CompiledStatement<Int> {
         return IUD_CompiledStatement(rawSql, connectionManager)
     }

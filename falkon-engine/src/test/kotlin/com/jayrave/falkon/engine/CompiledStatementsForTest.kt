@@ -25,22 +25,12 @@ internal open class CompiledStatementForTest<R>(
 }
 
 
-internal class CompiledStatementForSqlForTest(
+internal class UnitReturningCompiledStatementForTest(
         sql: String, shouldThrowOnExecution: Boolean = false) :
         CompiledStatementForTest<Unit>(sql, Unit, shouldThrowOnExecution)
 
 
-internal class CompiledStatementForInsertForTest(
-        sql: String, returnValue: Int, shouldThrowOnExecution: Boolean = false) :
-        CompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
-
-
-internal class CompiledStatementForUpdateForTest(
-        sql: String, returnValue: Int, shouldThrowOnExecution: Boolean = false) :
-        CompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
-
-
-internal class CompiledStatementForDeleteForTest(
+internal class IntReturningCompiledStatementForTest(
         sql: String, returnValue: Int, shouldThrowOnExecution: Boolean = false) :
         CompiledStatementForTest<Int>(sql, returnValue, shouldThrowOnExecution)
 

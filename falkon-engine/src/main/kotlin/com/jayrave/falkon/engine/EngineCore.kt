@@ -42,6 +42,12 @@ interface EngineCore {
     fun compileInsert(rawSql: String): CompiledStatement<Int>
 
     /**
+     * @param rawSql raw statement that performs insert or replace
+     * @return number of rows inserted or replaced [0, [Int.MAX_VALUE]]
+     */
+    fun compileInsertOrReplace(rawSql: String): CompiledStatement<Int>
+
+    /**
      * @param rawSql raw UPDATE statement
      * @return number of rows updated [0, [Int.MAX_VALUE]]
      */

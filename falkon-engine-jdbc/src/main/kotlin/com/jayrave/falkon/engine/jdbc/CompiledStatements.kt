@@ -24,7 +24,12 @@ internal class UnitReturningCompiledStatement(sql: String, connectionManager: Co
 
 
 /**
- * For compiling & executing INSERT, UPDATE & DELETE statements
+ * For compiling & executing
+ *
+ *  - INSERT
+ *  - UPDATE
+ *  - DELETE
+ *  - statement similar to insert or replace
  */
 internal class IUD_CompiledStatement(sql: String, connectionManager: ConnectionManager) :
         BaseCompiledStatement<Int>(sql, connectionManager) {
