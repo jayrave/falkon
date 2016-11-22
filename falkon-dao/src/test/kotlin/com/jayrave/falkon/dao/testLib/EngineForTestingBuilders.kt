@@ -11,6 +11,9 @@ internal class EngineForTestingBuilders private constructor(
         private val insertProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest,
         private val updateProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest,
         private val deleteProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest,
+        private val insertOrReplaceProvider: (String, String) ->
+        IntReturningOneShotCompiledStatementForTest,
+
         private val queryProvider: (Iterable<String>, String) ->
         OneShotCompiledStatementForQueryForTest) : Engine {
 
@@ -18,6 +21,8 @@ internal class EngineForTestingBuilders private constructor(
     val compiledStatementsForUpdate = ArrayList<IntReturningOneShotCompiledStatementForTest>()
     val compiledStatementsForDelete = ArrayList<IntReturningOneShotCompiledStatementForTest>()
     val compiledStatementsForQuery = ArrayList<OneShotCompiledStatementForQueryForTest>()
+    val compiledStatementsForInsertOrReplace =
+            ArrayList<IntReturningOneShotCompiledStatementForTest>()
 
     override fun <R> executeInTransaction(operation: () -> R): R {
         throw UnsupportedOperationException()
@@ -58,7 +63,9 @@ internal class EngineForTestingBuilders private constructor(
 
 
     override fun compileInsertOrReplace(tableName: String, rawSql: String): CompiledStatement<Int> {
-        throw UnsupportedOperationException()
+        val compiledStatementForInsertOrReplace = insertOrReplaceProvider.invoke(tableName, rawSql)
+        compiledStatementsForInsertOrReplace.add(compiledStatementForInsertOrReplace)
+        return compiledStatementForInsertOrReplace
     }
 
 
@@ -93,6 +100,10 @@ internal class EngineForTestingBuilders private constructor(
                 
                 deleteProvider: (String, String) -> IntReturningOneShotCompiledStatementForTest =
                 { tableName, sql -> IntReturningOneShotCompiledStatementForTest(tableName, sql) },
+
+                insertOrReplaceProvider: (String, String) ->
+                IntReturningOneShotCompiledStatementForTest =
+                { tableName, sql -> IntReturningOneShotCompiledStatementForTest(tableName, sql) },
                 
                 queryProvider: (Iterable<String>, String) ->
                 OneShotCompiledStatementForQueryForTest =
@@ -101,7 +112,8 @@ internal class EngineForTestingBuilders private constructor(
                 EngineForTestingBuilders {
 
             return EngineForTestingBuilders(
-                    insertProvider, updateProvider, deleteProvider, queryProvider
+                    insertProvider, updateProvider, deleteProvider,
+                    insertOrReplaceProvider, queryProvider
             )
         }
     }
