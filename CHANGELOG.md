@@ -1,3 +1,20 @@
+#Version 0.8-alpha (2016-11-23)
+- Support `INSERT OR REPLACE` (using db specific constructs that provide atomicity)
+- Add helpers to implement `Table#extractFrom` for both simple & composite primary keys
+- Better `InsertBuilder` & `UpdateBuilder` for setting values for multiple columns
+- Move `insert`, `update` & `delete` methods into their respective builders
+
+#Version 0.7-alpha (2016-11-19)
+- Simplified consumption of falkon (use `compile` instead of `compileOnly` & `provided` => used to use those because of gross misunderstanding of gradle's multi-project builds)
+- `falkon-android` doesn't pull in `falkon-rxJava-1` module anymore
+
+#Version 0.6-alpha (2016-11-18)
+- Support composite primary keys
+- Support `AUTO INCREMENT` columns
+- Use database specific SQL builders (SQLite & H2 supported)
+- Use database specific `TypeTranslator` (SQLite & H2 supported)
+- Remove `RIGHT OUTER JOIN` as neither SQLite, nor H2 support it
+
 #Version 0.5-alpha (2016-10-15)
 - All `WhereBuilder`'s `IN` & `NOT IN` can now work with sub-queries
 - `Insert`, `Update`, `Delete` & `Query` classes carry info about the tables they correspond to
