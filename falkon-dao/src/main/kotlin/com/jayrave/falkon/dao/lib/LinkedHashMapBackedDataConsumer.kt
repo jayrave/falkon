@@ -10,75 +10,77 @@ import java.util.*
  * [setColumnName] before every #put*() call will result in [RuntimeException]
  */
 internal class LinkedHashMapBackedDataConsumer : DataConsumer {
-    
+
+    /**
+     * When accessed from outside, this map should be treated as a read-only map
+     */
     val map = LinkedHashMap<String, Any>()
-
     private var columnName: String? = null
-
-    override fun put(short: Short?) {
-        when (short) {
-            null -> putNull(Type.SHORT)
-            else -> map.put(getAndNullifyColumnName(), short)
-        }
-    }
-
-    override fun put(int: Int?) {
-        when (int) {
-            null -> putNull(Type.INT)
-            else -> map.put(getAndNullifyColumnName(), int)
-        }
-    }
-
-    override fun put(long: Long?) {
-        when (long) {
-            null -> putNull(Type.LONG)
-            else -> map.put(getAndNullifyColumnName(), long)
-        }
-    }
-
-    override fun put(float: Float?) {
-        when (float) {
-            null -> putNull(Type.FLOAT)
-            else -> map.put(getAndNullifyColumnName(), float)
-        }
-    }
-
-    override fun put(double: Double?) {
-        when (double) {
-            null -> putNull(Type.DOUBLE)
-            else -> map.put(getAndNullifyColumnName(), double)
-        }
-    }
-
-    override fun put(string: String?) {
-        when (string) {
-            null -> putNull(Type.STRING)
-            else -> map.put(getAndNullifyColumnName(), string)
-        }
-    }
-
-    override fun put(blob: ByteArray?) {
-        when (blob) {
-            null -> putNull(Type.BLOB)
-            else -> map.put(getAndNullifyColumnName(), blob)
-        }
-    }
 
     fun setColumnName(columnName: String) {
         this.columnName = columnName
     }
 
-    private fun putNull(type: Type) {
-        map.put(getAndNullifyColumnName(), TypedNull(type))
+    override fun put(short: Short?) {
+        when (short) {
+            null -> putNullTypeInMap(Type.SHORT)
+            else -> putInMap(short)
+        }
     }
 
-    private fun getAndNullifyColumnName(): String {
-        val result = when (columnName) {
+    override fun put(int: Int?) {
+        when (int) {
+            null -> putNullTypeInMap(Type.INT)
+            else -> putInMap(int)
+        }
+    }
+
+    override fun put(long: Long?) {
+        when (long) {
+            null -> putNullTypeInMap(Type.LONG)
+            else -> putInMap(long)
+        }
+    }
+
+    override fun put(float: Float?) {
+        when (float) {
+            null -> putNullTypeInMap(Type.FLOAT)
+            else -> putInMap(float)
+        }
+    }
+
+    override fun put(double: Double?) {
+        when (double) {
+            null -> putNullTypeInMap(Type.DOUBLE)
+            else -> putInMap(double)
+        }
+    }
+
+    override fun put(string: String?) {
+        when (string) {
+            null -> putNullTypeInMap(Type.STRING)
+            else -> putInMap(string)
+        }
+    }
+
+    override fun put(blob: ByteArray?) {
+        when (blob) {
+            null -> putNullTypeInMap(Type.BLOB)
+            else -> putInMap(blob)
+        }
+    }
+
+    private fun putNullTypeInMap(type: Type) {
+        putInMap(TypedNull(type))
+    }
+
+    private fun putInMap(value: Any) {
+        val key = when (columnName) {
             null -> throw RuntimeException("Calling #put without setting a column name")
             else -> columnName!!
         }
 
         columnName = null
-        return result
+        map.put(key, value)
     }
 }
