@@ -98,7 +98,6 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     val address = col(User::address, isUnique = true) // isUnique adds UNIQUE to the column definition
     val lastSeenAt = col(User::lastSeenAt, converter = dateConverter) // Custom converters can be specified
 
-    override val idColumn: EnhancedColumn<User, UUID> get() = id // This points to the primary key
     override val dao: UsersDao = UsersDao(this, sqlBuilders) // DAO associated with this table
 
     private val extractFromHelper = SimpleIdExtractFromHelper(id)
