@@ -12,11 +12,13 @@ internal class EngineForTestingDaoExtn private constructor(
         private val insertProvider: () -> CompiledStatement<Int>,
         private val updateProvider: () -> CompiledStatement<Int>,
         private val deleteProvider: () -> CompiledStatement<Int>,
+        private val insertOrReplaceProvider: () -> CompiledStatement<Int>,
         private val queryProvider: () -> CompiledStatement<Source>) : Engine {
 
     val compiledStatementsForInsert = ArrayList<CompiledStatement<Int>>()
     val compiledStatementsForUpdate = ArrayList<CompiledStatement<Int>>()
     val compiledStatementsForDelete = ArrayList<CompiledStatement<Int>>()
+    val compiledStatementsForInsertOrReplace = ArrayList<CompiledStatement<Int>>()
     val compiledStatementsForQuery = ArrayList<CompiledStatement<Source>>()
 
     override fun <R> executeInTransaction(operation: () -> R): R {
@@ -55,7 +57,8 @@ internal class EngineForTestingDaoExtn private constructor(
 
 
     override fun compileInsertOrReplace(tableName: String, rawSql: String): CompiledStatement<Int> {
-        throw UnsupportedOperationException()
+        compiledStatementsForInsertOrReplace.add(insertOrReplaceProvider.invoke())
+        return compiledStatementsForInsertOrReplace.last()
     }
 
 
@@ -82,12 +85,16 @@ internal class EngineForTestingDaoExtn private constructor(
                 insertProvider: () -> CompiledStatement<Int> = { mock<CompiledStatement<Int>>() },
                 updateProvider: () -> CompiledStatement<Int> = { mock<CompiledStatement<Int>>() },
                 deleteProvider: () -> CompiledStatement<Int> = { mock<CompiledStatement<Int>>() },
+                insertOrReplaceProvider: () -> CompiledStatement<Int> =
+                { mock<CompiledStatement<Int>>() },
+
                 queryProvider: () -> CompiledStatement<Source> =
                 { mock<CompiledStatement<Source>>() }):
                 EngineForTestingDaoExtn {
 
             return EngineForTestingDaoExtn(
-                    insertProvider, updateProvider, deleteProvider, queryProvider
+                    insertProvider, updateProvider, deleteProvider,
+                    insertOrReplaceProvider, queryProvider
             )
         }
     }

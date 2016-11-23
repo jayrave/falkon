@@ -78,29 +78,6 @@ abstract class BaseClassForIntegrationTests {
         }
 
 
-        private fun compileQueryFor(
-                table: TableForTest, model: ModelForTest):
-                CompiledStatement<Source> {
-
-            val storageFormOfId1 = table.id1.computeStorageFormOf(
-                    table.id1.extractPropertyFrom(model)
-            ) as String
-
-            val storageFormOfId2 = table.id2.computeStorageFormOf(
-                    table.id2.extractPropertyFrom(model)
-            ) as String
-
-            val sql = "SELECT * FROM ${table.name} WHERE ${table.id1.name} = ? AND ${table.id2.name} = ?"
-
-            return table
-                    .configuration
-                    .engine
-                    .compileQuery(listOf(table.name), sql)
-                    .bind(1, storageFormOfId1)
-                    .bind(2, storageFormOfId2)
-        }
-
-
         /**
          * @param seedValue will be used as is for short & every subsequent parameter will
          * be 1 more than the previous parameter
@@ -152,122 +129,86 @@ abstract class BaseClassForIntegrationTests {
             models.forEach {
                 val compiledStatementForQuery = compileQueryFor(table, it)
                 val source = compiledStatementForQuery.execute()
-                assertThat(source.moveToNext()).isFalse()
 
+                val isPresent = when (source.moveToNext()) {
+                    true -> rowCorrespondsTo(source, it, table)
+                    else -> false
+                }
+
+                assertThat(isPresent).isFalse()
                 source.close()
                 compiledStatementForQuery.close()
             }
         }
 
 
-        internal fun assertCurrentRowCorrespondsTo(
-                source: Source, model: ModelForTest, table: TableForTest) {
+        internal fun assertCurrentRowCorrespondsTo(s: Source, m: ModelForTest, t: TableForTest) {
+            assertThat(rowCorrespondsTo(s, m, t)).isTrue()
+        }
 
-            assertThat(source.getString(
-                    source.getColumnIndex(table.id1.name))
-            ).isEqualTo(model.id1.toString())
 
-            assertThat(source.getString(
-                    source.getColumnIndex(table.id2.name))
-            ).isEqualTo(model.id2.toString())
+        private fun compileQueryFor(
+                table: TableForTest, model: ModelForTest):
+                CompiledStatement<Source> {
 
-            assertThat(source.getShort(
-                    source.getColumnIndex(table.short.name))
-            ).isEqualTo(model.short)
+            val storageFormOfId1 = table.id1.computeStorageFormOf(
+                    table.id1.extractPropertyFrom(model)
+            ) as String
 
-            assertThat(source.getInt(
-                    source.getColumnIndex(table.int.name))
-            ).isEqualTo(model.int)
+            val storageFormOfId2 = table.id2.computeStorageFormOf(
+                    table.id2.extractPropertyFrom(model)
+            ) as String
 
-            assertThat(source.getLong(
-                    source.getColumnIndex(table.long.name))
-            ).isEqualTo(model.long)
+            val sql = "SELECT * FROM ${table.name} WHERE " +
+                    "${table.id1.name} = ? AND ${table.id2.name} = ?"
 
-            assertThat(source.getFloat(
-                    source.getColumnIndex(table.float.name))
-            ).isEqualTo(model.float)
+            return table
+                    .configuration
+                    .engine
+                    .compileQuery(listOf(table.name), sql)
+                    .bind(1, storageFormOfId1)
+                    .bind(2, storageFormOfId2)
+        }
 
-            assertThat(source.getDouble(
-                    source.getColumnIndex(table.double.name))
-            ).isEqualTo(model.double)
 
-            assertThat(source.getString(
-                    source.getColumnIndex(table.string.name))
-            ).isEqualTo(model.string)
+        private fun rowCorrespondsTo(s: Source, m: ModelForTest, t: TableForTest): Boolean {
+            return s.getString(s.getColumnIndex(t.id1.name)) == m.id1.toString() &&
+                    s.getString(s.getColumnIndex(t.id2.name)) == m.id2.toString() &&
+                    s.getShort(s.getColumnIndex(t.short.name)) == m.short &&
+                    s.getInt(s.getColumnIndex(t.int.name)) == m.int &&
+                    s.getLong(s.getColumnIndex(t.long.name)) == m.long &&
+                    s.getFloat(s.getColumnIndex(t.float.name)) == m.float &&
+                    s.getDouble(s.getColumnIndex(t.double.name)) == m.double &&
+                    s.getString(s.getColumnIndex(t.string.name)) == m.string &&
+                    Arrays.equals(s.getBlob(s.getColumnIndex(t.blob.name)), m.blob) &&
 
-            assertThat(source.getBlob(
-                    source.getColumnIndex(table.blob.name))
-            ).isEqualTo(model.blob)
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableShort.name)) && m.nullableShort == null) || (s.getShort(
+                            s.getColumnIndex(t.nullableShort.name)) == m.nullableShort)) &&
 
-            when (model.nullableShort) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableShort.name)
-                )).isTrue()
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableInt.name)) && m.nullableInt == null) || (s.getInt(
+                            s.getColumnIndex(t.nullableInt.name)) == m.nullableInt)) &&
 
-                else -> assertThat(source.getShort(
-                        source.getColumnIndex(table.nullableShort.name))
-                ).isEqualTo(model.nullableShort)
-            }
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableLong.name)) && m.nullableLong == null) || (s.getLong(
+                            s.getColumnIndex(t.nullableLong.name)) == m.nullableLong)) &&
 
-            when (model.nullableInt) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableInt.name)
-                )).isTrue()
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableFloat.name)) && m.nullableFloat == null) || (s.getFloat(
+                            s.getColumnIndex(t.nullableFloat.name)) == m.nullableFloat)) &&
 
-                else -> assertThat(source.getInt(
-                        source.getColumnIndex(table.nullableInt.name))
-                ).isEqualTo(model.nullableInt)
-            }
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableDouble.name)) && m.nullableDouble == null) || (s.getDouble(
+                            s.getColumnIndex(t.nullableDouble.name)) == m.nullableDouble)) &&
 
-            when (model.nullableLong) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableLong.name)
-                )).isTrue()
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableString.name)) && m.nullableString == null) || (s.getString(
+                            s.getColumnIndex(t.nullableString.name)) == m.nullableString)) &&
 
-                else -> assertThat(source.getLong(
-                        source.getColumnIndex(table.nullableLong.name))
-                ).isEqualTo(model.nullableLong)
-            }
-
-            when (model.nullableFloat) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableFloat.name)
-                )).isTrue()
-
-                else -> assertThat(source.getFloat(
-                        source.getColumnIndex(table.nullableFloat.name))
-                ).isEqualTo(model.nullableFloat)
-            }
-
-            when (model.nullableDouble) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableDouble.name)
-                )).isTrue()
-
-                else -> assertThat(source.getDouble(
-                        source.getColumnIndex(table.nullableDouble.name))
-                ).isEqualTo(model.nullableDouble)
-            }
-
-            when (model.nullableString) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableString.name)
-                )).isTrue()
-
-                else -> assertThat(source.getString(
-                        source.getColumnIndex(table.nullableString.name))
-                ).isEqualTo(model.nullableString)
-            }
-
-            when (model.nullableBlob) {
-                null -> assertThat(source.isNull(
-                        source.getColumnIndex(table.nullableBlob.name)
-                )).isTrue()
-
-                else -> assertThat(source.getBlob(
-                        source.getColumnIndex(table.nullableBlob.name))
-                ).isEqualTo(model.nullableBlob)
-            }
+                    ((s.isNull(s.getColumnIndex(
+                            t.nullableBlob.name)) && m.nullableBlob == null) || (Arrays.equals(
+                            s.getBlob(s.getColumnIndex(t.nullableBlob.name)), m.nullableBlob)))
         }
 
         // -------------------------------- Using hand-built SQL -----------------------------------
@@ -275,9 +216,7 @@ abstract class BaseClassForIntegrationTests {
 
         // ----------------------------------- Using builders --------------------------------------
 
-        internal fun insertModelUsingInsertBuilder(
-                table: TableForTest, model: ModelForTest) {
-
+        internal fun insertModelUsingInsertBuilder(table: TableForTest, model: ModelForTest) {
             table.dao.insertBuilder().values {
                 set(table.id1, model.id1)
                 set(table.id2, model.id2)
@@ -301,6 +240,7 @@ abstract class BaseClassForIntegrationTests {
 
         internal fun insertModelsUsingInsertBuilder(
                 table: TableForTest, vararg models: ModelForTest) {
+
             table.configuration.engine.executeInTransaction {
                 models.forEach { insertModelUsingInsertBuilder(table, it) }
             }
