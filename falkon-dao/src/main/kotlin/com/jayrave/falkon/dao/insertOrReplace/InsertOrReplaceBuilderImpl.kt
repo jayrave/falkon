@@ -11,6 +11,7 @@ import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.InsertOrReplaceSqlBuilder
 import java.sql.SQLException
+import java.util.*
 
 internal class InsertOrReplaceBuilderImpl<T : Any>(
         override val table: Table<T, *>,
@@ -19,6 +20,17 @@ internal class InsertOrReplaceBuilderImpl<T : Any>(
 
     private val dataConsumerForIdColumns = LinkedHashMapBackedDataConsumer()
     private val dataConsumerForNonIdColumns = LinkedHashMapBackedDataConsumer()
+
+    // This index map is built under the following assumptions
+    //  - all id columns are bound first followed by the non id columns (in the order of arrival)
+    //  - both the data consumers (id & non-id) are backed by maps that maintain insertion order
+    // which doesn't change on remapping
+    private val indexMap = LinkedList<Int>()
+    init {
+        // Index 0 is invalid for index map as the mapping starts at 1
+        indexMap.add(Int.MIN_VALUE)
+    }
+
 
     /**
      * Calling this method again for columns that have been already set will overwrite the
@@ -30,8 +42,13 @@ internal class InsertOrReplaceBuilderImpl<T : Any>(
     }
 
 
+
     private inner class EnderImpl : Ender {
 
+        /**
+         * @return [InsertOrReplace]'s SQL statement could have the columns & arguments
+         * in a different order than they were injected via [InnerSetter.set]
+         */
         override fun build(): InsertOrReplace {
             val mapForIdColumns = dataConsumerForIdColumns.map
             val mapForNonIdColumns = dataConsumerForNonIdColumns.map
@@ -48,12 +65,33 @@ internal class InsertOrReplaceBuilderImpl<T : Any>(
             return InsertOrReplaceImpl(table.name, sql, arguments)
         }
 
+
+        /**
+         * @return [CompiledStatement] which can be reused to perform multiple insert or replaces
+         * by binding different values for columns in the same order as they were injected
+         * via [InnerSetter.set]
+         */
         override fun compile(): CompiledStatement<Int> {
+            // Build insert or replace
             val insertOrReplace = build()
-            return table.configuration.engine
+
+            // Compile insert or replace & bind all arguments
+            val compiledInsertOrReplace = table
+                    .configuration
+                    .engine
                     .compileInsertOrReplace(table.name, insertOrReplace.sql)
                     .closeIfOpThrows { bindAll(insertOrReplace.arguments) }
+
+            // Remap indices as id columns & non id columns may have come out of order
+            val indexRemappingCompiledStatement = IndexRemappingCompiledStatement(
+                    compiledInsertOrReplace, indexMap.toIntArray()
+            )
+
+            // Further bindings can happen in the order the columns arrived in & the
+            // IndexRemappingCompiledStatement will take care of everything
+            return indexRemappingCompiledStatement
         }
+
 
         override fun insertOrReplace() {
             val numberOfRecordsInsertedOrReplaced = compile().safeCloseAfterExecution()
@@ -67,6 +105,7 @@ internal class InsertOrReplaceBuilderImpl<T : Any>(
     }
 
 
+
     private inner class InnerSetterImpl : InnerSetter<T> {
 
         /**
@@ -74,13 +113,45 @@ internal class InsertOrReplaceBuilderImpl<T : Any>(
          * existing value for that column
          */
         override fun <C> set(column: Column<T, C>, value: C) {
+            val isIdColumn = column.isId
             val dataConsumer = when {
-                column.isId -> dataConsumerForIdColumns
+                isIdColumn -> dataConsumerForIdColumns
                 else -> dataConsumerForNonIdColumns
             }
 
-            dataConsumer.setColumnName(column.name)
+            // If mapping existed, it will be rebound, which doesn't change the target index
+            val columnName = column.name
+            val addToIndexMap = !dataConsumer.map.containsKey(columnName)
+
+            // Consume value
+            dataConsumer.setColumnName(columnName)
             column.putStorageFormIn(value, dataConsumer)
+
+            // Add to index map if required
+            if (addToIndexMap) {
+
+                val fromIndex = indexMap.size // Where the client would bind
+                val toIndex = when { // Where the actual argument should be bound
+                    isIdColumn -> dataConsumerForIdColumns.map.size // Data just got inserted here
+                    else -> indexMap.size
+                }
+
+                // Create mapping
+                indexMap.add(fromIndex, toIndex)
+
+                // If fromIndex isn't the same as toIndex, someone just cut into the line.
+                // Adjust other mappings based on last computed toIndex.
+                if (fromIndex != toIndex) {
+                    indexMap.forEachIndexed { index, targetIndex ->
+
+                        // Don't update last mapping. For other indices if it is >= toIndex,
+                        // it must be incremented by 1
+                        if (index != fromIndex && targetIndex >= toIndex) {
+                            indexMap[index] = targetIndex + 1
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -69,7 +69,7 @@ class InsertOrReplaceBuilderImplTest {
 
 
     @Test
-    fun `insert or replace with multiple id & non id columns`() {
+    fun `insert or replace with multiple id columns followed by multiple non id columns`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val engine = bundle.engine
@@ -78,8 +78,8 @@ class InsertOrReplaceBuilderImplTest {
         // build & compile
         val builder = InsertOrReplaceBuilderImpl(table, sqlBuilder).values {
             set(table.int, 5)
-            set(table.blob, byteArrayOf(6))
-            set(table.string, "test 7")
+            set(table.string, "test 6")
+            set(table.blob, byteArrayOf(7))
             set(table.nullableDouble, 8.0)
         }
 
@@ -93,7 +93,7 @@ class InsertOrReplaceBuilderImplTest {
         )
 
         val expectedInsertOrReplace = InsertOrReplaceImpl(
-                table.name, expectedSql, listOf(5, "test 7", byteArrayOf(6), 8.0)
+                table.name, expectedSql, listOf(5, "test 6", byteArrayOf(7), 8.0)
         )
 
         // Verify
@@ -104,8 +104,8 @@ class InsertOrReplaceBuilderImplTest {
         assertThat(statement.sql).isEqualTo(expectedSql)
         assertThat(statement.boundArgs).hasSize(4)
         assertThat(statement.intBoundAt(1)).isEqualTo(5)
-        assertThat(statement.stringBoundAt(2)).isEqualTo("test 7")
-        assertThat(statement.blobBoundAt(3)).isEqualTo(byteArrayOf(6))
+        assertThat(statement.stringBoundAt(2)).isEqualTo("test 6")
+        assertThat(statement.blobBoundAt(3)).isEqualTo(byteArrayOf(7))
         assertThat(statement.doubleBoundAt(4)).isEqualTo(8.0)
     }
 
