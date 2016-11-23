@@ -5,15 +5,12 @@ import com.jayrave.falkon.dao.findAll
 import com.jayrave.falkon.dao.findById
 import com.jayrave.falkon.dao.lib.extractAllModelsAndClose
 import com.jayrave.falkon.dao.lib.qualifiedName
-import com.jayrave.falkon.dao.select
-import com.jayrave.falkon.sample_android.ARG_PLACEHOLDER
+import com.jayrave.falkon.dao.query.lenient.select
+import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.sample_android.models.User
 import com.jayrave.falkon.sample_android.tables.MessagesTable
 import com.jayrave.falkon.sample_android.tables.UsersTable
-import com.jayrave.falkon.sqlBuilders.DeleteSqlBuilder
-import com.jayrave.falkon.sqlBuilders.InsertSqlBuilder
-import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
-import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
+import com.jayrave.falkon.sqlBuilders.*
 import java.util.*
 
 /**
@@ -24,10 +21,10 @@ import java.util.*
 class UsersDao(
         private val usersTable: UsersTable, insertSqlBuilder: InsertSqlBuilder,
         updateSqlBuilder: UpdateSqlBuilder, deleteSqlBuilder: DeleteSqlBuilder,
-        querySqlBuilder: QuerySqlBuilder) :
+        insertOrReplaceSqlBuilder: InsertOrReplaceSqlBuilder, querySqlBuilder: QuerySqlBuilder) :
         DaoImpl<User, UUID>(
-                usersTable, ARG_PLACEHOLDER, insertSqlBuilder, updateSqlBuilder,
-                deleteSqlBuilder, querySqlBuilder) {
+                usersTable, insertSqlBuilder, updateSqlBuilder, deleteSqlBuilder,
+                insertOrReplaceSqlBuilder, querySqlBuilder) {
 
     /**
      * [findById] is provided by the `falkon-dao-extn` module
@@ -55,9 +52,11 @@ class UsersDao(
                 .where()
                 .gt(usersTable.lastSeenAt, thresholdDate)
                 .compile()
-                .extractAllModelsAndClose(usersTable) {
-                    it.qualifiedName // Query builder uses qualified column names to avoid collision
-                }
+                .extractAllModelsAndClose(
+                        forTable = usersTable,
+                        columnNameExtractor = Column<User, *>::qualifiedName
+                        // Query builder uses qualified column names to avoid collision
+                )
     }
 
 
@@ -72,9 +71,11 @@ class UsersDao(
                 .join(usersTable.id, messagesTable.fromUserId)
                 .groupBy(usersTable.id)
                 .compile()
-                .extractAllModelsAndClose(usersTable) {
-                    it.qualifiedName // Query builder uses qualified column names to avoid collision
-                }
+                .extractAllModelsAndClose(
+                        forTable = usersTable,
+                        columnNameExtractor = Column<User, *>::qualifiedName
+                        // Query builder uses qualified column names to avoid collision
+                )
     }
 
 
@@ -101,8 +102,10 @@ class UsersDao(
                 .where().ge(messagesTable.receivedAt, cutOffDate)
                 .select(usersTable.allColumns)
                 .compile()
-                .extractAllModelsAndClose(usersTable) {
-                    it.qualifiedName // Query builder uses qualified column names to avoid collision
-                }
+                .extractAllModelsAndClose(
+                        forTable = usersTable,
+                        columnNameExtractor = Column<User, *>::qualifiedName
+                        // Query builder uses qualified column names to avoid collision
+                )
     }
 }

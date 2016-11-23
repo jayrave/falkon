@@ -4,7 +4,7 @@ import com.jayrave.falkon.dao.Dao
 import com.jayrave.falkon.dao.DaoImpl
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.mapper.*
-import com.jayrave.falkon.sample_android.ARG_PLACEHOLDER
+import com.jayrave.falkon.mapper.lib.SimpleIdExtractFromHelper
 import com.jayrave.falkon.sample_android.models.Message
 import com.jayrave.falkon.sample_android.SqlBuilders
 import java.text.SimpleDateFormat
@@ -21,7 +21,7 @@ class MessagesTable(
         BaseEnhancedTable<Message, UUID, Dao<Message, UUID>>(
                 "messages", configuration, sqlBuilders.createTableSqlBuilder) {
 
-    val id = col(Message::id)
+    val id = col(Message::id, isId = true)
     val content = col(Message::content)
     val sentAt = col(Message::sentAt)
 
@@ -37,12 +37,17 @@ class MessagesTable(
     val fromUserId = foreignCol(Message::fromUserId, foreignColumn = usersTable.id)
     val toUserId = foreignCol(Message::toUserId, foreignColumn = usersTable.id)
 
-    override val idColumn: EnhancedColumn<Message, UUID> = id
     override val dao: Dao<Message, UUID> = DaoImpl(
-            this, ARG_PLACEHOLDER,
-            sqlBuilders.insertSqlBuilder, sqlBuilders.updateSqlBuilder,
-            sqlBuilders.deleteSqlBuilder, sqlBuilders.querySqlBuilder
+            this, sqlBuilders.insertSqlBuilder, sqlBuilders.updateSqlBuilder,
+            sqlBuilders.deleteSqlBuilder, sqlBuilders.insertOrReplaceSqlBuilder,
+            sqlBuilders.querySqlBuilder
     )
+
+
+    private val extractFromHelper = SimpleIdExtractFromHelper(id)
+    override fun <C> extractFrom(id: UUID, column: Column<Message, C>): C {
+        return extractFromHelper.extractFrom(id, column)
+    }
 
 
     override fun create(value: Value<Message>): Message {

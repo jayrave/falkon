@@ -7,5 +7,6 @@ data class SqlBuilders(
         val insertSqlBuilder: InsertSqlBuilder,
         val updateSqlBuilder: UpdateSqlBuilder,
         val deleteSqlBuilder: DeleteSqlBuilder,
+        val insertOrReplaceSqlBuilder: InsertOrReplaceSqlBuilder,
         val querySqlBuilder: QuerySqlBuilder
 )

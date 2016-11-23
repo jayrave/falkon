@@ -1,6 +1,7 @@
 package com.jayrave.falkon.sample_android.tables
 
 import com.jayrave.falkon.mapper.*
+import com.jayrave.falkon.mapper.lib.SimpleIdExtractFromHelper
 import com.jayrave.falkon.sample_android.SqlBuilders
 import com.jayrave.falkon.sample_android.daos.UsersDao
 import com.jayrave.falkon.sample_android.models.User
@@ -18,15 +19,17 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
                 "users", configuration, sqlBuilders.createTableSqlBuilder) {
 
     /**
+     * isId makes column a part of table's primary key
+     *
      * By default, the property name is snake-cased & used as the database column name.
      * For example `Model::exampleColumn1` will use `example_column_1` as its column
      * name. You can change this by passing in a custom name or a different
      * [NameFormatter] to [TableConfiguration]
      */
-    val id = col(User::id)
+    val id = col(User::id, isId = true)
 
     /**
-     * Column's name can be explicitly assigned. If not, [configuration.nameFormatter] is
+     * Column's name can be explicitly assigned. If not, [TableConfiguration.nameFormatter] is
      * used to convert the model's property name into the column name
      */
     val firstName = col(User::firstName, name = "first_name")
@@ -60,11 +63,6 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
     val lastSeenAt = col(User::lastSeenAt, propertyExtractor = currentDatePropExtractor)
 
     /**
-     * This points to the primary key
-     */
-    override val idColumn: EnhancedColumn<User, UUID> get() = id
-
-    /**
      * This is the DAO associated with this table
      */
     override val dao: UsersDao = UsersDao(
@@ -72,8 +70,15 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
             insertSqlBuilder = sqlBuilders.insertSqlBuilder,
             updateSqlBuilder = sqlBuilders.updateSqlBuilder,
             deleteSqlBuilder = sqlBuilders.deleteSqlBuilder,
+            insertOrReplaceSqlBuilder = sqlBuilders.insertOrReplaceSqlBuilder,
             querySqlBuilder = sqlBuilders.querySqlBuilder
     )
+
+
+    private val extractFromHelper = SimpleIdExtractFromHelper(id)
+    override fun <C> extractFrom(id: UUID, column: Column<User, C>): C {
+        return extractFromHelper.extractFrom(id, column)
+    }
 
 
     override fun create(value: Value<User>): User {

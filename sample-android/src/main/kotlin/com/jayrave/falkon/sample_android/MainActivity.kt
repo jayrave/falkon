@@ -5,10 +5,10 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
 import com.jayrave.falkon.dao.delete
 import com.jayrave.falkon.dao.insert
+import com.jayrave.falkon.dao.insertOrReplace
 import com.jayrave.falkon.dao.update
 import com.jayrave.falkon.engine.*
 import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteEngineCore
-import com.jayrave.falkon.engine.android.sqlite.AndroidSqliteTypeTranslator
 import com.jayrave.falkon.engine.rxjava1.createCompiledQueryObservable
 import com.jayrave.falkon.mapper.CamelCaseToSnakeCaseFormatter
 import com.jayrave.falkon.mapper.TableConfiguration
@@ -17,7 +17,7 @@ import com.jayrave.falkon.mapper.registerDefaultConverters
 import com.jayrave.falkon.sample_android.models.User
 import com.jayrave.falkon.sample_android.tables.MessagesTable
 import com.jayrave.falkon.sample_android.tables.UsersTable
-import com.jayrave.falkon.sqlBuilders.*
+import com.jayrave.falkon.sqlBuilders.sqlite.*
 import rx.schedulers.Schedulers
 import java.util.*
 
@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
         deleteRecords()
         uiLog("Done demonstrating deleting records")
 
+        insertOrReplaceRecords()
+        uiLog("Done demonstrating inserting or replacing records")
+
         queryRecords()
         uiLog("Done demonstrating querying objects")
     }
@@ -91,12 +94,13 @@ class MainActivity : AppCompatActivity() {
          */
         usersTable.dao
                 .insertBuilder()
-                .set(usersTable.id, UUID.randomUUID())
-                .set(usersTable.firstName, "example_first_name")
-                .set(usersTable.lastName, "example_last_name")
-                .set(usersTable.emailId, "example-user@example.com")
-                .set(usersTable.lastSeenAt, Date())
-                .insert()
+                .values {
+                    set(usersTable.id, UUID.randomUUID())
+                    set(usersTable.firstName, "example_first_name")
+                    set(usersTable.lastName, "example_last_name")
+                    set(usersTable.emailId, "example-user@example.com")
+                    set(usersTable.lastSeenAt, Date())
+                }.insert()
     }
 
 
@@ -125,7 +129,7 @@ class MainActivity : AppCompatActivity() {
          */
         usersTable.dao
                 .updateBuilder()
-                .set(usersTable.lastSeenAt, Date())
+                .values { set(usersTable.lastSeenAt, Date()) }
                 .where()
                 .eq(usersTable.id, newUsers.first().id)
                 .update()
@@ -160,6 +164,37 @@ class MainActivity : AppCompatActivity() {
                 .where()
                 .eq(usersTable.id, newUsers.first().id)
                 .delete()
+    }
+
+
+    private fun insertOrReplaceRecords() {
+
+        /**
+         * `falkon-dao-extn` provides some cool methods to insert or replace stuff into your
+         * tables. It is super easy to do it. You just build them & pass to the DAO. You can
+         * do it one or a group of them at a time
+         */
+        val newUser = createRandomUser()
+        usersTable.dao.insertOrReplace(newUser)
+        usersTable.dao.insertOrReplace(listOf(
+                createRandomUser(), createRandomUser(), createRandomUser()
+        ))
+
+        val updatedUser = newUser.copy(firstName = "modified first name")
+        usersTable.dao.insertOrReplace(updatedUser) // Will update already existing user
+
+        /**
+         * Also an InsertOrReplaceBuilder is provided for greater flexibility
+         */
+        usersTable.dao
+                .insertOrReplaceBuilder()
+                .values {
+                    set(usersTable.id, UUID.randomUUID())
+                    set(usersTable.firstName, "example_first_name")
+                    set(usersTable.lastName, "example_last_name")
+                    set(usersTable.emailId, "example-user@example.com")
+                    set(usersTable.lastSeenAt, Date())
+                }.insertOrReplace()
     }
 
 
@@ -203,9 +238,9 @@ class MainActivity : AppCompatActivity() {
          * (if a name is not provided explicitly)
          */
 
-        val tableConfiguration = TableConfigurationImpl(
+        val configuration = TableConfigurationImpl(
                 engine = buildEngine(),
-                typeTranslator = AndroidSqliteTypeTranslator(),
+                typeTranslator = SqliteTypeTranslator(),
                 nameFormatter = CamelCaseToSnakeCaseFormatter()
         )
 
@@ -215,10 +250,10 @@ class MainActivity : AppCompatActivity() {
          * [Boolean], [Char], [Short], [Int], [Float], [Long], [Double] & even for
          * [Enum] types. You can register your custom converters too
          */
-        tableConfiguration.registerDefaultConverters()
-        tableConfiguration.registerForNullableType(UUID::class.java, NullableUuidConverter(), true)
-        tableConfiguration.registerForNullableType(Date::class.java, NullableDateConverter(), true)
-        return tableConfiguration
+        configuration.registerDefaultConverters()
+        configuration.registerForNullableValues(UUID::class.java, NullableUuidConverter(), true)
+        configuration.registerForNullableValues(Date::class.java, NullableDateConverter(), true)
+        return configuration
     }
 
 
@@ -229,11 +264,12 @@ class MainActivity : AppCompatActivity() {
          */
 
         return SqlBuilders(
-                SimpleCreateTableSqlBuilder(),
-                SimpleInsertSqlBuilder(),
-                SimpleUpdateSqlBuilder(),
-                SimpleDeleteSqlBuilder(),
-                SimpleQuerySqlBuilder()
+                SqliteCreateTableSqlBuilder(),
+                SqliteInsertSqlBuilder(),
+                SqliteUpdateSqlBuilder(),
+                SqliteDeleteSqlBuilder(),
+                SqliteInsertOrReplaceSqlBuilder(),
+                SqliteQuerySqlBuilder()
         )
     }
 
