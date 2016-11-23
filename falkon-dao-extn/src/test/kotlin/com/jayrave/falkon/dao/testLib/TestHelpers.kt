@@ -5,10 +5,7 @@ import com.jayrave.falkon.dao.DaoImpl
 import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.mapper.*
-import com.jayrave.falkon.sqlBuilders.h2.H2DeleteSqlBuilder
-import com.jayrave.falkon.sqlBuilders.h2.H2InsertSqlBuilder
-import com.jayrave.falkon.sqlBuilders.h2.H2QuerySqlBuilder
-import com.jayrave.falkon.sqlBuilders.h2.H2UpdateSqlBuilder
+import com.jayrave.falkon.sqlBuilders.h2.*
 import com.nhaarman.mockito_kotlin.mock
 import java.util.*
 
@@ -38,8 +35,8 @@ internal class TableForTest(
 
     data class Id(val id1: UUID, val id2: UUID)
     val dao: Dao<ModelForTest, Id> = DaoImpl(
-            this, H2InsertSqlBuilder(), H2UpdateSqlBuilder(),
-            H2DeleteSqlBuilder(), H2QuerySqlBuilder()
+            this, H2InsertSqlBuilder(), H2UpdateSqlBuilder(), H2DeleteSqlBuilder(),
+            H2InsertOrReplaceSqlBuilder(), H2QuerySqlBuilder()
     )
 
     @Suppress("UNCHECKED_CAST")
