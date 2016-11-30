@@ -59,19 +59,20 @@ class QueryBuilderExtnTest {
 
 
     /**
-     * Stores select arguments. Throws for everything else
+     * Stores select arguments. Throws for everything else (raw select throws too)
      */
     internal class AdderOrEnderForTest : AdderOrEnder<ModelForTest, AdderOrEnderForTest> {
 
         var selectColumnInfoList = ArrayList<SelectColumnInfo>()
 
-        override fun select(column: Column<*, *>, alias: String?): AdderOrEnderForTest {
+        override fun select(column: Column<ModelForTest, *>, alias: String?): AdderOrEnderForTest {
             selectColumnInfoList.add(SelectColumnInfoForTest(column.name, alias))
             return this
         }
 
         private fun exception() = UnsupportedOperationException("not implemented")
         override fun distinct() = throw exception()
+        override fun select(column: String, alias: String?) = throw exception()
         override fun limit(count: Long) = throw exception()
         override fun offset(count: Long) = throw exception()
         override fun build() = throw exception()

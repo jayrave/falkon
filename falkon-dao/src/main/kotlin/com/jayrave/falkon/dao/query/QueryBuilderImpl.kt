@@ -35,7 +35,13 @@ internal class QueryBuilderImpl<T : Any>(
      *
      *      `SELECT example_column, ..., example_column, ... FROM ...`
      */
-    override fun select(column: Column<*, *>, alias: String?): QueryBuilder<T> {
+    override fun select(column: String, alias: String?): QueryBuilder<T> {
+        lenientQueryBuilderImpl.select(column, alias)
+        return this
+    }
+
+
+    override fun select(column: Column<T, *>, alias: String?): QueryBuilder<T> {
         lenientQueryBuilderImpl.select(column, alias)
         return this
     }
@@ -119,7 +125,12 @@ internal class QueryBuilderImpl<T : Any>(
             return this
         }
 
-        override fun select(column: Column<*, *>, alias: String?): AdderOrEnderAfterWhere<T> {
+        override fun select(column: String, alias: String?): AdderOrEnderAfterWhere<T> {
+            this@QueryBuilderImpl.select(column, alias)
+            return this
+        }
+
+        override fun select(column: Column<T, *>, alias: String?): AdderOrEnderAfterWhere<T> {
             this@QueryBuilderImpl.select(column, alias)
             return this
         }

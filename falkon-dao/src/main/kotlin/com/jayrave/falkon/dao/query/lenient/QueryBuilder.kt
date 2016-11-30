@@ -29,12 +29,13 @@ interface AdderOrEnder<Z : AdderOrEnder<Z>> {
      * to add more columns to the result set. Behaviour on calling this method again for a column
      * that has already been included is implementation dependent
      *
-     * *NOTE:* If this isn't called, by default all columns (including columns of tables in the
-     * JOIN clause if any) will be included in the result set. This works similar to `*` projection
+     * *NOTE:* By default all columns (including columns of tables in the JOIN clause if any)
+     * will be included in the result set. This works similar to `*` projection
      *
      * @param [column] to be included in the result set
      * @param [alias] the name by which [column] will be addressable in the result set
      */
+    fun select(column: String, alias: String? = null): Z
     fun select(column: Column<*, *>, alias: String? = null): Z
 
     /**

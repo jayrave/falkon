@@ -20,7 +20,7 @@ import java.util.*
 class QueryBuilderImplTest {
 
     @Test
-    fun testWithDistinct() {
+    fun `with distinct`() {
         val bundle = Bundle.default()
         val builder = bundle.newBuilder()
 
@@ -30,7 +30,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testByDefaultAllColumnsAreSelected() {
+    fun `selected column list if empty is nothing is explicitly selected`() {
         val bundle = Bundle.default()
         val builder = bundle.newBuilder()
 
@@ -40,7 +40,21 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testWithSingleSelectedColumn() {
+    fun `single column selection via raw string #select`() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val builder = bundle.newBuilder()
+
+        builder.fromTable(table).select("custom_col")
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                columns = listOf(SelectColumnInfoForTest("custom_col", null))
+        )
+    }
+
+
+    @Test
+    fun `single column selection via type-safe #select`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -54,7 +68,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testWithMultipleSelectedColumns() {
+    fun `multiple column selection via both raw & type-safe #select`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -62,20 +76,26 @@ class QueryBuilderImplTest {
         builder
                 .fromTable(table)
                 .select(table.int)
+                .select("custom_col_1")
+                .select("custom_col_2")
                 .select(table.string)
+                .select("custom_col_3")
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
                 columns = listOf(
                         SelectColumnInfoForTest(table.int.qualifiedName, null),
-                        SelectColumnInfoForTest(table.string.qualifiedName, null)
+                        SelectColumnInfoForTest("custom_col_1", null),
+                        SelectColumnInfoForTest("custom_col_2", null),
+                        SelectColumnInfoForTest(table.string.qualifiedName, null),
+                        SelectColumnInfoForTest("custom_col_3", null)
                 )
         )
     }
 
 
     @Test
-    fun testWithMultipleSelectedColumnsWithAndWithoutAliases() {
+    fun `multiple column selection via both raw & type-safe #select with & without aliases`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -83,20 +103,28 @@ class QueryBuilderImplTest {
         builder
                 .fromTable(table)
                 .select(table.int, "t_int")
+                .select("custom_col_1", "cc_1")
+                .select("custom_col_2")
                 .select(table.string)
+                .select("custom_col_3", "cc_3")
+                .select(table.nullableBlob, "t_n_blob")
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
                 columns = listOf(
                         SelectColumnInfoForTest(table.int.qualifiedName, "t_int"),
-                        SelectColumnInfoForTest(table.string.qualifiedName, null)
+                        SelectColumnInfoForTest("custom_col_1", "cc_1"),
+                        SelectColumnInfoForTest("custom_col_2", null),
+                        SelectColumnInfoForTest(table.string.qualifiedName, null),
+                        SelectColumnInfoForTest("custom_col_3", "cc_3"),
+                        SelectColumnInfoForTest(table.nullableBlob.qualifiedName, "t_n_blob")
                 )
         )
     }
 
 
     @Test
-    fun testWithWhere() {
+    fun `with where`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -133,7 +161,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testGroupByWithOneColumn() {
+    fun `group by with one column`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -150,7 +178,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testGroupByWithMultipleColumns() {
+    fun `group by with multiple columns via single #groupBy call`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -167,7 +195,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testMultipleGroupByCallsAppend() {
+    fun `group by with multiple columns via multiple #groupBy calls`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -185,7 +213,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testOrderByWithOneColumn() {
+    fun `order by with one column`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -202,7 +230,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testOrderByWithMultipleColumns() {
+    fun `order by with multiple columns`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -223,7 +251,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testSubsequentOrderByForTheSameColumnAppends() {
+    fun `subsequent order by for the same column appends`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -244,7 +272,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testLimit() {
+    fun `with limit`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -258,7 +286,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testOffset() {
+    fun `with offset`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -272,7 +300,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testSingleJoinWithoutWhere() {
+    fun `single join without where`() {
         val bundle = Bundle.default()
         val table1 = bundle.table
         val table2 = TableForTest(name = "table_for_join")
@@ -293,7 +321,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testMultiJoinWithoutWhere() {
+    fun `multiple joins without where`() {
         val bundle = Bundle.default()
         val table1 = bundle.table
         val table2 = TableForTest(name = "table_for_join_1")
@@ -333,7 +361,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testJoinWithWhereFromMultipleTables() {
+    fun `join with where from multiple tables`() {
         val bundle = Bundle.default()
         val table1 = bundle.table
         val table2 = TableForTest(name = "table_for_join_1")
@@ -395,7 +423,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testComplexQueryWithWhereAtLast() {
+    fun `complex query with where at last`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -415,7 +443,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testComplexQueryWithWhereAtFirst() {
+    fun `complex query with where at first`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -435,7 +463,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testComplexQueryWithCrazyOrdering() {
+    fun `complex query with crazy ordering`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()
@@ -455,7 +483,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testQueryWithAllOptions() {
+    fun `with lots of options`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val tableForJoin = TableForTest("table_for_join")
@@ -465,7 +493,9 @@ class QueryBuilderImplTest {
                 .fromTable(table)
                 .distinct()
                 .select(table.int, null)
+                .select("custom_col_1", "cc_1")
                 .select(tableForJoin.string, "t_string_123")
+                .select("custom_col_2", null)
                 .join(table.long, tableForJoin.blob)
                 .where().eq(table.double, 5.0).and().notEq(tableForJoin.int, 6)
                 .groupBy(table.blob, tableForJoin.nullableInt)
@@ -485,7 +515,9 @@ class QueryBuilderImplTest {
                 distinct = true,
                 columns = listOf(
                         SelectColumnInfoForTest(table.int.qualifiedName, null),
-                        SelectColumnInfoForTest(tableForJoin.string.qualifiedName, "t_string_123")
+                        SelectColumnInfoForTest("custom_col_1", "cc_1"),
+                        SelectColumnInfoForTest(tableForJoin.string.qualifiedName, "t_string_123"),
+                        SelectColumnInfoForTest("custom_col_2", null)
                 ),
                 joinInfos = listOf(JoinInfoForTest(
                         JoinInfo.Type.INNER_JOIN, table.long.qualifiedName,
@@ -522,7 +554,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun testAllTypesAreBoundCorrectly() {
+    fun `all types are bound correctly`() {
         val bundle = Bundle.default()
         val table = bundle.table
         val builder = bundle.newBuilder()

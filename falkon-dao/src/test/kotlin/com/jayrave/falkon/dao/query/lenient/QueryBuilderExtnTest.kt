@@ -58,7 +58,7 @@ class QueryBuilderExtnTest {
 
 
     /**
-     * Stores select arguments. Throws for everything else
+     * Stores select arguments. Throws for everything else (raw select throws too)
      */
     internal class AdderOrEnderForTest : AdderOrEnder<AdderOrEnderForTest> {
 
@@ -71,6 +71,7 @@ class QueryBuilderExtnTest {
 
         private fun exception() = UnsupportedOperationException("not implemented")
         override fun distinct() = throw exception()
+        override fun select(column: String, alias: String?) = throw exception()
         override fun join(column: Column<*, *>, onColumn: Column<*, *>) = throw exception()
         override fun groupBy(column: Column<*, *>, vararg others: Column<*, *>) = throw exception()
         override fun orderBy(column: Column<*, *>, ascending: Boolean) = throw exception()

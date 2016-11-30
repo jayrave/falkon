@@ -53,13 +53,18 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
      *
      *      `SELECT example_column, ..., example_column, ... FROM ...`
      */
-    override fun select(column: Column<*, *>, alias: String?): AdderOrEnderBeforeWhere {
+    override fun select(column: String, alias: String?): AdderOrEnderBeforeWhere {
         if (selectColumnInfoList == null) {
             selectColumnInfoList = LinkedList()
         }
 
-        selectColumnInfoList!!.add(SelectColumnInfoImpl(column.qualifiedName, alias))
+        selectColumnInfoList!!.add(SelectColumnInfoImpl(column, alias))
         return this
+    }
+
+
+    override fun select(column: Column<*, *>, alias: String?): AdderOrEnderBeforeWhere {
+        return select(column.qualifiedName, alias)
     }
 
 
@@ -193,6 +198,12 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
         override fun distinct(): AdderOrEnderAfterWhere {
             this@QueryBuilderImpl.distinct()
+            return this
+        }
+
+
+        override fun select(column: String, alias: String?): AdderOrEnderAfterWhere {
+            this@QueryBuilderImpl.select(column, alias)
             return this
         }
 
