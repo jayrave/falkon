@@ -1,7 +1,6 @@
 package com.jayrave.falkon.dao.query.lenient
 
 import com.jayrave.falkon.dao.lib.qualifiedName
-import com.jayrave.falkon.dao.lib.uniqueNameInDb
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
@@ -11,7 +10,6 @@ import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.iterables.IterableBackedIterable
-import com.jayrave.falkon.iterables.IterablesBackedIterable
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
@@ -27,7 +25,7 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
     private lateinit var table: Table<*, *>
     private var distinct: Boolean = false
-    private var selectedColumns: MutableList<Column<*, *>>? = null
+    private var selectColumnInfoList: MutableList<SelectColumnInfo>? = null
     private var joinInfoList: MutableList<JoinInfoImpl>? = null
     private var whereBuilder: WhereBuilderImpl<PredicateAdderOrEnder>? = null
     private var groupByColumns: MutableList<Column<*, *>>? = null
@@ -49,21 +47,18 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
     /**
      * Calling this method again for a column that has been already included will include it
-     * again leading to the SELECT statement that has this column name twice. For example,
-     * if the column name "example_column" is passed twice to this method in the same
-     * invocation or even in two separate invocations, it would result in a SELECT that look like
+     * again, leading to a SELECT statement that has this column name twice. For example,
+     * if this method is called twice for the column "example_column", it would result in
+     * a SELECT that looks like
      *
      *      `SELECT example_column, ..., example_column, ... FROM ...`
      */
-    override fun select(column: Column<*, *>, vararg others: Column<*, *>):
-            AdderOrEnderBeforeWhere {
-
-        if (selectedColumns == null) {
-            selectedColumns = LinkedList()
+    override fun select(column: Column<*, *>, alias: String?): AdderOrEnderBeforeWhere {
+        if (selectColumnInfoList == null) {
+            selectColumnInfoList = LinkedList()
         }
 
-        selectedColumns!!.add(column)
-        selectedColumns!!.addAll(others)
+        selectColumnInfoList!!.add(SelectColumnInfoImpl(column.qualifiedName, alias))
         return this
     }
 
@@ -147,8 +142,8 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
         val where = whereBuilder?.build()
         val sql = querySqlBuilder.build(
-                table.name, distinct, buildSelectColumnInfoList(), joinInfoList,
-                where?.whereSections, buildGroupByList(), orderByInfoList, limitCount, offsetCount
+                table.name, distinct, selectColumnInfoList, joinInfoList, where?.whereSections,
+                buildGroupByList(), orderByInfoList, limitCount, offsetCount
         )
 
         return QueryImpl(tableNames, sql, where?.arguments ?: emptyList())
@@ -169,15 +164,6 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         return table.configuration.engine
                 .compileQuery(concernedTableNames, query.sql)
                 .closeIfOpThrows { bindAll(query.arguments) }
-    }
-
-
-    private fun buildSelectColumnInfoList(): Iterable<SelectColumnInfo> {
-        val tempSelectedColumns =
-                selectedColumns ?:
-                getUniqueTablesInQuery(table, joinInfoList).buildColumnList()
-
-        return tempSelectedColumns.buildColumnInfoList()
     }
 
 
@@ -211,10 +197,8 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         }
 
 
-        override fun select(column: Column<*, *>, vararg others: Column<*, *>):
-                AdderOrEnderAfterWhere {
-
-            this@QueryBuilderImpl.select(column, *others)
+        override fun select(column: Column<*, *>, alias: String?): AdderOrEnderAfterWhere {
+            this@QueryBuilderImpl.select(column, alias)
             return this
         }
 
@@ -263,6 +247,13 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
 
 
+    private data class SelectColumnInfoImpl(
+            override val columnName: String,
+            override val alias: String?
+    ) : SelectColumnInfo
+
+
+
     private data class JoinInfoImpl(
             override val type: JoinInfo.Type,
             override val qualifiedLocalColumnName: String,
@@ -276,35 +267,6 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
 
     private data class OrderInfoImpl(
             override val columnName: String,
-            override val ascending: Boolean) : OrderInfo
-
-
-
-    companion object {
-
-        private fun getUniqueTablesInQuery(
-                primaryTable: Table<*, *>, joinInfoList: Iterable<JoinInfoImpl>?):
-                Iterable<Table<*, *>> {
-
-            val set = LinkedHashSet<Table<*, *>>()
-            set.add(primaryTable)
-            joinInfoList?.forEach { set.add(it.tableToJoin) }
-            return set
-        }
-
-
-        private fun Iterable<Table<*, *>>.buildColumnList(): Iterable<Column<*, *>> {
-            return IterablesBackedIterable(map { it.allColumns })
-        }
-
-
-        private fun Iterable<Column<*, *>>.buildColumnInfoList(): Iterable<SelectColumnInfo> {
-            return IterableBackedIterable.create(this) {
-                object : SelectColumnInfo {
-                    override val columnName: String get() = it.qualifiedName
-                    override val alias: String? get() = it.uniqueNameInDb
-                }
-            }
-        }
-    }
+            override val ascending: Boolean
+    ) : OrderInfo
 }

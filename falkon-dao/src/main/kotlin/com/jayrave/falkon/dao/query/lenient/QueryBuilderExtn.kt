@@ -4,12 +4,19 @@ import com.jayrave.falkon.mapper.Column
 import java.sql.SQLException
 
 /**
- * A convenience function to select a list of columns
+ * A convenience function to select multiple columns in one go
+ *
+ * @param [columns] to be selected
+ * @param [aliaser] used to compute the alias to be used for the selected columns
+ *
+ * @throws [SQLException] if [columns] is empty
  */
-fun <Z : AdderOrEnder<Z>> AdderOrEnder<Z>.select(columns: Iterable<Column<*, *>>): Z {
+fun <Z : AdderOrEnder<Z>> AdderOrEnder<Z>.select(
+        columns: Iterable<Column<*, *>>, aliaser: ((Column<*, *>) -> String)? = null): Z {
+
     var result: Z? = null
-    columns.forEach {
-        result = select(it)
+    columns.forEach { column ->
+        result = select(column, aliaser?.invoke(column))
     }
 
     if (result == null) {

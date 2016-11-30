@@ -1,16 +1,11 @@
 package com.jayrave.falkon.dao.query
 
-import com.jayrave.falkon.dao.lib.uniqueNameInDb
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
 
-/**
- * All the columns have unique names in the result set (the result of running this query
- * against the database). [uniqueNameInDb] should be used for this purpose
- */
 interface QueryBuilder<T : Any> : AdderOrEnder<T, QueryBuilder<T>> {
 
     val table: Table<T, *>
@@ -31,19 +26,26 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
     fun distinct(): Z
 
     /**
-     * Add columns to be included in the result set. This method can be called multiple times
+     * Add column to be included in the result set. This method can be called multiple times
      * to add more columns to the result set. Behaviour on calling this method again for a column
      * that has already been included is implementation dependent
      *
-     * *NOTE:* If this isn't called, by default all columns will be included in the result set
+     * *NOTE:* If this isn't called, by default all columns (including columns of tables in the
+     * JOIN clause if any) will be included in the result set. This works similar to `*` projection
+     *
+     * @param [column] to be included in the result set
+     * @param [alias] the name by which [column] will be addressable in the result set
      */
-    fun select(column: Column<T, *>, vararg others: Column<T, *>): Z
+    fun select(column: Column<*, *>, alias: String? = null): Z
 
     /**
      * Adds JOIN clause. Can be called multiple times to add more tables to the JOIN clause.
      * Only simple JOINS are possible using this builder. If you need to specify WHERE clauses
-     * on the non-primary tables involved in the JOIN, consider using
+     * on the non-primary tables involved in the JOIN, please use
      * [com.jayrave.falkon.dao.query.lenient.QueryBuilder]
+     *
+     * *NOTE:* When using joins it is good practice to [select] the required columns and use
+     * appropriate aliases for those columns to prevent name collisions in the result set
      */
     fun join(column: Column<T, *>, onColumn: Column<*, *>): Z
 

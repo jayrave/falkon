@@ -29,14 +29,14 @@ internal class QueryBuilderImpl<T : Any>(
 
     /**
      * Calling this method again for a column that has been already included will include it
-     * again leading to the SELECT statement that has this column name twice. For example,
-     * if the column name "example_column" is passed twice to this method in the same
-     * invocation or even in two separate invocations, it would result in a SELECT that look like
+     * again, leading to a SELECT statement that has this column name twice. For example,
+     * if this method is called twice for the column "example_column", it would result in
+     * a SELECT that looks like
      *
      *      `SELECT example_column, ..., example_column, ... FROM ...`
      */
-    override fun select(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
-        lenientQueryBuilderImpl.select(column, *others)
+    override fun select(column: Column<*, *>, alias: String?): QueryBuilder<T> {
+        lenientQueryBuilderImpl.select(column, alias)
         return this
     }
 
@@ -119,10 +119,8 @@ internal class QueryBuilderImpl<T : Any>(
             return this
         }
 
-        override fun select(column: Column<T, *>, vararg others: Column<T, *>):
-                AdderOrEnderAfterWhere<T> {
-
-            this@QueryBuilderImpl.select(column, *others)
+        override fun select(column: Column<*, *>, alias: String?): AdderOrEnderAfterWhere<T> {
+            this@QueryBuilderImpl.select(column, alias)
             return this
         }
 

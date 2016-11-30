@@ -27,10 +27,7 @@ class QueryBuilderImplTest {
         builder.compile()
 
         // build expected query
-        val expectedSql = buildQuerySql(
-                tableName = table.name, querySqlBuilder = querySqlBuilder,
-                columns = buildColumnInfoList(table)
-        )
+        val expectedSql = buildQuerySql(tableName = table.name, querySqlBuilder = querySqlBuilder)
         val expectedQuery = QueryImpl(listOf(table.name), expectedSql, emptyList())
 
         // Verify
@@ -71,7 +68,7 @@ class QueryBuilderImplTest {
                 tableName = primaryTableName,
                 querySqlBuilder = bundle.querySqlBuilder,
                 distinct = true,
-                columns = listOf(table.int.buildSelectColumnInfoForTest()),
+                columns = listOf(SelectColumnInfoForTest(table.int.qualifiedName, null)),
                 joinInfos = listOf(JoinInfoForTest(
                         JoinInfo.Type.INNER_JOIN, table.long.qualifiedName,
                         tableForJoin.name, tableForJoin.blob.qualifiedName

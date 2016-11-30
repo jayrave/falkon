@@ -22,28 +22,20 @@ class QueryBuilderImplTest {
     @Test
     fun testWithDistinct() {
         val bundle = Bundle.default()
-        val table = bundle.table
         val builder = bundle.newBuilder()
 
-        builder.fromTable(table).distinct()
-        assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, distinct = true,
-                columns = buildColumnInfoList(table)
-        )
+        builder.fromTable(bundle.table).distinct()
+        assertArgFreeStatement(bundle = bundle, queryBuilderImpl = builder, distinct = true)
     }
 
 
     @Test
     fun testByDefaultAllColumnsAreSelected() {
         val bundle = Bundle.default()
-        val table = bundle.table
         val builder = bundle.newBuilder()
 
-        builder.fromTable(table)
-        assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder,
-                columns = buildColumnInfoList(table)
-        )
+        builder.fromTable(bundle.table)
+        assertArgFreeStatement(bundle = bundle, queryBuilderImpl = builder)
     }
 
 
@@ -56,7 +48,7 @@ class QueryBuilderImplTest {
         builder.fromTable(table).select(table.int)
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
-                columns = listOf(table.int.buildSelectColumnInfoForTest())
+                columns = listOf(SelectColumnInfoForTest(table.int.qualifiedName, null))
         )
     }
 
@@ -69,34 +61,35 @@ class QueryBuilderImplTest {
 
         builder
                 .fromTable(table)
-                .select(table.int, table.string)
-
-        assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder,
-                columns = listOf(
-                        table.int.buildSelectColumnInfoForTest(),
-                        table.string.buildSelectColumnInfoForTest()
-                )
-        )
-    }
-
-
-    @Test
-    fun testMultipleSelectCallsAppend() {
-        val bundle = Bundle.default()
-        val table = bundle.table
-        val builder = bundle.newBuilder()
-
-        builder
-                .fromTable(table)
                 .select(table.int)
                 .select(table.string)
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
                 columns = listOf(
-                        table.int.buildSelectColumnInfoForTest(),
-                        table.string.buildSelectColumnInfoForTest()
+                        SelectColumnInfoForTest(table.int.qualifiedName, null),
+                        SelectColumnInfoForTest(table.string.qualifiedName, null)
+                )
+        )
+    }
+
+
+    @Test
+    fun testWithMultipleSelectedColumnsWithAndWithoutAliases() {
+        val bundle = Bundle.default()
+        val table = bundle.table
+        val builder = bundle.newBuilder()
+
+        builder
+                .fromTable(table)
+                .select(table.int, "t_int")
+                .select(table.string)
+
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                columns = listOf(
+                        SelectColumnInfoForTest(table.int.qualifiedName, "t_int"),
+                        SelectColumnInfoForTest(table.string.qualifiedName, null)
                 )
         )
     }
@@ -120,7 +113,6 @@ class QueryBuilderImplTest {
         // build expected query
         val expectedSql = buildQuerySql(
                 tableName = table.name, querySqlBuilder = bundle.querySqlBuilder,
-                columns = buildColumnInfoList(table),
                 whereSections = listOf(OneArgPredicate(
                         OneArgPredicate.Type.EQ, table.int.qualifiedName
                 ))
@@ -151,7 +143,7 @@ class QueryBuilderImplTest {
                 .groupBy(table.int)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = buildColumnInfoList(table),
+                bundle = bundle, queryBuilderImpl = builder,
                 groupBy = listOf(table.int.qualifiedName)
         )
     }
@@ -168,7 +160,7 @@ class QueryBuilderImplTest {
                 .groupBy(table.string, table.blob)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = buildColumnInfoList(table),
+                bundle = bundle, queryBuilderImpl = builder,
                 groupBy = listOf(table.string.qualifiedName, table.blob.qualifiedName)
         )
     }
@@ -186,7 +178,7 @@ class QueryBuilderImplTest {
                 .groupBy(table.string)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = buildColumnInfoList(table),
+                bundle = bundle, queryBuilderImpl = builder,
                 groupBy = listOf(table.int.qualifiedName, table.string.qualifiedName)
         )
     }
@@ -203,7 +195,7 @@ class QueryBuilderImplTest {
                 .orderBy(table.int, true)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = buildColumnInfoList(table),
+                bundle = bundle, queryBuilderImpl = builder,
                 orderBy = listOf(OrderInfoForTest(table.int.qualifiedName, true))
         )
     }
@@ -221,7 +213,7 @@ class QueryBuilderImplTest {
                 .orderBy(table.blob, false)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = buildColumnInfoList(table),
+                bundle = bundle, queryBuilderImpl = builder,
                 orderBy = listOf(
                         OrderInfoForTest(table.int.qualifiedName, true),
                         OrderInfoForTest(table.blob.qualifiedName, false)
@@ -242,7 +234,7 @@ class QueryBuilderImplTest {
                 .orderBy(table.int, false)
 
         assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder, columns = buildColumnInfoList(table),
+                bundle = bundle, queryBuilderImpl = builder,
                 orderBy = listOf(
                         OrderInfoForTest(table.int.qualifiedName, true),
                         OrderInfoForTest(table.int.qualifiedName, false)
@@ -261,10 +253,7 @@ class QueryBuilderImplTest {
                 .fromTable(table)
                 .limit(50)
 
-        assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder,
-                columns = buildColumnInfoList(table), limit = 50
-        )
+        assertArgFreeStatement(bundle = bundle, queryBuilderImpl = builder, limit = 50)
     }
 
 
@@ -278,10 +267,7 @@ class QueryBuilderImplTest {
                 .fromTable(table)
                 .offset(72)
 
-        assertArgFreeStatement(
-                bundle = bundle, queryBuilderImpl = builder,
-                columns = buildColumnInfoList(table), offset = 72
-        )
+        assertArgFreeStatement(bundle = bundle, queryBuilderImpl = builder, offset = 72)
     }
 
 
@@ -298,7 +284,6 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
-                columns = buildColumnInfoList(table1, table2),
                 joinInfos = listOf(JoinInfoForTest(
                         JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
                         table2.name, table2.nullableDouble.qualifiedName
@@ -325,7 +310,6 @@ class QueryBuilderImplTest {
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
-                columns = buildColumnInfoList(table1, table2, table3, table4),
                 joinInfos = listOf(
                         JoinInfoForTest(
                                 JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
@@ -374,7 +358,6 @@ class QueryBuilderImplTest {
         // build expected query
         val expectedSql = buildQuerySql(
                 tableName = bundle.table.name, querySqlBuilder = bundle.querySqlBuilder,
-                columns = buildColumnInfoList(table1, table2, table3),
                 joinInfos = listOf(
                         JoinInfoForTest(
                                 JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
@@ -481,7 +464,8 @@ class QueryBuilderImplTest {
         builder
                 .fromTable(table)
                 .distinct()
-                .select(table.int, tableForJoin.string)
+                .select(table.int, null)
+                .select(tableForJoin.string, "t_string_123")
                 .join(table.long, tableForJoin.blob)
                 .where().eq(table.double, 5.0).and().notEq(tableForJoin.int, 6)
                 .groupBy(table.blob, tableForJoin.nullableInt)
@@ -500,8 +484,8 @@ class QueryBuilderImplTest {
                 querySqlBuilder = bundle.querySqlBuilder,
                 distinct = true,
                 columns = listOf(
-                        table.int.buildSelectColumnInfoForTest(),
-                        tableForJoin.string.buildSelectColumnInfoForTest()
+                        SelectColumnInfoForTest(table.int.qualifiedName, null),
+                        SelectColumnInfoForTest(tableForJoin.string.qualifiedName, "t_string_123")
                 ),
                 joinInfos = listOf(JoinInfoForTest(
                         JoinInfo.Type.INNER_JOIN, table.long.qualifiedName,
@@ -570,7 +554,6 @@ class QueryBuilderImplTest {
         val expectedSql = buildQuerySql(
                 tableName = table.name,
                 querySqlBuilder = bundle.querySqlBuilder,
-                columns = buildColumnInfoList(table),
                 whereSections = listOf(
                         OneArgPredicate(OneArgPredicate.Type.EQ, table.short.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
@@ -646,7 +629,7 @@ class QueryBuilderImplTest {
         val table = bundle.table
         val expectedSql = buildQuerySql(
                 tableName = table.name, querySqlBuilder = bundle.querySqlBuilder, distinct = true,
-                columns = listOf(table.string.buildSelectColumnInfoForTest()),
+                columns = listOf(SelectColumnInfoForTest(table.string.qualifiedName, null)),
                 whereSections = listOf(OneArgPredicate(
                         OneArgPredicate.Type.EQ, table.double.qualifiedName
                 )),
@@ -671,7 +654,7 @@ class QueryBuilderImplTest {
 
     private fun assertArgFreeStatement(
             bundle: Bundle, queryBuilderImpl: QueryBuilderImpl, distinct: Boolean = false,
-            columns: Iterable<SelectColumnInfo>, joinInfos: Iterable<JoinInfo>? = null,
+            columns: Iterable<SelectColumnInfo>? = null, joinInfos: Iterable<JoinInfo>? = null,
             whereSections: Iterable<WhereSection>? = null, groupBy: Iterable<String>? = null,
             orderBy: Iterable<OrderInfo>? = null, limit: Long? = null, offset: Long? = null) {
 
