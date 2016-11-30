@@ -11,11 +11,4 @@ class ColumnExtnTest {
         val table = TableForTest("table_for_test")
         assertThat(table.long.qualifiedName).isEqualTo("table_for_test.long")
     }
-
-
-    @Test
-    fun testUniqueNameInDbProperty() {
-        val table = TableForTest("table_for_test")
-        assertThat(table.long.uniqueNameInDb).isEqualTo("table_for_test_long")
-    }
 }
