@@ -1,6 +1,6 @@
-package com.jayrave.falkon.dao.lib
+package com.jayrave.falkon.mapper.lib
 
-import com.jayrave.falkon.dao.testLib.SingleRowSource
+import com.jayrave.falkon.mapper.testLib.SingleRowSource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -15,7 +15,7 @@ class SourceBackedDataProducerTest {
 
     @Test
     fun testGetNonNullInt() {
-        val inputValue: Int = 5.toInt()
+        val inputValue: Int = 5
         val actualValue = buildProducerAndSetColumnIndex(inputValue).getInt()
         assertThat(actualValue).isEqualTo(inputValue)
     }

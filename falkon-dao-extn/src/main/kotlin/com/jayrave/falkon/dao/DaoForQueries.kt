@@ -1,8 +1,8 @@
 package com.jayrave.falkon.dao
 
-import com.jayrave.falkon.dao.lib.extractAllModelsAndClose
-import com.jayrave.falkon.dao.lib.extractFirstModelAndClose
 import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.lib.extractAllModelsAndClose
+import com.jayrave.falkon.mapper.lib.extractFirstModelAndClose
 
 /**
  * @return [T] that has the passed in [ID] as its primary key

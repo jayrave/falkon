@@ -1,4 +1,4 @@
-package com.jayrave.falkon.dao.lib
+package com.jayrave.falkon.mapper.lib
 
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source

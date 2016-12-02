@@ -6,6 +6,11 @@ targetCompatibility = javaVersions.target
 dependencies {
     compile falkonModules.engine
     compile libraries.kotlinStdlib
+
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.mockito
+    testCompile libraries.mockitoKotlin
 }
 
 ext {
