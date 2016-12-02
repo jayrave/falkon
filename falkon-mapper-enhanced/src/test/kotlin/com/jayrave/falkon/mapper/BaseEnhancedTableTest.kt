@@ -180,73 +180,73 @@ class BaseEnhancedTableTest {
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #col after accessing allColumns throws`() {
-        `adding columns via #col too late throws`() { it.allColumns }
+        `adding columns via #col too late throws` { it.allColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #foreignCol after accessing allColumns throws`() {
-        `adding columns via #foreignCol too late throws`() { it.allColumns }
+        `adding columns via #foreignCol too late throws` { it.allColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addColumn after accessing allColumns throws`() {
-        `adding columns via #addColumn too late throws`() { it.allColumns }
+        `adding columns via #addColumn too late throws` { it.allColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addForeignColumn after accessing allColumns throws`() {
-        `adding columns via #addForeignColumn too late throws`() { it.allColumns }
+        `adding columns via #addForeignColumn too late throws` { it.allColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #col after accessing idColumns throws`() {
-        `adding columns via #col too late throws`() { it.idColumns }
+        `adding columns via #col too late throws` { it.idColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #foreignCol after accessing idColumns throws`() {
-        `adding columns via #foreignCol too late throws`() { it.idColumns }
+        `adding columns via #foreignCol too late throws` { it.idColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addColumn after accessing idColumns throws`() {
-        `adding columns via #addColumn too late throws`() { it.idColumns }
+        `adding columns via #addColumn too late throws` { it.idColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addForeignColumn after accessing idColumns throws`() {
-        `adding columns via #addForeignColumn too late throws`() { it.idColumns }
+        `adding columns via #addForeignColumn too late throws` { it.idColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #col after accessing nonIdColumns throws`() {
-        `adding columns via #col too late throws`() { it.nonIdColumns }
+        `adding columns via #col too late throws` { it.nonIdColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #foreignCol after accessing nonIdColumns throws`() {
-        `adding columns via #foreignCol too late throws`() { it.nonIdColumns }
+        `adding columns via #foreignCol too late throws` { it.nonIdColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addColumn after accessing nonIdColumns throws`() {
-        `adding columns via #addColumn too late throws`() { it.nonIdColumns }
+        `adding columns via #addColumn too late throws` { it.nonIdColumns }
     }
 
 
     @Test(expected = IllegalStateException::class)
     fun `adding columns via #addForeignColumn after accessing nonIdColumns throws`() {
-        `adding columns via #addForeignColumn too late throws`() { it.nonIdColumns }
+        `adding columns via #addForeignColumn too late throws` { it.nonIdColumns }
     }
 
 
@@ -319,7 +319,7 @@ class BaseEnhancedTableTest {
 
         override val dao: Dao<ModelForTest, Int> get() = throw UnsupportedOperationException()
         override fun <C> extractFrom(id: Int, column: Column<ModelForTest, C>) = throw exception()
-        override fun create(value: Value<ModelForTest>) = throw exception()
+        override fun create(value: Table.Value<ModelForTest>) = throw exception()
 
         private fun exception() = UnsupportedOperationException("not implemented")
     }

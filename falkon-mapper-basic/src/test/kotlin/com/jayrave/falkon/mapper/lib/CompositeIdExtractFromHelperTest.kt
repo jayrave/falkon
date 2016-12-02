@@ -58,7 +58,7 @@ class CompositeIdExtractFromHelperTest {
         class Id(val id1: Int = 42, val id2: Double = 44.0, val id3: String = "test 46")
 
         private fun exception() = NotImplementedError()
-        override fun create(value: Value<ExampleModel>) = throw exception()
+        override fun create(value: Table.Value<ExampleModel>) = throw exception()
         override fun <C> extractFrom(id: Int, column: Column<ExampleModel, C>) = throw exception()
 
         val id1 = col(ExampleModel::id1, isId = true)

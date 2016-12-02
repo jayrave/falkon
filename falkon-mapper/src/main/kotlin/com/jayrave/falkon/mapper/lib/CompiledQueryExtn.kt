@@ -4,7 +4,6 @@ import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.Column
 import com.jayrave.falkon.mapper.Table
-import com.jayrave.falkon.mapper.Value
 import java.util.*
 
 /**
@@ -168,7 +167,7 @@ private fun <T : Any> Table<T, *>.createInstanceFrom(
         dataProducer: SourceBackedDataProducer,
         columnIndexExtractor: ((Column<T, *>) -> Int)): T {
 
-    return create(object : Value<T> {
+    return create(object : Table.Value<T> {
         override fun <C> of(column: Column<T, C>): C {
             // Update data producer to point to the current column
             dataProducer.setColumnIndex(columnIndexExtractor.invoke(column))

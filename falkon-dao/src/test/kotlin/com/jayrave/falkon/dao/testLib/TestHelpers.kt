@@ -27,7 +27,7 @@ internal class TableForTest(
         BaseTable<ModelForTest, Int>(name, configuration) {
 
     override fun <C> extractFrom(id: Int, column: Column<ModelForTest, C>) = throw exception()
-    override fun create(value: Value<ModelForTest>) = throw exception()
+    override fun create(value: Table.Value<ModelForTest>) = throw exception()
 
     val short = col(ModelForTest::short, isId = true)
     val int = col(ModelForTest::int, isId = true)

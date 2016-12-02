@@ -48,7 +48,7 @@ internal class TableForTest(
         } as C
     }
 
-    override fun create(value: Value<ModelForTest>): ModelForTest {
+    override fun create(value: Table.Value<ModelForTest>): ModelForTest {
         return ModelForTest(
                 value of id1, value of id2, value of short, value of int, value of long,
                 value of float, value of double, value of string, value of blob,

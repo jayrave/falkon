@@ -38,7 +38,7 @@ class SimpleIdExtractFromHelperTest {
             BaseTable<ExampleModel, Int>("test", defaultTableConfiguration()) {
 
         private fun exception() = NotImplementedError()
-        override fun create(value: Value<ExampleModel>) = throw exception()
+        override fun create(value: Table.Value<ExampleModel>) = throw exception()
         override fun <C> extractFrom(id: Int, column: Column<ExampleModel, C>) = throw exception()
 
         val id = col(ExampleModel::id, isId = true)

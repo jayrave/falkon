@@ -47,4 +47,14 @@ interface Table<T : Any, in ID : Any> {
      * The values should be extracted out of the passed in [Value] instance
      */
     fun create(value: Value<T>): T
+
+
+    interface Value<T : Any> {
+
+        /**
+         * Implementation should give back the value corresponding to the
+         * passed in [Column]
+         */
+        infix fun <C> of(column: Column<T, C>): C
+    }
 }
