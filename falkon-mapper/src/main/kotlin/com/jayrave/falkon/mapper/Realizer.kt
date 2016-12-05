@@ -6,7 +6,7 @@ package com.jayrave.falkon.mapper
  *
  *  - columns from multiple tables
  *  - subset of columns from a single table
- *  - columns that include the result of running aggregate functions etc.
+ *  - columns that include the result of running aggregate functions etc
  */
 interface Realizer<out T : Any> {
 
@@ -17,16 +17,11 @@ interface Realizer<out T : Any> {
 
 
     interface Value {
-        /**
-         * Implementation should give back the value corresponding to the
-         * passed in [columnName]
-         */
-        infix fun <C> of(columnName: String): C
 
         /**
          * Implementation should give back the value corresponding to the
          * passed in [column]
          */
-        infix fun <C> of(column: Column<*, C>): C
+        infix fun <C> of(column: ReadOnlyColumn<C>): C
     }
 }

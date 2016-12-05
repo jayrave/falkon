@@ -1,9 +1,6 @@
 package com.jayrave.falkon.mapper.lib
 
-import com.jayrave.falkon.mapper.Column
-import com.jayrave.falkon.mapper.Realizer
-import com.jayrave.falkon.mapper.Table
-import com.jayrave.falkon.mapper.TableConfiguration
+import com.jayrave.falkon.mapper.*
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
 import org.junit.Test
@@ -18,10 +15,9 @@ class TableBackedRealizerTest {
         val expectedString = "test 6"
         val tableForTest = TableForTest()
 
-        @Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY", "unused")
+        @Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
         val realizerValue = object : Realizer.Value {
-            override fun <C> of(columnName: String) = throw exception
-            override fun <C> of(column: Column<*, C>): C {
+            override fun <C> of(column: ReadOnlyColumn<C>): C {
                 return when (column) {
                     tableForTest.idCol -> expectedId
                     tableForTest.intCol -> expectedInt
