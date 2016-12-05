@@ -1,6 +1,7 @@
 package com.jayrave.falkon.mapper
 
 import com.jayrave.falkon.engine.Type
+import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.mapper.testLib.StaticDataProducer
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -28,10 +29,16 @@ class ColumnImplTest {
     }
 
     @Test
-    fun testComputeStorageFormOfForNullableType() {
+    fun testComputeStorageFormOfForNullableTypeWithNonNullValue() {
         val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
         val inputId = UUID.randomUUID()
         assertThat(column.computeStorageFormOf(inputId)).isEqualTo(inputId.toString())
+    }
+
+    @Test
+    fun testComputeStorageFormOfForNullableTypeWithNullValue() {
+        val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
+        assertThat(column.computeStorageFormOf(null)).isEqualTo(TypedNull(Type.STRING))
     }
 
     @Test
@@ -44,12 +51,20 @@ class ColumnImplTest {
     }
 
     @Test
-    fun testPutStorageFormInForNullableType() {
+    fun testPutStorageFormInForNullableTypeWithNonNullValue() {
         val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
         val inputId = UUID.randomUUID()
         val dataConsumer = ValueHoldingDataConsumer()
         column.putStorageFormIn(inputId, dataConsumer)
         assertThat(dataConsumer.mostRecentConsumedValue).isEqualTo(inputId.toString())
+    }
+
+    @Test
+    fun testPutStorageFormInForNullableTypeWithNullValue() {
+        val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
+        val dataConsumer = ValueHoldingDataConsumer()
+        column.putStorageFormIn(null, dataConsumer)
+        assertThat(dataConsumer.mostRecentConsumedValue).isEqualTo(TypedNull(Type.STRING))
     }
 
     @Test
@@ -61,11 +76,18 @@ class ColumnImplTest {
     }
 
     @Test
-    fun testComputePropertyFromForNullableType() {
+    fun testComputePropertyFromForNullableTypeWithNonNullValue() {
         val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
         val inputString = UUID.randomUUID().toString()
         val dataProducer = StaticDataProducer.createForString(inputString)
         assertThat(column.computePropertyFrom(dataProducer)).isEqualTo(UUID.fromString(inputString))
+    }
+
+    @Test
+    fun testComputePropertyFromForNullableTypeWithNullValue() {
+        val column: Column<Any, UUID?> = buildColumnImplForTest(nullableUuidConverter())
+        val dataProducer = StaticDataProducer.createForString(null)
+        assertThat(column.computePropertyFrom(dataProducer)).isNull()
     }
 
 
