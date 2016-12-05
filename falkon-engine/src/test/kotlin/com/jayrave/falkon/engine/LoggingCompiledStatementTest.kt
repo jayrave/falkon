@@ -3,7 +3,7 @@ package com.jayrave.falkon.engine
 import com.jayrave.falkon.engine.testLib.StoringLogger
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class LoggingCompiledStatementTest {

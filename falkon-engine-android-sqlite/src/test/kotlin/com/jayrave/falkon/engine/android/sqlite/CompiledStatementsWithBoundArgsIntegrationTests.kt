@@ -1,4 +1,4 @@
-package com.jayrave.falkon.engine.jdbc
+package com.jayrave.falkon.engine.android.sqlite
 
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.safeCloseAfterExecution
@@ -6,7 +6,7 @@ import com.jayrave.falkon.engine.test.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
+class CompiledStatementsWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
 
     @Test
     fun `compile sql with all types of bound args`() {
@@ -74,7 +74,7 @@ class SqlWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
                                 ")"
                 )
 
-                val sql = "MERGE INTO $TABLE_NAME (" +
+                val sql = "INSERT OR REPLACE INTO $TABLE_NAME (" +
                         "$SHORT_COLUMN_NAME, " +
                         "$INT_COLUMN_NAME, " +
                         "$LONG_COLUMN_NAME, " +

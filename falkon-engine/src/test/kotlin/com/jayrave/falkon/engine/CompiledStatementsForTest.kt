@@ -5,6 +5,9 @@ internal open class CompiledStatementForTest<R>(
         private val shouldThrowOnExecution: Boolean) :
         CompiledStatement<R> {
 
+    override final var isClosed = false
+        private set
+
     override fun execute(): R {
         return when (shouldThrowOnExecution) {
             true -> throw RuntimeException()
@@ -20,7 +23,7 @@ internal open class CompiledStatementForTest<R>(
     override fun bindString(index: Int, value: String) = this
     override fun bindBlob(index: Int, value: ByteArray) = this
     override fun bindNull(index: Int, type: Type) = this
-    override fun close() {}
+    override fun close() { isClosed = true }
     override fun clearBindings() = this
 }
 

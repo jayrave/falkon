@@ -17,8 +17,9 @@ import java.util.*
 internal class CompiledQuery(override val sql: String, private val database: SQLiteDatabase) :
         CompiledStatement<Source> {
 
-    private var isClosed = false
     private var bindArgs: MutableMap<Int, Any?> = newArgsMap()
+    override var isClosed = false
+        private set
 
     override fun execute(): Source {
         throwIfClosed()
@@ -68,7 +69,7 @@ internal class CompiledQuery(override val sql: String, private val database: SQL
     }
 
     override fun close() {
-        isClosed = true // Idempotent. Can call multiple times
+        isClosed = true
     }
 
     override fun clearBindings(): CompiledStatement<Source> {

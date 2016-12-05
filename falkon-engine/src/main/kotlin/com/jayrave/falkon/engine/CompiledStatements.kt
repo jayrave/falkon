@@ -17,6 +17,11 @@ interface CompiledStatement<R> : Closeable {
     val sql: String
 
     /**
+     * Whether this compiled statement is closed or not
+     */
+    val isClosed: Boolean
+
+    /**
      * Execute this [CompiledStatement] for the currently bound arguments and
      * return the appropriate result
      */

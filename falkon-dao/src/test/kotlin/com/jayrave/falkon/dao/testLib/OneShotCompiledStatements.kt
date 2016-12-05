@@ -29,7 +29,7 @@ internal open class OneShotCompiledStatementForTest<R>(
     var numberOfTimesExecuted: Int = 0
         private set
 
-    var isClosed = false
+    override final var isClosed = false
         private set
 
     override fun execute(): R {

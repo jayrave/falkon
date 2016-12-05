@@ -8,7 +8,7 @@ import java.util.*
  */
 internal class LoggingCompiledStatement<R>(
         private val delegate: CompiledStatement<R>, private val logger: Logger) :
-        CompiledStatement<R> {
+        CompiledStatement<R> by delegate {
 
     private var largestIndex = DEFAULT_LARGEST_INDEX
     private val arguments = HashMap<Int, Any?>()
@@ -71,10 +71,6 @@ internal class LoggingCompiledStatement<R>(
         delegate.bindNull(index, type)
         storeArgument(index, null)
         return this
-    }
-
-    override fun close() {
-        delegate.close()
     }
 
     override fun clearBindings(): CompiledStatement<R> {
