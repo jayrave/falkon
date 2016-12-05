@@ -3,21 +3,18 @@ package com.jayrave.falkon.mapper
 import com.jayrave.falkon.engine.Type
 
 /**
- * Column defines how a property of a type corresponds to the column of a SQL table
+ * [Column] defines how a property of a type corresponds to the column of a SQL table
  *      [T] => Table type
  *      [C] => Column type
+ *
+ * [Column] is an extension of [ReadOnlyColumn] that always belongs to a table
  */
-interface Column<T : Any, C> {
+interface Column<T : Any, C> : ReadOnlyColumn<C> {
 
     /**
      * Table this column belongs to
      */
     val table: Table<T, *>
-
-    /**
-     * Name of the SQL column
-     */
-    val name: String
 
     /**
      * The [Type] this column will be stored as in the database
@@ -50,12 +47,4 @@ interface Column<T : Any, C> {
      * @param dataConsumer consumer that consumes the storage form
      */
     fun putStorageFormIn(property: C, dataConsumer: DataConsumer)
-
-    /**
-     * From the form the data was stored in the database to property
-     *
-     * [dataProducer] the producer which supplies the stored data
-     * @return - the property corresponding to the passed in stored form
-     */
-    fun computePropertyFrom(dataProducer: DataProducer): C
 }
