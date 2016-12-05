@@ -3,6 +3,8 @@ package com.jayrave.falkon.mapper.lib
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumn
+import com.jayrave.falkon.mapper.Realizer
 import com.jayrave.falkon.mapper.Table
 import java.util.*
 
@@ -13,9 +15,10 @@ import java.util.*
 fun <T : Any> CompiledStatement<Source>.extractFirstModelAndClose(
         forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)): T? {
 
-    return privateExtractAndClose {
-        extractFirstModel(forTable, columnNameExtractor)
-    }
+    return extractFirstModelAndClose(
+            forTable.buildRealizer(),
+            columnNameExtractor.castToUseWithRealizer()
+    )
 }
 
 
@@ -27,9 +30,10 @@ fun <T : Any> CompiledStatement<Source>.extractAllModelsAndClose(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
-    return privateExtractAndClose {
-        extractAllModels(forTable, toList, columnNameExtractor)
-    }
+    return extractAllModelsAndClose(
+            forTable.buildRealizer(), toList,
+            columnNameExtractor.castToUseWithRealizer()
+    )
 }
 
 
@@ -42,9 +46,10 @@ fun <T : Any> CompiledStatement<Source>.extractModelsAndClose(
         maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
-    return privateExtractAndClose {
-        extractModels(forTable, toList, maxNumberOfModelsToExtract, columnNameExtractor)
-    }
+    return extractModelsAndClose(
+            forTable.buildRealizer(), toList, maxNumberOfModelsToExtract,
+            columnNameExtractor.castToUseWithRealizer()
+    )
 }
 
 
@@ -59,13 +64,10 @@ fun <T : Any> CompiledStatement<Source>.extractModelsAndClose(
 fun <T : Any> CompiledStatement<Source>.extractFirstModel(
         forTable: Table<T, *>, columnNameExtractor: ((Column<T, *>) -> String)): T? {
 
-    val models = extractModels(
-            forTable = forTable, toList = LinkedList(),
-            maxNumberOfModelsToExtract = 1,
-            columnNameExtractor = columnNameExtractor
+    return extractFirstModel(
+            forTable.buildRealizer(),
+            columnNameExtractor.castToUseWithRealizer()
     )
-
-    return models.firstOrNull()
 }
 
 
@@ -81,9 +83,9 @@ fun <T : Any> CompiledStatement<Source>.extractAllModels(
         forTable: Table<T, *>, toList: MutableList<T> = buildNewMutableList(),
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
-    return extractModels(
-            forTable = forTable, toList = toList,
-            columnNameExtractor = columnNameExtractor
+    return extractAllModels(
+            forTable.buildRealizer(), toList,
+            columnNameExtractor.castToUseWithRealizer()
     )
 }
 
@@ -109,25 +111,125 @@ fun <T : Any> CompiledStatement<Source>.extractModels(
         maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
         columnNameExtractor: ((Column<T, *>) -> String)): List<T> {
 
-    val source = execute()
-    source.safeCloseAfterOp {
-        val dataProducer = SourceBackedDataProducer(source)
-        val columnIndexExtractor = buildColumnIndexExtractor(source, columnNameExtractor)
-        while (source.moveToNext() && toList.size < maxNumberOfModelsToExtract) {
-            toList.add(forTable.createInstanceFrom(dataProducer, columnIndexExtractor))
-        }
+    return extractModels(
+            forTable.buildRealizer(), toList, maxNumberOfModelsToExtract,
+            columnNameExtractor.castToUseWithRealizer()
+    )
+}
 
-        return toList
+
+/**
+ * Same as [extractFirstModel] but also closes [CompiledStatement]
+ * @see extractFirstModel
+ */
+fun <T : Any> CompiledStatement<Source>.extractFirstModelAndClose(
+        realizer: Realizer<T>, columnNameExtractor: ((ReadOnlyColumn<*>) -> String)): T? {
+
+    return safeCloseAfterOp {
+        extractFirstModel(realizer, columnNameExtractor)
     }
 }
 
 
 /**
- * Performs the given operation & closes [CompiledStatement]
+ * Same as [extractAllModels] but also closes [CompiledStatement]
+ * @see extractAllModels
  */
-private inline fun <R> CompiledStatement<Source>.privateExtractAndClose(operation: () -> R): R {
+fun <T : Any> CompiledStatement<Source>.extractAllModelsAndClose(
+        realizer: Realizer<T>, toList: MutableList<T> = buildNewMutableList(),
+        columnNameExtractor: ((ReadOnlyColumn<*>) -> String)): List<T> {
+
     return safeCloseAfterOp {
-        operation.invoke()
+        extractAllModels(realizer, toList, columnNameExtractor)
+    }
+}
+
+
+/**
+ * Same as [extractModels] but also closes [CompiledStatement]
+ * @see extractModels
+ */
+fun <T : Any> CompiledStatement<Source>.extractModelsAndClose(
+        realizer: Realizer<T>, toList: MutableList<T> = buildNewMutableList(),
+        maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
+        columnNameExtractor: ((ReadOnlyColumn<*>) -> String)): List<T> {
+
+    return safeCloseAfterOp {
+        extractModels(realizer, toList, maxNumberOfModelsToExtract, columnNameExtractor)
+    }
+}
+
+
+/**
+ * Same as [extractModels] except that only the first model is extracted
+ *
+ * *NOTE:* [CompiledStatement] isn't closed after execution. If that is preferred, checkout
+ * [extractFirstModelAndClose]
+ *
+ * @see extractFirstModelAndClose
+ */
+fun <T : Any> CompiledStatement<Source>.extractFirstModel(
+        realizer: Realizer<T>, columnNameExtractor: ((ReadOnlyColumn<*>) -> String)): T? {
+
+    val models = extractModels(
+            realizer = realizer, toList = LinkedList(),
+            maxNumberOfModelsToExtract = 1,
+            columnNameExtractor = columnNameExtractor
+    )
+
+    return models.firstOrNull()
+}
+
+
+/**
+ * Same as [extractModels] except that all models are extracted
+ *
+ * *NOTE:* [CompiledStatement] isn't closed after execution. If that is preferred, checkout
+ * [extractAllModelsAndClose]
+ *
+ * @see extractAllModelsAndClose
+ */
+fun <T : Any> CompiledStatement<Source>.extractAllModels(
+        realizer: Realizer<T>, toList: MutableList<T> = buildNewMutableList(),
+        columnNameExtractor: ((ReadOnlyColumn<*>) -> String)): List<T> {
+
+    return extractModels(
+            realizer = realizer, toList = toList,
+            columnNameExtractor = columnNameExtractor
+    )
+}
+
+
+/**
+ * Execute the [CompiledStatement] & extract an instance of [T] out of each row that is
+ * returned. This is done through [Realizer.realize]
+ *
+ * *NOTE:* [CompiledStatement] isn't closed after execution. If that is preferred, checkout
+ * [extractModelsAndClose]
+ *
+ * @param [realizer] whose [Realizer.realize] function will be called to realize instance
+ * @param [toList] to which the realized instances must be added. By default an [ArrayList] is used
+ * @param [maxNumberOfModelsToExtract] at the most only these number of models will be extracted
+ * @param [columnNameExtractor] used to extract the name that should be used to find the
+ * appropriate column in [Source] that will created by executing this [CompiledStatement]
+ *
+ * @return is the same as [toList]
+ * @see extractModelsAndClose
+ */
+fun <T : Any> CompiledStatement<Source>.extractModels(
+        realizer: Realizer<T>, toList: MutableList<T> = buildNewMutableList(),
+        maxNumberOfModelsToExtract: Int = Int.MAX_VALUE,
+        columnNameExtractor: ((ReadOnlyColumn<*>) -> String)): List<T> {
+
+    val source = execute()
+    source.safeCloseAfterOp {
+        val dataProducer = SourceBackedDataProducer(source)
+        val columnIndexExtractor = buildColumnIndexExtractor(source, columnNameExtractor)
+        while (source.moveToNext() && toList.size < maxNumberOfModelsToExtract) {
+            toList.add(realizer.createInstanceFrom(dataProducer, columnIndexExtractor))
+        }
+
+        return toList
     }
 }
 
@@ -139,15 +241,26 @@ private fun <T> buildNewMutableList() = ArrayList<T>()
 
 
 /**
+ * Builds a [Realizer] backed by [Table]
+ */
+private fun <T : Any> Table<T, *>.buildRealizer(): Realizer<T> = TableBackedRealizer(this)
+
+
+@Suppress("UNCHECKED_CAST")
+private fun <T : Any> ((Column<T, *>) -> String).castToUseWithRealizer():
+        ((ReadOnlyColumn<*>) -> String) = this as ((ReadOnlyColumn<*>) -> String)
+
+
+/**
  * Builds a column index extractor that looks up the index once & then caches it
  * for later use
  */
-private fun <T : Any> buildColumnIndexExtractor(
-        source: Source, columnNameExtractor: (Column<T, *>) -> String):
-        (Column<T, *>) -> Int {
+private fun buildColumnIndexExtractor(
+        source: Source, columnNameExtractor: (ReadOnlyColumn<*>) -> String):
+        (ReadOnlyColumn<*>) -> Int {
 
-    val columnPositionMap = HashMap<Column<T, *>, Int?>()
-    return { column: Column<T, *> ->
+    val columnPositionMap = HashMap<ReadOnlyColumn<*>, Int>()
+    return { column: ReadOnlyColumn<*> ->
         var index = columnPositionMap[column] // Check if the index is in cache
         if (index == null) {
             val columnName = columnNameExtractor.invoke(column)
@@ -163,12 +276,12 @@ private fun <T : Any> buildColumnIndexExtractor(
 /**
  * Used to build a instance of [T]
  */
-private fun <T : Any> Table<T, *>.createInstanceFrom(
+private fun <T : Any> Realizer<T>.createInstanceFrom(
         dataProducer: SourceBackedDataProducer,
-        columnIndexExtractor: ((Column<T, *>) -> Int)): T {
+        columnIndexExtractor: ((ReadOnlyColumn<*>) -> Int)): T {
 
-    return create(object : Table.Value<T> {
-        override fun <C> of(column: Column<T, C>): C {
+    return realize(object : Realizer.Value {
+        override fun <C> of(column: ReadOnlyColumn<C>): C {
             // Update data producer to point to the current column
             dataProducer.setColumnIndex(columnIndexExtractor.invoke(column))
             return column.computePropertyFrom(dataProducer)
