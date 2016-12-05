@@ -1,6 +1,6 @@
 package com.jayrave.falkon.mapper.lib
 
-import com.jayrave.falkon.mapper.testLib.SingleRowSource
+import com.jayrave.falkon.mapper.testLib.ImmovableSingleRowSource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -62,7 +62,7 @@ class SourceBackedDataProducerTest {
 
 
     private fun buildProducerAndSetColumnIndex(inputValue: Any?): SourceBackedDataProducer {
-        val source = SingleRowSource(mapOf(DEFAULT_COLUMN_NAME to inputValue))
+        val source = ImmovableSingleRowSource(mapOf(DEFAULT_COLUMN_NAME to inputValue))
         val producer = SourceBackedDataProducer(source)
         producer.setColumnIndex(source.getColumnIndex(DEFAULT_COLUMN_NAME))
         return producer

@@ -4,28 +4,30 @@ import com.jayrave.falkon.engine.Source
 import java.util.*
 
 /**
- * A [Source] that can hold only one row at a time and always points at the row
+ * A [Source] that can hold only one row at a time and always points at the row & throws on
+ * attempts to move around
  */
-internal class SingleRowSource(map: Map<String, Any?>) : Source {
+internal class ImmovableSingleRowSource(map: Map<String, Any?>) : Source {
 
     override var isClosed: Boolean = false
         private set
 
+    // `Source` contract demands user facing index map to be 1-based
+    private val columnNameToUserFacingIndexMap: Map<String, Int>
     private val values: List<Any?>
-    private val columnNameToIndexMap: Map<String, Int>
     init  {
         values = ArrayList(map.size)
-        columnNameToIndexMap = HashMap()
+        columnNameToUserFacingIndexMap = HashMap()
         map.forEach { entry ->
             val index = values.size
-            columnNameToIndexMap[entry.key] = index + 1 // columnIndex is 1-based
             values.add(index, entry.value)
+            columnNameToUserFacingIndexMap[entry.key] = index + 1 // columnIndex is 1-based
         }
     }
 
     override fun moveToNext() = false
     override fun moveToPrevious() = false
-    override fun getColumnIndex(columnName: String) = columnNameToIndexMap[columnName]!!
+    override fun getColumnIndex(columnName: String) = columnNameToUserFacingIndexMap[columnName]!!
     override fun getShort(columnIndex: Int) = getValue(columnIndex) as Short
     override fun getInt(columnIndex: Int) = getValue(columnIndex) as Int
     override fun getLong(columnIndex: Int) = getValue(columnIndex) as Long
@@ -37,6 +39,6 @@ internal class SingleRowSource(map: Map<String, Any?>) : Source {
     override fun close() { isClosed = true }
 
     private fun getValue(columnIndex: Int): Any? {
-        return values[columnIndex - 1] // columnIndex is 1-based
+        return values[columnIndex - 1] // user facing index is 1-based
     }
 }
