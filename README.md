@@ -211,7 +211,8 @@ There are a lot more features to discover
 - DbEventListener (get notified on insert, update & delete events)
 - Transactions (nested transactions are supported too)
 - Compiled statements (for performance & re-use)
-- Type-safe JOIN capable query builder
+- Type-safe `JOIN` capable query builder
+- Easy extraction of custom models (for e.g., from `JOIN` queries or queries using aggregates etc. via `Realizer`)
 - etc.
 
 To learn more check out

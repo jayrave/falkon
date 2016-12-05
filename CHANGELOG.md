@@ -1,3 +1,7 @@
+#Version 0.9-alpha (2016-12-05)
+- `QueryBuilder`: raw select & capability to specify column alias
+- Add `Realizer` (useful to extract custom models from `JOIN` queries, queries using aggregates etc.)
+
 #Version 0.8-alpha (2016-11-23)
 - Support `INSERT OR REPLACE` (using db specific constructs that provide atomicity)
 - Add helpers to implement `Table#extractFrom` for both simple & composite primary keys
