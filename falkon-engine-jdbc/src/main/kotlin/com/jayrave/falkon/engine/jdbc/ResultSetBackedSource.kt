@@ -5,13 +5,9 @@ import java.sql.ResultSet
 
 internal class ResultSetBackedSource(private val resultSet: ResultSet) : Source {
 
-    override val position: Int
-        get() = resultSet.row
+    override val isClosed: Boolean
+        get() = resultSet.isClosed
 
-    override fun move(offset: Int): Boolean = resultSet.relative(offset)
-    override fun moveToPosition(position: Int): Boolean = resultSet.absolute(position)
-    override fun moveToFirst(): Boolean = resultSet.first()
-    override fun moveToLast(): Boolean = resultSet.last()
     override fun moveToNext(): Boolean = resultSet.next()
     override fun moveToPrevious(): Boolean = resultSet.previous()
     override fun getColumnIndex(columnName: String): Int = resultSet.findColumn(columnName)
@@ -33,5 +29,4 @@ internal class ResultSetBackedSource(private val resultSet: ResultSet) : Source 
     }
 
     override fun close() = resultSet.close()
-    override fun isClosed() = resultSet.isClosed
 }

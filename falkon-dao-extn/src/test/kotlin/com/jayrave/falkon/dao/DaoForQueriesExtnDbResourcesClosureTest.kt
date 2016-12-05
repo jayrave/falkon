@@ -64,7 +64,7 @@ class DaoForQueriesExtnDbResourcesClosureTest {
         operation.invoke(buildTableForTest(engine))
 
         // Verify source & compiled query closure
-        assertThat(sourceForTest.isClosed()).isTrue()
+        assertThat(sourceForTest.isClosed).isTrue()
         assertThat(engine.compiledStatementsForQuery).hasSize(1)
         verify(engine.compiledStatementsForQuery.first()).close()
     }
@@ -90,7 +90,7 @@ class DaoForQueriesExtnDbResourcesClosureTest {
 
         // Verify exception was thrown and source & compiled query were closed
         assertThat(exceptionCaught).isTrue()
-        assertThat(sourceForTest.isClosed()).isTrue()
+        assertThat(sourceForTest.isClosed).isTrue()
         assertThat(engine.compiledStatementsForQuery).hasSize(1)
         verify(engine.compiledStatementsForQuery.first()).close()
     }
@@ -123,17 +123,13 @@ class DaoForQueriesExtnDbResourcesClosureTest {
     private class SourceForTest private constructor(
             private val forMoveCalls: () -> Boolean) : Source {
 
-        private var isClosed = false
-        override fun isClosed() = isClosed
+        override var isClosed = false
+            private set
+
         override fun close() {
             isClosed = true
         }
 
-        override val position: Int = 0
-        override fun move(offset: Int) = forMoveCalls.invoke()
-        override fun moveToPosition(position: Int) = forMoveCalls.invoke()
-        override fun moveToFirst() = forMoveCalls.invoke()
-        override fun moveToLast() = forMoveCalls.invoke()
         override fun moveToNext() = forMoveCalls.invoke()
         override fun moveToPrevious() = forMoveCalls.invoke()
 

@@ -8,9 +8,9 @@ import java.util.*
  */
 internal class SingleRowSource(map: Map<String, Any?>) : Source {
 
-    override val position: Int = 1 // position is 1-based
+    override var isClosed: Boolean = false
+        private set
 
-    private var isClosed: Boolean = false
     private val values: List<Any?>
     private val columnNameToIndexMap: Map<String, Int>
     init  {
@@ -23,22 +23,6 @@ internal class SingleRowSource(map: Map<String, Any?>) : Source {
         }
     }
 
-    override fun move(offset: Int): Boolean {
-        return when (position) {
-            0 -> true
-            else -> false
-        }
-    }
-
-    override fun moveToPosition(position: Int): Boolean {
-        return when (position) {
-            1 -> true
-            else -> false
-        }
-    }
-
-    override fun moveToFirst() = true
-    override fun moveToLast() = true
     override fun moveToNext() = false
     override fun moveToPrevious() = false
     override fun getColumnIndex(columnName: String) = columnNameToIndexMap[columnName]!!
@@ -50,11 +34,7 @@ internal class SingleRowSource(map: Map<String, Any?>) : Source {
     override fun getString(columnIndex: Int) = getValue(columnIndex) as String
     override fun getBlob(columnIndex: Int) = getValue(columnIndex) as ByteArray
     override fun isNull(columnIndex: Int) = getValue(columnIndex) == null
-
-    override fun isClosed() = isClosed
-    override fun close() {
-        isClosed = true
-    }
+    override fun close() { isClosed = true }
 
     private fun getValue(columnIndex: Int): Any? {
         return values[columnIndex - 1] // columnIndex is 1-based

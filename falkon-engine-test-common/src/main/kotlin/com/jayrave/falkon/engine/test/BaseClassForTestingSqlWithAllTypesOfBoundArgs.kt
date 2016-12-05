@@ -54,7 +54,7 @@ abstract class BaseClassForTestingSqlWithAllTypesOfBoundArgs(
             nullableDouble: Double?, nullableString: String?, nullableBlob: ByteArray?) {
 
         val source = nativeQueryExecutor.execute("SELECT * FROM $TABLE_NAME")
-        assertThat(source.moveToFirst()).isTrue()
+        assertThat(source.moveToNext()).isTrue()
         assertThat(source.getShort(source.getColumnIndex(SHORT_COLUMN_NAME))).isEqualTo(short)
         assertThat(source.getInt(source.getColumnIndex(INT_COLUMN_NAME))).isEqualTo(int)
         assertThat(source.getLong(source.getColumnIndex(LONG_COLUMN_NAME))).isEqualTo(long)

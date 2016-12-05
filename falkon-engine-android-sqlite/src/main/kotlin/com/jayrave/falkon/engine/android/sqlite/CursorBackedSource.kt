@@ -9,24 +9,8 @@ import com.jayrave.falkon.engine.Source
  */
 internal class CursorBackedSource(private val cursor: Cursor) : Source {
 
-    override val position: Int
-        get() = indexFromCursorConversion(cursor.position)
-
-    override fun move(offset: Int): Boolean {
-        return cursor.move(offset)
-    }
-
-    override fun moveToPosition(position: Int): Boolean {
-        return cursor.moveToPosition(indexToCursorConversion(position))
-    }
-
-    override fun moveToFirst(): Boolean {
-        return cursor.moveToFirst()
-    }
-
-    override fun moveToLast(): Boolean {
-        return cursor.moveToLast()
-    }
+    override val isClosed: Boolean
+        get() = cursor.isClosed
 
     override fun moveToNext(): Boolean {
         return cursor.moveToNext()
@@ -37,7 +21,7 @@ internal class CursorBackedSource(private val cursor: Cursor) : Source {
     }
 
     override fun getColumnIndex(columnName: String): Int {
-        return indexFromCursorConversion(cursor.getColumnIndex(columnName))
+        return indexFromCursorConversion(cursor.getColumnIndexOrThrow(columnName))
     }
 
     override fun getShort(columnIndex: Int): Short {
@@ -74,10 +58,6 @@ internal class CursorBackedSource(private val cursor: Cursor) : Source {
 
     override fun close() {
         cursor.close()
-    }
-
-    override fun isClosed(): Boolean {
-        return cursor.isClosed
     }
 
     private fun indexFromCursorConversion(index: Int): Int {

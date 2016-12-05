@@ -64,7 +64,7 @@ class TestCompileQueryWithAllTypesOfBoundArgs(
         val source = compiledQuery.execute()
 
         // Assert source's result set
-        assertThat(source.moveToFirst()).isEqualTo(true)
+        assertThat(source.moveToNext()).isEqualTo(true)
         assertThat(source.getShort(source.getColumnIndex(SHORT_COLUMN_NAME))).isEqualTo(5)
         assertThat(source.getInt(source.getColumnIndex(INT_COLUMN_NAME))).isEqualTo(6)
         assertThat(source.getLong(source.getColumnIndex(LONG_COLUMN_NAME))).isEqualTo(7)

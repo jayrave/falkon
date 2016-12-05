@@ -53,6 +53,6 @@ class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
             engineCore.compileQuery("SELECT * FROM $tableName").execute()
         }
 
-        source.moveToFirst()
+        source.moveToNext()
     }
 }

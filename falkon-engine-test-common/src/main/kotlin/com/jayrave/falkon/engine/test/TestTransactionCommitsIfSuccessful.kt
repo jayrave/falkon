@@ -34,7 +34,7 @@ class TestTransactionCommitsIfSuccessful(private val engineCore: EngineCore) {
 
         val compiledQuery = engineCore.compileQuery("SELECT * FROM $tableName")
         val source = compiledQuery.execute()
-        assertThat(source.moveToFirst()).isEqualTo(true)
+        assertThat(source.moveToNext()).isEqualTo(true)
         assertThat(source.getInt(source.getColumnIndex(columnName))).isEqualTo(5)
         assertThat(source.moveToNext()).isEqualTo(false)
         source.close()
