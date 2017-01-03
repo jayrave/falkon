@@ -1,3 +1,6 @@
+#Version 0.10-alpha (2017-01-03)
+- Add API to query builders to specify the type of JOIN
+
 #Version 0.9-alpha (2016-12-05)
 - `QueryBuilder`: raw select & capability to specify column alias
 - Add `Realizer` (useful to extract custom models from `JOIN` queries, queries using aggregates etc.)
