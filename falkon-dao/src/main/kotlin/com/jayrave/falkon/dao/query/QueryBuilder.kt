@@ -45,10 +45,14 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
      * on the non-primary tables involved in the JOIN, please use
      * [com.jayrave.falkon.dao.query.lenient.QueryBuilder]
      *
+     * *NOTE:* Default join type is [JoinType.INNER_JOIN]
      * *NOTE:* When using joins it is good practice to [select] the required columns and use
      * appropriate aliases for those columns to prevent name collisions in the result set
      */
-    fun join(column: Column<T, *>, onColumn: Column<*, *>): Z
+    fun join(
+            column: Column<T, *>, onColumn: Column<*, *>,
+            joinType: JoinType = JoinType.INNER_JOIN
+    ): Z
 
     /**
      * Adds the given columns to GROUP BY clause. This method can be called multiple times

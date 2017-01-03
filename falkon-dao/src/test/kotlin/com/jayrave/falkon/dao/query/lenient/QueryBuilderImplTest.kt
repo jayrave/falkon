@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.query.lenient
 
 import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.query.JoinType
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.query.testLib.*
 import com.jayrave.falkon.dao.testLib.TableForTest
@@ -300,7 +301,7 @@ class QueryBuilderImplTest {
 
 
     @Test
-    fun `single join without where`() {
+    fun `single default join without where`() {
         val bundle = Bundle.default()
         val table1 = bundle.table
         val table2 = TableForTest(name = "table_for_join")
@@ -321,6 +322,27 @@ class QueryBuilderImplTest {
 
 
     @Test
+    fun `single non default join without where`() {
+        val bundle = Bundle.default()
+        val table1 = bundle.table
+        val table2 = TableForTest(name = "table_for_join")
+        val builder = bundle.newBuilder()
+
+        builder
+                .fromTable(table1)
+                .join(table1.int, table2.nullableDouble, JoinType.RIGHT_OUTER_JOIN)
+
+        assertArgFreeStatement(
+                bundle = bundle, queryBuilderImpl = builder,
+                joinInfos = listOf(JoinInfoForTest(
+                        JoinInfo.Type.RIGHT_OUTER_JOIN, table1.int.qualifiedName,
+                        table2.name, table2.nullableDouble.qualifiedName
+                ))
+        )
+    }
+
+
+    @Test
     fun `multiple joins without where`() {
         val bundle = Bundle.default()
         val table1 = bundle.table
@@ -332,9 +354,9 @@ class QueryBuilderImplTest {
         builder
                 .fromTable(table1)
                 .join(table1.int, table2.nullableDouble)
-                .join(table2.long, table3.string)
-                .join(table3.blob, table4.float)
-                .join(table4.nullableShort, table2.nullableBlob)
+                .join(table2.long, table3.string, JoinType.LEFT_OUTER_JOIN)
+                .join(table3.blob, table4.float, JoinType.RIGHT_OUTER_JOIN)
+                .join(table4.nullableShort, table2.nullableBlob, JoinType.INNER_JOIN)
 
         assertArgFreeStatement(
                 bundle = bundle, queryBuilderImpl = builder,
@@ -344,11 +366,11 @@ class QueryBuilderImplTest {
                                 table2.name, table2.nullableDouble.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, table2.long.qualifiedName,
+                                JoinInfo.Type.LEFT_OUTER_JOIN, table2.long.qualifiedName,
                                 table3.name, table3.string.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, table3.blob.qualifiedName,
+                                JoinInfo.Type.RIGHT_OUTER_JOIN, table3.blob.qualifiedName,
                                 table4.name, table4.float.qualifiedName
                         ),
                         JoinInfoForTest(
@@ -371,7 +393,7 @@ class QueryBuilderImplTest {
         builder
                 .fromTable(table1)
                 .join(table1.int, table2.nullableDouble)
-                .join(table1.int, table3.nullableFloat)
+                .join(table1.int, table3.nullableFloat, JoinType.LEFT_OUTER_JOIN)
                 .where()
                 .eq(table1.float, 5F)
                 .and()
@@ -392,7 +414,7 @@ class QueryBuilderImplTest {
                                 table2.name, table2.nullableDouble.qualifiedName
                         ),
                         JoinInfoForTest(
-                                JoinInfo.Type.INNER_JOIN, table1.int.qualifiedName,
+                                JoinInfo.Type.LEFT_OUTER_JOIN, table1.int.qualifiedName,
                                 table3.name, table3.nullableFloat.qualifiedName
                         )
                 ),

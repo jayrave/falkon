@@ -1,6 +1,7 @@
 package com.jayrave.falkon.dao.query.lenient
 
 import com.jayrave.falkon.dao.lib.qualifiedName
+import com.jayrave.falkon.dao.query.JoinType
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.where.lenient.AfterSimpleConnectorAdder
@@ -68,13 +69,22 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
     }
 
 
-    override fun join(column: Column<*, *>, onColumn: Column<*, *>): AdderOrEnderBeforeWhere {
+    override fun join(
+            column: Column<*, *>, onColumn: Column<*, *>, joinType: JoinType):
+            AdderOrEnderBeforeWhere {
+
         if (joinInfoList == null) {
             joinInfoList = LinkedList()
         }
 
+        val typeForJoinInfo = when (joinType) {
+            JoinType.INNER_JOIN -> JoinInfo.Type.INNER_JOIN
+            JoinType.LEFT_OUTER_JOIN -> JoinInfo.Type.LEFT_OUTER_JOIN
+            JoinType.RIGHT_OUTER_JOIN -> JoinInfo.Type.RIGHT_OUTER_JOIN
+        }
+
         joinInfoList!!.add(JoinInfoImpl(
-                JoinInfo.Type.INNER_JOIN, column.qualifiedName,
+                typeForJoinInfo, column.qualifiedName,
                 onColumn.qualifiedName, onColumn.table
         ))
 
@@ -214,8 +224,10 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         }
 
 
-        override fun join(column: Column<*, *>, onColumn: Column<*, *>): AdderOrEnderAfterWhere {
-            this@QueryBuilderImpl.join(column, onColumn)
+        override fun join(column: Column<*, *>, onColumn: Column<*, *>, joinType: JoinType):
+                AdderOrEnderAfterWhere {
+
+            this@QueryBuilderImpl.join(column, onColumn, joinType)
             return this
         }
 

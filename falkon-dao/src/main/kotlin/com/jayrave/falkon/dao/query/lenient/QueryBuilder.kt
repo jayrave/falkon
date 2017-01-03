@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.query.lenient
 
+import com.jayrave.falkon.dao.query.JoinType
 import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.where.lenient.WhereBuilder
 import com.jayrave.falkon.engine.CompiledStatement
@@ -41,10 +42,14 @@ interface AdderOrEnder<Z : AdderOrEnder<Z>> {
     /**
      * Adds JOIN clause. Can be called multiple times to add more tables to the JOIN clause
      *
+     * *NOTE:* Default join type is [JoinType.INNER_JOIN]
      * *NOTE:* When using joins it is good practice to [select] the required columns and use
      * appropriate aliases for those columns to prevent name collisions in the result set
      */
-    fun join(column: Column<*, *>, onColumn: Column<*, *>): Z
+    fun join(
+            column: Column<*, *>, onColumn: Column<*, *>,
+            joinType: JoinType = JoinType.INNER_JOIN
+    ): Z
 
     /**
      * Adds the given columns to GROUP BY clause. This method can be called multiple times

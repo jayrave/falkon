@@ -1,5 +1,6 @@
 package com.jayrave.falkon.dao.query.lenient
 
+import com.jayrave.falkon.dao.query.JoinType
 import com.jayrave.falkon.dao.query.testLib.SelectColumnInfoForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.mapper.Column
@@ -72,7 +73,10 @@ class QueryBuilderExtnTest {
         private fun exception() = UnsupportedOperationException("not implemented")
         override fun distinct() = throw exception()
         override fun select(column: String, alias: String?) = throw exception()
-        override fun join(column: Column<*, *>, onColumn: Column<*, *>) = throw exception()
+        override fun join(
+                column: Column<*, *>, onColumn: Column<*, *>, joinType: JoinType
+        ) = throw exception()
+
         override fun groupBy(column: Column<*, *>, vararg others: Column<*, *>) = throw exception()
         override fun orderBy(column: Column<*, *>, ascending: Boolean) = throw exception()
         override fun limit(count: Long) = throw exception()

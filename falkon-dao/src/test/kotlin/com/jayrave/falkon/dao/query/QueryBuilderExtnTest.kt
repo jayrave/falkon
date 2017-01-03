@@ -79,7 +79,7 @@ class QueryBuilderExtnTest {
         override fun compile() = throw exception()
 
         override fun join(
-                column: Column<ModelForTest, *>, onColumn: Column<*, *>
+                column: Column<ModelForTest, *>, onColumn: Column<*, *>, joinType: JoinType
         ) = throw exception()
 
         override fun groupBy(

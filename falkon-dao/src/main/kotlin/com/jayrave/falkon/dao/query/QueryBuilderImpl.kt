@@ -47,8 +47,11 @@ internal class QueryBuilderImpl<T : Any>(
     }
 
 
-    override fun join(column: Column<T, *>, onColumn: Column<*, *>): QueryBuilder<T> {
-        lenientQueryBuilderImpl.join(column, onColumn)
+    override fun join(
+            column: Column<T, *>, onColumn: Column<*, *>, joinType: JoinType):
+            QueryBuilder<T> {
+
+        lenientQueryBuilderImpl.join(column, onColumn, joinType)
         return this
     }
 
@@ -135,8 +138,10 @@ internal class QueryBuilderImpl<T : Any>(
             return this
         }
 
-        override fun join(column: Column<T, *>, onColumn: Column<*, *>): AdderOrEnderAfterWhere<T> {
-            this@QueryBuilderImpl.join(column, onColumn)
+        override fun join(column: Column<T, *>, onColumn: Column<*, *>, joinType: JoinType):
+                AdderOrEnderAfterWhere<T> {
+
+            this@QueryBuilderImpl.join(column, onColumn, joinType)
             return this
         }
 
