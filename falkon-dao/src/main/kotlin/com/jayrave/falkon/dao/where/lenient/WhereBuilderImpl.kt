@@ -511,9 +511,10 @@ internal class WhereBuilderImpl<Z : AdderOrEnder<Z>>(
 
 
         private fun <T: Any, C> getAppropriateArg(column: Column<T, C>, value: C): Any {
-            return when (value) {
+            val storageForm = column.computeStorageFormOf(value)
+            return when (storageForm) {
                 null -> TypedNull(column.dbType)
-                else -> value as Any
+                else -> storageForm
             }
         }
 

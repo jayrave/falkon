@@ -5,10 +5,12 @@ import com.jayrave.falkon.dao.update.testLib.UpdateSqlBuilderForTesting
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.UpdateSqlBuilder
+import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
+import com.jayrave.falkon.dao.testLib.NullableFlagPairConverter as NFPC
 
 class UpdateBuilderImplTest {
 
@@ -203,22 +205,42 @@ class UpdateBuilderImplTest {
         val updateSqlBuilder = bundle.updateSqlBuilder
 
         // build & compile
-        val builder = UpdateBuilderImpl(table, updateSqlBuilder).values {
-            set(table.short, 5.toShort())
-            set(table.int, 6)
-            set(table.long, 7L)
-            set(table.float, 8F)
-            set(table.double, 9.toDouble())
-            set(table.string, "test 10")
-            set(table.blob, byteArrayOf(11))
-            set(table.nullableShort, null)
-            set(table.nullableInt, null)
-            set(table.nullableLong, null)
-            set(table.nullableFloat, null)
-            set(table.nullableDouble, null)
-            set(table.nullableString, null)
-            set(table.nullableBlob, null)
-        }
+        val builder = UpdateBuilderImpl(table, updateSqlBuilder)
+                .values {
+                    set(table.short, 5.toShort())
+                    set(table.int, 6)
+                    set(table.long, 7L)
+                    set(table.float, 8F)
+                    set(table.double, 9.toDouble())
+                    set(table.string, "test 10")
+                    set(table.blob, byteArrayOf(11))
+                    set(table.flagPair, FlagPair(false, true))
+                    set(table.nullableShort, null)
+                    set(table.nullableInt, null)
+                    set(table.nullableLong, null)
+                    set(table.nullableFloat, null)
+                    set(table.nullableDouble, null)
+                    set(table.nullableString, null)
+                    set(table.nullableBlob, null)
+                    set(table.nullableFlagPair, null)
+                }.where()
+                .eq(table.short, 12.toShort()).and()
+                .eq(table.int, 13).and()
+                .eq(table.long, 14L).and()
+                .eq(table.float, 15F).and()
+                .eq(table.double, 16.toDouble()).and()
+                .eq(table.string, "test 17").and()
+                .eq(table.blob, byteArrayOf(18)).and()
+                .eq(table.flagPair, FlagPair(true, false)).and()
+                .gt(table.nullableShort, null).and()
+                .gt(table.nullableInt, null).and()
+                .gt(table.nullableLong, null).and()
+                .gt(table.nullableFloat, null).and()
+                .gt(table.nullableDouble, null).and()
+                .gt(table.nullableString, null).and()
+                .gt(table.nullableBlob, null).and()
+                .gt(table.nullableFlagPair, null)
+
 
         val actualUpdate = builder.build()
         builder.update()
@@ -228,20 +250,61 @@ class UpdateBuilderImplTest {
                 table.name,
                 listOf(
                         table.short.name, table.int.name, table.long.name, table.float.name,
-                        table.double.name, table.string.name, table.blob.name,
+                        table.double.name, table.string.name, table.blob.name, table.flagPair.name,
                         table.nullableShort.name, table.nullableInt.name, table.nullableLong.name,
                         table.nullableFloat.name, table.nullableDouble.name,
-                        table.nullableString.name, table.nullableBlob.name
-                ), null
+                        table.nullableString.name, table.nullableBlob.name,
+                        table.nullableFlagPair.name
+                ),
+                listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.long.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.float.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.double.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.flagPair.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableShort.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableLong.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableFloat.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableDouble.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableString.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableFlagPair.name)
+                )
         )
 
         val expectedUpdate = UpdateImpl(
                 table.name, expectedSql,
                 listOf(
                         5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11),
+                        NFPC.asShort(FlagPair(false, true)),
                         TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
                         TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
-                        TypedNull(Type.BLOB)
+                        TypedNull(Type.BLOB), TypedNull(NFPC.dbType),
+
+                        12.toShort(), 13, 14L, 15F, 16.0, "test 17", byteArrayOf(18),
+                        NFPC.asShort(FlagPair(true, false)),
+                        TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
+                        TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
+                        TypedNull(Type.BLOB), TypedNull(NFPC.dbType)
                 )
         )
 
@@ -251,7 +314,7 @@ class UpdateBuilderImplTest {
         val statement = engine.compiledStatementsForUpdate.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
-        assertThat(statement.boundArgs).hasSize(14)
+        assertThat(statement.boundArgs).hasSize(32)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
         assertThat(statement.longBoundAt(3)).isEqualTo(7L)
@@ -259,13 +322,31 @@ class UpdateBuilderImplTest {
         assertThat(statement.doubleBoundAt(5)).isEqualTo(9.toDouble())
         assertThat(statement.stringBoundAt(6)).isEqualTo("test 10")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(11))
-        assertThat(statement.isNullBoundAt(8)).isTrue()
+        assertThat(statement.shortBoundAt(8)).isEqualTo(NFPC.asShort(FlagPair(false, true)))
         assertThat(statement.isNullBoundAt(9)).isTrue()
         assertThat(statement.isNullBoundAt(10)).isTrue()
         assertThat(statement.isNullBoundAt(11)).isTrue()
         assertThat(statement.isNullBoundAt(12)).isTrue()
         assertThat(statement.isNullBoundAt(13)).isTrue()
         assertThat(statement.isNullBoundAt(14)).isTrue()
+        assertThat(statement.isNullBoundAt(15)).isTrue()
+        assertThat(statement.isNullBoundAt(16)).isTrue()
+        assertThat(statement.shortBoundAt(17)).isEqualTo(12.toShort())
+        assertThat(statement.intBoundAt(18)).isEqualTo(13)
+        assertThat(statement.longBoundAt(19)).isEqualTo(14L)
+        assertThat(statement.floatBoundAt(20)).isEqualTo(15F)
+        assertThat(statement.doubleBoundAt(21)).isEqualTo(16.toDouble())
+        assertThat(statement.stringBoundAt(22)).isEqualTo("test 17")
+        assertThat(statement.blobBoundAt(23)).isEqualTo(byteArrayOf(18))
+        assertThat(statement.shortBoundAt(24)).isEqualTo(NFPC.asShort(FlagPair(true, false)))
+        assertThat(statement.isNullBoundAt(25)).isTrue()
+        assertThat(statement.isNullBoundAt(26)).isTrue()
+        assertThat(statement.isNullBoundAt(27)).isTrue()
+        assertThat(statement.isNullBoundAt(28)).isTrue()
+        assertThat(statement.isNullBoundAt(29)).isTrue()
+        assertThat(statement.isNullBoundAt(30)).isTrue()
+        assertThat(statement.isNullBoundAt(31)).isTrue()
+        assertThat(statement.isNullBoundAt(32)).isTrue()
     }
 
 

@@ -12,13 +12,15 @@ internal class ModelForTest(
         val double: Double = 0.toDouble(),
         val string: String = "test",
         val blob: ByteArray = byteArrayOf(0),
+        val flagPair: FlagPair = FlagPair(true, false),
         val nullableShort: Short? = null,
         val nullableInt: Int? = null,
         val nullableLong: Long? = null,
         val nullableFloat: Float? = null,
         val nullableDouble: Double? = null,
         val nullableString: String? = null,
-        val nullableBlob: ByteArray? = null
+        val nullableBlob: ByteArray? = null,
+        val nullableFlagPair: FlagPair? = null
 )
 
 
@@ -36,6 +38,7 @@ internal class TableForTest(
     val double = col(ModelForTest::double)
     val string = col(ModelForTest::string, isId = true)
     val blob = col(ModelForTest::blob)
+    val flagPair = col(ModelForTest::flagPair)
     val nullableShort = col(ModelForTest::nullableShort)
     val nullableInt = col(ModelForTest::nullableInt)
     val nullableLong = col(ModelForTest::nullableLong)
@@ -43,6 +46,7 @@ internal class TableForTest(
     val nullableDouble = col(ModelForTest::nullableDouble)
     val nullableString = col(ModelForTest::nullableString)
     val nullableBlob = col(ModelForTest::nullableBlob)
+    val nullableFlagPair = col(ModelForTest::nullableFlagPair)
 
     private fun exception() = UnsupportedOperationException()
 }
@@ -51,5 +55,10 @@ internal class TableForTest(
 internal fun defaultTableConfiguration(engine: Engine = mock()): TableConfiguration {
     val configuration = TableConfigurationImpl(engine, mock())
     configuration.registerDefaultConverters()
+    configuration.registerForNullableValues(
+            FlagPair::class.java, NullableFlagPairConverter(),
+            wrapForNonNullValuesIfRequired = true
+    )
+
     return configuration
 }

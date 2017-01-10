@@ -1,16 +1,14 @@
 package com.jayrave.falkon.dao.insertOrReplace
 
 import com.jayrave.falkon.dao.insertOrReplace.testLib.InsertOrReplaceSqlBuilderForTesting
-import com.jayrave.falkon.dao.testLib.EngineForTestingBuilders
-import com.jayrave.falkon.dao.testLib.IntReturningOneShotCompiledStatementForTest
-import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.dao.testLib.defaultTableConfiguration
+import com.jayrave.falkon.dao.testLib.*
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
 import com.jayrave.falkon.sqlBuilders.InsertOrReplaceSqlBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.junit.Test
+import com.jayrave.falkon.dao.testLib.NullableFlagPairConverter as NFPC
 
 class InsertOrReplaceBuilderImplTest {
 
@@ -224,6 +222,7 @@ class InsertOrReplaceBuilderImplTest {
             set(table.double, 9.toDouble())
             set(table.string, "test 10")
             set(table.blob, byteArrayOf(11))
+            set(table.flagPair, FlagPair(false, true))
             set(table.nullableShort, null)
             set(table.nullableInt, null)
             set(table.nullableLong, null)
@@ -231,6 +230,7 @@ class InsertOrReplaceBuilderImplTest {
             set(table.nullableDouble, null)
             set(table.nullableString, null)
             set(table.nullableBlob, null)
+            set(table.nullableFlagPair, null)
         }
 
         val actualInsertOrReplace = builder.build()
@@ -246,9 +246,10 @@ class InsertOrReplaceBuilderImplTest {
 
                 listOf(
                         table.long.name, table.float.name, table.double.name, table.blob.name,
-                        table.nullableShort.name, table.nullableInt.name, table.nullableLong.name,
-                        table.nullableDouble.name, table.nullableString.name,
-                        table.nullableBlob.name
+                        table.flagPair.name, table.nullableShort.name, table.nullableInt.name,
+                        table.nullableLong.name, table.nullableDouble.name,
+                        table.nullableString.name, table.nullableBlob.name,
+                        table.nullableFlagPair.name
                 )
         )
 
@@ -256,9 +257,10 @@ class InsertOrReplaceBuilderImplTest {
                 table.name, expectedSql,
                 listOf(
                         5.toShort(), 6, "test 10", TypedNull(Type.FLOAT), 7L, 8F, 9.0,
-                        byteArrayOf(11), TypedNull(Type.SHORT), TypedNull(Type.INT),
+                        byteArrayOf(11), NFPC.asShort(FlagPair(false, true)),
+                        TypedNull(Type.SHORT), TypedNull(Type.INT),
                         TypedNull(Type.LONG), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
-                        TypedNull(Type.BLOB)
+                        TypedNull(Type.BLOB), TypedNull(NFPC.dbType)
                 )
         )
 
@@ -268,7 +270,7 @@ class InsertOrReplaceBuilderImplTest {
         val statement = engine.compiledStatementsForInsertOrReplace.first()
         assertThat(statement.tableName).isEqualTo(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
-        assertThat(statement.boundArgs).hasSize(14)
+        assertThat(statement.boundArgs).hasSize(16)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
         assertThat(statement.stringBoundAt(3)).isEqualTo("test 10")
@@ -277,12 +279,14 @@ class InsertOrReplaceBuilderImplTest {
         assertThat(statement.floatBoundAt(6)).isEqualTo(8F)
         assertThat(statement.doubleBoundAt(7)).isEqualTo(9.toDouble())
         assertThat(statement.blobBoundAt(8)).isEqualTo(byteArrayOf(11))
-        assertThat(statement.isNullBoundAt(9)).isTrue()
+        assertThat(statement.shortBoundAt(9)).isEqualTo(NFPC.asShort(FlagPair(false, true)))
         assertThat(statement.isNullBoundAt(10)).isTrue()
         assertThat(statement.isNullBoundAt(11)).isTrue()
         assertThat(statement.isNullBoundAt(12)).isTrue()
         assertThat(statement.isNullBoundAt(13)).isTrue()
         assertThat(statement.isNullBoundAt(14)).isTrue()
+        assertThat(statement.isNullBoundAt(15)).isTrue()
+        assertThat(statement.isNullBoundAt(16)).isTrue()
     }
 
 

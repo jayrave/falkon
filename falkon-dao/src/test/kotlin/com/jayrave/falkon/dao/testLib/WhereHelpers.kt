@@ -54,7 +54,7 @@ internal fun assertWhereEquality(actualWhere: Where, expectedWhere: Where) {
 
 private fun Where.buildString(): String {
     val clauseWithPlaceholders = buildWhereClauseWithPlaceholders(whereSections)
-    val argsString = arguments.joinToString() {
+    val argsString = arguments.joinToString {
         when (it) {
             is ByteArray -> kotlin.text.String(it)
             else -> it.toString()

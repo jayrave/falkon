@@ -4,6 +4,7 @@ import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.JoinType
 import com.jayrave.falkon.dao.query.QueryImpl
 import com.jayrave.falkon.dao.query.testLib.*
+import com.jayrave.falkon.dao.testLib.FlagPair
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.engine.Type
 import com.jayrave.falkon.engine.TypedNull
@@ -17,6 +18,7 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.OneArgPredicate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.*
+import com.jayrave.falkon.dao.testLib.NullableFlagPairConverter as NFPC
 
 class QueryBuilderImplTest {
 
@@ -592,13 +594,15 @@ class QueryBuilderImplTest {
                 .eq(table.double, 9.toDouble()).and()
                 .eq(table.string, "test 10").and()
                 .eq(table.blob, byteArrayOf(11)).and()
+                .eq(table.flagPair, FlagPair(true, false)).and()
                 .gt(table.nullableShort, null).and()
                 .gt(table.nullableInt, null).and()
                 .gt(table.nullableLong, null).and()
                 .gt(table.nullableFloat, null).and()
                 .gt(table.nullableDouble, null).and()
                 .gt(table.nullableString, null).and()
-                .gt(table.nullableBlob, null)
+                .gt(table.nullableBlob, null).and()
+                .gt(table.nullableFlagPair, null)
 
         // build & compile
         val actualQuery = builder.build()
@@ -623,6 +627,8 @@ class QueryBuilderImplTest {
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.flagPair.qualifiedName),
+                        SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableShort.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.qualifiedName),
@@ -635,7 +641,9 @@ class QueryBuilderImplTest {
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableString.qualifiedName),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.qualifiedName)
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.qualifiedName),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableFlagPair.qualifiedName)
                 )
         )
 
@@ -643,9 +651,10 @@ class QueryBuilderImplTest {
                 listOf(table.name), expectedSql,
                 listOf(
                         5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11),
+                        NFPC.asShort(FlagPair(true, false)),
                         TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
                         TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
-                        TypedNull(Type.BLOB)
+                        TypedNull(Type.BLOB), TypedNull(NFPC.dbType)
                 )
         )
 
@@ -656,7 +665,7 @@ class QueryBuilderImplTest {
         val statement = engine.compiledStatementsForQuery.first()
         assertThat(statement.tableNames).containsOnly(table.name)
         assertThat(statement.sql).isEqualTo(expectedSql)
-        assertThat(statement.boundArgs).hasSize(14)
+        assertThat(statement.boundArgs).hasSize(16)
         assertThat(statement.shortBoundAt(1)).isEqualTo(5.toShort())
         assertThat(statement.intBoundAt(2)).isEqualTo(6)
         assertThat(statement.longBoundAt(3)).isEqualTo(7L)
@@ -664,13 +673,15 @@ class QueryBuilderImplTest {
         assertThat(statement.doubleBoundAt(5)).isEqualTo(9.toDouble())
         assertThat(statement.stringBoundAt(6)).isEqualTo("test 10")
         assertThat(statement.blobBoundAt(7)).isEqualTo(byteArrayOf(11))
-        assertThat(statement.isNullBoundAt(8)).isTrue()
+        assertThat(statement.shortBoundAt(8)).isEqualTo(NFPC.asShort(FlagPair(true, false)))
         assertThat(statement.isNullBoundAt(9)).isTrue()
         assertThat(statement.isNullBoundAt(10)).isTrue()
         assertThat(statement.isNullBoundAt(11)).isTrue()
         assertThat(statement.isNullBoundAt(12)).isTrue()
         assertThat(statement.isNullBoundAt(13)).isTrue()
         assertThat(statement.isNullBoundAt(14)).isTrue()
+        assertThat(statement.isNullBoundAt(15)).isTrue()
+        assertThat(statement.isNullBoundAt(16)).isTrue()
     }
 
 

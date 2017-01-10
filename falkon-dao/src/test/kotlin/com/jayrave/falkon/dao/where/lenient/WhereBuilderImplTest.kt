@@ -2,6 +2,7 @@ package com.jayrave.falkon.dao.where.lenient
 
 import com.jayrave.falkon.dao.lib.qualifiedName
 import com.jayrave.falkon.dao.query.QueryImpl
+import com.jayrave.falkon.dao.testLib.FlagPair
 import com.jayrave.falkon.dao.testLib.TableForTest
 import com.jayrave.falkon.dao.testLib.assertWhereEquality
 import com.jayrave.falkon.dao.where.Where
@@ -13,6 +14,7 @@ import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Connector.SimpleConnector
 import com.jayrave.falkon.sqlBuilders.lib.WhereSection.Predicate.*
 import org.junit.Test
 import java.sql.SQLSyntaxErrorException
+import com.jayrave.falkon.dao.testLib.NullableFlagPairConverter as NFPC
 
 class WhereBuilderImplTest {
 
@@ -709,21 +711,47 @@ class WhereBuilderImplTest {
 
 
     @Test
-    fun testNullHandling() {
+    fun `all types are bound correctly`() {
         val table = TableForTest()
         val builder = newBuilder()
+
         val actualWhere = builder
+                .eq(table.short, 5.toShort()).and()
+                .eq(table.int, 6).and()
+                .eq(table.long, 7L).and()
+                .eq(table.float, 8F).and()
+                .eq(table.double, 9.toDouble()).and()
+                .eq(table.string, "test 10").and()
+                .eq(table.blob, byteArrayOf(11)).and()
+                .eq(table.flagPair, FlagPair(true, false)).and()
                 .gt(table.nullableShort, null).and()
                 .gt(table.nullableInt, null).and()
                 .gt(table.nullableLong, null).and()
                 .gt(table.nullableFloat, null).and()
                 .gt(table.nullableDouble, null).and()
                 .gt(table.nullableString, null).and()
-                .gt(table.nullableBlob, null).
-                build()
+                .gt(table.nullableBlob, null).and()
+                .gt(table.nullableFlagPair, null)
+                .build()
 
         val expectedWhere = WhereImpl(
                 listOf(
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.short.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.int.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.long.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.float.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.double.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.string.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.blob.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.EQ, table.flagPair.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableShort.name),
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableInt.name),
@@ -736,13 +764,17 @@ class WhereBuilderImplTest {
                         SimpleConnector(SimpleConnector.Type.AND),
                         OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableString.name),
                         SimpleConnector(SimpleConnector.Type.AND),
-                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.name)
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableBlob.name),
+                        SimpleConnector(SimpleConnector.Type.AND),
+                        OneArgPredicate(OneArgPredicate.Type.GREATER_THAN, table.nullableFlagPair.name)
                 ),
 
                 listOf(
+                        5.toShort(), 6, 7L, 8F, 9.0, "test 10", byteArrayOf(11),
+                        NFPC.asShort(FlagPair(true, false)),
                         TypedNull(Type.SHORT), TypedNull(Type.INT), TypedNull(Type.LONG),
                         TypedNull(Type.FLOAT), TypedNull(Type.DOUBLE), TypedNull(Type.STRING),
-                        TypedNull(Type.BLOB)
+                        TypedNull(Type.BLOB), TypedNull(NFPC.dbType)
                 )
         )
 
