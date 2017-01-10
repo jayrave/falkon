@@ -14,12 +14,6 @@ class SimpleInsertOrReplaceSqlBuilderTest {
     }
 
 
-    @Test(expected = SQLSyntaxErrorException::class)
-    fun `build insert or replace throws for empty non id columns iterable`() {
-        SimpleInsertOrReplaceSqlBuilder.build("I_O_R", "test", listOf("a"), emptyList())
-    }
-
-
     @Test
     fun `successfully builds`() {
         val actualSql = SimpleInsertOrReplaceSqlBuilder.build(
@@ -27,6 +21,17 @@ class SimpleInsertOrReplaceSqlBuilderTest {
         )
 
         val expectedSql = "I_O_R INTO $tableName (id_column_1, non_id_column_1) VALUES (?, ?)"
+        assertThat(actualSql).isEqualTo(expectedSql)
+    }
+
+
+    @Test
+    fun `successfully builds with empty non id columns iterable`() {
+        val actualSql = SimpleInsertOrReplaceSqlBuilder.build(
+                "I_O_R", "test", listOf("a"), emptyList()
+        )
+
+        val expectedSql = "I_O_R INTO $tableName (a) VALUES (?)"
         assertThat(actualSql).isEqualTo(expectedSql)
     }
 }

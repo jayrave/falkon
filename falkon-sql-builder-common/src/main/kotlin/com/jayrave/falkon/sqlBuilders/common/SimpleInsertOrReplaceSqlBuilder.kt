@@ -18,10 +18,6 @@ object SimpleInsertOrReplaceSqlBuilder {
             throw SQLSyntaxErrorException("ID columns can't be empty for insert or replace")
         }
 
-        if (nonIdColumns.size() == 0) {
-            throw SQLSyntaxErrorException("Non id columns can't be empty for insert or replace")
-        }
-
         val allColumns = IterablesBackedIterable(listOf(idColumns, nonIdColumns))
         return SimpleInsertAndCousinsSqlBuilder.build(
                 phraseForInsertOrReplace, tableName, allColumns

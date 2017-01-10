@@ -14,4 +14,9 @@ class H2InsertOrReplaceSqlBuilderIntegrationTests : BaseClassForTesting() {
     fun `existing records are updated via insert or replace with both null & non null values`() {
         TestInsertOrReplace(H2InsertOrReplaceSqlBuilder(), db).`existing records are updated via insert or replace with both null & non null values`()
     }
+
+    @Test
+    fun `can insert or replace into table with only id columns`() {
+        TestInsertOrReplace(H2InsertOrReplaceSqlBuilder(), db).`can insert or replace into table with only id columns`()
+    }
 }
