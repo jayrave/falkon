@@ -1,3 +1,6 @@
+#Version 0.11-alpha (2017-01-10)
+- Allow `INSERT OR REPLACE` for tables with only primary key columns
+
 #Version 0.10-alpha (2017-01-03)
 - Add API to query builders to specify the type of JOIN
 
