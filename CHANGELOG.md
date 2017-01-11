@@ -1,3 +1,6 @@
+#Version 0.13-alpha (2017-01-10)
+- Bug fix: `CompiledStatement` extension method, `bindColumns` was not using storage forms of column values
+
 #Version 0.12-alpha (2017-01-10)
 - Bug fix: `WhereBuilder` was not using storage forms of the passed in column values
 
