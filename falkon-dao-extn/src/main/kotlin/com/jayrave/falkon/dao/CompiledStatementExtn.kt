@@ -6,15 +6,14 @@ import com.jayrave.falkon.engine.bind
 import com.jayrave.falkon.mapper.Column
 
 /**
- * [columns] of [item] will be bound using [bind]. If the column value is null,
+ * Values for [columns] of [item] will be bound using [bind]. If the column value is null,
  * appropriate [TypedNull] is used
  */
 internal fun <T: Any, CS: CompiledStatement<R>, R> CS.bindColumns(
         columns: Collection<Column<T, *>>, item: T, startIndex: Int = 1): CS {
 
     bindColumns(columns, item, startIndex) { item, column ->
-        @Suppress("UNCHECKED_CAST")
-        (column as Column<Any, Any>).extractPropertyFrom(item)
+        column.extractPropertyFrom(item)
     }
 
     return this
@@ -22,15 +21,19 @@ internal fun <T: Any, CS: CompiledStatement<R>, R> CS.bindColumns(
 
 
 /**
- * values for [columns] extracted from [item] using [valueExtractor] will be bound using [bind].
- * If the extracted value is null, appropriate [TypedNull] is used
+ * Values for [columns] extracted from [item] using [valueExtractor] will be bound using [bind]
+ * after converting them into their storage form. If the extracted value is null, appropriate
+ * [TypedNull] is used
  */
+@Suppress("UNCHECKED_CAST")
 internal inline fun <T: Any, ITEM, CS: CompiledStatement<R>, R> CS.bindColumns(
         columns: Collection<Column<T, *>>, item: ITEM, startIndex: Int = 1,
         valueExtractor: (ITEM, Column<T, *>) -> Any?): CS {
 
     columns.forEachIndexed { index, column ->
-        bind(index + startIndex, valueExtractor.invoke(item, column) ?: TypedNull(column.dbType))
+        val columnValue = valueExtractor.invoke(item, column)
+        val storageForm = (column as Column<T, Any?>).computeStorageFormOf(columnValue)
+        bind(index + startIndex, storageForm ?: TypedNull(column.dbType))
     }
 
     return this
