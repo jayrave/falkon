@@ -15,7 +15,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import java.util.*
 
-class DaoForQueriesExtnDbResourcesClosureTest {
+class DaoForQueriesDbResourcesClosureTest {
 
     @Test
     fun testFindByIdClosesSourceAndCompiledStatementForQueryOnSuccessfulExecution() {

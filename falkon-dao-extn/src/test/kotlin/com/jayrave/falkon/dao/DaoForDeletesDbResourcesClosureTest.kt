@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import java.util.*
 
-class DaoForDeletesExtnDbResourcesClosureTest {
+class DaoForDeletesDbResourcesClosureTest {
 
     @Test
     fun testDeletionOfSingleModelClosesCompiledStatementForDeleteOnSuccessfulExecution() {

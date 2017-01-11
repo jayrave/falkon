@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import java.io.Closeable
 
-class CloseableExtnKtTest {
+class CloseableExtnTest {
 
     @Test
     fun testAutoCloseableClosesOnSuccessfulExecution() {

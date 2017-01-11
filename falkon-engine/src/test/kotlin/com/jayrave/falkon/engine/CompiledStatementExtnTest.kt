@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import java.util.concurrent.Callable
 
-class CompiledStatementKtTest {
+class CompiledStatementExtnTest {
 
     private val compiledStatement = mock<CompiledStatement<Unit>>()
 

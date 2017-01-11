@@ -10,7 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 
-class DaoForInsertsExtnDbResourcesClosureTest {
+class DaoForInsertsDbResourcesClosureTest {
 
     @Test
     fun testInsertOfSingleModelClosesCompiledStatementForInsertOnSuccessfulExecution() {
