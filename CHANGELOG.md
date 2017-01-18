@@ -1,3 +1,6 @@
+#Version 0.14-alpha (2017-01-18)
+- Add `ReadOnlyColumnOfTable` and make `Column` extend it
+
 #Version 0.13-alpha (2017-01-10)
 - Bug fix: `CompiledStatement` extension method, `bindColumns` was not using storage forms of column values
 
