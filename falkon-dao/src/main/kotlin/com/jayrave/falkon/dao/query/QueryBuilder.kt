@@ -3,7 +3,7 @@ package com.jayrave.falkon.dao.query
 import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumnOfTable
 import com.jayrave.falkon.mapper.Table
 
 interface QueryBuilder<T : Any> : AdderOrEnder<T, QueryBuilder<T>> {
@@ -37,7 +37,7 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
      * @param [alias] the name by which [column] will be addressable in the result set
      */
     fun select(column: String, alias: String? = null): Z
-    fun select(column: Column<T, *>, alias: String? = null): Z
+    fun select(column: ReadOnlyColumnOfTable<T, *>, alias: String? = null): Z
 
     /**
      * Adds JOIN clause. Can be called multiple times to add more tables to the JOIN clause.
@@ -50,7 +50,7 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
      * appropriate aliases for those columns to prevent name collisions in the result set
      */
     fun join(
-            column: Column<T, *>, onColumn: Column<*, *>,
+            column: ReadOnlyColumnOfTable<T, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
             joinType: JoinType = JoinType.INNER_JOIN
     ): Z
 
@@ -60,7 +60,7 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
      * in a "first come, first serve" order. Behaviour on calling this method again for a
      * column that has already been included is implementation dependent
      */
-    fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): Z
+    fun groupBy(column: ReadOnlyColumnOfTable<T, *>, vararg others: ReadOnlyColumnOfTable<T, *>): Z
 
     /**
      * Adds ORDER BY clause for the passed in column. This method can be called multiple times
@@ -68,7 +68,7 @@ interface AdderOrEnder<T : Any, Z : AdderOrEnder<T, Z>> {
      * a "first come, first serve" order. Behaviour on calling this method again for a
      * column that has already been included is implementation dependent
      */
-    fun orderBy(column: Column<T, *>, ascending: Boolean): Z
+    fun orderBy(column: ReadOnlyColumnOfTable<T, *>, ascending: Boolean): Z
 
     /**
      * Adds LIMIT clause which dictates the maximum number of rows the query can return.

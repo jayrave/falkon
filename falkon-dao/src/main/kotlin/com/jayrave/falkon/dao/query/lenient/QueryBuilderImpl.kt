@@ -11,7 +11,7 @@ import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.engine.bindAll
 import com.jayrave.falkon.engine.closeIfOpThrows
 import com.jayrave.falkon.iterables.IterableBackedIterable
-import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumnOfTable
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.sqlBuilders.lib.JoinInfo
@@ -29,7 +29,7 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
     private var selectColumnInfoList: MutableList<SelectColumnInfo>? = null
     private var joinInfoList: MutableList<JoinInfoImpl>? = null
     private var whereBuilder: WhereBuilderImpl<PredicateAdderOrEnder>? = null
-    private var groupByColumns: MutableList<Column<*, *>>? = null
+    private var groupByColumns: MutableList<ReadOnlyColumnOfTable<*, *>>? = null
     private var orderByInfoList: MutableList<OrderInfoImpl>? = null
     private var limitCount: Long? = null
     private var offsetCount: Long? = null
@@ -64,14 +64,17 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
     }
 
 
-    override fun select(column: Column<*, *>, alias: String?): AdderOrEnderBeforeWhere {
+    override fun select(
+            column: ReadOnlyColumnOfTable<*, *>, alias: String?):
+            AdderOrEnderBeforeWhere {
+
         return select(column.qualifiedName, alias)
     }
 
 
     override fun join(
-            column: Column<*, *>, onColumn: Column<*, *>, joinType: JoinType):
-            AdderOrEnderBeforeWhere {
+            column: ReadOnlyColumnOfTable<*, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
+            joinType: JoinType): AdderOrEnderBeforeWhere {
 
         if (joinInfoList == null) {
             joinInfoList = LinkedList()
@@ -106,7 +109,8 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
      *
      *      `SELECT ... GROUP BY example_column, ..., example_column, ...`
      */
-    override fun groupBy(column: Column<*, *>, vararg others: Column<*, *>):
+    override fun groupBy(
+            column: ReadOnlyColumnOfTable<*, *>, vararg others: ReadOnlyColumnOfTable<*, *>):
             AdderOrEnderBeforeWhere {
 
         if (groupByColumns == null) {
@@ -128,7 +132,10 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
      *
      *      `SELECT ... ORDER BY example_column ASC|DESC, ..., example_column ASC|DESC, ...`
      */
-    override fun orderBy(column: Column<*, *>, ascending: Boolean): AdderOrEnderBeforeWhere {
+    override fun orderBy(
+            column: ReadOnlyColumnOfTable<*, *>, ascending: Boolean):
+            AdderOrEnderBeforeWhere {
+
         if (orderByInfoList == null) {
             orderByInfoList = LinkedList()
         }
@@ -218,21 +225,26 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         }
 
 
-        override fun select(column: Column<*, *>, alias: String?): AdderOrEnderAfterWhere {
+        override fun select(
+                column: ReadOnlyColumnOfTable<*, *>, alias: String?):
+                AdderOrEnderAfterWhere {
+
             this@QueryBuilderImpl.select(column, alias)
             return this
         }
 
 
-        override fun join(column: Column<*, *>, onColumn: Column<*, *>, joinType: JoinType):
-                AdderOrEnderAfterWhere {
+        override fun join(
+                column: ReadOnlyColumnOfTable<*, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
+                joinType: JoinType): AdderOrEnderAfterWhere {
 
             this@QueryBuilderImpl.join(column, onColumn, joinType)
             return this
         }
 
 
-        override fun groupBy(column: Column<*, *>, vararg others: Column<*, *>):
+        override fun groupBy(
+                column: ReadOnlyColumnOfTable<*, *>, vararg others: ReadOnlyColumnOfTable<*, *>):
                 AdderOrEnderAfterWhere {
 
             this@QueryBuilderImpl.groupBy(column, *others)
@@ -240,7 +252,10 @@ internal class QueryBuilderImpl(private val querySqlBuilder: QuerySqlBuilder) :
         }
 
 
-        override fun orderBy(column: Column<*, *>, ascending: Boolean): AdderOrEnderAfterWhere {
+        override fun orderBy(
+                column: ReadOnlyColumnOfTable<*, *>, ascending: Boolean):
+                AdderOrEnderAfterWhere {
+
             this@QueryBuilderImpl.orderBy(column, ascending)
             return this
         }

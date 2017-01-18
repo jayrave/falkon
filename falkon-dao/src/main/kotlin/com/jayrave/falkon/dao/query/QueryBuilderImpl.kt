@@ -5,7 +5,7 @@ import com.jayrave.falkon.dao.where.WhereBuilder
 import com.jayrave.falkon.dao.where.WhereBuilderImpl
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumnOfTable
 import com.jayrave.falkon.mapper.Table
 import com.jayrave.falkon.sqlBuilders.QuerySqlBuilder
 import com.jayrave.falkon.dao.query.lenient.QueryBuilderImpl as LenientQueryBuilderImpl
@@ -41,15 +41,15 @@ internal class QueryBuilderImpl<T : Any>(
     }
 
 
-    override fun select(column: Column<T, *>, alias: String?): QueryBuilder<T> {
+    override fun select(column: ReadOnlyColumnOfTable<T, *>, alias: String?): QueryBuilder<T> {
         lenientQueryBuilderImpl.select(column, alias)
         return this
     }
 
 
     override fun join(
-            column: Column<T, *>, onColumn: Column<*, *>, joinType: JoinType):
-            QueryBuilder<T> {
+            column: ReadOnlyColumnOfTable<T, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
+            joinType: JoinType): QueryBuilder<T> {
 
         lenientQueryBuilderImpl.join(column, onColumn, joinType)
         return this
@@ -74,7 +74,10 @@ internal class QueryBuilderImpl<T : Any>(
      *
      *      `SELECT ... GROUP BY example_column, ..., example_column, ...`
      */
-    override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>): QueryBuilder<T> {
+    override fun groupBy(
+            column: ReadOnlyColumnOfTable<T, *>, vararg others: ReadOnlyColumnOfTable<T, *>):
+            QueryBuilder<T> {
+
         lenientQueryBuilderImpl.groupBy(column, *others)
         return this
     }
@@ -89,7 +92,7 @@ internal class QueryBuilderImpl<T : Any>(
      *
      *      `SELECT ... ORDER BY example_column ASC|DESC, ..., example_column ASC|DESC, ...`
      */
-    override fun orderBy(column: Column<T, *>, ascending: Boolean): QueryBuilder<T> {
+    override fun orderBy(column: ReadOnlyColumnOfTable<T, *>, ascending: Boolean): QueryBuilder<T> {
         lenientQueryBuilderImpl.orderBy(column, ascending)
         return this
     }
@@ -133,26 +136,34 @@ internal class QueryBuilderImpl<T : Any>(
             return this
         }
 
-        override fun select(column: Column<T, *>, alias: String?): AdderOrEnderAfterWhere<T> {
+        override fun select(
+                column: ReadOnlyColumnOfTable<T, *>, alias: String?):
+                AdderOrEnderAfterWhere<T> {
+
             this@QueryBuilderImpl.select(column, alias)
             return this
         }
 
-        override fun join(column: Column<T, *>, onColumn: Column<*, *>, joinType: JoinType):
-                AdderOrEnderAfterWhere<T> {
+        override fun join(
+                column: ReadOnlyColumnOfTable<T, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
+                joinType: JoinType): AdderOrEnderAfterWhere<T> {
 
             this@QueryBuilderImpl.join(column, onColumn, joinType)
             return this
         }
 
-        override fun groupBy(column: Column<T, *>, vararg others: Column<T, *>):
+        override fun groupBy(
+                column: ReadOnlyColumnOfTable<T, *>, vararg others: ReadOnlyColumnOfTable<T, *>):
                 AdderOrEnderAfterWhere<T> {
 
             this@QueryBuilderImpl.groupBy(column, *others)
             return this
         }
 
-        override fun orderBy(column: Column<T, *>, ascending: Boolean): AdderOrEnderAfterWhere<T> {
+        override fun orderBy(
+                column: ReadOnlyColumnOfTable<T, *>, ascending: Boolean):
+                AdderOrEnderAfterWhere<T> {
+
             this@QueryBuilderImpl.orderBy(column, ascending)
             return this
         }

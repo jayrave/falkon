@@ -1,6 +1,6 @@
 package com.jayrave.falkon.dao.query.lenient
 
-import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumnOfTable
 import java.sql.SQLException
 
 /**
@@ -12,7 +12,8 @@ import java.sql.SQLException
  * @throws [SQLException] if [columns] is empty
  */
 fun <Z : AdderOrEnder<Z>> AdderOrEnder<Z>.select(
-        columns: Iterable<Column<*, *>>, aliaser: ((Column<*, *>) -> String)? = null): Z {
+        columns: Iterable<ReadOnlyColumnOfTable<*, *>>,
+        aliaser: ((ReadOnlyColumnOfTable<*, *>) -> String)? = null): Z {
 
     var result: Z? = null
     columns.forEach { column ->

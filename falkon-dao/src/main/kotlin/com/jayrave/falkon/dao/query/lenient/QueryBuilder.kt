@@ -5,7 +5,7 @@ import com.jayrave.falkon.dao.query.Query
 import com.jayrave.falkon.dao.where.lenient.WhereBuilder
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
-import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumnOfTable
 import com.jayrave.falkon.mapper.Table
 
 interface QueryBuilder {
@@ -37,7 +37,7 @@ interface AdderOrEnder<Z : AdderOrEnder<Z>> {
      * @param [alias] the name by which [column] will be addressable in the result set
      */
     fun select(column: String, alias: String? = null): Z
-    fun select(column: Column<*, *>, alias: String? = null): Z
+    fun select(column: ReadOnlyColumnOfTable<*, *>, alias: String? = null): Z
 
     /**
      * Adds JOIN clause. Can be called multiple times to add more tables to the JOIN clause
@@ -47,7 +47,7 @@ interface AdderOrEnder<Z : AdderOrEnder<Z>> {
      * appropriate aliases for those columns to prevent name collisions in the result set
      */
     fun join(
-            column: Column<*, *>, onColumn: Column<*, *>,
+            column: ReadOnlyColumnOfTable<*, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
             joinType: JoinType = JoinType.INNER_JOIN
     ): Z
 
@@ -57,7 +57,7 @@ interface AdderOrEnder<Z : AdderOrEnder<Z>> {
      * in a "first come, first serve" order. Behaviour on calling this method again for a
      * column that has already been included is implementation dependent
      */
-    fun groupBy(column: Column<*, *>, vararg others: Column<*, *>): Z
+    fun groupBy(column: ReadOnlyColumnOfTable<*, *>, vararg others: ReadOnlyColumnOfTable<*, *>): Z
 
     /**
      * Adds ORDER BY clause for the passed in column. This method can be called multiple times
@@ -65,7 +65,7 @@ interface AdderOrEnder<Z : AdderOrEnder<Z>> {
      * a "first come, first serve" order. Behaviour on calling this method again for a
      * column that has already been included is implementation dependent
      */
-    fun orderBy(column: Column<*, *>, ascending: Boolean): Z
+    fun orderBy(column: ReadOnlyColumnOfTable<*, *>, ascending: Boolean): Z
 
     /**
      * Adds LIMIT clause which dictates the maximum number of rows the query can return.

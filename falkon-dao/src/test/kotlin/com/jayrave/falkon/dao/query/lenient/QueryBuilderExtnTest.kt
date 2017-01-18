@@ -3,7 +3,7 @@ package com.jayrave.falkon.dao.query.lenient
 import com.jayrave.falkon.dao.query.JoinType
 import com.jayrave.falkon.dao.query.testLib.SelectColumnInfoForTest
 import com.jayrave.falkon.dao.testLib.TableForTest
-import com.jayrave.falkon.mapper.Column
+import com.jayrave.falkon.mapper.ReadOnlyColumnOfTable
 import com.jayrave.falkon.sqlBuilders.lib.SelectColumnInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -48,12 +48,12 @@ class QueryBuilderExtnTest {
     fun `select with multi arg list & aliaser`() {
         val table = TableForTest()
         val adderOrEnderForTest = AdderOrEnderForTest()
-        val aliaserForTest = { column: Column<*, *> -> "${column.name}-aliased" }
-        adderOrEnderForTest.select(listOf(table.int, table.blob), aliaserForTest)
+        val aliaser = { column: ReadOnlyColumnOfTable<*, *> -> "${column.name}-aliased" }
+        adderOrEnderForTest.select(listOf(table.int, table.blob), aliaser)
 
         assertThat(adderOrEnderForTest.selectColumnInfoList).containsOnly(
-                SelectColumnInfoForTest(table.int.name, aliaserForTest.invoke(table.int)),
-                SelectColumnInfoForTest(table.blob.name, aliaserForTest.invoke(table.blob))
+                SelectColumnInfoForTest(table.int.name, aliaser.invoke(table.int)),
+                SelectColumnInfoForTest(table.blob.name, aliaser.invoke(table.blob))
         )
     }
 
@@ -65,7 +65,10 @@ class QueryBuilderExtnTest {
 
         var selectColumnInfoList = ArrayList<SelectColumnInfo>()
 
-        override fun select(column: Column<*, *>, alias: String?): AdderOrEnderForTest {
+        override fun select(
+                column: ReadOnlyColumnOfTable<*, *>, alias: String?):
+                AdderOrEnderForTest {
+
             selectColumnInfoList.add(SelectColumnInfoForTest(column.name, alias))
             return this
         }
@@ -73,15 +76,22 @@ class QueryBuilderExtnTest {
         private fun exception() = UnsupportedOperationException("not implemented")
         override fun distinct() = throw exception()
         override fun select(column: String, alias: String?) = throw exception()
-        override fun join(
-                column: Column<*, *>, onColumn: Column<*, *>, joinType: JoinType
-        ) = throw exception()
-
-        override fun groupBy(column: Column<*, *>, vararg others: Column<*, *>) = throw exception()
-        override fun orderBy(column: Column<*, *>, ascending: Boolean) = throw exception()
         override fun limit(count: Long) = throw exception()
         override fun offset(count: Long) = throw exception()
         override fun build() = throw exception()
         override fun compile() = throw exception()
+        override fun join(
+                column: ReadOnlyColumnOfTable<*, *>, onColumn: ReadOnlyColumnOfTable<*, *>,
+                joinType: JoinType
+        ) = throw exception()
+
+        override fun groupBy(
+                column: ReadOnlyColumnOfTable<*, *>,
+                vararg others: ReadOnlyColumnOfTable<*, *>
+        ) = throw exception()
+
+        override fun orderBy(
+                column: ReadOnlyColumnOfTable<*, *>, ascending: Boolean
+        ) = throw exception()
     }
 }
