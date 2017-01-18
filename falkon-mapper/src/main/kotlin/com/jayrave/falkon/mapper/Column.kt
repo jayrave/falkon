@@ -7,14 +7,10 @@ import com.jayrave.falkon.engine.Type
  *      [T] => Table type
  *      [C] => Column type
  *
- * [Column] is an extension of [ReadOnlyColumn] that always belongs to a table
+ * [Column] is an extension of [ReadOnlyColumnOfTable] that knows how to convert a property
+ * to its storage form
  */
-interface Column<T : Any, C> : ReadOnlyColumn<C> {
-
-    /**
-     * Table this column belongs to
-     */
-    val table: Table<T, *>
+interface Column<T : Any, C> : ReadOnlyColumnOfTable<T, C> {
 
     /**
      * The [Type] this column will be stored as in the database
