@@ -121,6 +121,7 @@ class DaoForQueriesDbResourcesClosureTest {
 
 
     private class SourceForTest private constructor(
+            override val canBacktrack: Boolean,
             private val forMoveCalls: () -> Boolean) : Source {
 
         override var isClosed = false
@@ -149,8 +150,8 @@ class DaoForQueriesDbResourcesClosureTest {
 
 
         companion object {
-            fun buildEmptySource() = SourceForTest { false }
-            fun buildSourceThatThrowsExceptionOnTryingToMove() = SourceForTest {
+            fun buildEmptySource() = SourceForTest(false) { false }
+            fun buildSourceThatThrowsExceptionOnTryingToMove() = SourceForTest(false) {
                 throw ExceptionForTesting()
             }
         }

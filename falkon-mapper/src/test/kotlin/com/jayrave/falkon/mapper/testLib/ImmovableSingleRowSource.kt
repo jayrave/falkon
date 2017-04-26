@@ -9,6 +9,7 @@ import java.util.*
  */
 internal class ImmovableSingleRowSource(map: Map<String, Any?>) : Source {
 
+    override val canBacktrack: Boolean = false
     override var isClosed: Boolean = false
         private set
 

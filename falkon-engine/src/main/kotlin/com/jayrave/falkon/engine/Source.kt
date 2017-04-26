@@ -5,7 +5,7 @@ import java.sql.SQLException
 
 /**
  * This interface provides random read access to the result set returned by a database query.
- * [Source] implementations are not required to be synchronized so code using a Source from
+ * [Source] implementations are not required to be synchronized so code using a source from
  * multiple threads should perform its own synchronization
  */
 interface Source : Closeable {
@@ -14,6 +14,11 @@ interface Source : Closeable {
      * Whether this source is closed or not
      */
     val isClosed: Boolean
+
+    /**
+     * Whether this source can move backwards too through the rows of result set
+     */
+    val canBacktrack: Boolean
 
     /**
      * Move the source to the next row. This method is a no-op if the source is
@@ -26,12 +31,14 @@ interface Source : Closeable {
     fun moveToNext(): Boolean
 
     /**
-     * Move the source to the previous row. This method is a no-op if the source is
-     * already before the first entry in the result set
+     * Move the source to the previous row. This method is a no-op if the source can't
+     * backtrack or is already before the first entry in the result set
      *
      * *Note:* Source is initially positioned before the first row
      *
-     * @return `true` if the new current row is valid
+     * @return `true` if the new current row is valid. `false` if the source can't
+     * backtrack (i.e., [canBacktrack] returns `false`) or is already before the
+     * first entry in the result set
      */
     fun moveToPrevious(): Boolean
 

@@ -5,6 +5,9 @@ import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.test.TestSourceClosure
 import com.jayrave.falkon.engine.test.TestSourceGetFieldValueCalls
 import com.jayrave.falkon.engine.test.TestSourceMoveCalls
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.sql.ResultSet
@@ -20,6 +23,23 @@ class ResultSetBackedSourceTest : BaseClassForIntegrationTests() {
     @Before
     fun setUpResultSetBackedSourceTest() {
         engine = DefaultEngine(engineCore)
+    }
+
+    @Test
+    fun `backtrackability is dependent on the type of result set`() {
+        val resultSetMock = mock<ResultSet>()
+        whenever(resultSetMock.type).thenReturn(
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.TYPE_FORWARD_ONLY,
+                -1234
+        )
+
+        val source = ResultSetBackedSource(resultSetMock)
+        assertThat(source.canBacktrack).isTrue() // scroll insensitive
+        assertThat(source.canBacktrack).isTrue() // scroll sensitive
+        assertThat(source.canBacktrack).isFalse() // forward only
+        assertThat(source.canBacktrack).isTrue() // some random int
     }
 
     @Test

@@ -5,6 +5,8 @@ import com.jayrave.falkon.engine.Engine
 import com.jayrave.falkon.engine.test.TestSourceClosure
 import com.jayrave.falkon.engine.test.TestSourceGetFieldValueCalls
 import com.jayrave.falkon.engine.test.TestSourceMoveCalls
+import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
@@ -15,6 +17,11 @@ class CursorBackedSourceTest : BaseClassForIntegrationTests() {
     @Before
     fun setUpResultSetBackedSourceTest() {
         engine = DefaultEngine(engineCore)
+    }
+
+    @Test
+    fun `is backtrackable`() {
+        assertThat(CursorBackedSource(mock()).canBacktrack).isTrue()
     }
 
     @Test

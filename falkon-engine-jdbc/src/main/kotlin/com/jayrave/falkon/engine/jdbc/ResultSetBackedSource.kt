@@ -8,6 +8,12 @@ internal class ResultSetBackedSource(private val resultSet: ResultSet) : Source 
     override val isClosed: Boolean
         get() = resultSet.isClosed
 
+    override val canBacktrack: Boolean
+        get() = when (resultSet.type) {
+            ResultSet.TYPE_FORWARD_ONLY -> false
+            else -> true
+        }
+
     override fun moveToNext(): Boolean = resultSet.next()
     override fun moveToPrevious(): Boolean = resultSet.previous()
     override fun getColumnIndex(columnName: String): Int = resultSet.findColumn(columnName)

@@ -4,11 +4,12 @@ import android.database.Cursor
 import com.jayrave.falkon.engine.Source
 
 /**
- * [Source] indices are 1-based but [Cursor] indices are 0-based. Appropriate conversion
+ * [Source] indices are 1-based but [Cursor] indices are 0-based. Appropriate conversions
  * will be done
  */
 internal class CursorBackedSource(private val cursor: Cursor) : Source {
 
+    override val canBacktrack: Boolean get() = true
     override val isClosed: Boolean
         get() = cursor.isClosed
 
