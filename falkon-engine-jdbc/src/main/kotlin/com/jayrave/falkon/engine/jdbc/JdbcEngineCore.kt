@@ -3,7 +3,9 @@ package com.jayrave.falkon.engine.jdbc
 import com.jayrave.falkon.engine.*
 import javax.sql.DataSource
 
-class JdbcEngineCore(dataSource: DataSource) : EngineCore {
+class JdbcEngineCore(
+        dataSource: DataSource,
+        private val driverSupportsResultSetScrolling: Boolean = false) : EngineCore {
 
     private val transactionManager = TransactionManagerImpl(dataSource)
     private val connectionManager = ConnectionManagerImpl(dataSource, transactionManager)
@@ -51,6 +53,6 @@ class JdbcEngineCore(dataSource: DataSource) : EngineCore {
 
 
     override fun compileQuery(rawSql: String): CompiledStatement<Source> {
-        return CompiledQuery(rawSql, connectionManager)
+        return CompiledQuery(rawSql, connectionManager, driverSupportsResultSetScrolling)
     }
 }

@@ -6,7 +6,6 @@ import com.jayrave.falkon.engine.test.NativeSqlExecutor
 import org.h2.jdbcx.JdbcConnectionPool
 import org.junit.After
 import org.junit.Before
-import java.sql.PreparedStatement
 import javax.sql.DataSource
 
 /**
@@ -64,20 +63,5 @@ abstract class BaseClassForIntegrationTests {
         // For an in-memory db, closing is akin to nuking it. This makes sure that we have a
         // clean slate for every test
         dataSource.forStatement("SHUTDOWN") { it.execute() }
-    }
-
-
-
-    companion object {
-        private fun <R> DataSource.forStatement(sql: String, op: (PreparedStatement) -> R): R {
-            val connection = connection
-            val preparedStatement = connection.prepareStatement(sql)
-            return try {
-                op.invoke(preparedStatement)
-            } finally {
-                preparedStatement.close()
-                connection.close()
-            }
-        }
     }
 }

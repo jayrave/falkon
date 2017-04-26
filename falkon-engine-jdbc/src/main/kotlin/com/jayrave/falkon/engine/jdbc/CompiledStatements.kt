@@ -48,7 +48,9 @@ internal class IUD_CompiledStatement(sql: String, connectionManager: ConnectionM
 /**
  * For compiling & executing SELECT statements
  */
-internal class CompiledQuery(sql: String, connectionManager: ConnectionManager) :
+internal class CompiledQuery(
+        sql: String, connectionManager: ConnectionManager,
+        private val makeResultSetScrollable: Boolean) :
         BaseCompiledStatement<Source>(sql, connectionManager) {
 
     override fun execute(): Source {
@@ -56,9 +58,12 @@ internal class CompiledQuery(sql: String, connectionManager: ConnectionManager) 
     }
 
     override fun prepareStatement(connection: Connection): PreparedStatement {
-        return connection.prepareStatement(
-                sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY
-        )
+        val resultSetType = when {
+            makeResultSetScrollable -> ResultSet.TYPE_SCROLL_INSENSITIVE
+            else -> ResultSet.TYPE_FORWARD_ONLY
+        }
+
+        return connection.prepareStatement(sql, resultSetType, ResultSet.CONCUR_READ_ONLY)
     }
 }
 
