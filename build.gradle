@@ -1,7 +1,7 @@
 buildscript {
 
     def baseVersions = [
-            kotlin        : '1.0.5-2',
+            kotlin        : '1.1.2',
             supportLibrary: '23.1.1',
     ]
 
