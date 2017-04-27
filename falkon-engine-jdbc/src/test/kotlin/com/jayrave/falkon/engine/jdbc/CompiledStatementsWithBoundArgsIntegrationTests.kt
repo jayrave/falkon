@@ -8,6 +8,8 @@ import org.junit.Test
 
 class CompiledStatementsWithBoundArgsIntegrationTests : BaseClassForIntegrationTests() {
 
+    private val engineCore by lazy { JdbcEngineCore(dataSource) }
+
     @Test
     fun `compile sql with all types of bound args`() {
         TestCompileSqlWithAllTypesOfBoundArgs(

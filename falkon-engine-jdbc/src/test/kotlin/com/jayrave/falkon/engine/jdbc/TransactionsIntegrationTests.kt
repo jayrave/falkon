@@ -8,6 +8,8 @@ import java.sql.SQLException
 
 class TransactionsIntegrationTests : BaseClassForIntegrationTests() {
 
+    private val engineCore by lazy { JdbcEngineCore(dataSource) }
+
     @Test
     fun `transaction commits if successful`() {
         TestTransactionCommitsIfSuccessful(engineCore).`perform test`()

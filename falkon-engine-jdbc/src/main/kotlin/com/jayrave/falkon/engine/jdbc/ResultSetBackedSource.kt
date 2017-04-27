@@ -15,7 +15,13 @@ internal class ResultSetBackedSource(private val resultSet: ResultSet) : Source 
         }
 
     override fun moveToNext(): Boolean = resultSet.next()
-    override fun moveToPrevious(): Boolean = resultSet.previous()
+    override fun moveToPrevious(): Boolean {
+        return when {
+            canBacktrack -> resultSet.previous()
+            else -> false
+        }
+    }
+
     override fun getColumnIndex(columnName: String): Int = resultSet.findColumn(columnName)
     override fun getShort(columnIndex: Int): Short = resultSet.getShort(columnIndex)
     override fun getInt(columnIndex: Int): Int = resultSet.getInt(columnIndex)

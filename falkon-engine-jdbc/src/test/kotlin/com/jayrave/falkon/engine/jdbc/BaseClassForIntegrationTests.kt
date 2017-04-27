@@ -14,7 +14,6 @@ import javax.sql.DataSource
 abstract class BaseClassForIntegrationTests {
 
     protected lateinit var dataSource: DataSource
-    protected lateinit var engineCore: JdbcEngineCore
 
     protected val sqlExecutorUsingDataSource = object : NativeSqlExecutor {
         override fun execute(sql: String) {
@@ -51,7 +50,6 @@ abstract class BaseClassForIntegrationTests {
         ds.maxConnections = 1
 
         dataSource = ds
-        engineCore = JdbcEngineCore(dataSource)
     }
 
 
