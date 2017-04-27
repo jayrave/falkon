@@ -1,3 +1,7 @@
+#Version 0.15-alpha (2017-01-18)
+- Add `Source#canBacktrack`
+- `Source` won't be backtrackable until explicitly asked
+
 #Version 0.14-alpha (2017-01-18)
 - Add `ReadOnlyColumnOfTable` and make `Column` extend it
 

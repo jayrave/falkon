@@ -3,6 +3,10 @@ package com.jayrave.falkon.engine.jdbc
 import com.jayrave.falkon.engine.*
 import javax.sql.DataSource
 
+/**
+ * [driverSupportsResultSetScrolling] is `false` by default as there are widely used
+ * JDBC drivers that don't support scrollable result set (eg., xerial's sqlite)
+ */
 class JdbcEngineCore(
         dataSource: DataSource,
         private val driverSupportsResultSetScrolling: Boolean = false) : EngineCore {
