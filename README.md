@@ -1,9 +1,9 @@
 **NOTE: This library is still in its alpha!**
 
-#Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon) [ ![Download](https://api.bintray.com/packages/jayrave/android/falkon-android/images/download.svg) ](https://bintray.com/jayrave/android/falkon-android/_latestVersion)
+# Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon) [ ![Download](https://api.bintray.com/packages/jayrave/android/falkon-android/images/download.svg) ](https://bintray.com/jayrave/android/falkon-android/_latestVersion)
 Clean & simple API to interact with the database (for Android & Kotlin)
 
-##Design Principles
+## Design Principles
  - Should let domain models untouched
  - Should keep reflection to a minimum
  - Should generate SQL that is as clean as handwritten SQL
@@ -12,7 +12,7 @@ Clean & simple API to interact with the database (for Android & Kotlin)
  - Should let users dive down to raw SQL without any ceremony if they desire
  - Shouldn't do implicit joins
 
-##What can it do?
+## What can it do?
 - Talk with different databases. Out of the box support is available for Android's SQLite & H2
 - An easy way to express how domain models are mapped to tables
 - A type-safe way to insert (or replace) into, update, delete from & query the tables
@@ -20,7 +20,7 @@ Clean & simple API to interact with the database (for Android & Kotlin)
 
 **NOTE:** Falkon isn't a traditional ORM (object relational mapping). Although it does a great job at OM (object mapping => serialize to & deserialize from db records), relationships aren't taken care of i.e., foreign fields are not automatically converted into foreign objects. This makes sure that unnecessary data is not loaded from the db (in case of a lengthy chain of foreign fields) and forces the user to think about writing queries that just loads what they want (hopefully)
 
-##Dependency
+## Dependency
 The following is true for an Android gradle project. For more configurations, check out the advanced section
 ```gradle
 // This is usually in the top-level build.gradle file
@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-##Simple tutorial
+## Simple tutorial
 Let's look at the model that we will be saving to / retrieving from the database
 
 ```kotlin
@@ -52,12 +52,12 @@ data class User(
 )
 ```
 
-###TableConfiguration
+### TableConfiguration
 Every table needs a configuration. This carries information like
 - The database engine this table will talk with
 - Converters to convert between Kotlin & SQL types
 
-####Engine
+#### Engine
 There is a default implementation => `DefaultEngine`. This guy needs a core to talk with the actual database. To talk with Android's SQLite use `AndroidSqliteEngineCore` (There is also a `JdbcEngineCore`, if you want to connect to a database via `JDBC`)
 
 ```kotlin
@@ -83,7 +83,7 @@ tableConfiguration.registerDefaultConverters()
 // tableConfiguration.registerForNullableValues(UUID::class.java, YourCustomUuidConverter(), true)
 ```
 
-###Table
+### Table
 Tables inform Falkon about how a model maps to a table. `BaseEnhancedTable` provides
 a lot of defaults & is a good class to extend for you table mappings
 
@@ -111,10 +111,10 @@ class UsersTable(configuration: TableConfiguration, sqlBuilders: SqlBuilders) :
 }
 ```
 
-###DAO
+### DAO
 All the builders (for insert (or replace), update, delete & query) in the following section are context aware (suggests appropriate methods at appropriate time when used as a fluent-interface) & are type-safe
 
-####Insert
+#### Insert
 ```kotlin
 // Models can be directly inserted
 usersTable.dao.insert(createRandomUser())
@@ -129,7 +129,7 @@ usersTable.dao
     }.insert()
 ```
 
-####Update
+#### Update
 ```kotlin
 // Models can be directly updated
 usersTable.dao.update(editedUser)
@@ -144,7 +144,7 @@ usersTable.dao
         .update()
 ```
 
-####Delete
+#### Delete
 ```kotlin
 // Models can be directly deleted
 usersTable.dao.delete(user)
@@ -161,7 +161,7 @@ usersTable.dao.deleteBuilder()
         .delete()
 ```
 
-####Insert or replace
+#### Insert or replace
 ```kotlin
 // Models can be directly inserted or replaced (based on whether the record already exists)
 val newUser = createRandomUser()
@@ -180,7 +180,7 @@ usersTable.dao
     }.insertOrReplace()
 ```
 
-####Query
+#### Query
 ```kotlin
 // There are several convenience methods
 usersTable.dao.findById(user.id)
@@ -204,7 +204,7 @@ observable.subscribe({ compiledQuery ->
 })
 ```
 
-##Going deeper
+## Going deeper
 There are a lot more features to discover
 - Support for composite primary key
 - Logger (to log all SQL, along with the arguments)
@@ -220,45 +220,45 @@ To learn more check out
 - Unit tests
 - Dive into source code (it is open-source :))
 
-##Advanced: pick & choose the modules
+## Advanced: pick & choose the modules
 Falkon has been designed to be very modular. You can plug these modules together to make object mapping as featureful or as simple as possible.
 
 - *Core modules:* Engine, Mapper, SqlBuilder & DAO
 - *Non-core modules:* Rx
 
-###Engine
+### Engine
 Engine modules provide the functionality to talk with database engines. There are 3 such modules
 
  - `falkon-engine` => provides the interfaces (engine, compiled statement, logger etc.)
  - `falkon-engine-android-sqlite` => engine implementation to talk with Android's SQLite
  - `falkon-engine-jdbc` => engine implementation to talk with databases via JDBC
 
-###Mapper
+### Mapper
 Mapper modules provide a way to map Kotlin objects to database columns. There are 3 such modules
 
 - `falkon-mapper` => provides the interfaces (table, column, converter etc.)
 - `falkon-mapper-basic` => provides basic mapper implementation
 - `falkon-mapper-enhanced` => provides enhanced mapping functionality (basic + DAO)
 
-###SqlBuilder
+### SqlBuilder
 SqlBuilder modules provide a way to build raw SQL to send to the database. There are 2 such modules
 
 - `falkon-sql-builder` => provides the interfaces (sql builder for insert (or replace), update, delete, query & create table statements)
 - `falkon-sql-builder-h2` => provides implementation for H2 database
 - `falkon-sql-builder-sqlite` => provides implementation for SQLite database
 
-###DAO
+### DAO
 DAO modules provide type-safe API to insert, update, delete & query. There are 2 such modules
 
 - `falkon-dao` => provides insert, update, delete & query builder interfaces & implementation
 - `falkon-dao-extn` => provides extension to dao like inserting, updating, deleting models & deleting, querying by id etc.
 
-###Rx
+### Rx
 Rx modules introduce reactive stream semantics to SQL operations
 
 - `falkon-rxjava-1` => provides extensions to engines to setup observable streams
 
-##Gradle dependencies
+## Gradle dependencies
 All artifacts live in Bintray's `jcenter`
 
 ```gradle
@@ -277,17 +277,17 @@ compile 'com.jayrave.falkon:falkon-sql-builder-h2:$falkonVersion'
 compile 'com.jayrave.falkon:falkon-sql-builder-sqlite:$falkonVersion'
 ```
 
-##Building Falkon
+## Building Falkon
 Just clone the repository & run `./gradlew build` from project root. It requires the following
 - Java 6
 - Android SDK 24 (not required, if Android modules need not participate in the build)
 
 **Note:** To exclude Android modules from the build, add `falkon.excludeAndroidModulesFromBuild = true` to *local.properties* file in project root
 
-##Credits
+## Credits
 - [Andrew O'Malley](https://github.com/andrewoma) - creator of [kwery](https://github.com/andrewoma/kwery) which gave me the idea & some core concepts
 - [Gray](https://github.com/j256) - creator of [ORMLite](https://github.com/j256/ormlite-core) which inducted me into the world of ORMs & has been my choice of work-horse for the past few years
 
 
-##Check this out
+## Check this out
 If you like keeping your models clean, you may be interested in checking out another library => [Moshi: Pristine Models](https://github.com/jayrave/moshi-pristine-models) (Disclaimer: I am the author), an add-on to [Moshi] (https://github.com/square/moshi), which helps to keep your models free of JSON serializing/deserializing specific annotations. Like this library, it enables to programmatically define the mapping between models & JSON
