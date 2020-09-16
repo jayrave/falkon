@@ -1,6 +1,7 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteDatabase
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Source
 import com.jayrave.falkon.engine.Type
@@ -14,7 +15,7 @@ import java.util.*
  *
  * *CAUTION: * This class is not thread-safe
  */
-internal class CompiledQuery(override val sql: String, private val database: SQLiteDatabase) :
+internal class CompiledQuery(override val sql: String, private val database: SupportSQLiteDatabase) :
         CompiledStatement<Source> {
 
     private var bindArgs: MutableMap<Int, Any?> = newArgsMap()
@@ -23,8 +24,8 @@ internal class CompiledQuery(override val sql: String, private val database: SQL
 
     override fun execute(): Source {
         throwIfClosed()
-        return CursorBackedSource(database.rawQueryWithFactory(
-                ArgsBindingCursorFactory(bindArgs), sql, null, null
+        return CursorBackedSource(database.query(
+                SimpleSQLiteQuery(sql, bindArgs.values.toTypedArray())
         ))
     }
 

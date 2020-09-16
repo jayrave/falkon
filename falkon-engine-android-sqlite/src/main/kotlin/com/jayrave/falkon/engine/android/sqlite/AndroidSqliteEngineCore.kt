@@ -1,10 +1,10 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteOpenHelper
+import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.jayrave.falkon.engine.*
 import java.sql.SQLException
 
-class AndroidSqliteEngineCore(sqLiteOpenHelper: SQLiteOpenHelper) : EngineCore {
+class AndroidSqliteEngineCore(sqLiteOpenHelper: SupportSQLiteOpenHelper) : EngineCore {
 
     private val database by lazy { sqLiteOpenHelper.writableDatabase }
 

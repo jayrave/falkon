@@ -1,7 +1,7 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteStatement
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteStatement
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -14,7 +14,7 @@ class BaseCompiledStatementTest {
 
     @Test
     fun `closure`() {
-        val mockStatement = mock<SQLiteStatement>()
+        val mockStatement = mock<SupportSQLiteStatement>()
         val db = buildMockDb(mockStatement)
         val cs = CompiledStatementForTest(db)
 
@@ -28,7 +28,7 @@ class BaseCompiledStatementTest {
 
     @Test
     fun `clear bindings`() {
-        val mockStatement = mock<SQLiteStatement>()
+        val mockStatement = mock<SupportSQLiteStatement>()
         val db = buildMockDb(mockStatement)
         val cs = CompiledStatementForTest(db)
 
@@ -39,7 +39,7 @@ class BaseCompiledStatementTest {
 
 
 
-    private class CompiledStatementForTest(db: SQLiteDatabase) :
+    private class CompiledStatementForTest(db: SupportSQLiteDatabase) :
             BaseCompiledStatement<Int>("DUMMY SQL", db) {
 
         override fun execute(): Int = throw UnsupportedOperationException("not implemented")
@@ -48,8 +48,8 @@ class BaseCompiledStatementTest {
 
 
     companion object {
-        private fun buildMockDb(sqLiteStatement: SQLiteStatement): SQLiteDatabase {
-            val db = mock<SQLiteDatabase>()
+        private fun buildMockDb(sqLiteStatement: SupportSQLiteStatement): SupportSQLiteDatabase {
+            val db = mock<SupportSQLiteDatabase>()
             whenever(db.compileStatement(any())).thenReturn(sqLiteStatement)
             return db
         }

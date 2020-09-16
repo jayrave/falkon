@@ -1,6 +1,6 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.jayrave.falkon.engine.test.NativeQueryExecutor
 import com.jayrave.falkon.engine.test.NativeSqlExecutor
 import org.junit.After
@@ -9,7 +9,7 @@ import org.robolectric.RuntimeEnvironment
 
 abstract class BaseClassForIntegrationTests : RobolectricTestBaseClass() {
 
-    protected lateinit var database: SQLiteDatabase
+    protected lateinit var database: SupportSQLiteDatabase
     protected lateinit var engineCore: AndroidSqliteEngineCore
 
     protected val sqlExecutorUsingDataSource = object : NativeSqlExecutor {
@@ -17,13 +17,13 @@ abstract class BaseClassForIntegrationTests : RobolectricTestBaseClass() {
     }
 
     protected val queryExecutorUsingDataSource = object : NativeQueryExecutor {
-        override fun execute(query: String) = CursorBackedSource(database.rawQuery(query, null))
+        override fun execute(query: String) = CursorBackedSource(database.query(query))
     }
 
 
     @Before
     fun setUp() {
-        val helper = SqliteOpenHelperForTest()
+        val helper = buildSqliteOpenHelper(RuntimeEnvironment.application)
         database = helper.writableDatabase
         engineCore = AndroidSqliteEngineCore(helper)
     }

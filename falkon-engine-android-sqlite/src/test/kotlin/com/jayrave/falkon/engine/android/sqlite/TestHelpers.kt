@@ -1,24 +1,30 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
+import android.content.Context
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import org.assertj.core.api.Assertions.fail
-import org.robolectric.RuntimeEnvironment
 
-fun buildAndroidSqliteEngineCore(
-        helper: SQLiteOpenHelper = SqliteOpenHelperForTest()):
-        AndroidSqliteEngineCore {
+fun buildAndroidSqliteEngineCore(context: Context): AndroidSqliteEngineCore {
+    return AndroidSqliteEngineCore(buildSqliteOpenHelper(context))
+}
 
-    return AndroidSqliteEngineCore(helper)
+fun buildSqliteOpenHelper(context: Context): SupportSQLiteOpenHelper {
+    return FrameworkSQLiteOpenHelperFactory().create(
+            SupportSQLiteOpenHelper.Configuration.builder(context)
+                    .callback(Callback())
+                    .build()
+    )
 }
 
 
-class SqliteOpenHelperForTest : SQLiteOpenHelper(RuntimeEnvironment.application, null, null, 1) {
-    override fun onCreate(db: SQLiteDatabase) {
+private class Callback : SupportSQLiteOpenHelper.Callback(1) {
+    override fun onCreate(db: SupportSQLiteDatabase) {
         // No op
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
         fail("onUpgrade shouldn't be called")
     }
 }

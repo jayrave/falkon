@@ -1,15 +1,15 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteStatement
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteStatement
 import com.jayrave.falkon.engine.CompiledStatement
 import com.jayrave.falkon.engine.Type
 
 internal abstract class BaseCompiledStatement<T>(
-        final override val sql: String, database: SQLiteDatabase) :
+        final override val sql: String, database: SupportSQLiteDatabase) :
         CompiledStatement<T> {
 
-    protected val sqliteStatement: SQLiteStatement = database.compileStatement(sql)
+    protected val sqliteStatement: SupportSQLiteStatement = database.compileStatement(sql)
     override final var isClosed = false
         private set
 

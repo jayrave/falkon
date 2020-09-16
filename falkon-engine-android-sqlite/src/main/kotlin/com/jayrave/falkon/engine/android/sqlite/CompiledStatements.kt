@@ -1,11 +1,11 @@
 package com.jayrave.falkon.engine.android.sqlite
 
-import android.database.sqlite.SQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Could be used for compiling & executing any valid SQL statement
  */
-internal class UnitReturningCompiledStatement(sql: String, database: SQLiteDatabase) :
+internal class UnitReturningCompiledStatement(sql: String, database: SupportSQLiteDatabase) :
         BaseCompiledStatement<Unit>(sql, database) {
 
     override fun execute() {
@@ -22,7 +22,7 @@ internal class UnitReturningCompiledStatement(sql: String, database: SQLiteDatab
  *  - DELETE
  *  - INSERT OR REPLACE
  */
-internal class IUD_CompiledStatement(sql: String, database: SQLiteDatabase) :
+internal class IUD_CompiledStatement(sql: String, database: SupportSQLiteDatabase) :
         BaseCompiledStatement<Int>(sql, database) {
 
     override fun execute(): Int {
