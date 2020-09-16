@@ -25,6 +25,8 @@ android {
 dependencies {
     compile falkonModules.engine
     compile libraries.kotlinStdlib
+    compile libraries.supportSqliteInterface
+    compile libraries.supportSqliteImpl
 
     testCompile falkonModules.engineTestCommon
     testCompile libraries.assertJ

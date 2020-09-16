@@ -2,6 +2,7 @@ package com.jayrave.falkon.sample_android
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.TextView
 import com.jayrave.falkon.dao.delete
 import com.jayrave.falkon.dao.insert
@@ -32,10 +33,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Extract log view
-        logView = findViewById(R.id.log_view) as TextView
+        logView = findViewById(R.id.log_view)
 
         // Setup falkon stuff to run on button click
-        findViewById(R.id.perform_falkon_magic).setOnClickListener {
+        findViewById<View>(R.id.perform_falkon_magic).setOnClickListener {
             uiLog("Get ready to be blown away")
             performFalkonMagic()
             uiLog("That's all folks")

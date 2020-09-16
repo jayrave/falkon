@@ -36,6 +36,7 @@ buildscript {
             rxJava1         : '1.2.0',
             sqliteJdbc      : '3.7.2',
             supportAppCompat: baseVersions.supportLibrary,
+            sqliteVersion   : "2.1.0"
     ]
 
     repositories {
@@ -77,17 +78,19 @@ if (engineForAndroidSqliteProject != null) {
 
 
 ext.libraries = [
-        assertJ         : "org.assertj:assertj-core:${librariesVersions.assertJ}",
-        h2              : "com.h2database:h2:${librariesVersions.h2}",
-        jUnit           : "junit:junit:${librariesVersions.jUnit}",
-        kotlinReflect   : "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
-        kotlinStdlib    : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
-        mockito         : "org.mockito:mockito-core:${librariesVersions.mockito}",
-        mockitoKotlin   : "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
-        robolectric     : "org.robolectric:robolectric:${librariesVersions.robolectric}",
-        rxJava1         : "io.reactivex:rxjava:${librariesVersions.rxJava1}",
-        sqliteJdbc      : "org.xerial:sqlite-jdbc:${librariesVersions.sqliteJdbc}",
-        supportAppCompat: "com.android.support:appcompat-v7:${librariesVersions.supportAppCompat}",
+        assertJ               : "org.assertj:assertj-core:${librariesVersions.assertJ}",
+        h2                    : "com.h2database:h2:${librariesVersions.h2}",
+        jUnit                 : "junit:junit:${librariesVersions.jUnit}",
+        kotlinReflect         : "org.jetbrains.kotlin:kotlin-reflect:${librariesVersions.kotlinReflect}",
+        kotlinStdlib          : "org.jetbrains.kotlin:kotlin-stdlib:${librariesVersions.kotlinStdlib}",
+        mockito               : "org.mockito:mockito-core:${librariesVersions.mockito}",
+        mockitoKotlin         : "com.nhaarman:mockito-kotlin:${librariesVersions.mockitoKotlin}",
+        robolectric           : "org.robolectric:robolectric:${librariesVersions.robolectric}",
+        rxJava1               : "io.reactivex:rxjava:${librariesVersions.rxJava1}",
+        sqliteJdbc            : "org.xerial:sqlite-jdbc:${librariesVersions.sqliteJdbc}",
+        supportAppCompat      : "com.android.support:appcompat-v7:${librariesVersions.supportAppCompat}",
+        supportSqliteInterface: "androidx.sqlite:sqlite:${librariesVersions.sqliteVersion}",
+        supportSqliteImpl     : "androidx.sqlite:sqlite-framework:${librariesVersions.sqliteVersion}",
 ]
 
 
@@ -98,6 +101,9 @@ subprojects {
 
     repositories {
         jcenter()
+        maven {
+            url("https://dl.google.com/dl/android/maven2/")
+        }
     }
 }
 
