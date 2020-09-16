@@ -22,21 +22,21 @@ android {
 
 dependencies {
     // Provides engine interface & implementation
-    api falkonModules.engine
-    api falkonModules.engineAndroidSqlite
+    compile falkonModules.engine
+    compile falkonModules.engineAndroidSqlite
 
     // Provides mapper interface & implementation (basic & enhanced)
-    api falkonModules.mapper
-    api falkonModules.mapperBasic
-    api falkonModules.mapperEnhanced
+    compile falkonModules.mapper
+    compile falkonModules.mapperBasic
+    compile falkonModules.mapperEnhanced
 
     // Provides SQL builder interface & implementation
-    api falkonModules.sqlBuilder
-    api falkonModules.sqlBuilderSqlite
+    compile falkonModules.sqlBuilder
+    compile falkonModules.sqlBuilderSqlite
 
     // Provides DAO & its extension
-    api falkonModules.dao
-    api falkonModules.daoExtn
+    compile falkonModules.dao
+    compile falkonModules.daoExtn
 }
 
 ext {

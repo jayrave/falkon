@@ -22,17 +22,17 @@ android {
 }
 
 dependencies {
-    api falkonModules.engine
-    api libraries.kotlinStdlib
-    api libraries.supportSqliteInterface
-    api libraries.supportSqliteImpl
+    compile falkonModules.engine
+    compile libraries.kotlinStdlib
+    compile libraries.supportSqliteInterface
+    compile libraries.supportSqliteImpl
 
-    testImplementation falkonModules.engineTestCommon
-    testImplementation libraries.assertJ
-    testImplementation libraries.jUnit
-    testImplementation libraries.mockito
-    testImplementation libraries.mockitoKotlin
-    testImplementation libraries.robolectric
+    testCompile falkonModules.engineTestCommon
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.mockito
+    testCompile libraries.mockitoKotlin
+    testCompile libraries.robolectric
 }
 
 ext {

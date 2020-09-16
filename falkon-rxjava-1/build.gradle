@@ -4,14 +4,14 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    api falkonModules.engine
-    api libraries.kotlinStdlib
-    api libraries.rxJava1
+    compile falkonModules.engine
+    compile libraries.kotlinStdlib
+    compile libraries.rxJava1
 
-    testImplementation libraries.assertJ
-    testImplementation libraries.jUnit
-    testImplementation libraries.mockito
-    testImplementation libraries.mockitoKotlin
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
+    testCompile libraries.mockito
+    testCompile libraries.mockitoKotlin
 }
 
 ext {

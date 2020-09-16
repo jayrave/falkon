@@ -4,10 +4,10 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    api libraries.kotlinStdlib
+    compile libraries.kotlinStdlib
 
-    testImplementation libraries.assertJ
-    testImplementation libraries.jUnit
+    testCompile libraries.assertJ
+    testCompile libraries.jUnit
 }
 
 ext {
