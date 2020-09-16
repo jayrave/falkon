@@ -40,7 +40,7 @@ class BaseCompiledStatementTest {
 
 
     private class CompiledStatementForTest(db: SupportSQLiteDatabase) :
-            BaseCompiledStatement<Int>("DUMMY SQL", db) {
+            BaseCompiledStatement<Int>(DUMMY_SQL, db) {
 
         override fun execute(): Int = throw UnsupportedOperationException("not implemented")
     }
@@ -48,9 +48,11 @@ class BaseCompiledStatementTest {
 
 
     companion object {
+        private const val DUMMY_SQL = "DUMMY SQL"
+
         private fun buildMockDb(sqLiteStatement: SupportSQLiteStatement): SupportSQLiteDatabase {
             val db = mock<SupportSQLiteDatabase>()
-            whenever(db.compileStatement(any())).thenReturn(sqLiteStatement)
+            whenever(db.compileStatement(eq(DUMMY_SQL))).thenReturn(sqLiteStatement)
             return db
         }
     }
