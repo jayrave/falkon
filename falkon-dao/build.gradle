@@ -4,17 +4,17 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compile falkonModules.engine
-    compile falkonModules.iterableUtils
-    compile falkonModules.mapper
-    compile falkonModules.sqlBuilder
-    compile libraries.kotlinStdlib
+    api falkonModules.engine
+    api falkonModules.iterableUtils
+    api falkonModules.mapper
+    api falkonModules.sqlBuilder
+    api libraries.kotlinStdlib
 
-    testCompile falkonModules.mapperBasic
-    testCompile libraries.assertJ
-    testCompile libraries.jUnit
-    testCompile libraries.mockito
-    testCompile libraries.mockitoKotlin
+    testImplementation falkonModules.mapperBasic
+    testImplementation libraries.assertJ
+    testImplementation libraries.jUnit
+    testImplementation libraries.mockito
+    testImplementation libraries.mockitoKotlin
 }
 
 ext {

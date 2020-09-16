@@ -4,7 +4,7 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compile falkonModules.engine
-    compile libraries.assertJ
-    compile libraries.kotlinStdlib
+    api falkonModules.engine
+    api libraries.assertJ
+    api libraries.kotlinStdlib
 }

@@ -4,7 +4,7 @@ sourceCompatibility = javaVersions.source
 targetCompatibility = javaVersions.target
 
 dependencies {
-    compile libraries.kotlinStdlib
+    api libraries.kotlinStdlib
 }
 
 ext {
