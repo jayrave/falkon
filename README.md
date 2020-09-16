@@ -1,4 +1,4 @@
-**NOTE: This library is still in its alpha!**
+**DEPRECATED: This library served its purpose well (at least for the one app this was getting used in pretty widely for a few years 😁). Development has come to an end on this library. Please consider using better alternatives: might I suggest [SqlDelight](https://github.com/cashapp/sqldelight)?**
 
 # Falkon [![Build Status](https://travis-ci.org/jayrave/falkon.svg?branch=master)](https://travis-ci.org/jayrave/falkon) [ ![Download](https://api.bintray.com/packages/jayrave/android/falkon-android/images/download.svg) ](https://bintray.com/jayrave/android/falkon-android/_latestVersion)
 Clean & simple API to interact with the database (for Android & Kotlin)
