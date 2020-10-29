@@ -25,7 +25,14 @@ internal class CompiledQuery(override val sql: String, private val database: Sup
     override fun execute(): Source {
         throwIfClosed()
         return CursorBackedSource(database.query(
-                SimpleSQLiteQuery(sql, bindArgs.values.toTypedArray())
+                SimpleSQLiteQuery(
+                        sql,
+                        Array<Any?>(bindArgs.size) { null }.also { arr ->
+                            bindArgs.forEach { (index, value) ->
+                                arr[index - 1] = value
+                            }
+                        }
+                )
         ))
     }
 
